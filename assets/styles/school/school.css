@@ -1,0 +1,65 @@
+main{
+    min-height: 80vh;
+}
+
+main .school{
+    background-color: #eee;
+    flex: 1 1 250px;
+    width: fit-content;
+    padding: 1vh 0.6vw;
+    margin: 0.3vh;
+}
+
+main .school:hover{
+    background-color: #f8f8f8ee;
+}
+
+main .school.no_data{
+    font-size: larger;
+    color: #333;
+}
+
+.button .btn{
+    margin: 0;
+    padding: 1%;
+}
+
+/*.button .btn button{
+    min-width: 7vw;
+}*/
+
+@media screen and (max-width: 768px){
+    .button .btn button{
+        min-width: 10vw;
+    }
+}
+
+.school .button button:hover{
+    background-color: whitesmoke;
+
+}
+
+.school .head{
+    text-align: center;
+}
+
+.head .image_div{
+    width: 25vw;
+    min-width: 70px;
+    max-width: 200px;
+}
+
+.school .body{
+    padding: 0 5px;
+}
+
+@media screen and (max-width: 768px){
+    main .school{
+        flex-direction: column;
+    }
+
+    .school .body{
+        padding: 1vh 1.5vw;
+        text-align: center;
+    }
+}

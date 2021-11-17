@@ -1,0 +1,110 @@
+#placement_search #action{
+    padding: 5px;
+}
+
+#placement_search #display .title_bar{
+    background-color: #8f9;
+    padding: 5px 8px 5px 5px;
+}
+
+.title_bar #close{
+    cursor: pointer;
+    position: relative;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    width: 15px;
+}
+
+.title_bar #close span{
+    width: 10px;
+    color: black;
+    background-color: black;
+    height: 2px;
+    display: block;
+    margin: 1px;
+    position: absolute;
+    right: 0;
+}
+
+#close.clicked span:last-child{
+    transform: rotate(180deg);
+}
+
+#close.clicked span{
+    margin: 0;
+}
+
+#close span:last-child{
+    transform: rotate(90deg);
+}
+
+#placement_search #display{
+    margin: 5px;
+}
+
+#display #content{
+    min-height: 20vh;
+    max-height: 70vh;
+    overflow: auto;
+    border: 1px solid lightgrey;
+    border-top: unset;
+    background-color: #efe;
+    display: none;
+}
+
+#content div#search{
+    margin: 5px auto;
+}
+
+#content #body{
+    padding: 0.5em;
+    border: 1px dashed;
+    min-height: 12.5vh;
+    margin: auto 5px;
+}
+
+#body.empty{
+    display: flex;
+    text-align: center;
+    align-items: center;
+    color: #222;
+}
+
+div#search input[type=search]{
+    width: 100%;
+}
+
+#modal{
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(15,15,15,0.7);
+}
+
+#modal_2, #modal_3{
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15,15,15,0.7);
+    padding: 5px;
+}
+
+#modal_2 form{
+    background-color: white;
+}
+
+@media screen and (max-width: 520px){
+    #modal_form{
+        width: 98vw !important;
+    }
+
+    #modal_2 form{
+        left: 0;
+        right:0;
+        width: 97.5vw;
+        display: block;
+    }
+}

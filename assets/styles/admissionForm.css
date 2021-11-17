@@ -1,0 +1,46 @@
+#payment_form, #admission{
+    position: fixed;
+    top: 0;
+    right:0;
+    left: 0;
+    height: 100vh;
+    background-color: whitesmoke;
+    background-color: rgba(245, 245, 245, 0.3);
+    *display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    *display: none;
+}
+
+#student{
+    padding: 8vh 3vw;
+}
+
+#payment_form form, #admission form{
+    width: 70vw;
+    border-top: 3px solid #1279d3;
+}
+
+fieldset{
+    margin-bottom: 10px;
+    padding: 0.2em;
+}
+
+@media screen and (max-width: 650px){
+    #payment_form form, #admission form{
+        width: 90vw;
+    }
+
+    #student .selection{
+        display: block;
+    }
+
+    #student .selection #school_admission_case{
+        margin-bottom: 10px;
+    }
+
+    #student .selection #results_case{
+        margin-bottom: 5px;
+    }
+}

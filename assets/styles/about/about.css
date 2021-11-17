@@ -1,0 +1,68 @@
+body{
+    background-color: #eee;
+}
+
+section{
+    background-color: white;
+}
+
+#intro{
+    padding: 5vh 5vw;
+}
+
+.head h1{
+    text-align: center;
+}
+
+.desc p{
+    text-align: center; 
+    padding: 5px 10px;
+}
+
+#gallery .gallery_box{
+    flex: 1 1 240px;
+    padding: 1%;
+    max-width: 640px;
+    background-color: whitesmoke;
+}
+
+#gallery .gallery_box:hover{
+    background-color: honeydew;
+}
+
+.gallery_box .image{
+    border: 1px solid #aaa;
+}
+
+.person .body{
+    padding: 5px 10px;
+}
+.person .body span{
+    display: block;
+    text-align: center;
+}
+
+.person .body .name{
+    font-size: large;
+    font-weight: bold;
+    margin: 5px auto;
+}
+
+.person .body .role{
+    color: #222;
+}
+
+.person .image img{
+    padding: 5px;
+    border-radius: 100%;
+    max-width: 280px;
+}
+
+.person .image{
+    text-align: center;
+}
+
+.desc .person{
+    max-width: 320px;
+    flex: 1 1 180px;
+}

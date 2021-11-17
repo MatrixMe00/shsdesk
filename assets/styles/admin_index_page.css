@@ -1,0 +1,375 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    scroll-behavior: smooth;
+}
+
+body{
+    background-color: #eee;
+    height: 100vh;
+    overflow: hidden;
+}
+
+div.container{
+    overflow: hidden;
+}
+
+nav, #lhs{
+    background-color: rgba(15,15,15,0.7);
+}
+
+#lhs, #rhs{
+    padding: 1%;
+}
+
+div.container{
+    display: flex;
+}
+
+nav{
+    align-items: center;
+    color: whitesmoke;
+    font-weight: bold;
+    font-feature-settings: "curs" "cswh" "jalt";
+    font-family: gabriola;
+}
+
+nav #nav_holder{
+    background-color: rgba(173, 216, 230,0.8);
+    padding: 0 5px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+
+
+#logo{
+    flex: 2;
+    background-color: rgba(79, 140, 160, 0.7);
+    align-self: stretch;
+}
+
+#logo #name{
+    padding: 5px;
+    display: flex;
+    font-size: larger;
+    cursor: pointer;
+}
+
+#name span:first-child{
+    align-self: stretch;
+    font-size: larger;
+}
+
+#name span:last-child{
+    font-size: medium;
+    align-self: flex-start;
+    font-weight: 400;
+    margin-left: 2px;
+    padding-top: 3px;
+}
+
+#right_nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 5;
+}
+
+#right_nav #user_control{
+    display: flex;
+    align-items: center;
+    font-weight: 100;
+    cursor: pointer;
+    padding: 0;
+}
+
+#user_control #user_img{
+    width: 7vh;
+    height: 7vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#user_img img{
+    width: 80%;
+    filter: invert(1);
+}
+
+#user_control #user_name{
+    position: relative;
+}
+
+#user_name #logout{
+    position: absolute;
+    top: 80%;
+    right: 0;
+    left: 0;
+    background-color:rgba(15,15,15, 0.75);
+    padding-left: 5px;
+    cursor: pointer;
+    display: none;
+}
+
+#user_name #logout:hover{
+    background-color: rgb(15,15,15);
+    padding-left: 7px;
+}
+
+div.container>section{
+    background-color: white;
+}
+
+section{
+    padding: 1vh 1vw;
+}
+
+div.container{
+    height: 90vh;
+}
+
+#lhs, #rhs{
+    height: inherit;
+}
+
+#lhs{
+    flex: 2;
+    color: white;
+    font-size: smaller;
+}
+
+#lhs .menu{
+    padding: 1%;
+}
+
+.menu .head{
+    background-color: rgba(15,15,15, 0.3);
+    color: lightgrey;
+    padding: 0.3em;
+    padding-left: 1em;
+}
+
+.menu .head.active, .menu .head:hover, .menu:hover > .head{
+    background-color:rgba(15,15,15, 0.6)
+}
+
+.menu .item{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 2px solid transparent;
+    padding: 5px 1px;
+    cursor: pointer;
+}
+
+.menu .item.active, .menu .item.active:hover{
+    border-left-color: lightblue;
+    background-color: transparent;
+}
+
+.menu .item:hover{
+    background-color: rgba(15,15,15, 0.1);
+}
+
+.item .icon{
+    width: 4.5vh;
+    height: 4.5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.item img{
+    width: 80%;
+    filter: invert();
+}
+
+.item .menu_name{
+    flex: 1;
+    padding-left: 5px;
+}
+
+#rhs{
+    flex: 5;
+    overflow: auto;
+    border-top: 1vh solid lightgrey;
+}
+
+#rhs > .head{
+    padding: 1% 1.5% 1% 0.2%;
+    font-variant: small-caps;
+    font-size: larger;
+    width: fit-content;
+    border-bottom: 1px solid;
+    margin-bottom: 1em;
+}
+
+
+@media screen and (min-width: 768px){
+    #lhs, #logo{
+        flex: 2;
+    }
+    #rhs, #right_nav{
+        flex: 6;
+    }
+}
+
+@media screen and (orientation: portrait){
+    #rhs{
+        padding-bottom: 5vh;
+    }
+}
+
+@media screen and (max-width: 768px), (orientation: portrait){
+    #nav_holder{
+        flex-direction: column;
+    }
+
+    #nav_holder #logo #name{
+        justify-content: center;
+    }
+
+    #nav_holder #right_nav{
+        justify-content: space-between;
+        width: 100%;
+        padding: 0 0.5em;
+    }
+
+    #ham{
+        cursor: pointer;
+        position: initial;
+    }
+    #ham span{
+        display: block;
+        background-color: white;
+        width: 18px;
+        height: 3px;
+        margin: 2px;
+    }
+
+    #ham.clicked{
+        position: relative;
+    }
+
+    #ham.clicked span{
+        position: absolute;
+    }
+
+    #ham.clicked span:first-child{
+        transform:rotate(45deg);
+        top: -5px;
+    }
+
+    #ham.clicked span:last-child{
+        transform: rotate(-45deg);
+        top: -5px;
+    }
+
+    #ham.clicked span:nth-child(2){
+        display: none;
+    }
+
+    #lhs{
+        flex: 1;
+    }
+
+    #lhs .menu .item .menu_name, #lhs .menu > .head{
+        display: none;
+    }
+
+    #rhs{
+        flex: 11;
+    }
+
+    #lhs.menu_click{
+        flex: 5;
+    }
+
+    #lhs.menu_click ~ #rhs{
+        flex: 2;
+    }
+
+    @media screen and (min-width: 540px){
+        #lhs.menu_click ~ #rhs{
+            flex: 7;
+        }
+    }
+
+    #lhs.menu_click .item .menu_name, #lhs.menu_click .head{
+        display: inherit;
+    }
+
+    .item img{
+        width: 95%;
+    }
+
+    /* #lhs .item{
+        justify-content: flex-start;
+    } */
+}
+
+.allocation{
+    color: black !important;
+    text-align: left;
+}
+
+.body table{
+    padding: 5px;
+    border-collapse: collapse;
+    overflow: auto;
+    display: inherit;
+    min-width: 65vw;
+}
+
+.body table td{
+    padding: 3px;
+    min-width: 10vw;
+}
+
+.body table thead td{
+    border-right-color: black;
+}
+
+table tbody tr{
+    border: 1px solid transparent;
+}
+
+table tbody tr:nth-child(odd){
+    background-color: #eee;
+}
+
+table tbody tr:nth-child(odd):hover{
+    background-color: #ddd;
+    border-color: #333;
+}
+
+table tbody tr:nth-child(even):hover{
+    background-color: #eee;
+    border-color: #333;
+}
+
+@media screen and (min-width: 1020px){
+    #lhs{
+        font-size: 1rem;
+    }
+}
+
+.school_container{
+    padding: 0.5rem;
+}
+
+.school_container:hover{
+    background-color: #eee;
+}
+
+.school_container.empty:hover{
+    background-color: unset;
+}
+
+.school_container.empty{
+    border: 1px solid #bbb;
+}

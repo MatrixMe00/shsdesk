@@ -1,0 +1,85 @@
+#intro_image{
+    position: relative; 
+    height: 70vh; 
+    background-color: rgba(5,5,5,0.3);
+    color: whitesmoke;
+    overflow: hidden;
+}
+
+#intro_image .form{
+    z-index: 1;
+    text-align: center;
+}
+
+div[role=form]{
+    margin-top: 10px;
+}
+
+input[name=search]{
+    width: 100%;
+    border-radius: 10% 0 0 10% / 100% 0 0 100%;
+}
+
+button[name=searchButton]{
+    border: none;
+    border-radius: 0 50% 50% 0 / 0 100% 100% 0;
+    border-left: 1px solid lightgrey;
+}
+.form label[for=search] {
+    flex: 1;
+}
+
+input[name=search], button[name=searchButton]{
+    padding: 10px;
+}
+
+#intro_image img{
+    position: absolute;
+    height: inherit;
+    min-width: 320px;
+    min-height: 100vh;
+}
+
+@media screen and (max-width: 520px){
+    div[role=form]{
+        flex-direction: column;
+    }
+
+    div[role=form] input, div[role=form] button{
+        border-radius: 0;
+        margin: 3px;
+    }
+
+    div[role=form] input{
+        width: 95%;
+    }
+}
+
+section{
+    padding: 5px;
+    border: 1px solid #d3d3d3;
+    margin: 3px;
+    flex: 1 1 15rem;
+}
+
+section .writer, section .date{
+    color: #555;
+    font-size: small;
+}
+
+section:hover{
+    box-shadow: 0 0 4px 0 lightgrey;
+}
+
+header{
+    padding-bottom: 10px;
+    border-bottom: thin dashed;
+}
+
+article .block{
+    padding: 7px 1px;
+}
+
+form{
+    margin: 3px;
+}
