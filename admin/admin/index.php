@@ -13,9 +13,11 @@ if(!isset($_SESSION['user_login_id'])){
     <!--Scripts-->
     <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
     <script src="assets/scripts/angular/angular.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>"></script>
 
     <!--Other Styles-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/loader.css?v=<?php echo time()?>">
 
     <!--Document Style-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin_index_page.css?v=<?php echo time()?>">
@@ -192,8 +194,16 @@ if(!isset($_SESSION['user_login_id'])){
 
     <script>
         $(document).ready(function() {
-            $("div[name=Dashboard]").click();
+            nav_point = "<?php
+                if(isset($_GET["nav_point"]) && $_GET["nav_point"] != null){
+                    echo $_GET["nav_point"];
+                }else{
+                    echo "Dashboard";
+                }
+                ?>";
+            $("div[name=" + nav_point + "]").click();
         })
+        
         $(".item").click(function(){
             //remove and add the active class
             $(".item").removeClass("active");

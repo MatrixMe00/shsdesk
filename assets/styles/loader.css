@@ -1,0 +1,181 @@
+.loader{
+    width: 100%;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+}
+
+.loader .span-container{
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    position: relative;
+}
+
+.loader.full{
+    height: unset;
+    /*width: 100vw; */
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    /* position: fixed; */
+
+    width: 100%;
+}
+
+.loader span{
+    display: inline-block;
+    padding: 2px;
+    border: 1px solid inherit;
+}
+
+/*determine size of loader spans*/
+.loader .large{
+    width: 15px;
+    height: 15px;
+    margin: 5px;
+}
+
+.loader .med{
+    width: 10px;
+    height: 10px;
+    margin: 3px;
+}
+
+.loader .small{
+    width: 5px;
+    height: 5px;
+    margin: 3px;
+}
+
+.loader .vsmall{
+    width: 5px;
+    height: 5px;
+    padding: 0;
+    margin: 3px;
+}
+
+/*types of span displays*/
+.loader .round{
+    border-radius: 100%;
+}
+
+.loader .semi-round{
+    border-radius: 35%;
+}
+
+/*types of animations for loader*/
+.loader.anim-fade span{
+    opacity: 0;
+}
+
+.loader.anim-fade span:nth-child(1){
+    animation-name: anim-fade;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-delay: 0;
+}
+
+.loader.anim-fade span:nth-child(2){
+    animation-name: anim-fade;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-delay: 0.25s;
+}
+
+.loader.anim-fade span:nth-child(3){
+    animation-name: anim-fade;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-delay: 0.5s;
+}
+
+.loader.anim-fade span:nth-child(4){
+    animation-name: anim-fade;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-delay: 0.75s;
+}
+
+.loader.anim-swing span:nth-child(1){
+    animation-name: anim-swing;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-delay: 0;
+}
+
+.loader.anim-swing span:nth-child(2){
+    animation-name: anim-swing;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-delay: 0.25s;
+}
+
+.loader.anim-swing span:nth-child(3){
+    animation-name: anim-swing;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-delay: 0.5s;
+}
+
+.loader.anim-swing span:nth-child(4){
+    animation-name: anim-swing;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-delay: 0.75s;
+}
+
+.loader.anim-fade.anim-swing span{
+    opacity: 1;
+}
+
+.loader.anim-fade.anim-swing span:nth-child(1){
+    animation-name: anim-swing-fade;
+}
+
+.loader.anim-fade.anim-swing span:nth-child(2){
+    animation-name: anim-swing-fade;
+}
+
+.loader.anim-fade.anim-swing span:nth-child(3){
+    animation-name: anim-swing-fade;
+}
+
+.loader.anim-fade.anim-swing span:nth-child(4){
+    animation-name: anim-swing-fade;
+}
+
+/*keyframes*/
+@keyframes anim-fade {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+
+@keyframes anim-swing{
+    from {margin-bottom: 15px;}
+    to {margin-bottom: unset;}
+}
+
+@keyframes anim-swing-fade{
+    from {opacity: 1; margin-bottom: 15px;}
+    to {opacity: 0; margin-bottom: unset;}
+}

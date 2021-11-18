@@ -31,7 +31,7 @@
         }else{
             echo "username_error";
         }
-    }elseif(isset($_POST['submit']) && $_POST['submit'] === "user_check"){
+    }elseif(isset($_POST['submit']) && $_POST['submit'] == "user_check"){
         $email = $_POST['email'];
 
         $res = $connect->query("SELECT user_id FROM admins_table WHERE email = '$email'");

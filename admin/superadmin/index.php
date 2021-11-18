@@ -10,9 +10,11 @@
     <!--Scripts-->
     <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
     <script src="assets/scripts/angular/angular.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>"></script>
 
     <!--Other Styles-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/loader.css?v=<?php echo time()?>">
 
     <!--Document Style-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin_index_page.css?v=<?php echo time()?>">
@@ -100,14 +102,7 @@
                         <span>Enrolled Students</span>
                     </div>
                 </div>
-                <div class="item" data-url="page_parts/houses.php" name="House" title="Houses/Bed Capacity">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/bed-outline.svg" alt="Placement" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Houses/Bed Capacity</span>
-                    </div>
-                </div> -->
+                 -->
             </div>
             <div class="menu">
                 <div class="head">
@@ -129,10 +124,26 @@
                         <span>About Page</span>
                     </div>
                 </div>
+                <div class="item" data-url="page_parts/faq.php" name="faq" title="Frequently Asked Questions">
+                    <div class="icon">
+                        <img src="<?php echo $url?>/assets/images/icons/information-circle-outline.svg" alt="faq" />
+                    </div>
+                    <div class="menu_name">
+                        <span>Frequently Asked Questions</span>
+                    </div>
+                </div>
             </div>
             <div class="menu">
                 <div class="head">
                     <span>Settings</span>
+                </div>
+                <div class="item" name="account" title="Personal Account" data-url="page_parts/person.php">
+                    <div class="icon">
+                        <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="" />
+                    </div>
+                    <div class="menu_name">
+                        <span>Personal Account</span>
+                    </div>
                 </div>
                 <div class="item" name="password" title="Change Password" data-url="page_parts/change_password.php">
                     <div class="icon">

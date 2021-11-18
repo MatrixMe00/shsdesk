@@ -26,6 +26,75 @@ $(document).ready(function(){
     })
 })
 
+//function for load event
+/**
+ * This function will be used to determine load events for message boxes
+ * @param {string} size This parameter will hold the size of the buttons
+ * @param {string} display This parameter will hold the type of shape the buttons should take
+ * @param {string} animation This param is for taking animation classes
+ * @param {boolean} full This is for verifying if the div should be for full screen or not
+ * @param {string} span1 This is for taking the color for the first span
+ * @param {string} span2 This is for taking the color for the second span
+ * @param {string} span3 This is for taking the color for the third span
+ * @param {string} span4 This is for taking the color for the fourth span
+ * @returns {string} Returns a string of the created div element
+ */
+function loadDisplay(size = "", display = "", animation = "", full = false, span1 = "", span2 = "", span3 = "", span4 = ""){
+    //initialize values with default
+    if(size == ""){
+        wide = $(window).width();
+
+        if(wide < 480){
+            size = "vsmall";
+        }else if(wide < 720){
+            size = "small";
+        }else{
+            size = "med";
+        }
+    }
+
+    if(animation == ""){
+        animation = "anim-swing";
+    }
+
+    if(display == ""){
+        display = "semi-round";
+    }
+
+    if(span1 == ""){
+        span1 = "red";
+    }
+
+    if(span2 == ""){
+        span2 = "yellow";
+    }
+
+    if(span3 == ""){
+        span3 = "green";
+    }
+
+    if(span4 == ""){
+        span4 = "teal";
+    }
+
+    if(full){
+        fullClass = "full";
+    }else{
+        fullClass = "";
+    }
+
+    load = "<div class=\"loader flex " + animation + " " + fullClass + "\">\n" +
+            "<div class=\"span-container flex\">\n" +
+                "<span class=\"" + size + " " + display + " " + span1 + "\"></span>\n" + 
+                "<span class=\"" + size + " " + display + " " + span2 + "\"></span>\n" + 
+                "<span class=\"" + size + " " + display + " " + span3 + "\"></span>\n" + 
+                "<span class=\"" + size + " " + display + " " + span4 + "\"></span>\n" +
+            "</div>\n" +
+        "</div>\n";
+    
+        return load;
+}
+
 //function for the slideshow
 function slideshow(i){
     //show the image

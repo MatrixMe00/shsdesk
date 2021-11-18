@@ -9,10 +9,12 @@
     <!--Scripts-->
     <script src="assets/scripts/jquery/uncompressed_jquery.js"></script>
     <script src="assets/scripts/angular/angular.js"></script>
+    <script src="assets/scripts/index.js"></script>
 
     <!--Styles-->
     <link rel="stylesheet" href="assets/styles/general.css">
     <link rel="stylesheet" href="assets/styles/admin/admin_form.css">
+    <link rel="stylesheet" href="assets/styles/loader.css?v=<?php echo time()?>">
 
     <style>
         body{
@@ -68,7 +70,7 @@
     <div id="cover"></div>
 
     <!--Forgot password Section-->
-    <form action="admin/submit.php" method="post">
+    <form action="admin/submit.php" method="post" name="passwordForm">
         <div class="back_btn no_disp">
             <button type="button" class="btn" title="Back">&leftarrow;</button>
         </div>
@@ -129,67 +131,47 @@
     </div>
 <script src="assets/scripts/form/general.js"></script>
 <script>
-    function messageTimeout(message, message_type, time = 0){
-            //transform time into miliseconds
-            time *= 1000;
-
-            //display message and its type
-            $("#message_box").fadeIn().addClass(message_type);
-            $("#message_box .message").html(message);
-
-            if(time){
-                //automatically hide the message box
-                setTimeout(function(){
-                    //remove all classes and messages
-                    $("#message_box").fadeOut().removeClass("load success error");
-                    $("#message_box .message").html("");
-                }, time)
-            }
-        }
-
-    $("input#email").keyup(function() {
-        if($(this).val().length <= 1) {
-            messageTimeout("Email field is incomplete!", "error", 5);
+    $("input#email").blur(function() {
+        if($(this).val().length <= 5) {
+            messageBoxTimeout("passwordForm","Email field is incomplete!", "error", 5);
 
             if(!$("#password_change").hasClass("no_disp")){
                 $("#password_change").addClass("no_disp");
             }
         }else{
             $.ajax({
-            url: $("form").attr("action"),
-            data: "email=" + $(this).val() + "&submit=user_check",
-            type: "POST",
-            dataType: "html",
-            cache: true,
-            beforeSend: function(){
-                $("button[name=submit]").html("Verifying...");
+                url: $("form").attr("action"),
+                data: "email=" + $(this).val() + "&submit=user_check",
+                type: "POST",
+                dataType: "html",
+                cache: false,
+                beforeSend: function(){
+                    messageBoxTimeout("passwordForm",loadDisplay("med","","", false, "gray", "gray", "gray", "gray"), "load", 0);
+                },
+                success: function(data){
+                    if(data.includes("success")){
+                        $("#password_change").removeClass("no_disp");
 
-                if(!$("#password_change").hasClass("no_disp")){
-                $("#password_change").addClass("no_disp");
-            }
-            },
-            success: function(data){
-                if(data.includes("success")){
-                    $("#password_change").removeClass("no_disp");
+                        //parse the user id
+                        user_id = data.split("+");
 
-                    //parse the user id
-                    user_id = data.split("+");
-
-                    $("input[name=user_id]").val(user_id[1]);
-                }else{
-                    $("#password_change").addClass("no_disp");
+                        $("input[name=user_id]").val(user_id[1]);
+                    }else{
+                        // messageBoxTimeout("passwordForm","Email is invalid", "error", 7);
+                        $("#password_change").addClass("no_disp");
+                    }
+                },
+                complete: function(){
+                    $("button[name=submit]").html("Submit");
+                },
+                error: function(){
+                    messageBoxTimeout("passwordForm","Error communicating with server", "error", 5);
                 }
-            },
-            complete: function(){
-                $("button[name=submit]").html("Submit");
-            }
-        });
+            });
         }
-    })
 
-    $("input#email").blur(function(){
         if($("#password_change").hasClass("no_disp") && ($(this).val().length > 0 && $(this).val().length <= 2)){
-            messageTimeout("Error getting account information! Check and try again later", "error", 5);
+            messageBoxTimeout("passwordForm","Error getting account information! Check and try again later", "error", 5);
         }
     })
 

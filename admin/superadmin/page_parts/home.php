@@ -7,7 +7,7 @@
     </div>
 </section>
 
-<section class="carousel" id="active_carousel">
+<section class="section_main_block" id="active_carousel">
     <div class="head title_bar flex flex-space-content flex-center-align">
         <h3>Active Carousel</h3>
         <div class="close">
@@ -60,7 +60,7 @@
             }else{
                 echo "
                     <div class=\"item empty\">
-                        <p>No items to display. Please add one to remove this error</p>
+                        <p>No items to display. Please add one to remove this message</p>
                     </div>
                 ";
             }
@@ -68,7 +68,7 @@
     </div>
 </section>
 
-<section class="carousel" id="inactive_carousel">
+<section class="section_main_block" id="inactive_carousel">
     <div class="head title_bar flex flex-space-content flex-center-align">
         <h3>Inactive Carousel</h3>
         <div class="close">
@@ -121,7 +121,7 @@
             }else{
                 echo "
                     <div class=\"item empty\">
-                        <p>No items to display. Please add one to remove this error</p>
+                        <p>No items to display. Please add one to remove this message</p>
                     </div>
                 ";
             }
@@ -129,7 +129,7 @@
     </div>
 </section>
 
-<section class="carousel" id="add_carousel">
+<section class="section_main_block" id="add_carousel">
     <div class="head title_bar flex flex-space-content flex-center-align">
         <h3>Add a Carousel</h3>
         <div class="close">
@@ -234,7 +234,7 @@
 
             //empty tabs
             empty = "<div class=\"item empty\">" + 
-                    "<p>No items to display. Please add one to remove this error</p>" +
+                    "<p>No items to display. Please add one to remove this message</p>" +
                     "</div>";
 
             //push new element into this new space
@@ -292,10 +292,10 @@
     })
 
     //click the head of the carousel to show or hide body
-    $(".carousel .head").click(function(){
+    $(".section_main_block .head").click(function(){
         if($(this).siblings(".body").hasClass("no_disp")){
-            $(".carousel>.body").addClass("no_disp");
-            $(".carousel .head .close.clicked").removeClass("clicked");
+            $(".section_main_block>.body").addClass("no_disp");
+            $(".section_main_block .head .close.clicked").removeClass("clicked");
             
             $(this).siblings(".body").removeClass("no_disp");
             $(this).children(".close").addClass("clicked");
@@ -308,8 +308,8 @@
     //open or close the contents of a windowed tab
     $(".item .title_bar .close").click(function(){
         //close all other and reset all item buttons
-        $(".carousel .body .item .middle").slideUp();
-        $(".carousel .body .item .edit").addClass("no_disp");
+        $(".section_main_block .body .item .middle").slideUp();
+        $(".section_main_block .body .item .edit").addClass("no_disp");
 
         if($(this).parents(".item").hasClass("active")){
             //mark parents as inactive
@@ -319,7 +319,7 @@
             $(this).removeClass("clicked");
         }else{
             //remove active from open tabs
-            $(".carousel .body .item.active").removeClass("active");
+            $(".section_main_block .body .item.active").removeClass("active");
 
             //mark parent as active
             $(this).parents(".item").addClass("active");

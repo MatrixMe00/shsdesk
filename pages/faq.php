@@ -1,3 +1,4 @@
+<?php include_once("../includes/session.php");?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,13 +8,13 @@
     <title>SHSDESK | FAQ</title>
 
     <!--Script-->
-    <script src="../assets/scripts/jquery/uncompressed_jquery.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
 
     <!--Styles-->
-    <link rel="stylesheet" href="../assets/styles/head_foot.css">
-    <link rel="stylesheet" href="../assets/styles/admin/admin_form.css">
-    <link rel="stylesheet" href="../assets/styles/faq.css">
-    <link rel="stylesheet" href="../assets/styles/general.css">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/head_foot.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/faq.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/general.css?v=<?php echo time()?>">
 </head>
 <body>
     <nav>
@@ -49,7 +50,7 @@
 
     <main>
         <div id="intro_image" class="flex flex-center-content flex-center-align">
-            <img src="../assets/images/backgrounds/HAN4890-web-sq_fb2957a9-958f-47c8-aeb1-8bf211bfbbfb.jpg" alt="intro_image">
+            <img src="<?php echo $url?>/assets/images/backgrounds/HAN4890-web-sq_fb2957a9-958f-47c8-aeb1-8bf211bfbbfb.jpg" alt="intro_image">
             <div class="form">
                 <h1>Have a question in mind?</h1>
                 <div class="flex flex-wrap" role="form">
@@ -65,7 +66,7 @@
         </div>
 
         <h2 style="padding: 1.5vh 1vw">Frequently Asked Questions</h2>
-        <div class="flex flex-wrap flex-center-align">
+        <div id="question_container" class="flex flex-wrap flex-center-align">
             <section class="faq_block">
                 <header class="question_head flex flex-column">
                     <h3>Is this system reliable?</h3>
@@ -121,42 +122,43 @@
         </div>
 
         <hr style="margin: 3vh 1vw">
-        <form action="" method="post">
+        <form action="" method="post" name="faqForm">
             <div class="head">
                 <h2>Send Us A Question</h2>
             </div>
             <div class="body">
-                <div id="message_box" class="success">
+                <div id="message_box" class="no_disp">
                     <span class="message">Here is a test message</span>
                     <div class="close"><span>&cross;</span></div>
                 </div>
                 <label for="fullname">
                     <span class="label_image">
-                        <img src="../assets/images/icons/user.png" alt="fullname_logo">
+                        <img src="<?php echo $url?>/assets/images/icons/user.png" alt="fullname_logo">
                     </span>
                     <input type="text" name="fullname" id="fullname" class="text_input" placeholder="Your Fullname" autocomplete="off" pattern="[a-zA-Z\s]{6,}" title="Provide your full name" required>
                 </label>
                 <label for="email">
                     <span class="label_image">
-                        <img src="../assets/images/icons/mail-outline.svg" alt="username_logo">
+                        <img src="<?php echo $url?>/assets/images/icons/mail-outline.svg" alt="username_logo">
                     </span>
                     <input type="email" name="email" id="email" class="text_input" placeholder="Your Email" autocomplete="off" title="Provide you valid email address" required>
                 </label>
                 <label for="phone">
                     <span class="label_image">
-                        <img src="../assets/images/icons/phone-portrait-outline.svg" alt="username_logo">
+                        <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="username_logo">
                     </span>
                     <input type="tel" name="phone" id="phone" class="text_input" placeholder="Your Phone Number" autocomplete="off" maxlength="10">
                 </label>
-                <label for="message" class="textarea">
+                <label for="question">
                     <span class="label_image">
-                        <img src="../assets/images/icons/chatbox-outline.svg" alt="chatbox_icon">
+                        <img src="<?php echo $url?>/assets/images/icons/chatbox-outline.svg" alt="chatbox_icon">
                     </span>
-                    <textarea name="message" id="message" placeholder="Type your question here"></textarea>
+                    <input type="text" name="question" id="question" placeholder="Type your question here" maxlength="150" 
+                    title="Your question must be brief and should not be more than 150 characters">
                 </label>
                 <label for="submit" class="btn_label">
-                    <button type="submit" name="submit" value="login" class="img_btn">
-                        <img src="../assets/images/icons/send-outline.svg" alt="send">
+                    <button type="submit" name="submit" value="faq_send" class="img_btn">
+                        <img src="<?php echo $url?>/assets/images/icons/send-outline.svg" alt="send">
                         <span>Send</span>
                     </button>
                 </label>
@@ -173,7 +175,7 @@
         <span>&copy; Copyright 2021</span>
     </footer>
 
-    <script src="../assets/scripts/head_foot.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/head_foot.js"></script>
     <script>
         //alert("This page will be added to the project only if you want it to be added");
 

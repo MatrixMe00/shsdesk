@@ -22,6 +22,63 @@
     --dark: #343a40;
 }
 
+/*naming the colors*/
+.blue, .primary{
+    background-color: var(--blue);
+}
+
+.indigo{
+    background: var(--indigo);
+} 
+
+.purple{
+    background: var(--purple);
+} 
+
+.red, .danger{
+    background: var(--red);
+} 
+
+.pink{
+    background: var(--pink);
+}
+
+.orange{
+    background: var(--orange);
+} 
+
+.yellow, .warning{
+    background: var(--yellow);
+} 
+
+.green, .success{
+    background: var(--green);
+} 
+
+.teal{
+    background: var(--teal);
+}
+
+.cyan, .info{
+    background: var(--cyan);
+} 
+
+.white{
+    background: var(--white);
+} 
+
+.light{
+    background: var(--light);
+} 
+
+.gray, .secondary{
+    background: var(--gray);
+} 
+
+.gray-dark, .dark{
+    background: var(--gray-dark);
+}
+
 *{
     margin: 0;
     padding: 0;

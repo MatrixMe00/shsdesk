@@ -12,6 +12,8 @@
 
     <!--Styles-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/general.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/loader.css?v=<?php echo time()?>">
 
     <style>
         body{
@@ -68,7 +70,7 @@
                 <input type="password" name="password" id="password" class="text_input" placeholder="Your Password" autocomplete="off">
             </label>
             <label for="pass_forg">
-                <p onclick="window.location.href = '<?php echo $url?>/password.html'">Forgot Your Password?</p>
+                <p onclick="window.location.href = '<?php echo $url?>/password.php'">Forgot Your Password?</p>
             </label>
             <label for="submit" class="btn_label">
                 <button type="submit" name="submit" value="login">Login</button>
@@ -82,6 +84,7 @@
     </form>
 
     <script src="<?php echo $url?>/assets/scripts/form/general.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>"></script>
     <script>
         function messageTimeout(message, message_type, time = 0){
             //transform time into miliseconds
@@ -143,7 +146,7 @@
                     dataType: "html",
                     type: "POST",
                     beforeSend: function(){
-                        message = "Please wait...";
+                        message = loadDisplay();
                         message_type = "load";
 
                         messageTimeout(message, message_type, time);
@@ -160,7 +163,7 @@
                         }else if(html === "username_error"){
                             message_type = "error";
                             message = "Username entered is invalid or could not be found";
-                            time = 5;
+                            time = 10;
                         }else{
                             message_type = "error";
                             message = "Could not receive response from server, please try again later";

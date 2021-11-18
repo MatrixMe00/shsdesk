@@ -69,10 +69,10 @@
     cursor: default;
 }
 
-.carousel .head{
+.section_main_block .head{
     cursor: pointer;
 }
-.carousel .body .item{
+.section_main_block .body .item{
     margin: 5px auto;
 }
 
@@ -95,21 +95,21 @@
     max-height: 100px;
 }
 
-.carousel .body .item:first-child{
+.section_main_block .body .item:first-child{
     margin-top: 10px;
 }
 
-.carousel .body .item .top{
+.section_main_block .body .item .top{
     padding: 0.4em;
     border: 1px solid #aaa;
 }
 
-.carousel .body .item.active .top, 
-.carousel .body .item .top:hover{
+.section_main_block .body .item.active .top, 
+.section_main_block .body .item .top:hover{
     border: 1px solid cadetblue;
 }
 
-.carousel .body .item .middle{
+.section_main_block .body .item .middle{
     padding: 0.4em;
     border: 1px dashed cadetblue;
     border-top: unset;
@@ -117,23 +117,23 @@
     display: none;
 }
 
-.carousel .body .item .middle .desc[contenteditable=true]{
+.section_main_block .body .item .middle .desc[contenteditable=true]{
     background-color: white;
     padding: 0.2rem;
 }
 
-.carousel .body .item .btn{
+.section_main_block .body .item .btn{
     margin: 0;
     padding: 0.4em 0 0.2em;
 }
 
-.carousel .body .item .edit{
+.section_main_block .body .item .edit{
     font-size: small;
     padding: 0.4em;
     cursor: default;
 }
 
-.carousel .body .item .edit span{
+.section_main_block .body .item .edit span{
     color: blue;
     cursor: pointer;
     padding: 0 2px;
@@ -160,7 +160,7 @@ button.selected{
         display: block;
     }
 
-    .carousel .body .item .top .image{
+    .section_main_block .body .item .top .image{
         display: none;
     }
 }

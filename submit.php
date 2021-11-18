@@ -344,6 +344,25 @@
             }else{
                 echo "error";
             }
+        }elseif($submit == "faq_send"){
+            $fullname = $_POST["fullname"];
+            $email = $_POST["email"];
+            $phone = $_POST["phone"];
+            $question = $_POST["question"];
+            $answer = $_POST["answer"];
+            $active = $_POST["active"];
+
+            $sql = "INSERT INTO faq (Fullname, Email, ContactNumber, Question, Answer, Active) 
+                    VALUES (?,?,?,?,?,?)" or die("Query Error: ".$connect->error);
+            $res = $connect->prepare($sql);
+            $res->bind_param("sssssi",$fullname,$email,$phone,$question,$answer,$active);
+
+            if($res->execute()){
+                echo "success";
+            }else{
+                echo "error";
+            }
+
         }
     }
     // echo date("Y-m-d H:i:s")
