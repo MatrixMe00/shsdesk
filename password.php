@@ -146,7 +146,7 @@
                 dataType: "html",
                 cache: false,
                 beforeSend: function(){
-                    messageBoxTimeout("passwordForm",loadDisplay("med","","", false, "gray", "gray", "gray", "gray"), "load", 0);
+                    messageBoxTimeout("passwordForm",loadDisplay("","","", false, "gray", "gray", "gray", "gray"), "load", 0);
                 },
                 success: function(data){
                     if(data.includes("success")){
@@ -157,7 +157,7 @@
 
                         $("input[name=user_id]").val(user_id[1]);
                     }else{
-                        // messageBoxTimeout("passwordForm","Email is invalid", "error", 7);
+                        messageBoxTimeout("passwordForm","Email is invalid", "error", 7);
                         $("#password_change").addClass("no_disp");
                     }
                 },

@@ -4,114 +4,6 @@ var admission_button_tab_index = 1;     //This will be used to track the tab ind
 //getting the host url
 var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[1];
 
-//function to check the form and make submit button ready
-function checkForm(i){
-    //return value
-    return_value = true;
-
-    //cssps details
-    shs_placed = $("#shs_placed").val();
-    ad_enrol_code = $("#ad_enrol_code").val();
-    ad_index = $("#ad_index").val();
-    ad_aggregate = $("#ad_aggregate").val();
-    ad_course = $("#ad_course").val();
-
-    //personal details of candidate
-    ad_fname = $("#ad_fname").val();
-    ad_lname = $("#ad_lname").val();
-    ad_oname = $("#ad_oname").val();
-    ad_gender = $("#ad_gender").val();
-    ad_jhs = $("#ad_jhs").val();
-    ad_jhs_town = $("#ad_jhs_town").val();
-    ad_jhs_district = $("#ad_jhs_district").val();
-    ad_birthdate = $("#ad_birthdate").val();
-    ad_year = $("#ad_year").val();
-    ad_month = $("#ad_month").val();
-    ad_day = $("#ad_day").val();
-    ad_birth_place = $("#ad_birth_place").val();
-
-    //parents particulars
-    ad_father_name = $("#ad_father_name").val();
-    ad_father_occupation = $("#ad_father_occupation").val();
-    ad_mother_name = $("#ad_mother_name").val();
-    ad_mother_occupation = $("#ad_mother_occupation").val();
-    ad_guardian_name = $("#ad_guardian_name").val();
-    ad_resident = $("#ad_resident").val();
-    ad_postal_address = $("#ad_postal_address").val();
-    ad_phone = $("#ad_phone").val();
-    ad_other_phone = $("#ad_other_phone").val();
-
-    //interests
-    interest = $("#interest").val();
-
-    //others
-    ad_awards = $("#ad_awards").val();
-    ad_position = $("#ad_position").val();
-
-    //witness
-    ad_witness = $("#ad_witness").val();
-    ad_witness_phone = $("#ad_witness_phone").val();
-
-    if(parseInt(i) == 1){
-        if(ad_enrol_code != "" && ad_index != "" && ad_aggregate != "" && ad_course != "" &&
-        ad_fname != "" && ad_lname != "" && ad_gender != "" && ad_jhs != "" && ad_jhs_town != "" &&
-        ad_jhs_district != "" && ad_year != "" && ad_month != "" && ad_day != "" && ad_birth_place != ""){
-            $(".tab_button.active").removeClass("incomplete");
-            return_value = false;
-        }else{
-            $(".tab_button.active").addClass("incomplete");
-            return_value = true;
-        }
-    }else if(parseInt(i) == 2){
-        if(((ad_father_name != "" && ad_father_occupation != "") || (ad_mother_name != "" && ad_mother_occupation != "") || ad_guardian_name != "") && 
-        ad_resident != "" && ad_phone != "" && ad_witness != "" && ad_witness_phone != ""){
-            $(".tab_button.active").removeClass("incomplete");
-            return_value = false;
-        }else{
-            $(".tab_button.active").addClass("incomplete");
-            return_value = true;
-        }
-    }
-
-    if(return_value == false){
-        next = parseInt(i) + 1;
-        element = $(".tab_button:nth-child(" + next + ")");
-        if($(element).hasClass("no_disp")){
-            $(element).removeClass("no_disp");
-        }
-    }
-
-    return return_value;
-}
-
-//function to be used to check if the next or submit button should be
-//shown in the admission form
-function admissionFormButtonChange()
-{
-    //get the total number of levels we have
-    total = $(".tabs").children("span.tab_button").length;
-    var i = 1;
-    
-    for(i; i <= total; i++){
-        //search for the currently selected tab
-        if($(".tabs span.tab_button:nth-child(" + i + ")").hasClass("active") && i < total){
-            $("button[name=submit_admission] span").html("Next");
-            $("button[name=submit_admission]").prop("disabled", checkForm(i));
-
-            admission_button_tab_index = i;
-
-            break;
-        }else if($(".tabs span.tab_button:nth-child(" + i + ")").hasClass("active") && i == total){
-            $("button[name=submit_admission] span").html("Save");
-            $("button[name=submit_admission]").prop("disabled", checkForm(i));
-
-            break;
-        }
-    }
-
-    return;
-}
-
 $(document).ready(function(){
     //fill the years select box
     $("select[name=ad_year]").html(function(){
@@ -162,8 +54,16 @@ $("button[name=modal_cancel]").click(function(){
     admission_button_tab_index = 1;
     $(this).parents(".form_modal_box").addClass("no_disp");
 
-    //enable the index input field
-    $("#ad_index").prop("disabled", false);
+    if($(this).parents(".form_modal_box").prop("id") == "payment_form"){
+        //enable all fields
+        $("form[name=paymentForm] input").prop("disabled", false);
+
+        //keep the amount section disabled
+        $("#pay_amount").prop("disabled", true);
+    }else if($(this).parents(".form_modal_box").prop("id") == "admission"){
+        //enable the index input field
+        $("#ad_index").prop("disabled", false);
+    }
 })
 
 //what to do with the submit admission button
@@ -180,14 +80,14 @@ $("button[name=submit_admission]").click(function() {
 
 //marking the button enabled when user agrees that data is correct
 $("label[for=agree]").click(function(){
-    if($("input[name=agree]").prop("checked") == false){
+    if($("label[for=agree] input[name=agree]").prop("checked") == false){
         $("button[name=submit_admission]").prop("disabled", true);
 
         //change the type of the admission button
         $("button[name=submit_admission]").prop("type","button");
 
         //show the other steps
-        $(".tab_button").remove("no_disp");
+        // $(".tab_button").removeClass("no_disp");
     }else{
         $("button[name=submit_admission]").prop("disabled",false);
 
@@ -198,7 +98,7 @@ $("label[for=agree]").click(function(){
         $("button[name=submit_admission] span").html("Submit");
 
         //hide the other steps
-        $(".tab_button").addClass("no_disp");
+        // $(".tab_button").addClass("no_disp");
         $(".tab_botton.active").removeClass("no_disp");
     }
 })
@@ -313,7 +213,7 @@ $("#payment_button, .enrol_button").click(function(){
     $("form[name=admissionForm] #enrol_field").removeClass("no_disp");
 
     //on client side, do not display the other tabs when the user has not given the index number
-    $(".tabs span.tab_button").addClass("no_disp");
+    // $(".tabs span.tab_button").addClass("no_disp");
     $(".tabs span.tab_button.active").removeClass("no_disp");
 })
 
@@ -375,6 +275,11 @@ $("#ad_index").keyup(function(){
 })
 
 $("button[name=continue]").click(function(){
+    //take index number
+    index_number = $("#ad_index").val();
+    school_id = $("#student #school_select").val();
+
+    dataString = "submit=getStudentIndex&index_number=" + index_number + "&"
     if($("#ad_index").val() == "01234"){
         //remove this button and show the submit button
         $(this).addClass("no_disp");
@@ -430,7 +335,7 @@ $("form[name=admissionForm]").submit(function(e){
 
     //ajax call
     $.ajax({
-        url: url + "submit.php",
+        url: url + "/submit.php",
         data: dataString,
     })
 })

@@ -188,7 +188,6 @@ label select:focus, label input[type=number]:focus{
 .btn_label[for=submit]{
     background-color: transparent;
     border: unset;
-    display: block;
     margin-top: 15px;
 }
 
@@ -234,7 +233,7 @@ label select:focus, label input[type=number]:focus{
 .img_btn img{
     flex: 0;
     filter: invert(1);
-    padding-bottom: 5px;
+    padding: 2px;
 }
 
 .img_btn span{

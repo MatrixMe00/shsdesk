@@ -233,7 +233,7 @@
      * @param int $user_id This parameter receives the index of the user
      * @return bool The return value is either a true (for new user) or a false (for not new user)
      */
-    function checkNewUser($user_id){
+    function checkNewUser($user_id):bool {
         global $connect;
 
         $res = $connect->query("SELECT new_login FROM admins_table WHERE user_id=$user_id");
@@ -244,6 +244,50 @@
             return $row['new_login'];
         }else{
             return "invalid-user";
+        }
+    }
+
+    /**
+     * This function is responsible for retrieving data about schools in the system
+     * 
+     * @param string|int $key This parameter can either be a string with the name of the school
+     * or an integer holding the school's id
+     * @param bool $all This parameter is a  boolean responsible for revealing if an
+     * array should return or not. It is false by default
+     * 
+     * @return string A string (school name) is returned when the key is an integer
+     * @return int An integer is return when the key is a string
+     * @return array An array is returned when the all parameter is set to true
+     */
+    function getSchoolDetail(int|string $key, bool $all = false):string|int|array{
+        global $connect;
+
+        if(intval($key) > 0 && !$all){
+            $sql = "SELECT schoolName
+                    FROM schools
+                    WHERE id=$key";
+        }elseif(!intval($key) && !$all){
+            $sql = "SELECT id
+                    FROM schools
+                    WHERE schoolName='$key'";
+        }elseif(intval($key) > 0 && $all){
+            $sql = "SELECT * 
+                    FROM schools
+                    WHERE id=$key";
+        }elseif(!intval($key) && $all){
+            ///sql is responsible for storing the sql statement
+            $sql = "SELECT *
+                    FROM schools
+                    WHERE schoolName='$key'";
+        }
+
+        $result = $connect->query($sql);
+        $row = $result->fetch_array();
+
+        if($row){
+            return $row;
+        }else{
+            return $row[0];
         }
     }
 ?>

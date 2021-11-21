@@ -182,17 +182,6 @@
     font-size: large;
 }
 
-table{
-    border: 1px solid lightgrey;
-    width: 95%;
-    margin: 2.5%;
-}
-
-td{
-    border: 1px solid #ccc;
-    padding: 5px;
-}
-
 @media screen and (orientation:portrait){
     .img_container img, #carousel{
         height: 70vh;

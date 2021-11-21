@@ -5,6 +5,7 @@
 
     <!--General Scripts-->
     <script src="<?php echo $url?>/assets/scripts/jquery/compressed_jquery.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/functions.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/assets/scripts/angular/angular.js?v=<?php echo time()?>"></script>
 
     <!--General Stylesheets-->

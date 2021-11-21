@@ -75,47 +75,50 @@
             $ad_phone, $ad_other_phone, $interest, $ad_awards, $ad_position, $ad_witness, $ad_witness_phone);
 
             //check for errors
-            if($ad_index == ""){
-                echo "no-index";
+            if(!isset($_POST["ad_transaction_id"]) || $_POST["ad_transaction_id"] == "" || $_POST["ad_transaction_id"] == null){
+                echo "no-transaction-id";
+                exit(1);
+            }elseif($ad_index == ""){
+                echo "no-index-number";
                 exit(1);
             }elseif($ad_enrol_code == ""){
-                echo "no-enrol-code";
+                echo "no-enrolment-code";
                 exit(1);
             }elseif($ad_aggregate == ""){
                 echo "no-aggregate-score";
                 exit(1);
             }elseif($ad_course == ""){
-                echo "no-course";
+                echo "no-course-provided";
                 exit(1);
             }elseif($ad_fname == ""){
-                echo "no-firstname";
+                echo "no-firstname-provided";
                 exit(1);
             }elseif($ad_lname == ""){
-                echo "no-lastname";
+                echo "no-lastname-provided";
                 exit(1);
             }elseif($ad_gender == ""){
-                echo "no-gender";
+                echo "no-gender-provided";
                 exit(1);
             }elseif($ad_jhs == ""){
-                echo "no-jhs-name";
+                echo "no-jhs-name-provided";
                 exit(1);
             }elseif($ad_jhs_town == ""){
-                echo "no-jhs-town";
+                echo "no-jhs-town-provided";
                 exit(1);
             }elseif($ad_jhs_district == ""){
-                echo "no-jhs-district";
+                echo "no-jhs-district-provided";
                 exit(1);
             }elseif($ad_year == ""){
-                echo "no-year";
+                echo "no-year-provided";
                 exit(1);
             }elseif($ad_month == ""){
-                echo "no-month";
+                echo "no-month-provided";
                 exit(1);
             }elseif($ad_day == ""){
-                echo "no-day";
+                echo "no-day-provided";
                 exit(1);
             }elseif($ad_birth_place == ""){
-                echo "no-birth-place";
+                echo "no-birth-place-provided";
                 exit(1);
             }elseif($ad_aggregate == ""){
                 echo "no-fname";
@@ -229,6 +232,10 @@
             //update the cssps table that the code has expired
             $sql = "UPDATE TABLE cssps SET expired = 1, date_used = 'CURRENT_TIMESTAMP()' WHERE enrolment_code = '$ad_enrol_code'";
             $result = $connect->query($sql);
+
+            //update the transaction table the transaction has been used
+            $sql = "UPDATE TABLE transaction SET expired = 1 WHERE transactionID='".$_POST["ad_transaction_id"]."'";
+            $result->$connect->query($sql);
         }elseif($submit === "send_contact"){
             $fullname = mysqli_real_escape_string($connect, $_POST['fullname']);
             $email = mysqli_real_escape_string($connect, $_POST['email']);
@@ -295,15 +302,16 @@
             }
         }elseif($submit == "search_school_id"){
             $school_name= $_POST["school_name"];
+
             $sql = "SELECT id FROM schools WHERE schoolName='$school_name'";
             $res = $connect->query($sql);
 
             if($res->num_rows > 0){
                 $rows = $res->fetch_array();
 
-                return $rows["id"];
+                echo $rows["id"];
             }else{
-                return "error";
+                echo "error";
             }
         }elseif($submit == "add_payment_data"){
             //receive data from data string
@@ -363,6 +371,40 @@
                 echo "error";
             }
 
+        }
+    }elseif(isset($_GET['submit'])){
+        $submit = $_GET["submit"];
+
+        if($submit == "getStudentIndex"){
+            $index_number = $_GET["index_number"];
+            $school_id = $_GET["school_id"];
+
+            $sql = "SELECT enrolment_code, school_id, expired
+                    FROM cssps
+                    WHERE student_index_number='$index_number'";
+            $result = $connect->query($sql);
+            
+            $array = array();
+            if($result->num_rows == 1){
+                $row = $res->fetch_array();
+
+                if($row["expired"] === true){
+                    $array = array(
+                        "status" => "already-registered"
+                    );
+                }else{
+                    $array = $row;
+                    $array += array(
+                        "status" => "success"
+                    );
+                }
+            }else{
+                $array = array(
+                    "status" => "wrong-index"
+                );
+            }
+
+            echo json_encode($array);
         }
     }
     // echo date("Y-m-d H:i:s")

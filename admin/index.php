@@ -48,7 +48,7 @@
 </head>
 <body>
     <div id="cover"></div>
-    <form action="submit.php" method="post">
+    <form action="submit.php" method="post" name="loginForm">
         <div class="head">
             <h2>Login</h2>
         </div>
@@ -119,7 +119,7 @@
                 //focus into this input element
                 $("input#username").focus();
 
-                messageTimeout(message, message_type, time);
+                messageBoxTimeout("loginForm",message, message_type, time);
 
                 return false;
             }else if($("input#password").val() == ""){
@@ -130,7 +130,7 @@
                 //focus into this input element
                 $("input#password").focus();
 
-                messageTimeout(message, message_type, time);
+                messageBoxTimeout("loginForm",message, message_type, time);
 
                 return false;
             }else{
@@ -149,7 +149,7 @@
                         message = loadDisplay();
                         message_type = "load";
 
-                        messageTimeout(message, message_type, time);
+                        messageBoxTimeout("loginForm",message, message_type, time);
                     },
                     success: function(html){
                         if(html.includes("login_success")){
@@ -168,7 +168,7 @@
                             message_type = "error";
                             message = "Could not receive response from server, please try again later";
                         }
-                        messageTimeout(message, message_type, time);
+                        messageBoxTimeout("loginForm",message, message_type, time);
 
                         //if login was successful, reload this page via the user role
                         if(html === "login_success"){

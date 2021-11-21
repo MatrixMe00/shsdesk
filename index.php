@@ -163,7 +163,7 @@
                             ?>
                         </select>
                     </label>
-                    <label for="payment_button" class="btn hide_label" style="display:none">
+                    <label for="payment_button" class="btn hide_label no_disp">
                         <button name="payment_button" id="payment_button" type="button">Make My Payment</button>
                     </label>
                 </div>
@@ -172,12 +172,20 @@
                     <label for="school_select2">
                         <select name="school_select2" id="school_select2">
                             <option value="NULL">Please select your school</option>
-                            <option value="Oninku SHS">Oninku SHS</option>
+                            <?php
+                                $res = $connect->query("SELECT id, schoolName FROM schools");
+
+                                if($res->num_rows > 0){
+                                    while($row = $res->fetch_assoc()){
+                                        echo "<option value=\"".$row["id"]."\">".$row["schoolName"]."</option>";
+                                    }
+                                }
+                            ?>
                         </select>
                     </label>
                     <label for="year_level" class="hide_label no_disp">
                         <select name="year_level" id="year_level">
-                            <option value="">Select Your Year Level</option>
+                            <option value="NULL">Select Your Year Level</option>
                             <option value="Year1">Year 1</option>
                             <option value="Year2">Year 2</option>
                             <option value="Year3">Year 3</option>
@@ -186,8 +194,8 @@
                     <label for="student_name" class="hide_label no_disp">
                         <input type="text" name="student_name" id="student_name" placeholder="Enter your name here" ng-model="student_name" pattern="[a-zA-Z]{4,}" title="Your full name should be 4 characters or more">
                     </label>
-                    <label for="search" class="btn hide_label" ng-show="student_name">
-                        <button name="search">Search</button>
+                    <label for="search" class="btn hide_label no_disp">
+                        <button name="search" id="res_search">Search</button>
                     </label>
                 </div>
             </div>

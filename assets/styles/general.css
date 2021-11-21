@@ -238,6 +238,17 @@ form button{
     max-width: 180px;
 }
 
+table{
+    border: 1px solid lightgrey;
+    width: 95%;
+    margin: 2.5%;
+}
+
+td{
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
 @media screen and (min-width: 768px) {
     .btn button{
         min-width: 10vw;

@@ -1,4 +1,4 @@
-<form action="" class="fixed" method="post" ng-controller="AdmissionController" name="admissionForm">
+<form action="<?php echo $url?>/submit.php" class="fixed" method="post" ng-controller="AdmissionController" name="admissionForm">
                     <div class="tabs">
                         <span class="tab_button" data-views="view1">
                             Step 1
@@ -20,6 +20,9 @@
                                 <fieldset id="enrol_field">
                                     <legend>CSSPS Details</legend>
                                     <div class="joint">
+                                        <input type="hidden" name="transaction_id" id="ad_transaction_id"
+                                        ng-model="ad_transaction_id">
+
                                         <label for="shs_placed" class="no_disp">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/school-outline.svg" alt="shs">
@@ -587,7 +590,7 @@
                             </button>
                         </label>
                         <label for="modal_cancel" class="btn dbl_btn_label">
-                            <button type="button" name="modal_cancel" value="cancel">Cancel</button>
+                            <button type="reset" name="modal_cancel" value="cancel">Cancel</button>
                         </label>
                     </div>
                 </form>

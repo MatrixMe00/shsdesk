@@ -61,17 +61,20 @@
                                 <input type="text" name="pay_reference" id="pay_reference" class="text_input" placeholder="Enter your Reference ID" autocomplete="off">
                             </label>
                         </section>
-                        <label for="submit" class="btn btn_label">
-                            <button type="button" name="submit" value="login" class="img_btn" id="paymentFormButton" onclick="payWithPaystack()" disabled>
+                        
+                    </div>
+                    <div class="flex">
+                        <label for="submit" class="btn">
+                            <button type="button" name="submit" value="login" class="dbl_btn img_btn" id="paymentFormButton" onclick="$('form[name=admissionForm]').submit()" disabled>
                                 <img src="<?php echo $url?>/assets/images/icons/lock.png" alt="lock">
                                 <span>Continue</span>
                             </button>
                         </label>
-                        <label for="modal_cancel" class="btn">
-                            <button type="button" class="modal_cancel" name="modal_cancel" value="cancel">Cancel</button>
+                        <label for="modal_cancel" class="btn dbl_btn_label">
+                            <button type="reset" name="modal_cancel" value="cancel">Cancel</button>
                         </label>
                     </div>
-                    <div class="foot">
+                <div class="foot">
                         <p>
                             @2021 shsdesk.com
                         </p>

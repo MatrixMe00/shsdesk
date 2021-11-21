@@ -26,86 +26,6 @@ $(document).ready(function(){
     })
 })
 
-//function for load event
-/**
- * This function will be used to determine load events for message boxes
- * @param {string} size This parameter will hold the size of the buttons
- * @param {string} display This parameter will hold the type of shape the buttons should take
- * @param {string} animation This param is for taking animation classes
- * @param {boolean} full This is for verifying if the div should be for full screen or not
- * @param {string} span1 This is for taking the color for the first span
- * @param {string} span2 This is for taking the color for the second span
- * @param {string} span3 This is for taking the color for the third span
- * @param {string} span4 This is for taking the color for the fourth span
- * @returns {string} Returns a string of the created div element
- */
-function loadDisplay(size = "", display = "", animation = "", full = false, span1 = "", span2 = "", span3 = "", span4 = ""){
-    //initialize values with default
-    if(size == ""){
-        wide = $(window).width();
-
-        if(wide < 480){
-            size = "vsmall";
-        }else if(wide < 720){
-            size = "small";
-        }else{
-            size = "med";
-        }
-    }
-
-    if(animation == ""){
-        animation = "anim-swing";
-    }
-
-    if(display == ""){
-        display = "semi-round";
-    }
-
-    if(span1 == ""){
-        span1 = "red";
-    }
-
-    if(span2 == ""){
-        span2 = "yellow";
-    }
-
-    if(span3 == ""){
-        span3 = "green";
-    }
-
-    if(span4 == ""){
-        span4 = "teal";
-    }
-
-    if(full){
-        fullClass = "full";
-    }else{
-        fullClass = "";
-    }
-
-    load = "<div class=\"loader flex " + animation + " " + fullClass + "\">\n" +
-            "<div class=\"span-container flex\">\n" +
-                "<span class=\"" + size + " " + display + " " + span1 + "\"></span>\n" + 
-                "<span class=\"" + size + " " + display + " " + span2 + "\"></span>\n" + 
-                "<span class=\"" + size + " " + display + " " + span3 + "\"></span>\n" + 
-                "<span class=\"" + size + " " + display + " " + span4 + "\"></span>\n" +
-            "</div>\n" +
-        "</div>\n";
-    
-        return load;
-}
-
-//function for the slideshow
-function slideshow(i){
-    //show the image
-    $(".img_container img").hide();
-    $(".img_container img:nth-child(" + i + ")").show();
-
-    //show the content
-    $(".description .detail").hide();
-    $(".description .detail:nth-child(" + i + ")").fadeIn();
-}
-
 $(".prev").click(function(){
     //get the slider button which is active
     number = $(".slider_counter span").length;
@@ -162,47 +82,59 @@ setInterval(function(){
 //selecting school for admission
 $("select[name=school_select]").change(function(){
     if($(this).val() != "NULL"){
-        $("label[for=payment_button]").show();
-        $("#results_case").hide();
-    }else{
-        $("label[for=payment_button]").hide();
+        $("label[for=payment_button]").removeClass("no_disp");
+        $("#results_case").addClass("no_disp");
 
-        //bring back the previous tabs
-        $(".case").css("display", "initial");
+        //hide other case
+        $(".case").addClass("no_disp");
+        $(this).parents(".case").removeClass("no_disp");
+    }else{
+        $("button[name=student_cancel_operation]").click();
     }
 })
 
 //select change for end of semester results
 $("select[name=school_select2").change(function(){
     if($(this).val() != "NULL"){
-        $("label[for=year_level]").show();
-        $("#school_admission_case").hide();
-    }else{
-        $("label[for=year_level]").hide();
+        $("label[for=year_level]").removeClass("no_disp");
+        $("#school_admission_case").addClass("no_disp");
 
-        //bring back the previous tabs
-        $(".case").css("display", "initial");
+        //hide other case
+        $(".case").addClass("no_disp");
+        $(this).parents(".case").removeClass("no_disp");
+    }else{
+        $("button[name=student_cancel_operation]").click();
     }
 })
 
+//choose a year level
 $("select[name=year_level]").change(function(){
-    if($(this).val() != ""){
-        $("label[for=student_name]").show();
+    if($(this).val() != "NULL"){
+        $("label[for=student_name]").removeClass("no_disp");
     }else{
-        $("label[for=student_name]").hide();
+        $("label[for=student_name]").addClass("no_disp");
     }
 });
 
 //show the results of the student
 $("button[name=search]").click(function(){
+    //take student's name
     $("input[name=student_name]").val('');
-    $("#results").show();
+    $("#results").removeClass("no_disp");
+
+    //an ajax call will happen here
 })
+
+$(".hide_label #student_name").keyup(function(){
+    if($(this).val().length >= 4)
+        $("button#res_search").parent().removeClass("no_disp");
+});
 
 //hide the labels when the reset button is clicked
 $("button[name=student_cancel_operation]").click(function(){
-    $(".hide_label").hide();
-    $(".case").css("display", "initial");
+    $(".hide_label").addClass("no_disp");
+    $(".hide_label #student_name").val("");
+    $(".case").removeClass("no_disp");
     $(".case select").val("NULL");
 })
 

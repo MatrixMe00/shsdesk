@@ -1,5 +1,5 @@
 <?php include_once("../../../includes/session.php")?>
-<section>
+<section draggable="true">
     <div class="head">
         <div class="intro">
             <p>This menu is for the home page of the main website page. At this point, you decide on what to be shown and what not to be shown on it.</p>
@@ -7,7 +7,7 @@
     </div>
 </section>
 
-<section class="section_main_block" id="active_carousel">
+<section draggable="true" class="section_main_block" id="active_carousel">
     <div class="head title_bar flex flex-space-content flex-center-align">
         <h3>Active Carousel</h3>
         <div class="close">
@@ -68,7 +68,7 @@
     </div>
 </section>
 
-<section class="section_main_block" id="inactive_carousel">
+<section draggable="true" class="section_main_block" id="inactive_carousel">
     <div class="head title_bar flex flex-space-content flex-center-align">
         <h3>Inactive Carousel</h3>
         <div class="close">
@@ -129,7 +129,7 @@
     </div>
 </section>
 
-<section class="section_main_block" id="add_carousel">
+<section draggable="true" class="section_main_block" id="add_carousel">
     <div class="head title_bar flex flex-space-content flex-center-align">
         <h3>Add a Carousel</h3>
         <div class="close">
