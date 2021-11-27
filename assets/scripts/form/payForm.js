@@ -163,7 +163,7 @@ $("form[name=paymentForm]").submit(function(){
             cache: false,
             beforeSend: function(){
                 //message = "Please wait...";
-                message = loadDisplay("small","", "anim-fade anim-swing");
+                message = loadDisplay({size:"small", animation:"anim-fade anim-swing"});
                 messageType = "load";
                 time = 0;
                 messageBoxTimeout(form_name, message, messageType, time);

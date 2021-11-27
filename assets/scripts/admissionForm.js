@@ -279,8 +279,78 @@ $("button[name=continue]").click(function(){
     index_number = $("#ad_index").val();
     school_id = $("#student #school_select").val();
 
-    dataString = "submit=getStudentIndex&index_number=" + index_number + "&"
-    if($("#ad_index").val() == "01234"){
+    dataString = "submit=getStudentIndex&index_number=" + index_number + "&school_name=" + $("#school_admission_case #school_select option:selected").html();
+
+    //parse through ajax and check input
+    $.ajax({
+        url: $("form[name=admissionForm]").attr("action"),
+        type: "GET",
+        data: dataString,
+        dataType: "json",
+        cache: true,
+        async: false,
+        success: function(json){
+            data = JSON.parse(JSON.stringify(json));
+
+            if(data["status"] == "success"){
+                //successful results should fill the form with needed data
+
+                //display form information
+                $("form[name=admissionForm] button[name=modal_cancel]").addClass("no_disp");
+                $("label[for=submit_admission]").removeClass("no_disp");
+
+                //display the fields
+                $("form[name=admissionForm] fieldset").removeClass("no_disp");
+
+                //show all the elements in the enrol field
+                $("form[name=admissionForm] #enrol_field label").removeClass("no_disp");
+
+                //when the user has entered the index number
+                //provide the school's name
+                $("#shs_placed").val($("#school_admission_case #school_select option:selected").html());
+
+                //disable the index input field
+                $("#ad_index").prop("disabled", true);
+            }else if(data["status"] == "wrong-school-select"){
+                //display an error message
+                $("#view1 .para_message").html("Incorrect school chosen. Select your right school to continue and enter your transaction ID to continue");
+
+                //disable these controls for the time being so that user can take a look at the error
+                $("form[name=admissionForm] button[name=continue]").prop('disabled', true);
+                $('#ad_enrol').prop('disabled', true);
+                $('button[name=modal_cancel]').prop('disabled', true);
+
+                setTimeout(function(){
+                    $("#view1 .para_message").html("Parts with * means they are required fields");
+
+                    $("form[name=admissionForm] button[name=continue]").prop('disabled', false);
+                    $('#ad_enrol').prop('disabled', false);
+                    $('button[name=modal_cancel]').prop('disabled', false);
+
+                    $("form button[name=modal_cancel]").click();
+                },5000);
+            }else if(data["status"] == "wrong-index"){
+                //display an error message
+                $("#view1 .para_message").html("Incorrect or invalid index number provided. Please check and try again");
+
+                //disable these controls for the time being so that user can take a look at the error
+                $("form[name=admissionForm] button[name=continue]").prop('disabled', true);
+                $('#ad_enrol').prop('disabled', true);
+                $('button[name=modal_cancel]').prop('disabled', true);
+
+                setTimeout(function(){
+                    $("form[name=admissionForm] button[name=continue]").prop('disabled', false);
+                    $('#ad_enrol').prop('disabled', false);
+                    $('button[name=modal_cancel]').prop('disabled', false);
+                },3000);
+
+                setTimeout(function(){
+                    $("#view1 .para_message").html("Parts with * means they are required fields");
+                },5000);
+            }
+        }
+    })
+    /*if($("#ad_index").val() == "01234"){
         //remove this button and show the submit button
         $(this).addClass("no_disp");
         $("label[for=submit_admission]").removeClass("no_disp");
@@ -319,7 +389,32 @@ $("button[name=continue]").click(function(){
             $('#ad_enrol').prop('disabled', false);
             $('button[name=modal_cancel]').prop('disabled', false);
         },5000);
-    }
+    }*/
+})
+
+//when the admission form cancel button is clicked, reset that form
+$("form[name=admissionForm] button[name=modal_cancel]").click(function(){
+    //display continue button and hide the submit button
+    $("button[name=continue]").removeClass("no_disp");
+    $("label[for=submit_admission]").addClass("no_disp");
+
+    //hide the fields
+    $("form[name=admissionForm] fieldset").addClass("no_disp");
+
+    //hide all the elements in the enrol field
+    $("form[name=admissionForm] #enrol_field label").addClass("no_disp");
+
+    //enable the index input field
+    $("#ad_index").prop("disabled", false);
+
+    //show view1
+    $("#view1 fieldset:first-child").removeClass("no_disp");
+
+    //hide all labels in view 1
+    $("#view1 fieldset:first-child label").addClass("no_disp");
+
+    //reveal only index number portion
+    $("#view1 fieldset:first-child label[for=ad_index]").removeClass("no_disp");
 })
 
 //submit the admission form

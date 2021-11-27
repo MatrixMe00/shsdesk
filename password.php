@@ -146,7 +146,7 @@
                 dataType: "html",
                 cache: false,
                 beforeSend: function(){
-                    messageBoxTimeout("passwordForm",loadDisplay("","","", false, "gray", "gray", "gray", "gray"), "load", 0);
+                    messageBoxTimeout("passwordForm",loadDisplay({span1: "gray", span2: "gray", span3: "gray", span4: "gray"}), "load", 0);
                 },
                 success: function(data){
                     if(data.includes("success")){

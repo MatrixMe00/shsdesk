@@ -10,60 +10,73 @@
  * @param {string} span4 This is for taking the color for the fourth span
  * @returns {string} Returns a string of the created div element
  */
- function loadDisplay(size = "", display = "", animation = "", full = false, span1 = "", span2 = "", span3 = "", span4 = ""){
+ function loadDisplay(element = {
+     size: null,
+     display: null,
+     animation: null,
+     full: false,
+     span1: null,
+     span2: null,
+     span3: null,
+     span4: null
+ }){
     //initialize values with default
-    if(size == ""){
+    if(element["size"] == null){
         wide = $(window).width();
 
         if(wide < 480){
-            size = "vsmall";
+            element["size"] = "vsmall";
         }else if(wide < 720){
-            size = "small";
+            element["size"] = "small";
         }else{
-            size = "med";
+            element["size"] = "med";
         }
     }
 
-    if(animation == ""){
-        animation = "anim-swing";
+    if(element["animation"] == null){
+        element["animation"] = "anim-swing";
     }
 
-    if(display == ""){
-        display = "semi-round";
+    if(element["display"] == null){
+        element["display"] = "semi-round";
     }
 
-    if(span1 == ""){
-        span1 = "red";
+    if(element["span1"] == null){
+        element["span1"] = "red";
     }
 
-    if(span2 == ""){
-        span2 = "yellow";
+    if(element["span2"] == null){
+        element["span2"] = "yellow";
     }
 
-    if(span3 == ""){
-        span3 = "green";
+    if(element["span3"] == null){
+        element["span3"] = "green";
     }
 
-    if(span4 == ""){
-        span4 = "teal";
+    if(element["span4"] == null){
+        element["span4"] = "teal";
     }
 
-    if(full){
+    if(element["full"]){
         fullClass = "full";
     }else{
         fullClass = "";
     }
 
-    load = "<div class=\"loader flex " + animation + " " + fullClass + "\">\n" +
+    load = "<div class=\"loader flex " + element["animation"] + " " + fullClass + "\">\n" +
             "<div class=\"span-container flex\">\n" +
-                "<span class=\"" + size + " " + display + " " + span1 + "\"></span>\n" + 
-                "<span class=\"" + size + " " + display + " " + span2 + "\"></span>\n" + 
-                "<span class=\"" + size + " " + display + " " + span3 + "\"></span>\n" + 
-                "<span class=\"" + size + " " + display + " " + span4 + "\"></span>\n" +
+                "<span class=\"" + element["size"] + " " + element["display"] + " " + element["span1"] + "\"></span>\n" + 
+                "<span class=\"" + element["size"] + " " + element["display"] + " " + element["span2"] + "\"></span>\n" + 
+                "<span class=\"" + element["size"] + " " + element["display"] + " " + element["span3"] + "\"></span>\n" + 
+                "<span class=\"" + element["size"] + " " + element["display"] + " " + element["span4"] + "\"></span>\n" +
             "</div>\n" +
         "</div>\n";
     
         return load;
+}
+
+function sometin(data = {url: "key", password: ""}){
+    alert(data["password"]);
 }
 
 /**

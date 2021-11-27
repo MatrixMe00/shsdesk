@@ -60,14 +60,6 @@
                                 <fieldset>
                                     <legend>Personal Details of Candidate</legend>
                                     <div class="joint">
-                                        <label for="ad_fname">
-                                            <span class="label_image">
-                                                <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="firstname">
-                                            </span>
-                                            <input type="text" name="ad_fname" id="ad_fname" class="text_input" 
-                                            placeholder="Your Firstname*" autocomplete="off" ng-model="ad_fname" pattern="[a-zA-Z]{3,}" 
-                                            title="Enter only your first name, do not add spaces" required disabled>
-                                        </label>
                                         <label for="ad_lname">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="lastname">
@@ -79,7 +71,7 @@
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="othername">
                                             </span>
-                                            <input type="text" name="ad_oname" id="ad_oname" class="text_input" placeholder="Other name(s)" autocomplete="off" ng-model="ad_oname" title="Enter any other name(s) you have">
+                                            <input type="text" name="ad_oname" id="ad_oname" class="text_input" placeholder="Other name(s)" autocomplete="off" ng-model="ad_oname" title="Enter any other name(s) you have" required>
                                         </label>
                                     </div>
                                     <div class="joint">
@@ -363,23 +355,15 @@
                                     <div class="joint">
                                         <div class="label">
                                             <div class="name">
-                                                <span>Firstname</span>
-                                            </div>
-                                            <div class="value">
-                                                <span>{{ad_fname}}</span>
-                                            </div>
-                                        </div>
-                                        <div class="label">
-                                            <div class="name">
                                                 <span>Lastname</span>
                                             </div>
                                             <div class="value">
                                                 <span>{{ad_lname}}</span>
                                             </div>
                                         </div>
-                                        <div class="label" ng-show="ad_oname">
+                                        <div class="label">
                                             <div class="name">
-                                                <span>Other name</span>
+                                                <span>Other name(s)</span>
                                             </div>
                                             <div class="value">
                                                 <span>{{ad_oname}}</span>

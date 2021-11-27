@@ -4,7 +4,7 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT enrolment_code FROM cssps");
+                    $res = $connect->query("SELECT indexNumber FROM cssps");
                     
                     echo $res->num_rows;
                 ?>
@@ -19,7 +19,7 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT enrolment_code FROM cssps WHERE expired = TRUE");
+                    $res = $connect->query("SELECT indexNumber FROM cssps WHERE enroled = TRUE");
                     
                     echo $res->num_rows;
                 ?>
@@ -34,7 +34,7 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT enrolment_code FROM cssps WHERE expired = FALSE");
+                    $res = $connect->query("SELECT indexNumber FROM cssps WHERE enroled = FALSE");
                     
                     echo $res->num_rows;
                 ?>

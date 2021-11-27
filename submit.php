@@ -229,8 +229,8 @@
                 echo "success";
             }
 
-            //update the cssps table that the code has expired
-            $sql = "UPDATE TABLE cssps SET expired = 1, date_used = 'CURRENT_TIMESTAMP()' WHERE enrolment_code = '$ad_enrol_code'";
+            //update the cssps table that the student has enroled
+            $sql = "UPDATE TABLE cssps SET enroled = 1 WHERE indexNumber = '$ad_index'";
             $result = $connect->query($sql);
 
             //update the transaction table the transaction has been used
@@ -327,7 +327,7 @@
             //prepare and bind parameters
             $query = "INSERT INTO transaction (transactionID, contactNumber, schoolBought, amountPaid, contactName, contactEmail, Deduction, Transaction_Date) VALUES (?,?,?,?,?,?,?,?)";
             $result = $connect->prepare($query);
-            $result->bind_param("ssiissis", $transaction_id, $contact_number, $school, $amount, $contact_name, $contact_email, $deduction, $trans_time);
+            $result->bind_param("ssidssds", $transaction_id, $contact_number, $school, $amount, $contact_name, $contact_email, $deduction, $trans_time);
 
             //check for successful execution
             if($result->execute()){
@@ -377,7 +377,7 @@
 
         if($submit == "getStudentIndex"){
             $index_number = $_GET["index_number"];
-            $school_id = $_GET["school_id"];
+            $school_id = getSchoolDetail($_GET["school_name"]);
 
             $sql = "SELECT enrolment_code, school_id, expired
                     FROM cssps
@@ -393,10 +393,20 @@
                         "status" => "already-registered"
                     );
                 }else{
-                    $array = $row;
-                    $array += array(
-                        "status" => "success"
-                    );
+                    //check if right school is selected
+                    if($row["school_id"] == $school_id){
+                        $sql = "SELECT indexNumber, enrolCode, shsID, aggregateScore, program, Firstname, Lastname
+                                FROM enrol_table
+                                WHERE indexNumber = '$index_number' AND shsID = $school_id";
+                        $array = $connect->query($sql)->fetch_array();
+                        $array += array(
+                            "status" => "success"
+                        );
+                    }else{
+                        $array = array(
+                            "status" => "wrong-school-select"
+                        );
+                    }
                 }
             }else{
                 $array = array(

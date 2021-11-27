@@ -13,7 +13,7 @@
 
     <!--Payment script-->
     <script src="https://js.paystack.co/v1/inline.js"></script>
-    <!-- <script src="assets/scripts/form/paystack.js"></script> -->
+    <script src="assets/scripts/form/paystack.js"></script>
 </head>
 <body ng-app="index_application" id="index_main">
     <?php @include_once($rootPath.'/blocks/nav.php')?>
@@ -291,5 +291,13 @@
 
     <!--Payment scripts-->
     <script src="assets/scripts/form/payForm.js?v=<?php echo time();?>"></script>
+
+    <script>
+        $(document).ready(function(){
+            load = loadDisplay({display: "round"});
+
+            alert(load);
+        })
+    </script>
 </body>
 </html>
