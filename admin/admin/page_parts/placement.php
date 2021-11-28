@@ -4,7 +4,10 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM cssps");
+                    $user_school_id = 1;
+                    $res = $connect->query("SELECT indexNumber 
+                    FROM cssps 
+                    WHERE schoolID = $user_school_id");
                     
                     echo $res->num_rows;
                 ?>
@@ -19,7 +22,9 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM cssps WHERE enroled = TRUE");
+                    $res = $connect->query("SELECT indexNumber 
+                    FROM cssps 
+                    WHERE enroled = TRUE AND schoolID = $user_school_id");
                     
                     echo $res->num_rows;
                 ?>
@@ -34,7 +39,9 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM cssps WHERE enroled = FALSE");
+                    $res = $connect->query("SELECT indexNumber 
+                    FROM cssps 
+                    WHERE enroled = FALSE AND schoolID = $user_school_id");
                     
                     echo $res->num_rows;
                 ?>
@@ -96,7 +103,7 @@
             <li>Your file should be a spreadsheet file</li>
             <li>Spreadsheet files with .xls or .xlsx as extensions are acceptable</li>
             <li>Your data should have headings for easy entry into the database</li>
-            <li>If you do not have the default spreadsheet file for upload, please click <a href="">here</a> to download</li>
+            <li>If you do not have the default spreadsheet file for upload, please click <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">here</a> to download</li>
         </ol>
         <br>
         <div id="message_box" class="no_disp">

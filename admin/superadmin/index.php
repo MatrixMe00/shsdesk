@@ -187,6 +187,18 @@
         <?php include_once("page_parts/add_house.php")?>
     </div>
 
+    <div id="modal_yes_no" class="fixed flex flex-center-content flex-center-align form_modal_box">
+        <div class="yes_no_container">
+            <div class="body">
+                <p id="warning_content">Do you want to delete?</p>
+            </div>
+            <div class="foot btn flex flex-center-content flex-center-align">
+                <button type="button" name="yes_button" class="success">Yes</button>
+                <button type="button" name="no_button" class="red">No</button>
+            </div>
+        </div>
+    </div>
+
     <script src="assets/scripts/angular_index.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/assets/scripts/admissionForm.js?v=<?php echo time(); ?>"></script>
     <script src="assets/scripts/index.js?v=<?php echo time()?>"></script>

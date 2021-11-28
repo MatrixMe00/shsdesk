@@ -63,7 +63,7 @@
                     $amount = 0;
                     while($row = $res->fetch_array()){
                         if(date("Y",strtotime($row["Transaction_Date"])) == date("Y")){
-                            $amount += ($row["amountPaid"] - $row["Deduction"]) * 0.3 * 725;
+                            $amount += ($row["amountPaid"] - $row["Deduction"]) * 0.9;
                         }else{
                             continue;
                         }
