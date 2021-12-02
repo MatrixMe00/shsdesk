@@ -16,7 +16,13 @@
 
     <div class="content" style="background-color: #dc3545">
         <div class="head">
-            <h2>0</h2>
+            <h2>
+                <?php
+                $res = $connect->query("SELECT id FROM schools WHERE Active = FALSE");
+
+                echo $res->num_rows;
+                ?>
+            </h2>
         </div>
         <div class="body">
             <span>Schools Deactivated</span>
@@ -42,7 +48,7 @@
                     <h3><?php echo $row['schoolName'];?></h3>
                 </div>
                 <div class="deactivate btn">
-                    <button>Deactivate</button>
+                    <button data-school-id="<?php echo $row['id']?>">Deactivate</button>
                 </div>
             </div>
             <div class="window_space no_disp">
@@ -80,8 +86,8 @@
                 <div class="name">
                     <h3><?php echo $row['schoolName'];?></h3>
                 </div>
-                <div class="deactivate btn">
-                    <button>Deactivate</button>
+                <div class="activate btn">
+                    <button data-school-id="<?php echo $row['id'] ?>">Activate</button>
                 </div>
             </div>
             <div class="window_space no_disp">
@@ -106,5 +112,37 @@
     $(".menu_bar .name").click(function(){
         sibling = $(this).parent().siblings(".window_space");
         $(sibling).toggleClass("no_disp");
+    })
+
+    //clicking activate and deactivate buttons
+    $(".deactivate button, .activate button").click(function(){
+        $("#modal_yes_no").removeClass("no_disp");
+
+        //retrieve the school id
+        s_id = $(this).attr("data-school-id");
+
+        //parse id into secret form
+        $("#yes_no_form input[name=sid]").val(s_id);
+        $("#yes_no_form input[name=table]").val("schools");
+    })
+
+    //deactivate button click
+    $(".deactivate button").click(function(){
+        $("#modal_yes_no p#warning_content").html("Do you want to deactivate <strong>" + 
+        $(this).parents(".school_container").children(".menu_bar").children(".name").children("h3").html() + 
+        "</strong> from this system?");
+
+        //parse mode and submit value to secret form
+        $("#yes_no_form input[name=mode]").val("deactivate");
+    })
+
+    //activate school button click
+    $(".activate button").click(function(){
+        $("#modal_yes_no p#warning_content").html("Do you want to activate <strong>" + 
+        $(this).parents(".school_container").children(".menu_bar").children(".name").children("h3").html() + 
+        "</strong> on this system?");
+
+        //parse mode and submit value to secret form
+        $("#yes_no_form input[name=mode]").val("activate");
     })
 </script>

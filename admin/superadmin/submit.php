@@ -4,14 +4,14 @@
     if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != NULL){
         $submit = $_REQUEST["submit"];
 
-        if($submit == "upload"){
+        if($submit == "document_upload" || $submit == "document_upload_ajax"){
             if(isset($_FILES['import']) && $_FILES["import"]["tmp_name"] != NULL){
                 echo "okay";
             }else{
                 echo "no-file";
                 exit(1);
             }
-        }elseif($submit = "page_item_upload"){
+        }elseif($submit == "page_item_upload" || $submit == "page_item_upload_ajax"){
             $image_alt = $_POST["image_alt"];
             $item_page = $_POST["item_page"];
             $item_type = $_POST["item_type"];
@@ -106,12 +106,45 @@
                     $reference = $reference[0];
 
                     header("location:$reference?nav_point=Index");
+
+                    echo "success";
                 }else{
-                    echo "A problem occured on the server. Please go back and try again";
+                    echo "error";
                 }
             }
+        }elseif($submit == "yes_no_submit" || $submit == "yes_no_submit_ajax"){
+            $sid = $_REQUEST["sid"];
+            $mode = $_REQUEST["mode"];
+            $table = $_REQUEST["table"];
+
+            if($mode == "activate"){
+                $activate = 1;
+            }elseif($mode == "deactivate"){
+                $activate = 0;
+            }
+
+            //sql statement
+            if($mode == "delete"){
+                $sql = "DELETE FROM $table 
+                WHERE id=$sid" or die($connect->error);
+            }elseif($mode == "activate" || $mode == "deactivate"){
+                $sql = "UPDATE $table 
+            SET Active = $activate
+            WHERE id=$sid" or die($connect->error);
+            }
+            
+            //responses
+            if($connect->query($sql)){
+                echo "update-success";
+            }else{
+                echo "update-error";
+            }
+
         }
     }else{
         echo "no-submission";
     }
+
+    //close connections
+    $connect->close();
 ?>

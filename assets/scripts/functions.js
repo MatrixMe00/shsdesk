@@ -228,3 +228,73 @@ function admissionFormButtonChange()
 
     return;
 }
+
+/**
+ * This function will be used to parse any file type into the database
+ * 
+ * @param {string} file_element This takes the element name of the file
+ * @param {string} form_element This takes a specified form element
+ * @param {string} submit_element This takes the name of the submit button
+ * 
+ * @return {boolean|string} Returns a boolean value or an error message
+ */
+
+function fileUpload(file_element, form_element, submit_element){
+    formData = new FormData();
+
+    //preparing file and submit values
+    file = $(file_element).prop("files")[0];
+    file_name = $(file_element).attr("name");
+    submit_value = $(submit_element).prop("value");
+
+    //strip form data into array form and attain total data
+    form_data = $(form_element).serializeArray();
+    split_lenght = form_data.length;
+
+    //loop and fill form data
+    counter = 0;
+    while(counter < split_lenght){
+        //grab each array data
+        new_data = form_data[counter];
+
+        key = new_data["name"];
+        value = new_data["value"];
+
+        //append to form data
+        formData.append(key, value);
+
+        //move to next data
+        counter++;
+    }
+
+    //append name and value of file
+    formData.append(file_name, file);
+
+    //append submit if not found
+    if(!$(form_element).serialize().includes("submit=")){
+        formData.append("submit", submit_value + "_ajax");
+    }
+
+    response = null;
+    
+    $.ajax({
+        url: $(form_element).attr("action"),
+        data: formData,
+        method: "post",
+        dataType: "text",
+        cache: false,
+        async: false,
+        contentType: false,
+        processData: false,
+
+        success: function(text){
+            if(text == "success" || text.includes("success")){
+                response = true;
+            }else{
+                response = text;
+            }
+        }
+    })
+
+    return response;
+}

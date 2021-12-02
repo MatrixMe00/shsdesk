@@ -9,6 +9,7 @@
 
     <!--Scripts-->
     <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/functions.js"></script>
 
     <!--Styles-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">

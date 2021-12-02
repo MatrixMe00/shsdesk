@@ -2,8 +2,27 @@
 <section draggable="true">
     <div class="head">
         <div class="intro">
-            <p>This menu is for the home page of the main website page. At this point, you decide on what to be shown and what not to be shown on it.</p>
+            <p>This menu is for the about page of the main website page. At this point, you decide on what to be shown and what not to be shown on it.</p>
         </div>
+    </div>
+</section>
+
+<section id="about_block">
+    <div class="head">
+        <h3>Website Description</h3>
+    </div>
+    <div class="body middle">
+        <div id="web_desc">
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus explicabo ducimus, at atque labore ab ea nesciunt deserunt quaerat enim, consequuntur, voluptas reiciendis. 
+            Quo asperiores officia qui inventore porro nostrum?</p>
+            <p>Nihil perferendis dolores cumque quia praesentium magni vel quo rem placeat. 
+            Labore libero animi consequatur architecto rem, facilis ut eos itaque sed expedita, praesentium, quo totam hic molestias ex magni.</p>
+            <p>Nesciunt, nulla maxime cumque exercitationem aut illum libero aspernatur tenetur voluptatibus minima possimus fugit eius quisquam modi, 
+            repellendus nostrum quaerat, sequi similique dolorem? Odio corporis dolore officiis ipsa expedita eveniet!</p>
+        </div>
+    </div>
+    <div class="foot">
+        <span class="span_edit item-event" data-item-id="<?php echo $row["id"]?>" data-item-event="edit">Edit Content</span>
     </div>
 </section>
 

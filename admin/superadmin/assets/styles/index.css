@@ -101,6 +101,7 @@
 .section_main_block .body .item .top{
     padding: 0.4em;
     border: 1px solid #aaa;
+    cursor: pointer;
 }
 
 .section_main_block .body .item.active .top, 
@@ -126,19 +127,22 @@
     padding: 0.4em 0 0.2em;
 }
 
-.section_main_block .body .item .edit{
+.section_main_block .body .item .edit,
+#about_block .foot{
     font-size: small;
     padding: 0.4em;
     cursor: default;
 }
 
-.section_main_block .body .item .edit span{
+.section_main_block .body .item .edit span,
+#about_block .foot span{
     color: blue;
     cursor: pointer;
     padding: 0 2px;
 }
 
-.edit span:hover{
+.edit span:hover,
+#about_block .foot span:hover{
     text-decoration: underline;
 }
 
@@ -194,6 +198,7 @@ button.selected{
     color: white;
     font-weight: bold;
     font-family: 'Courier New', Courier, monospace, 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 1rem;
 }
 
 #modal_yes_no .foot button:first-child{
@@ -210,4 +215,22 @@ button.selected{
 
 #modal_yes_no .foot button:last-child:hover{
     background-color: #ff3322;
+}
+
+/*about section*/
+#about_block .head{
+    padding-bottom: 1.5vh;
+    padding-top: 1vh;
+    border-bottom: 1px dashed #898;
+    width: fit-content;
+    padding-right: 2vw;
+}
+
+#about_block .body{
+    padding: 1vh 0.3rem;
+    text-align: justify;
+}
+
+#about_block .body p{
+    padding: 3px 0;
 }

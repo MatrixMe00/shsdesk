@@ -46,3 +46,38 @@ $("#ham").click(function(){
 $("#user_control").click(function(){
     $("#logout").slideToggle();
 })
+
+//yes no form submission
+$("#yes_no_form").submit(function(){
+    submit_val = $("#yes_no_form input[name=submit]").val();
+
+    if(!submit_val.includes("_ajax"))
+        submit_val += "_ajax";
+
+    $("#yes_no_form input[name=submit]").val(submit_val);
+
+    $.ajax({
+        url: $(this).attr("action"),
+        data: $(this).serialize(),
+        type: "get",
+        dataType: "text",
+
+        success: function(text){
+            if(text == "update-success"){
+                $("#lhs .menu .item.active").click();
+            }else if(text == "update-error"){
+                alert("Unable to cause change. Please try again later");
+            }else{
+                alert(text);
+            }
+        },
+
+        error: function(){
+            alert("Please communication could not be established");
+        },
+
+        complete: function(){
+            $("#modal_yes_no button[name=no_button]").click();
+        }
+    })
+})

@@ -11,6 +11,7 @@
     <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
     <script src="assets/scripts/angular/angular.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/functions.js?v=<?php echo time()?>"></script>
 
     <!--Other Styles-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">
@@ -187,14 +188,22 @@
         <?php include_once("page_parts/add_house.php")?>
     </div>
 
-    <div id="modal_yes_no" class="fixed flex flex-center-content flex-center-align form_modal_box">
+    <div id="modal_yes_no" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
         <div class="yes_no_container">
             <div class="body">
                 <p id="warning_content">Do you want to delete?</p>
             </div>
+
+            <form action="submit.php" class="no_disp" name="yes_no_form" id="yes_no_form">
+                <input type="hidden" name="sid">
+                <input type="hidden" name="mode">
+                <input type="hidden" name="table">
+                <input type="hidden" name="submit" value="yes_no_submit">
+            </form>
+
             <div class="foot btn flex flex-center-content flex-center-align">
-                <button type="button" name="yes_button" class="success">Yes</button>
-                <button type="button" name="no_button" class="red">No</button>
+                <button type="button" name="yes_button" class="success" onclick="$('#yes_no_form').submit()">Yes</button>
+                <button type="button" name="no_button" class="red" onclick="$('#modal_yes_no').addClass('no_disp')">No</button>
             </div>
         </div>
     </div>
