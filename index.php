@@ -291,13 +291,5 @@
 
     <!--Payment scripts-->
     <script src="assets/scripts/form/payForm.js?v=<?php echo time();?>"></script>
-
-    <script>
-        $(document).ready(function(){
-            load = loadDisplay({display: "round"});
-
-            alert(load);
-        })
-    </script>
 </body>
 </html>

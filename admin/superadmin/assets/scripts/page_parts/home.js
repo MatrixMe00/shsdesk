@@ -121,27 +121,33 @@ $(".span_edit").click(function(){
     //check its html name and work with it
     html = $(this).html();
 
-    if(html == "Edit"){
+    if(html.includes("Edit")){
         //change to cancel
         $(this).html("Cancel");
 
         //add the edit feature to the description element
         $(this).parent().siblings(".middle").children(".desc").prop("contenteditable",true).focus();
+
+        //enable textarea if present
+        $(this).parent().siblings(".middle").children("label.desc").children("textarea").prop("disabled", false).focus();
     }else if(html == "Save"){
         //step into the parent element
         parent = $(this).parents(".item");
 
         //when it is clicked as save, save everything and remake changes
-        $(this).html("Edit");
+        $(this).html($(this).attr("data-default-text"));
 
         //remove the edit feature to the description element
         $(this).parent().siblings(".middle").children(".desc").prop("contenteditable",false);
     }else{
         //when it is clicked as cancel
-        $(this).html("Edit");
+        $(this).html($(this).attr("data-default-text"));
 
-        //remove the edit feature to the description element
+        //add the edit feature to the description element
         $(this).parent().siblings(".middle").children(".desc").prop("contenteditable",false);
+
+        //disable textarea
+        $(this).parent().siblings(".middle").children("label.desc").children("textarea").prop("disabled", true);
     }
 })
 

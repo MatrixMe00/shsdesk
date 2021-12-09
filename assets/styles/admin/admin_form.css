@@ -58,7 +58,7 @@ form .body{
     padding: 1%;
 }
 
-form .body label{
+.body label{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -67,11 +67,11 @@ form .body label{
     background-color: white;
 }
 
-form .body label, form .body label input, form .body label select{
+.body label, .body label input, .body label select{
     min-height: 32px;
 }
 
-form .body label.btn{
+.body label.btn{
     background-color: unset;
     border: unset;
     justify-content: flex-start;
@@ -79,7 +79,7 @@ form .body label.btn{
     padding: unset;
 }
 
-form .body label.checkbox, form .body label.radio{
+.body label.checkbox, .body label.radio{
     justify-content: flex-start;
     width: fit-content;
     background-color: transparent;
@@ -381,7 +381,7 @@ form .form_views{
         padding-right: 1%;
     }
 
-    form label input, form label textarea, form label select, select{
+    label input, label textarea, label select, select{
         width: 100%;
     }
 
@@ -425,4 +425,12 @@ form .form_views{
     background-color: silver;
     border-top-left-radius: 25px;
     border-bottom-left-radius: 25px 50px;
+}
+
+/*style for desc container in middle classes*/
+.middle .desc[contenteditable=true]{
+    border: 1px solid lightgrey;
+    outline: unset;
+    padding: 0.3rem;
+    background-color: white;
 }

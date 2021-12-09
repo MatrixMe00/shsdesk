@@ -46,11 +46,14 @@
     margin: auto 5px;
 }
 
-#body.empty, .body.empty{
+#body.empty, .body.empty, .item.empty{
     display: flex;
     text-align: center;
     align-items: center;
+    justify-content: center;
     color: #222;
+    border: 1px solid lightgrey;
+    min-height: 3rem;
 }
 
 .school_container{
@@ -128,21 +131,21 @@
 }
 
 .section_main_block .body .item .edit,
-#about_block .foot{
+.page_setup .foot{
     font-size: small;
     padding: 0.4em;
     cursor: default;
 }
 
 .section_main_block .body .item .edit span,
-#about_block .foot span{
+.page_setup .foot span{
     color: blue;
     cursor: pointer;
     padding: 0 2px;
 }
 
 .edit span:hover,
-#about_block .foot span:hover{
+.page_setup .foot span:hover{
     text-decoration: underline;
 }
 
@@ -218,7 +221,7 @@ button.selected{
 }
 
 /*about section*/
-#about_block .head{
+.page_setup .head{
     padding-bottom: 1.5vh;
     padding-top: 1vh;
     border-bottom: 1px dashed #898;
@@ -226,11 +229,11 @@ button.selected{
     padding-right: 2vw;
 }
 
-#about_block .body{
+.page_setup .body{
     padding: 1vh 0.3rem;
     text-align: justify;
 }
 
-#about_block .body p{
+.page_setup .body p{
     padding: 3px 0;
 }
