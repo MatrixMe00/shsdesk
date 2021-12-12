@@ -160,7 +160,7 @@ $("select[name=ad_month]").change(function(){
 //canceling results
 $("button[name=modal_cancel]").click(function(){
     admission_button_tab_index = 1;
-    $(".form_modal_box").addClass("no_disp");
+    fadeOutElement($(".form_modal_box"));
 })
 
 //what to do with the submit admission button
@@ -195,7 +195,7 @@ $("label[for=agree]").click(function(){
         $("button[name=submit_admission] span").html("Submit");
 
         //hide the other steps
-        $(".tab_button").addClass("no_disp");
+        fadeOutElement($(".tab_button"));
         $(".tab_botton.active").removeClass("no_disp");
     }
 })
@@ -231,7 +231,7 @@ $(".tabs span.tab_button").click(function(){
     $(this).addClass("active");
 
     //hide all views
-    $(".form_views > div").addClass("no_disp");
+    fadeOutElement($(".form_views > div"));
 
     //display its associated form view
     $("#" + $(this).attr("data-views")).removeClass("no_disp");
@@ -257,22 +257,13 @@ $("select[name=ad_health]").change(function () {
     if($(this).val() == "yes"){
         $("label[for=health_specify]").removeClass("no_disp");
     }else{
-        $("label[for=health_specify]").addClass("no_disp");
+        fadeOutElement($("label[for=health_specify]"));
     }
 })
 
 //show the payment form when the payment / enrol button is clicked
 $("#payment_button, .enrol_button").click(function(){
     $("#payment_form").toggleClass("no_disp").addClass("flex");
-
-    /*//when it is client side, by default, the enrolment code section should display first
-    //for verification before continuation
-    $("form[name=admissionForm] fieldset").addClass("no_disp");
-    $("form[name=admissionForm] #enrol_field").removeClass("no_disp");
-
-    //on client side, do not display the other tabs when the user has not given the enrolment code
-    $(".tabs span.tab_button").addClass("no_disp");
-    $(".tabs span.tab_button.active").removeClass("no_disp");*/
 })
 
 //enabling the payment button when needed info is available

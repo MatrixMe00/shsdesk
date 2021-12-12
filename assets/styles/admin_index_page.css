@@ -141,6 +141,7 @@ div.container{
     flex: 2;
     color: white;
     font-size: smaller;
+    overflow: auto !important;
 }
 
 #lhs .menu{

@@ -22,6 +22,10 @@
     --dark: #343a40;
 }
 
+*{
+    scroll-behavior: smooth;
+}
+
 /*naming the colors*/
 .blue, .primary{
     background-color: var(--blue);
@@ -135,6 +139,31 @@ form img{
     display: none;
 }
 
+.fadeOut{
+    animation: fadeOut ease 0.7s;
+    animation-iteration-count: 1;
+}
+
+*{
+    animation: fadeIn ease 0.7s;
+    animation-iteration-count: 1;
+}
+
+@keyframes fadeOut{
+    from{opacity: 1;}
+    50%{opacity: 0.5; height: unset;}
+    to{opacity: 0;}
+}
+
+@keyframes fadeIn{
+    0%{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+
 .form_modal_box{
     background:rgba(15, 15, 15, 0.85);
     height: 100vh;
@@ -226,6 +255,10 @@ form img{
 
 .relative{
     position: relative;
+}
+
+.absolute{
+    position: absolute;
 }
 
 .static{

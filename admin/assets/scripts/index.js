@@ -15,6 +15,18 @@ $(".item").click(function(){
 
     //display the contents of the said property
     if($(this).attr("data-url")){
+        //attain the height of rhs
+        rhs_height = $("#rhs").height();
+
+        if($(window).width() > 650 || $(window).width() < $(window).height()){
+            rhs_height *= 0.8;
+        }else{
+            rhs_height *= 0.6;
+        }
+
+        rhs_height = Math.floor(rhs_height);
+
+        //using ajax, get contents of document
         $.ajax({
         url: $(this).attr("data-url"),
         type: "GET",
@@ -22,7 +34,13 @@ $(".item").click(function(){
         dataType: "html",
 
         beforeSend: function(){
-            $("#rhs .body").html("Please wait...");
+            element = "<div class=\"relative\" style=\"height: " + rhs_height + "px\">" + 
+                        loadDisplay({
+                            circular: true,
+                            full: true
+                        }) + 
+                        "</div>";
+            $("#rhs .body").html(element);
         },
 
         success: function(html){
@@ -30,7 +48,10 @@ $(".item").click(function(){
         },
 
         error: function(){
-            $("#rhs .body").html("Requested page could not be loaded. Please try again later. If this continues after three spaced tries, contact the admin for help.");
+            errorElement = "<div class=\"item empty\"  style=\"height: " + rhs_height + "px\">\n" + 
+                            "<p>Requested page could not be loaded. Please try again later. If this continues after three spaced tries, contact the admin for help.</p>\n" + 
+                            "</div>";
+            $("#rhs .body").html(errorElement);
         }
     })
     }else{

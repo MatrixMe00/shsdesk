@@ -14,6 +14,7 @@ if(!isset($_SESSION['user_login_id'])){
     <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
     <script src="assets/scripts/angular/angular.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/functions.js?v=<?php echo time()?>"></script>
 
     <!--Other Styles-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">
@@ -136,6 +137,27 @@ if(!isset($_SESSION['user_login_id'])){
                 </div>
             </div>
             <div class="menu">
+                <div class="head active">
+                    <span>Documents</span>
+                </div>
+                <div class="item active" name="Request" title="Request Document" data-url="page_parts/request.php">
+                    <div class="icon">
+                        <img src="<?php echo $url?>/assets/images/icons/hand-right-outline.svg" alt="request" />
+                    </div>
+                    <div class="menu_name">
+                        <span>Request Document</span>
+                    </div>
+                </div>
+                <div class="item active" name="Report" title="Make Report" data-url="page_parts/report.php">
+                    <div class="icon">
+                        <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="request" />
+                    </div>
+                    <div class="menu_name">
+                        <span>Make a Report</span>
+                    </div>
+                </div>
+            </div>
+            <div class="menu">
                 <div class="head">
                     <span>Settings</span>
                 </div>
@@ -221,6 +243,18 @@ if(!isset($_SESSION['user_login_id'])){
 
             //display the contents of the said property
             if($(this).attr("data-url")){
+                //attain the height of rhs
+                rhs_height = $("#rhs").height();
+
+                if($(window).width() > 650 || $(window).width() < $(window).height()){
+                    rhs_height *= 0.8;
+                }else{
+                    rhs_height *= 0.6;
+                }
+
+                rhs_height = Math.floor(rhs_height);
+
+                //using ajax, get contents of document
                 $.ajax({
                 url: $(this).attr("data-url"),
                 type: "GET",
@@ -228,11 +262,24 @@ if(!isset($_SESSION['user_login_id'])){
                 dataType: "html",
 
                 beforeSend: function(){
-                    $("#rhs .body").html("Please wait...");
+                    element = "<div class=\"relative\" style=\"height: " + rhs_height + "px\">" + 
+                                loadDisplay({
+                                    circular: true,
+                                    full: true
+                                }) + 
+                                "</div>";
+                    $("#rhs .body").html(element);
                 },
 
                 success: function(html){
                     $("#rhs .body").html(html);
+                },
+
+                error: function(){
+                    errorElement = "<div class=\"item empty\"  style=\"height: " + rhs_height + "px\">\n" + 
+                    "<p>Requested page could not be loaded. Please try again later. If this continues after three spaced tries, contact the admin for help.</p>\n" + 
+                    "</div>";
+                    $("#rhs .body").html(errorElement);
                 }
             })
             }else{

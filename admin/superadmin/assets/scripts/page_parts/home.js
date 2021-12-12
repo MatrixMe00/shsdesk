@@ -116,12 +116,19 @@ $(".item .title_bar.top").click(function(){
     }
 })
 
+//description value variable
+//it will be used to track original text contents
+desc_val = "";
+
 //edit a content
 $(".span_edit").click(function(){
     //check its html name and work with it
     html = $(this).html();
 
     if(html.includes("Edit")){
+        //store original contents in description variable
+        desc_val = $(this).parent().siblings(".middle").children(".desc").html();
+
         //change to cancel
         $(this).html("Cancel");
 
@@ -130,6 +137,9 @@ $(".span_edit").click(function(){
 
         //enable textarea if present
         $(this).parent().siblings(".middle").children("label.desc").children("textarea").prop("disabled", false).focus();
+
+        //hide cancel span element
+        $(this).siblings(".span_cancel").addClass("no_disp");
     }else if(html == "Save"){
         //step into the parent element
         parent = $(this).parents(".item");
@@ -151,9 +161,42 @@ $(".span_edit").click(function(){
     }
 })
 
+//cancel editing
+$(".span_cancel").click(function(){
+    //add the edit feature to the description element
+    $(this).parent().siblings(".middle").children(".desc").prop("contenteditable",false);
+
+    //disable textarea
+    $(this).parent().siblings(".middle").children("label.desc").children("textarea").prop("disabled", true);
+
+    //revert its save element to original text
+    $(this).siblings(".span_edit").html($(this).siblings(".span_edit").attr("data-default-text"));
+
+    //reset value in desc element
+    if($(this).parent().siblings(".middle").html().includes("<label")){
+
+    }else{
+        $(this).parent().siblings(".middle").children(".desc").html(desc_val);
+    }
+
+    //hide element
+    $(this).addClass("no_disp");
+})
+
 $(".middle .desc").keypress(function(){
     //when a key is pressed, change the edit to save
     $(this).parent().siblings(".edit").children(".span_edit").html("Save");
+
+    //display the cancel
+    $(this).parent().siblings(".edit").children(".span_cancel").removeClass("no_disp");
+})
+
+$(".middle textarea").keypress(function(){
+    //change edit to save
+    $(this).parents(".middle").siblings(".foot").children(".span_edit").html("Save");
+
+    //display cancel
+    $(this).parents(".middle").siblings(".foot").children(".span_cancel").removeClass("no_disp");
 })
 
 //concerning the files that will be chosen

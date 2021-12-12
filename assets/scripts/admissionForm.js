@@ -52,7 +52,7 @@ $("select[name=ad_month]").change(function(){
 //canceling results
 $("button[name=modal_cancel]").click(function(){
     admission_button_tab_index = 1;
-    $(this).parents(".form_modal_box").addClass("no_disp");
+    fadeOutElement($(this).parents(".form_modal_box"));
 
     if($(this).parents(".form_modal_box").prop("id") == "payment_form"){
         //enable all fields
@@ -173,7 +173,7 @@ $(".tabs span.tab_button").click(function(){
     $(this).addClass("active");
 
     //hide all views
-    $(".form_views > div").addClass("no_disp");
+    fadeOutElement($(".form_views > div"));
 
     //display its associated form view
     $("#" + $(this).attr("data-views")).removeClass("no_disp");
@@ -199,7 +199,7 @@ $("select[name=ad_health]").change(function () {
     if($(this).val() == "yes"){
         $("label[for=health_specify]").removeClass("no_disp");
     }else{
-        $("label[for=health_specify]").addClass("no_disp");
+        fadeOutElement($("label[for=health_specify]"));
     }
 })
 
@@ -209,7 +209,7 @@ $("#payment_button, .enrol_button").click(function(){
 
     //when it is client side, by default, the index number section should display first
     //for verification before continuation
-    $("form[name=admissionForm] fieldset").addClass("no_disp");
+    fadeOutElement($("form[name=admissionForm] fieldset"));
     $("form[name=admissionForm] #enrol_field").removeClass("no_disp");
 
     //on client side, do not display the other tabs when the user has not given the index number
@@ -296,7 +296,7 @@ $("button[name=continue]").click(function(){
                 //successful results should fill the form with needed data
 
                 //display form information
-                $("form[name=admissionForm] button[name=modal_cancel]").addClass("no_disp");
+                fadeOutElement($("form[name=admissionForm] button[name=modal_cancel]"));
                 $("label[for=submit_admission]").removeClass("no_disp");
 
                 //display the fields
@@ -396,13 +396,13 @@ $("button[name=continue]").click(function(){
 $("form[name=admissionForm] button[name=modal_cancel]").click(function(){
     //display continue button and hide the submit button
     $("button[name=continue]").removeClass("no_disp");
-    $("label[for=submit_admission]").addClass("no_disp");
+    fadeOutElement($("label[for=submit_admission]"));
 
     //hide the fields
-    $("form[name=admissionForm] fieldset").addClass("no_disp");
+    fadeOutElement($("form[name=admissionForm] fieldset"));
 
     //hide all the elements in the enrol field
-    $("form[name=admissionForm] #enrol_field label").addClass("no_disp");
+    fadeOutElement($("form[name=admissionForm] #enrol_field label"));
 
     //enable the index input field
     $("#ad_index").prop("disabled", false);
@@ -411,7 +411,7 @@ $("form[name=admissionForm] button[name=modal_cancel]").click(function(){
     $("#view1 fieldset:first-child").removeClass("no_disp");
 
     //hide all labels in view 1
-    $("#view1 fieldset:first-child label").addClass("no_disp");
+    fadeOutElement($("#view1 fieldset:first-child label"));
 
     //reveal only index number portion
     $("#view1 fieldset:first-child label[for=ad_index]").removeClass("no_disp");

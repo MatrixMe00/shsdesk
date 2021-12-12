@@ -118,11 +118,11 @@
                 <span id="display_file_name">Choose or drag your file here</span>
             </div>
         </label>
-        <div class="divide">
+        <div class="flex">
             <label for="submit" class="btn">
                 <button type="submit" name="submit" value="upload">Upload</button>
             </label>
-            <label for="close" class="btn" title="Show Details">
+            <label for="close" class="btn">
                 <button type="reset" name="close">Close</button>
             </label>
         </div>

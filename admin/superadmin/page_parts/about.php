@@ -20,23 +20,29 @@
             <p>Nesciunt, nulla maxime cumque exercitationem aut illum libero aspernatur tenetur voluptatibus minima possimus fugit eius quisquam modi, 
             repellendus nostrum quaerat, sequi similique dolorem? Odio corporis dolore officiis ipsa expedita eveniet!</p>
         </div>
+        <!-- <label for="about_desc" class="desc">
+            <textarea name="about_desc" id="about_desc" 
+            placeholder="Please provide a description about the website"></textarea>
+        </label> -->
     </div>
-    <div class="foot">
+    <div class="edit foot">
         <span class="span_edit item-event" data-item-id="<?php echo $row["id"]?>" data-item-event="edit" data-default-text="Edit Content">Edit Content</span>
+        <span class="span_cancel item-event no_disp" data-item-event="cancel">Cancel</span>
     </div>
 </section>
 
 <section id="short_desc" class="page_setup">
     <div class="head">
-        <h3>Short Description</h3>
+        <h3>Website Short Description</h3>
     </div>
     <div class="body middle">
         <label for="web_desc" class="desc">
             <textarea name="web_desc" id="web_desc" placeholder="Enter a short description of the website here. You are limited to provide between 80 and 300 characters..." maxlength="300" minlength="80" disabled></textarea>
         </label>
     </div>
-    <div class="foot">
+    <div class="edit foot">
         <span class="span_edit item-event" data-item-id="<?php echo $row["id"]?>" data-item-event="edit" data-default-text="Edit Content">Edit Content</span>
+        <span class="span_cancel item-event no_disp" data-item-event="cancel">Cancel</span>
     </div>
 </section>
 

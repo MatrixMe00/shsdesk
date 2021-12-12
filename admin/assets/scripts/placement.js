@@ -161,7 +161,7 @@ $("form[name=importForm").on('submit',(function(e){
 //when the import form is closed
 $("form[name=importForm] button[name=close]").click(function(){
     //hide the form
-    $("#modal_2").addClass("no_disp");
+    fadeOutElement($("#modal_2"));
 
     //display that the file input has nothing
     $("#plus").css("display","initial");

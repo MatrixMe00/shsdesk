@@ -4,6 +4,8 @@
  * @param {string} display This parameter will hold the type of shape the buttons should take
  * @param {string} animation This param is for taking animation classes
  * @param {boolean} full This is for verifying if the div should be for full screen or not
+ * @param {boolean} circular This is for displaying a circular loader
+ * @param {string} circleColor This is for providing a color for a circular loader
  * @param {string} span1 This is for taking the color for the first span
  * @param {string} span2 This is for taking the color for the second span
  * @param {string} span3 This is for taking the color for the third span
@@ -11,14 +13,16 @@
  * @returns {string} Returns a string of the created div element
  */
  function loadDisplay(element = {
-     size: null,
-     display: null,
-     animation: null,
+     size: "",
+     display: "",
+     animation: "",
      full: false,
-     span1: null,
-     span2: null,
-     span3: null,
-     span4: null
+     circular: false,
+     span1: "",
+     span2: "",
+     span3: "",
+     span4: "",
+     circleColor: "",
  }){
     //initialize values with default
     if(element["size"] == null){
@@ -63,20 +67,58 @@
         fullClass = "";
     }
 
-    load = "<div class=\"loader flex " + element["animation"] + " " + fullClass + "\">\n" +
+    if(element["circleColor"] == null){
+        element["circleColor"] = "dark";
+    }
+
+    if(element["circular"]){
+        load = 
+        "<div class=\"loader " + fullClass + " circle-loader flex anim-fade\" style=\"--c:8\">\n" +
+            "<div class=\"span-container flex\">\n" + 
+                "<span class=\"stroke " + element["display"] + " " + element["circleColor"] + "\" style=\"--i:0\"></span>\n" +
+                "<span class=\"stroke " + element["display"] + " " + element["circleColor"] + "\" style=\"--i:1\"></span>\n" +
+                "<span class=\"stroke " + element["display"] + " " + element["circleColor"] + "\" style=\"--i:2\"></span>\n" +
+                "<span class=\"stroke " + element["display"] + " " + element["circleColor"] + "\" style=\"--i:3\"></span>\n" +
+                "<span class=\"stroke " + element["display"] + " " + element["circleColor"] + "\" style=\"--i:4\"></span>\n" +
+                "<span class=\"stroke " + element["display"] + " " + element["circleColor"] + "\" style=\"--i:5\"></span>\n" +
+                "<span class=\"stroke " + element["display"] + " " + element["circleColor"] + "\" style=\"--i:6\"></span>\n" +
+                "<span class=\"stroke " + element["display"] + " " + element["circleColor"] + "\" style=\"--i:7\"></span>\n" +
+            "</div>\n" +
+        "</div>";
+    }else{
+        load = "<div class=\"loader flex " + element["animation"] + " " + fullClass + "\" style=\"--c:4\">\n" +
             "<div class=\"span-container flex\">\n" +
-                "<span class=\"" + element["size"] + " " + element["display"] + " " + element["span1"] + "\"></span>\n" + 
-                "<span class=\"" + element["size"] + " " + element["display"] + " " + element["span2"] + "\"></span>\n" + 
-                "<span class=\"" + element["size"] + " " + element["display"] + " " + element["span3"] + "\"></span>\n" + 
-                "<span class=\"" + element["size"] + " " + element["display"] + " " + element["span4"] + "\"></span>\n" +
+                "<span class=\"" + element["size"] + " " + element["display"] + " " + element["span1"] + "\" style=\"--i:0\"></span>\n" + 
+                "<span class=\"" + element["size"] + " " + element["display"] + " " + element["span2"] + "\" style=\"--i:1\"></span>\n" + 
+                "<span class=\"" + element["size"] + " " + element["display"] + " " + element["span3"] + "\" style=\"--i:2\"></span>\n" + 
+                "<span class=\"" + element["size"] + " " + element["display"] + " " + element["span4"] + "\" style=\"--i:3\"></span>\n" +
             "</div>\n" +
         "</div>\n";
+    }
     
         return load;
 }
 
-function sometin(data = {url: "key", password: ""}){
-    alert(data["password"]);
+/**
+ * This function will be used to regulate fade outs in the project
+ * 
+ * @param {number} time This takes the length of time for the effect. Its defaulted at 0.7s
+ * @param {any} element This picks the element to add or retrieve the fade animation to
+ * 
+ * @return {void} The function returns nothing
+ */
+function fadeOutElement(element, time = 0.7){
+    //set time to miliseconds
+    time *= 1000;
+
+    //add the fadeout class to the element
+    $(element).addClass("fadeOut");
+
+    //set an interval to make animation
+    timeout = setTimeout(function(){
+        //remove and add neccessary classes
+        $(element).removeClass("fadeOut").addClass("no_disp");
+    }, time);
 }
 
 /**

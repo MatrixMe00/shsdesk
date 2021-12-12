@@ -51,6 +51,7 @@
             </div>
             <div class="edit no_disp">
                 <span class="span_edit item-event" data-item-id="<?php echo $row["id"]?>" data-item-event="edit" data-default-text="Edit">Edit</span>
+                <span class="span_cancel item-event no_disp" data-item-event="cancel">Cancel</span>
                 <span class="span_delete item-event" data-item-id="<?php echo $row["id"]?>" data-item-event="delete" data-default-text="Delete">Delete</span>
                 <span class="span_deactivate item-event" data-item-id="<?php echo $row["id"]?>" data-item-event="deactivate" data-default-text="Deactivate">Deactivate</span>
             </div>
@@ -112,6 +113,7 @@
             </div>
             <div class="edit no_disp">
                 <span class="span_edit item-event" data-item-id="<?php echo $row["id"]?>" data-item-event="edit" data-default-text="Edit">Edit</span>
+                <span class="span_cancel item-event no_disp" data-item-event="cancel">Cancel</span>
                 <span class="span_delete item-event" data-item-id="<?php echo $row["id"]?>" data-item-event="delete" data-default-text="Delete">Delete</span>
                 <span class="span_activate item-event" data-item-id="<?php echo $row["id"]?>" data-item-event="activate" data-default-text="Activate">Activate</span>
             </div>
