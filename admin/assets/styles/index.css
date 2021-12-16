@@ -5,11 +5,6 @@
     overflow: auto;
 }
 
-#rhs section > .middle:has(form),
-#rhs section > .body:has(form),
-#rhs section > .desc:has(form){
-    max-height: 20vw;
-}
 #placement_search #action{
     padding: 5px;
 }
