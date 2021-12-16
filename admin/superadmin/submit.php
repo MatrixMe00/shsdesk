@@ -24,7 +24,22 @@
             
             //upload the image
             $image_input_name = "item_img";
-            $local_storage_directory = "$rootPath/assets/images/backgrounds/carousel/";
+            $local_storage_directory = "$rootPath/assets/images/";
+
+            //separate storage directories for images
+            switch ($item_type) {
+                case "carousel":
+                    $local_storage_directory .= "backgrounds/carousel/";
+                    break;
+                
+                case "gallery":
+                    $local_storage_directory .= "pictures/";
+                    break;
+                    
+                default:
+                    # code...
+                    break;
+            }
 
             $item_img = getImageDirectory($image_input_name, $local_storage_directory);
 

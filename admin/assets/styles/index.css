@@ -1,3 +1,15 @@
+#rhs section > .middle,
+#rhs section > .body,
+#rhs section > .desc{
+    max-height: 50vh;
+    overflow: auto;
+}
+
+#rhs section > .middle:has(form),
+#rhs section > .body:has(form),
+#rhs section > .desc:has(form){
+    max-height: 20vw;
+}
 #placement_search #action{
     padding: 5px;
 }
@@ -236,4 +248,23 @@ button.selected{
 
 .page_setup .body p{
     padding: 3px 0;
+}
+
+#users .user_container{
+    padding: 0.3em 0.5em;
+    margin: 3px auto;
+    border: thin solid grey;
+}
+
+#users .user_container:hover{
+    border-style: dashed;
+}
+
+#users .desc .school_name{
+    font-size: small;
+    color: grey;
+}
+
+#users .foot{
+    padding: 2px 0;
 }

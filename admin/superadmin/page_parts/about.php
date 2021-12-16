@@ -46,6 +46,29 @@
     </div>
 </section>
 
+<section class="page_setup" id="users">
+    <div class="head">
+        <h3>Users on System</h3>
+    </div>
+    <div class="middle">
+        <div class="user_container flex flex-column">
+            <div class="top">
+                <h4>Full Name (<span class="username">Username</span>)</h4>
+            </div>
+            <div class="desc">
+                <div class="school_name">
+                    <span>School Name</span>
+                </div>
+            </div>
+            <div class="foot">
+                <span class="item-event">Edit</span>
+                <span class="item-event">Activate</span>
+                <span class="item-event">Delete</span>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section draggable="true" class="section_main_block" id="active_carousel">
     <div class="head title_bar flex flex-space-content flex-center-align">
         <h3>Active Gallery</h3>

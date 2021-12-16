@@ -2,26 +2,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php @include_once($rootPath.'/admin/generalHead.php')?>
     <title>Welcome SuperAdmin</title>
-
-    <!--Scripts-->
-    <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
-    <script src="assets/scripts/angular/angular.js?v=<?php echo time()?>"></script>
-    <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>"></script>
-    <script src="<?php echo $url?>/assets/scripts/functions.js?v=<?php echo time()?>"></script>
-
-    <!--Other Styles-->
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/loader.css?v=<?php echo time()?>">
-
-    <!--Document Style-->
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin_index_page.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="assets/styles/general.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="assets/styles/index.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/general.css?v=<?php echo time()?>">
 </head>
 
 <body ng-app="index_application">
@@ -135,6 +117,27 @@
                 </div>
             </div>
             <div class="menu">
+                <div class="head active">
+                    <span>Documents</span>
+                </div>
+                <div class="item active" name="Request" title="Document Requests" data-url="page_parts/request.php">
+                    <div class="icon">
+                        <img src="<?php echo $url?>/assets/images/icons/hand-right-outline.svg" alt="request" />
+                    </div>
+                    <div class="menu_name">
+                        <span>Document Requests</span>
+                    </div>
+                </div>
+                <div class="item active" name="Report" title="Admin System Reports" data-url="page_parts/report.php">
+                    <div class="icon">
+                        <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="request" />
+                    </div>
+                    <div class="menu_name">
+                        <span>Admin System Reports</span>
+                    </div>
+                </div>
+            </div>
+            <div class="menu">
                 <div class="head">
                     <span>Settings</span>
                 </div>
@@ -208,9 +211,9 @@
         </div>
     </div>
 
-    <script src="assets/scripts/angular_index.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/angular_index.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/assets/scripts/admissionForm.js?v=<?php echo time(); ?>"></script>
-    <script src="assets/scripts/index.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/index.js?v=<?php echo time()?>"></script>
 
     <script>
         $(document).ready(function() {

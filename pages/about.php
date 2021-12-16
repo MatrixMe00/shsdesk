@@ -25,9 +25,34 @@
         </section>
         
         <section id="gallery" class="flex flex-wrap flex-center-content">
+            <?php
+                $result = $connect->query("SELECT item_img, image_alt, item_head, item_desc
+                FROM pageItemDisplays
+                WHERE active=TRUE AND item_type='gallery' AND item_page='about'");
+
+                if($result->num_rows > 0){
+                    while($row = $result->fetch_assoc()){
+            ?>
             <div class="gallery_box">
                 <div class="image">
-                    <img src="<?php echo $url?>/assets/images/pictures/ges.jfif" alt="">
+                    <img src="<?php echo $url."/".$row['item_img']?>" alt="<?php echo $row['image_alt']?>">
+                </div>
+                <div class="body">
+                    <div class="caption">
+                        <h3><?php echo $row["item_head"]?></h3>
+                    </div>
+                    <div class="message">
+                        <p><?php echo $row["item_desc"]?></p>
+                    </div>
+                </div>
+            </div>
+            <?php
+                    }
+                }else{
+            ?>
+            <div class="gallery_box">
+                <div class="image">
+                    <img src="<?php echo $url?>/assets/images/default/ges.jfif" alt="">
                 </div>
                 <div class="body">
                     <div class="caption">
@@ -40,7 +65,7 @@
             </div>
             <div class="gallery_box">
                 <div class="image">
-                    <img src="<?php echo $url?>/assets/images/pictures/ghanaian student.jfif" alt="">
+                    <img src="<?php echo $url?>/assets/images/default/ghanaian student.jfif" alt="">
                 </div>
                 <div class="body">
                     <div class="caption">
@@ -53,7 +78,7 @@
             </div>
             <div class="gallery_box">
                 <div class="image">
-                    <img src="<?php echo $url?>/assets/images/pictures/shs student 2.jfif" alt="">
+                    <img src="<?php echo $url?>/assets/images/default/shs student 2.jfif" alt="">
                 </div>
                 <div class="body">
                     <div class="caption">
@@ -66,7 +91,7 @@
             </div>
             <div class="gallery_box">
                 <div class="image">
-                    <img src="<?php echo $url?>/assets/images/pictures/shs student.jfif" alt="">
+                    <img src="<?php echo $url?>/assets/images/default/shs student.jfif" alt="">
                 </div>
                 <div class="body">
                     <div class="caption">
@@ -77,6 +102,7 @@
                     </div>
                 </div>
             </div>
+            <?php }?>
         </section>
 
         <section id="team">
@@ -86,7 +112,7 @@
             <div class="desc flex flex-wrap flex-center-content flex-center-align">
                 <div class="person">
                     <div class="image">
-                        <img src="<?php echo $url?>/assets/images/pictures/library.jfif" alt="">
+                        <img src="<?php echo $url?>/assets/images/default/library.jfif" alt="">
                     </div>
                     <div class="body">
                         <span class="name">John Doe</span>
@@ -96,7 +122,7 @@
                 </div>
                 <div class="person">
                     <div class="image">
-                        <img src="<?php echo $url?>/assets/images/pictures/library.jfif" alt="">
+                        <img src="<?php echo $url?>/assets/images/default/library.jfif" alt="">
                     </div>
                     <div class="body">
                         <span class="name">Abraham Lincoln</span>
