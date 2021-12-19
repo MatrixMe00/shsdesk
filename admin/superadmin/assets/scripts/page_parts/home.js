@@ -65,9 +65,17 @@ $(".section_main_block .head").click(function(){
         
         $(this).siblings(".body").removeClass("no_disp");
         $(this).children(".close").addClass("clicked");
+
+        //increase margin bottom
+        if($(this).parent().height() >= ($(document).height() / 2))
+            $(this).css("margin-bottom", "2vh");
     }else{
         $(this).siblings(".body").addClass("no_disp");
         $(this).children(".close").removeClass("clicked");
+
+        //reset margin bottom
+        if($(this).parent().height() < ($(document).height() / 2))
+            $(this).css("margin-bottom", "unset");
     }
 })
 

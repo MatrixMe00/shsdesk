@@ -96,7 +96,7 @@
     </div>
 </section>
 
-<div id="modal_2" class="fixed no_disp">
+<div id="modal_2" class="fixed no_disp form_modal_form">
     <form action="<?php echo $url?>/admin/admin/submit.php" name="importForm" enctype="multipart/form-data" method="POST">
         <h5>NB:</h5>
         <ol>

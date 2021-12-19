@@ -64,6 +64,17 @@
                         <span>Dashboard</span>
                     </div>
                 </div>
+                <div class="item relative" name="Notification" title="Notification" data-url="page_parts/notification.php">
+                    <div class="icon">
+                        <img src="<?php echo $url?>/assets/images/icons/notifications-circle-outline.svg" alt="Dashboard" />
+                    </div>
+                    <div class="menu_name relative">
+                        <span>Notification</span>
+                    </div>
+                    <div id="news_number" class="absolute danger flex flex-center-align flex-center-content">
+                        <span>4</span>
+                    </div>
+                </div>
             </div>
             <div class="menu">
                 <div class="head">

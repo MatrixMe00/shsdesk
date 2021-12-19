@@ -48,25 +48,49 @@
 
 <section class="page_setup" id="users">
     <div class="head">
-        <h3>Users on System</h3>
+        <h3>Team Members</h3>
     </div>
+    <?php 
+        $result = $connect->query("SELECT a.fullname, a.username, a.role, a.adYear, s.schoolName, r.title AS roleTitle 
+        FROM admins_table a JOIN schools s
+        ON a.school_id = s.id
+        JOIN roles r
+        ON a.role = r.id 
+        WHERE a.role = 1 AND r.access = TRUE") or die($connect->error);
+
+        if($result->num_rows > 0){
+    ?>
     <div class="middle">
+        <?php while($row = $result->fetch_assoc()){?>
         <div class="user_container flex flex-column">
             <div class="top">
-                <h4>Full Name (<span class="username">Username</span>)</h4>
+                <h4><?php echo $row["fullname"] ?> (<span class="username"><?php echo $row["username"] ?></span>)</h4>
             </div>
-            <div class="desc">
+            <div class="desc flex flex-wrap">
+                <?php if($row["schoolName"] != null){ ?>
                 <div class="school_name">
-                    <span>School Name</span>
+                    <span><?php echo $row["schoolName"] ?></span>
+                </div>
+                <?php } ?>
+                <div class="role">
+                    <span><?php echo $row["roleTitle"]?></span>
+                </div>
+                <div class="member_since">
+                    <span>Since <?php echo date("dS F, Y", strtotime($row["adYear"]))?></span>
                 </div>
             </div>
             <div class="foot">
-                <span class="item-event">Edit</span>
-                <span class="item-event">Activate</span>
-                <span class="item-event">Delete</span>
+                <span class="item-event" title="This will remove this user from the team but will keep superadmin previledges">Remove From Team</span>
+                <span class="item-event" title="This will remove this user from the team. It will remove every previledge he has as a super admin">Change Role</span>
             </div>
         </div>
+        <?php } ?>
     </div>
+    <?php }else{?>
+    <div class="body empty" style="margin-top: 10px">
+        <p>No users were found in the system</p>
+    </div>
+    <?php }?>
 </section>
 
 <section draggable="true" class="section_main_block" id="active_carousel">

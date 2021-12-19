@@ -153,7 +153,7 @@
                         <select name="school_select" id="school_select">
                             <option value="NULL">Please select your school</option>
                             <?php
-                                $res = $connect->query("SELECT id, schoolName FROM schools");
+                                $res = $connect->query("SELECT id, schoolName FROM schools WHERE Active = TRUE");
 
                                 if($res->num_rows > 0){
                                     while($row = $res->fetch_assoc()){
@@ -173,7 +173,7 @@
                         <select name="school_select2" id="school_select2">
                             <option value="NULL">Please select your school</option>
                             <?php
-                                $res = $connect->query("SELECT id, schoolName FROM schools");
+                                $res = $connect->query("SELECT id, schoolName FROM schools WHERE Active = TRUE");
 
                                 if($res->num_rows > 0){
                                     while($row = $res->fetch_assoc()){

@@ -102,3 +102,8 @@ $("#yes_no_form").submit(function(){
         }
     })
 })
+
+$("#logout").click(function(){
+    // location.href = "../logout.php";
+    location.href = "../";
+})

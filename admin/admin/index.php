@@ -75,6 +75,17 @@ if(!isset($_SESSION['user_login_id'])){
                         <span>Dashboard</span>
                     </div>
                 </div>
+                <div class="item relative" name="Notification" title="Notification" data-url="page_parts/notification.php">
+                    <div class="icon">
+                        <img src="<?php echo $url?>/assets/images/icons/notifications-circle-outline.svg" alt="Dashboard" />
+                    </div>
+                    <div class="menu_name relative">
+                        <span>Notification</span>
+                    </div>
+                    <div id="news_number" class="absolute danger flex flex-center-align flex-center-content">
+                        <span>4</span>
+                    </div>
+                </div>
             </div>
             <div class="menu">
                 <div class="head">
@@ -193,7 +204,8 @@ if(!isset($_SESSION['user_login_id'])){
         <?php include_once("page_parts/add_house.php")?>
     </div>
 
-    <script src="assets/scripts/angular_index.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/angular_index.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/index.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/assets/scripts/admissionForm.js?v=<?php echo time(); ?>"></script>
 
     <script>
@@ -207,82 +219,6 @@ if(!isset($_SESSION['user_login_id'])){
                 ?>";
             $("div[name=" + nav_point + "]").click();
         })
-        
-        $(".item").click(function(){
-            //remove and add the active class
-            $(".item").removeClass("active");
-            $(this).addClass("active");
-
-            //get the parent element
-            parent = $(this).parent();
-
-            //remove and add active class to the head element
-            $(".menu .head").removeClass("active");
-            $(parent).children(".head").addClass("active");
-
-            //change the contents on the rhs
-            $("#rhs .head #title").html($(this).children(".menu_name").children("span").text());
-
-            //display the contents of the said property
-            if($(this).attr("data-url")){
-                //attain the height of rhs
-                rhs_height = $("#rhs").height();
-
-                if($(window).width() > 650 || $(window).width() < $(window).height()){
-                    rhs_height *= 0.8;
-                }else{
-                    rhs_height *= 0.6;
-                }
-
-                rhs_height = Math.floor(rhs_height);
-
-                //using ajax, get contents of document
-                $.ajax({
-                url: $(this).attr("data-url"),
-                type: "GET",
-                cache: false,
-                dataType: "html",
-
-                beforeSend: function(){
-                    element = "<div class=\"relative\" style=\"height: " + rhs_height + "px\">" + 
-                                loadDisplay({
-                                    circular: true,
-                                    full: true
-                                }) + 
-                                "</div>";
-                    $("#rhs .body").html(element);
-                },
-
-                success: function(html){
-                    $("#rhs .body").html(html);
-                },
-
-                error: function(){
-                    errorElement = "<div class=\"item empty\"  style=\"height: " + rhs_height + "px\">\n" + 
-                    "<p>Requested page could not be loaded. Please try again later. If this continues after three spaced tries, contact the admin for help.</p>\n" + 
-                    "</div>";
-                    $("#rhs .body").html(errorElement);
-                }
-            })
-            }else{
-                $("#rhs .body").html("No data is available");
-            }
-        })
-
-        $("#ham").click(function(){
-            $("#lhs").toggleClass("menu_click");
-            $(this).toggleClass("clicked");
-        })
-
-        $("#user_control").click(function(){
-            $("#logout").slideToggle();
-        })
-
-        $("#logout").click(function(){
-            // location.href = "../logout.php";
-            location.href = "../";
-        })
-
         //$("#rhs .body").load("page_parts/change_password.html");
     </script>
     <?php // }

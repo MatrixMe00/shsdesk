@@ -130,6 +130,10 @@ form img{
     padding: 5px;
 }
 
+.btn:first-child{
+    padding-left: unset !important;
+}
+
 .btn button:hover{
     border-bottom-left-radius: 0.65rem;
     border-bottom-right-radius: 0.65rem;

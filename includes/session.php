@@ -47,6 +47,7 @@ if(isset($_SESSION['user_login_id'])){
     $user_email = $user_details['Email'];
 }else{
     $user_role = "guest";
+    $school_id = 1;
 }
 
 ?>
