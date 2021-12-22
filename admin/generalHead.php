@@ -17,3 +17,4 @@
     <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/general.css?v=<?php echo time()?>">
     <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/index.css?v=<?php echo time()?>">
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/general.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/notification.css?v=<?php echo time()?>">

@@ -82,9 +82,14 @@ if(!isset($_SESSION['user_login_id'])){
                     <div class="menu_name relative">
                         <span>Notification</span>
                     </div>
-                    <div id="news_number" class="absolute danger flex flex-center-align flex-center-content">
-                        <span>4</span>
+                    <?php 
+                        //count notifications
+                        if(notificationCounter() > 0){
+                    ?>
+                    <div class="news_number absolute danger flex flex-center-align flex-center-content">
+                        <span><?php echo notificationCounter();?></span>
                     </div>
+                    <?php }?>
                 </div>
             </div>
             <div class="menu">
@@ -207,7 +212,8 @@ if(!isset($_SESSION['user_login_id'])){
     <script src="<?php echo $url?>/admin/assets/scripts/angular_index.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/index.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/assets/scripts/admissionForm.js?v=<?php echo time(); ?>"></script>
-
+    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+    
     <script>
         $(document).ready(function() {
             nav_point = "<?php

@@ -35,16 +35,17 @@ session_start();
 
 date_default_timezone_set("Africa/Accra");
 
+$_SESSION['user_login_id'] = 4;
 //create a session variable
 if(isset($_SESSION['user_login_id'])){
     $user_details = getUserDetails($_SESSION['user_login_id']);
 
     //retrieve all details
-    $user_id = $user_details['id'];
+    $user_id = $user_details['user_id'];
     $user_username = $user_details['username'];
-    $user_school_id = $user_details['school_id'];
+    $school_id = $user_details['school_id'];
     $user_role = getRole($user_details['role']);
-    $user_email = $user_details['Email'];
+    $user_email = $user_details['email'];
 }else{
     $user_role = "guest";
     $school_id = 1;

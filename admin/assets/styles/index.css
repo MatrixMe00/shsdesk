@@ -85,6 +85,10 @@
     margin: 5px auto;
 }
 
+.head{
+    margin-bottom: 1vh;
+}
+
 #rhs .image{
     filter: invert(1);
 }
@@ -256,41 +260,41 @@ button.selected{
 #users .middle{
     padding-top: 5px;
 }
-#users .user_container{
+.user_container{
     padding: 0.3em 0.5em;
     margin: 3px auto;
-    border: thin solid grey;
+    border: thin solid lightgrey;
 }
 
-#users .user_container:hover{
-    border-color: lightgrey;
+.user_container:hover{
+    border-color: grey;
 }
 
-#users .desc{
+.user_container .desc{
     font-size: small;
     color: grey;
 }
 
-#users .desc > div{
+.user_container .desc > div{
     padding-right: 5px;
     padding-left: 5px;
     border-right: 1px solid grey;
 }
 
-#users .desc > div:first-child{
+.user_container .desc > div:first-child{
     padding-left: unset;
 }
 
-#users .desc > div:last-child{
+.user_container .desc > div:last-child{
     border-right: unset;
 }
 
-#users .foot{
+.user_container .foot{
     padding: 2px 0;
 }
 
 /*News number*/
-#news_number{
+.news_number{
     border-radius: 50%;
     top: 50%;
     right: 0;
@@ -301,23 +305,23 @@ button.selected{
     border: 1px solid white;
 }
 
-.menu_click #news_number{
+.menu_click .news_number{
     top: 1em;
 }
 
 @media screen and (min-width: 768px){
-    #news_number{
+    .news_number{
         top: 1em;
     }
 }
 
 @media screen and (max-width: 480px){
-    #news_number{
+    .news_number{
         font-size: xx-small;
         top: 0.2rem;
     }
 
-    .menu_click #news_number{
+    .menu_click .news_number{
         top: 0.8rem;
         font-size: x-small;
     }

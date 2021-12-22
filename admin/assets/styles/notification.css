@@ -1,0 +1,68 @@
+.notif_box{
+    padding: 0.3em 0.5em;
+    margin: 3px auto;
+    border: thin solid lightgrey;
+}
+
+.notif_box:hover{
+    border-color: grey;
+}
+
+.notif_box .top span{
+    color: grey;
+    font-size: small;
+    padding-right: 5px;
+    padding-left: 5px;
+    border-right: 1px solid grey;
+}
+
+.notif_box .top span.username{
+    padding-left: unset;
+}
+
+.notif_box .top span.date{
+    border-right: unset;
+}
+
+.notif_box .middle{
+    background-color: rgb(250, 250, 250);
+    border: 1px dotted #444;
+    padding: 0.2rem;
+}
+
+.notif_box .foot{
+    padding-left: unset;
+}
+
+.notif_box .foot .num_dot{
+    border: 1px solid blue;
+    padding: 1px;
+    border-radius: 50%;
+    width: 2px;
+    height: 2px;
+}
+
+.notif_box .reply_tab label[for=reply]{
+    flex:1; 
+    margin: 0;
+}
+
+.notif_box .reply_tab label[for=reply]{
+    background-color: transparent;
+}
+
+.notif_box .reply_tab label[for=reply] input{
+    border: 1px solid lightgrey;
+}
+
+.notif_box .foot .replies{
+    display: inline-flex;
+}
+
+.notif_box .reply_container .body.empty{
+    color: #233;
+}
+
+#announcement{
+    left: 0;
+}

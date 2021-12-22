@@ -4,9 +4,9 @@
      * 
      * @param int $id This variable will take the user id for extraction
      * 
-     * @return array The function returns an array of results
+     * @return array|string The function returns an array of results
      */
-    function getUserDetails($id){
+    function getUserDetails($id):array|string{
         global $connect;
 
         $sql = "SELECT * FROM admins_table WHERE user_id=$id";
@@ -28,7 +28,7 @@
      * 
      * @return string The title of the role is retrieved
      */
-    function getRole($role_id){
+    function getRole($role_id):string{
         global $connect;
 
         $sql = "SELECT title FROM roles WHERE id=$role_id" or die($connect->error);
@@ -55,7 +55,7 @@
      * 
      * @return string This function return the directory of the image stored
      */
-    function getImageDirectory(string $image_input_name, string $local_storage_directory, string $default_image_path = ""){
+    function getImageDirectory(string $image_input_name, string $local_storage_directory, string $default_image_path = ""):string{
         if(isset($_FILES[$image_input_name]) && $_FILES[$image_input_name]["tmp_name"] != null){
             //get a local directory
             $image_directory = $local_storage_directory;
@@ -140,7 +140,7 @@
      * 
      * @return string The return value is the destination of the compressed image
      */
-    function compress($source, $destination, $quality) {
+    function compress($source, $destination, $quality):string {
 
         $info = getimagesize($source);
     
@@ -167,7 +167,7 @@
      * 
      * @return string This function return the directory of the file stored
      */
-    function getFileDirectory(string $file_input_name, string $local_storage_directory){
+    function getFileDirectory(string $file_input_name, string $local_storage_directory):string{
         if(isset($_FILES[$file_input_name]) && $_FILES[$file_input_name]["tmp_name"] != null){
             //get a local directory
             $base_directory = $local_storage_directory;
@@ -289,5 +289,97 @@
         }else{
             return $row[0];
         }
+    }
+
+    /**
+     * The purpose of this function is to allow number of details to be found for notifications
+     * 
+     * @param string $audience This is the receives the kind of audience to reveal. It is defaulted as all
+     * @param string $type This is the variable for taking the type of notification to count. It is defaulted as all
+     * @param boolean $read This is for checking if user is requesting user read or unread messages
+     *
+     *  @return int returns total number of notifications requested
+     */
+    function notificationCounter($audience = "all", $type = "all", $read = 0):int{
+        global $connect;
+
+        //variables that will be returned
+        $total = 0;
+
+        //get username
+        if(isset($_SESSION['user_login_id'])){
+            $user = getUserDetails($_SESSION['user_login_id']);
+            $username = $user["username"];
+            $school_id = $user["school_id"];
+            $role = $user["role"];
+            
+            $sql = "SELECT ID 
+                    FROM notification
+                    WHERE ID > 0";
+
+            if($audience != "all" && $type != "all"){
+                $sql .= " AND Audience LIKE '%$audience%'
+                        AND Notification_type = '$type'";
+            }elseif($audience != "all" && $type == "all"){
+                $sql .= " AND Audience LIKE '%$audience%'";
+            }elseif($audience == "all" && $type != "all"){
+                $sql .= " AND Notification_type = '$type'";
+            }
+            
+            if($read == false){
+                if($audience != "all" || $type != "all"){
+                    $sql .= " AND Read_by NOT LIKE '%$username%'";
+                }else{
+                    $sql .= " WHERE Read_by NOT LIKE '%$username%'";
+                }
+            }
+
+            //filter by school
+            if(!empty($school_id)){
+                $sql .= " AND School_id = $school_id";
+            }
+
+            echo $sql;
+
+            //generate total number
+            // $res = $connect->query($sql);
+
+            // $total = $res->num_rows;
+        }
+        
+        return $total;
+    }
+
+    /**
+     * The purpose of this function is to allow number of details to be found for replies
+     * 
+     * @param string $comment_id This is the receives the id of the current comment box
+     * @param string $type This is the variable for taking the type of notification to count. It is defaulted as notice
+     * 
+     * @return int returns total number of notifications requested
+     */
+    function replyCounter($comment_id):int{
+        global $connect;
+
+        //variables that will be returned
+        $total = 0;
+
+        //get username
+        if(isset($_SESSION['user_login_id'])){
+            $user = getUserDetails($_SESSION['user_login_id']);
+            $user = $user["username"];
+            $school_id = $user["school_id"];
+
+            $sql = "SELECT ID 
+                    FROM reply
+                    WHERE Comment_id = '$comment_id'";
+
+            //generate total number
+            $res = $connect->query($sql);
+
+            $total = $res->num_rows;
+        }
+        
+        return $total;
     }
 ?>

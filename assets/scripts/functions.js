@@ -25,7 +25,7 @@
      circleColor: "",
  }){
     //initialize values with default
-    if(element["size"] == null){
+    if(element["size"] == null || element["size"] == ""){
         wide = $(window).width();
 
         if(wide < 480){
@@ -37,27 +37,27 @@
         }
     }
 
-    if(element["animation"] == null){
+    if(element["animation"] == null || element["animation"] ==""){
         element["animation"] = "anim-swing";
     }
 
-    if(element["display"] == null){
+    if(element["display"] == null || element["display"] ==""){
         element["display"] = "semi-round";
     }
 
-    if(element["span1"] == null){
+    if(element["span1"] == null || element["span1"] ==""){
         element["span1"] = "red";
     }
 
-    if(element["span2"] == null){
+    if(element["span2"] == null || element["span2"] ==""){
         element["span2"] = "yellow";
     }
 
-    if(element["span3"] == null){
+    if(element["span3"] == null || element["span3"] ==""){
         element["span3"] = "green";
     }
 
-    if(element["span4"] == null){
+    if(element["span4"] == null || element["span4"] ==""){
         element["span4"] = "teal";
     }
 
@@ -67,7 +67,7 @@
         fullClass = "";
     }
 
-    if(element["circleColor"] == null){
+    if(element["circleColor"] == null || element["circleColor"] ==""){
         element["circleColor"] = "dark";
     }
 
@@ -313,7 +313,7 @@ function fileUpload(file_element, form_element, submit_element){
     formData.append(file_name, file);
 
     //append submit if not found
-    if(!$(form_element).serialize().includes("submit=")){
+    if(!$(form_element).serialize().includes("&submit=")){
         formData.append("submit", submit_value + "_ajax");
     }
 
@@ -328,13 +328,105 @@ function fileUpload(file_element, form_element, submit_element){
         async: false,
         contentType: false,
         processData: false,
+        beforeSend: function(){
+            message = loadDisplay({size: "small"});
+            type = "load";
+            time = 0;
 
+            messageBoxTimeout(form_element.prop("name"), message, type, time);
+        },
         success: function(text){
             if(text == "success" || text.includes("success")){
                 response = true;
             }else{
                 response = text;
             }
+        },
+        error: function(){
+            message = "Please check your internet connection and try again";
+            type = "error";
+
+            messageBoxTimeout(form_element.prop("name"), message, type);
+        }
+    })
+
+    return response;
+}
+
+/**
+ * This function will be used to send textual information from forms
+ * 
+ * @param {any} form_element This takes the form element object
+ * @param {any} submit_element This takes the submit element of the form
+ * 
+ * @return {boolean|string} returns a boolean value or a string
+ */
+function formSubmit(form_element, submit_element){
+    // formData = new FormData();
+
+    //submit value
+    submit = $(submit_element).val();
+
+    //strip form data into array form and attain total data
+    form_data = $(form_element).serializeArray();
+    split_lenght = form_data.length;
+
+    //variable to hold all user data
+    formData = "";
+
+    //loop and fill form data
+    counter = 0;
+    while(counter < split_lenght){
+        //grab each array data
+        new_data = form_data[counter];
+
+        key = new_data["name"];
+        value = new_data["value"];
+
+        //append to form data
+        if(formData != ""){
+            formData += "&" + key + "=" + value;
+        }else{
+            formData = key + "=" + value;
+        }
+
+        //move to next data
+        counter++;
+    }
+
+    //append submit if not found
+    if(!$(form_element).serialize().includes("&submit=")){
+        formData += "&submit=" + submit + "_ajax";
+    }
+
+    response = null;
+    
+    $.ajax({
+        url: $(form_element).attr("action"),
+        data: formData,
+        method: "post",
+        dataType: "text",
+        cache: false,
+        async: false,
+        beforeSend: function(){
+            message = loadDisplay({size: "small"});
+            type = "load";
+            time = 0;
+
+            messageBoxTimeout(form_element.prop("name"), message, type, time);
+        },
+        success: function(text){
+            if(text == "success" || text.includes("success")){
+                response = true;
+            }else{
+                response = text;
+            }
+        },
+        error: function(){
+            message = "Please check your internet connection and try again";
+            type = "error";
+
+            messageBoxTimeout(form_element.prop("name"), message, type);
         }
     })
 

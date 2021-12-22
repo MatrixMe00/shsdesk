@@ -155,6 +155,21 @@
                 echo "update-error";
             }
 
+        }elseif($submit == "make_announcement" || $submit == "make_announcement_ajax"){
+            //retrieve needed data
+            $title = $_REQUEST["title"];
+            $message = htmlentities($_REQUEST["message"]);
+            $audience = $_REQUEST["audience"];
+
+            if($audience == "Others" && isset($_REQUEST["custom_audience"])){
+                $audience = $_REQUEST["custom_audience"];
+            }else{
+                echo "no-custom-audience";
+                exit(1);
+            }
+            $notification_type = $_REQUEST["notification_type"];
+            $title = $_REQUEST["title"];
+            $title = $_REQUEST["title"];
         }
     }else{
         echo "no-submission";
