@@ -277,11 +277,12 @@ function admissionFormButtonChange()
  * @param {string} file_element This takes the element name of the file
  * @param {string} form_element This takes a specified form element
  * @param {string} submit_element This takes the name of the submit button
+ * @param {boolean} messageBox This tests if there is a message box
  * 
  * @return {boolean|string} Returns a boolean value or an error message
  */
 
-function fileUpload(file_element, form_element, submit_element){
+function fileUpload(file_element, form_element, submit_element, messageBox = true){
     formData = new FormData();
 
     //preparing file and submit values
@@ -329,11 +330,13 @@ function fileUpload(file_element, form_element, submit_element){
         contentType: false,
         processData: false,
         beforeSend: function(){
-            message = loadDisplay({size: "small"});
-            type = "load";
-            time = 0;
+            if(messageBox){
+                message = loadDisplay({size: "small"});
+                type = "load";
+                time = 0;
 
-            messageBoxTimeout(form_element.prop("name"), message, type, time);
+                messageBoxTimeout(form_element.prop("name"), message, type, time);
+            }            
         },
         success: function(text){
             if(text == "success" || text.includes("success")){
@@ -358,10 +361,11 @@ function fileUpload(file_element, form_element, submit_element){
  * 
  * @param {any} form_element This takes the form element object
  * @param {any} submit_element This takes the submit element of the form
+ * @param {boolean} messageBox This tests if there is a message box
  * 
  * @return {boolean|string} returns a boolean value or a string
  */
-function formSubmit(form_element, submit_element){
+function formSubmit(form_element, submit_element, messageBox = true){
     // formData = new FormData();
 
     //submit value
@@ -409,11 +413,13 @@ function formSubmit(form_element, submit_element){
         cache: false,
         async: false,
         beforeSend: function(){
-            message = loadDisplay({size: "small"});
-            type = "load";
-            time = 0;
+            if(messageBox){
+                message = loadDisplay({size: "small"});
+                type = "load";
+                time = 0;
 
-            messageBoxTimeout(form_element.prop("name"), message, type, time);
+                messageBoxTimeout(form_element.prop("name"), message, type, time);
+            }
         },
         success: function(text){
             if(text == "success" || text.includes("success")){

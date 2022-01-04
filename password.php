@@ -10,6 +10,7 @@
     <script src="assets/scripts/jquery/uncompressed_jquery.js"></script>
     <script src="assets/scripts/angular/angular.js"></script>
     <script src="assets/scripts/index.js"></script>
+    <script src="assets/scripts/functions.js"></script>
 
     <!--Styles-->
     <link rel="stylesheet" href="assets/styles/general.css">
@@ -146,7 +147,13 @@
                 dataType: "html",
                 cache: false,
                 beforeSend: function(){
-                    messageBoxTimeout("passwordForm",loadDisplay({span1: "gray", span2: "gray", span3: "gray", span4: "gray"}), "load", 0);
+                    messageBoxTimeout("passwordForm",loadDisplay({
+                        span1: "gray", 
+                        span2: "gray", 
+                        span3: "gray", 
+                        span4: "gray",
+                        size: "vsmall"
+                    }), "load", 0);
                 },
                 success: function(data){
                     if(data.includes("success")){
@@ -163,6 +170,9 @@
                 },
                 complete: function(){
                     $("button[name=submit]").html("Submit");
+
+                    //hide the message box
+                    $("#message_box").removeClass("load").addClass("no_disp");
                 },
                 error: function(){
                     messageBoxTimeout("passwordForm","Error communicating with server", "error", 5);

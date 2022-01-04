@@ -230,11 +230,11 @@
             }
 
             //update the cssps table that the student has enroled
-            $sql = "UPDATE TABLE cssps SET enroled = 1 WHERE indexNumber = '$ad_index'";
+            $sql = "UPDATE cssps SET enroled = 1 WHERE indexNumber = '$ad_index'";
             $result = $connect->query($sql);
 
             //update the transaction table the transaction has been used
-            $sql = "UPDATE TABLE transaction SET expired = 1 WHERE transactionID='".$_POST["ad_transaction_id"]."'";
+            $sql = "UPDATE transaction SET expired = 1 WHERE transactionID='".$_POST["ad_transaction_id"]."'";
             $result->$connect->query($sql);
         }elseif($submit === "send_contact"){
             $fullname = mysqli_real_escape_string($connect, $_POST['fullname']);

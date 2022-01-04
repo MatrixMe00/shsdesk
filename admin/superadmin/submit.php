@@ -117,12 +117,14 @@
                 //execute command
                 if($result->execute()){
                     //take previous reference and remove any additives
-                    $reference = explode("?",$_SERVER["HTTP_REFERER"]);
-                    $reference = $reference[0];
+                    if($submit == "document_upload"){
+                        $reference = explode("?",$_SERVER["HTTP_REFERER"]);
+                        $reference = $reference[0];
 
-                    header("location:$reference?nav_point=Index");
-
-                    echo "success";
+                        header("location:$reference?nav_point=Index");
+                    }else{
+                        echo "success";
+                    }                    
                 }else{
                     echo "error";
                 }
@@ -150,7 +152,15 @@
             
             //responses
             if($connect->query($sql)){
-                echo "update-success";
+                if($submit == "yes_no_submit"){
+                    //redirect to previous page
+                    $location = $_SERVER["HTTP_REFERER"];
+
+                    header("location: $location");
+                }else{
+                    echo "update-success";
+                }
+                
             }else{
                 echo "update-error";
             }
@@ -160,16 +170,113 @@
             $title = $_REQUEST["title"];
             $message = htmlentities($_REQUEST["message"]);
             $audience = $_REQUEST["audience"];
+            $notification_type = $_REQUEST["notification_type"];
 
-            if($audience == "Others" && isset($_REQUEST["custom_audience"])){
-                $audience = $_REQUEST["custom_audience"];
+            echo $audience;
+
+            //get details from session
+            if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] != null){
+                $school_id = $_REQUEST["school_id"];
+                $sender_id = $user_id;
+                $item_read = true;
+                $read_by = $user_username;
             }else{
-                echo "no-custom-audience";
+                echo "You are not logged in";
                 exit(1);
             }
-            $notification_type = $_REQUEST["notification_type"];
-            $title = $_REQUEST["title"];
-            $title = $_REQUEST["title"];
+
+            if($title == "" || $title == null || empty($title)){
+                echo "no-title";
+                exit(1);
+            }elseif($message == "" || $message == null || empty($message)){
+                echo "no-message";
+                exit(1);
+            }elseif($notification_type == "" || $notification_type == null || empty($notification_type)){
+                echo "notification-type-not-set";
+            }
+            
+            if($audience == "Others" && !empty($_REQUEST["custom_audience"])){
+                $audience = $_REQUEST["custom_audience"];
+            }elseif($audience == "Others" && empty($_REQUEST["custom_audience"])){
+                echo "no-custom-audience";
+                exit(1);
+            }elseif($audience != "All" && $audience != "Others"){
+                echo "no-audience-provided";
+                exit(1);
+            }
+
+            $sql = "INSERT INTO notification (Sender_id, Audience, School_id, Notification_type, Title, Description, Item_Read, Read_by) VALUES 
+                    (?,?,?,?,?,?,?,?)" or die("Connection error");
+            $res = $connect->prepare($sql);
+            $res->bind_param("isisssis",$sender_id,$audience,$school_id,$notification_type,$title,$message,$item_read,$read_by);
+            
+            if($res->execute()){
+                if($submit == "make_announcement"){
+                    //redirect to previous page
+                    $location = $_SERVER["HTTP_REFERER"];
+
+                    header("location: $location");
+                }else{
+                    echo "success";
+                }                
+            }else{
+                echo "error making announcement";
+            }
+        }elseif($submit == "btn_reply" || $submit == "btn_reply_ajax"){
+            $reply = $_REQUEST["reply"];
+            $comment_id = $_REQUEST["comment_id"];
+            $user_id = $_REQUEST["user_id"];
+            $school_id = $_REQUEST["school_id"];
+            $recepient_id = $_REQUEST["recepient_id"];
+            $admin_read = true;
+            $read_by = $user_username;
+
+            //filter out any error
+            if(empty($reply)){
+                echo "no-reply";
+                exit(1);
+            }elseif(strlen($reply) < 2){
+                echo "reply-short";
+                exit(1);
+            }elseif(empty($comment_id)){
+                echo "no-comment-id";
+                exit(1);
+            }elseif(empty($user_id) || $user_id < 1){
+                echo "no-user-id";
+                exit(1);
+            }elseif(empty($recepient_id) || $recepient_id < 1){
+                echo "no-recepient-id";
+                exit(1);
+            }else{
+                $sql = "INSERT INTO reply (Sender_id, Recipient_id, Comment_id, Message, AdminRead, Read_by) VALUES 
+                        (?,?,?,?,?,?)";
+                $res = $connect->prepare($sql);
+                $res->bind_param("iiisis", $user_id, $recepient_id, $comment_id, $reply, $admin_read, $read_by);
+
+                if($res->execute()){
+                    $username = getUserDetails($user_id);
+                    $username1 = getUserDetails($recepient_id);
+
+                    $row = array(
+                        "status" => "success",
+                        "username" => $username["username"],
+                        "username1" => $username1["username"]
+                    );
+
+                    if($submit == "btn_reply"){
+                        //redirect to previous page
+                        $location = $_SERVER["HTTP_REFERER"];
+
+                        header("location: $location");
+                    }
+                }else{
+                    $row = array(
+                        "status" => "error"
+                    );
+                }
+                
+                echo json_encode($row);
+            }
         }
     }else{
         echo "no-submission";

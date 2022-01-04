@@ -104,6 +104,8 @@ $("#yes_no_form").submit(function(){
 })
 
 $("#logout").click(function(){
-    // location.href = "../logout.php";
-    location.href = "../";
+    var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[1];
+    location.href = url + "/admin/logout.php";
+    // location.href = "../";
+    // alert(url);
 })

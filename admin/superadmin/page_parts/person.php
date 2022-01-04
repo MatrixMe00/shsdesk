@@ -4,10 +4,8 @@
         <h3>Users on System</h3>
     </div>
     <?php 
-        $result = $connect->query("SELECT a.fullname, a.username, a.role, a.adYear, s.schoolName, r.title AS roleTitle 
-        FROM admins_table a JOIN schools s
-        ON a.school_id = s.id
-        JOIN roles r
+        $result = $connect->query("SELECT a.*, r.title AS roleTitle 
+        FROM admins_table a JOIN roles r
         ON a.role = r.id 
         WHERE r.access = TRUE") or die($connect->error);
 
@@ -20,9 +18,11 @@
                 <h4><?php echo $row["fullname"] ?> (<span class="username"><?php echo $row["username"] ?></span>)</h4>
             </div>
             <div class="desc flex flex-wrap">
-                <?php if($row["schoolName"] != null){ ?>
+                <?php if($row["school_id"] != null){ ?>
                 <div class="school_name">
-                    <span><?php echo $row["schoolName"] ?></span>
+                    <span>
+                        <?php echo getSchoolDetail($row["school_id"])[0] ?>
+                    </span>
                 </div>
                 <?php } ?>
                 <div class="role">
@@ -33,10 +33,14 @@
                 </div>
             </div>
             <div class="foot">
-                <span class="item-event">Edit</span>
-                <span class="item-event">Activate</span>
-                <span class="item-event">Delete</span>
-                <span class="item-event">Promote</span>
+                <?php if($user_details["role"] == 1 || $row["user_id"] == $user_id){?>
+                <span class="item-event" data-user-id="<?php echo $row["user_id"]?>">Edit</span>
+                <?php }?>
+                <span class="item-event" data-user-id="<?php echo $row["user_id"]?>">Activate</span>
+                <span class="item-event" data-user-id="<?php echo $row["user_id"]?>">Delete</span>
+                <?php if($user_details["role"] == 1){?>
+                <span class="item-event" data-user-id="<?php echo $row["user_id"]?>">Promote</span>
+                <?php }?>
             </div>
         </div>
         <?php } ?>

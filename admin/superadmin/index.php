@@ -1,8 +1,21 @@
-<?php include_once("../../includes/session.php")?>
+<?php
+    //depending on where the page is being called from
+    $this_url = $_SERVER["REQUEST_URI"];
+    $this_url = explode("/", $this_url);
+    $this_url = $this_url[count($this_url) - 2];
+    
+    if($this_url == "admin"){
+        include_once("../includes/session.php");
+    }else{
+        include_once("../../includes/session.php");
+    }
+?>
+
+<?php if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php @include_once($rootPath.'/admin/generalHead.php')?>
+    <?php require_once($rootPath.'/admin/generalHead.php')?>
     <title>Welcome SuperAdmin</title>
 </head>
 
@@ -41,7 +54,7 @@
 
                             echo $greet;
                             ?>
-                        </span>, Admin
+                        </span>, <?php echo $user_username ?>
                         <div id="logout">
                             <span>Logout</span>
                         </div>
@@ -56,7 +69,7 @@
                 <div class="head active">
                     <span>Dashboard</span>
                 </div>
-                <div class="item active" name="Dashboard" title="Dashboard" data-url="page_parts/dashboard.php">
+                <div class="item active" name="Dashboard" title="Dashboard" data-url="<?php echo $url?>/admin/superadmin/page_parts/dashboard.php">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/speedometer-outline.svg" alt="Dashboard" />
                     </div>
@@ -64,7 +77,7 @@
                         <span>Dashboard</span>
                     </div>
                 </div>
-                <div class="item relative" name="Notification" title="Notification" data-url="page_parts/notification.php">
+                <div class="item relative" name="Notification" title="Notification" data-url="<?php echo $url?>/admin/superadmin/page_parts/notification.php">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/notifications-circle-outline.svg" alt="Dashboard" />
                     </div>
@@ -73,10 +86,28 @@
                     </div>
                     <?php 
                         //count notifications
-                        if(notificationCounter() > 0){
+                        $total = 0;
+
+                        //unread notifications
+                        $result = $connect->query("SELECT DISTINCT n.*
+                            FROM notification n JOIN reply r
+                            ON n.ID = r.Comment_ID
+                            WHERE n.Read_by NOT LIKE '$user_username'");
+                        $total += $result->num_rows;
+
+                        //new replies
+                        $result = $connect->query("SELECT DISTINCT n.* 
+                            FROM notification n JOIN reply r 
+                            ON n.ID = r.Comment_id 
+                            WHERE r.Read_by NOT LIKE'$user_username'
+                            AND n.Read_by LIKE '$user_username'
+                            ORDER BY ID DESC");
+                        $total += $result->num_rows;
+
+                        if($total > 0){
                     ?>
                     <div class="news_number absolute danger flex flex-center-align flex-center-content">
-                        <span><?php echo notificationCounter();?></span>
+                        <span><?php echo $total;?></span>
                     </div>
                     <?php }?>
                 </div>
@@ -85,7 +116,7 @@
                 <div class="head">
                     <span>Manage</span>
                 </div>
-                <div class="item" data-url="page_parts/schools.php" name="Schools" title="Schools List">
+                <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/schools.php" name="Schools" title="Schools List">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/city hall.png" alt="Schools" />
                     </div>
@@ -93,21 +124,12 @@
                         <span>Schools List</span>
                     </div>
                 </div>
-                <!-- <div class="item" data-url="page_parts/enrol.php" name="Enrol" title="Enrolled Students">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/enter.png" alt="Enrol" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Enrolled Students</span>
-                    </div>
-                </div>
-                 -->
             </div>
             <div class="menu">
                 <div class="head">
                     <span>Page Setups</span>
                 </div>
-                <div class="item" data-url="page_parts/home.php" name="Index" title="Home Page">
+                <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/home.php" name="Index" title="Home Page">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/home.png" alt="Home" />
                     </div>
@@ -115,7 +137,7 @@
                         <span>Home Page</span>
                     </div>
                 </div>
-                <div class="item" data-url="page_parts/about.php" name="about" title="About Page">
+                <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/about.php" name="about" title="About Page">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="about" />
                     </div>
@@ -123,7 +145,7 @@
                         <span>About Page</span>
                     </div>
                 </div>
-                <div class="item" data-url="page_parts/faq.php" name="faq" title="Frequently Asked Questions">
+                <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/faq.php" name="faq" title="Frequently Asked Questions">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/information-circle-outline.svg" alt="faq" />
                     </div>
@@ -133,10 +155,10 @@
                 </div>
             </div>
             <div class="menu">
-                <div class="head active">
+                <div class="head">
                     <span>Documents</span>
                 </div>
-                <div class="item active" name="Request" title="Document Requests" data-url="page_parts/request.php">
+                <div class="item" name="Request" title="Document Requests" data-url="<?php echo $url?>/admin/superadmin/page_parts/request.php">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/hand-right-outline.svg" alt="request" />
                     </div>
@@ -144,7 +166,7 @@
                         <span>Document Requests</span>
                     </div>
                 </div>
-                <div class="item active" name="Report" title="Admin System Reports" data-url="page_parts/report.php">
+                <div class="item" name="Report" title="Admin System Reports" data-url="<?php echo $url?>/admin/superadmin/page_parts/report.php">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="request" />
                     </div>
@@ -157,7 +179,7 @@
                 <div class="head">
                     <span>Settings</span>
                 </div>
-                <div class="item" name="account" title="Personal Account" data-url="page_parts/person.php">
+                <div class="item" name="account" title="Personal Account" data-url="<?php echo $url?>/admin/superadmin/page_parts/person.php">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="" />
                     </div>
@@ -165,7 +187,7 @@
                         <span>Personal Account</span>
                     </div>
                 </div>
-                <div class="item" name="password" title="Change Password" data-url="page_parts/change_password.php">
+                <div class="item" name="password" title="Change Password" data-url="<?php echo $url?>/admin/superadmin/page_parts/change_password.php">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/key-outline.svg" alt="" />
                     </div>
@@ -173,15 +195,7 @@
                         <span>Change Password</span>
                     </div>
                 </div>
-                <!-- <div class="item" data-url="page_parts/admission.php" name="admission" title="Admission Details">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Admission Details</span>
-                    </div>
-                </div>
-                <div class="item" data-url="page_parts/exeat.php" name="exeat" title="Exeat">
+                <!-- <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/exeat.php" name="exeat" title="Exeat">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons" alt="exeat">
                     </div>
@@ -200,11 +214,11 @@
     </div>
 
     <div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-        <?php @include_once("page_parts/newStudent.php")?>
+        <?php @include_once("<?php echo $url?>/admin/superadmin/page_parts/newStudent.php")?>
     </div>
 
     <div id="modal_3" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-        <?php include_once("page_parts/add_house.php")?>
+        <?php include_once("<?php echo $url?>/admin/superadmin/page_parts/add_house.php")?>
     </div>
 
     <div id="modal_yes_no" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
@@ -213,7 +227,7 @@
                 <p id="warning_content">Do you want to delete?</p>
             </div>
 
-            <form action="submit.php" class="no_disp" name="yes_no_form" id="yes_no_form">
+            <form action="<?php echo $url?>/admin/superadmin/submit.php" class="no_disp" name="yes_no_form" id="yes_no_form">
                 <input type="hidden" name="sid">
                 <input type="hidden" name="mode">
                 <input type="hidden" name="table">
@@ -243,7 +257,14 @@
                 ?>";
             $("div[name=" + nav_point + "]").click();
         })
-        //$("#rhs .body").load("page_parts/change_password.html");
+        //$("#rhs .body").load("<?php echo $url?>/admin/superadmin/page_parts/change_password.html");
     </script>
 </body>
 </html>
+<?php 
+        //close connection
+        $connect->close();
+    }else{
+    header("location: $url/admin");
+}
+?>

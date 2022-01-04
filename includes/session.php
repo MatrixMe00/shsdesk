@@ -35,9 +35,8 @@ session_start();
 
 date_default_timezone_set("Africa/Accra");
 
-$_SESSION['user_login_id'] = 4;
 //create a session variable
-if(isset($_SESSION['user_login_id'])){
+if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     $user_details = getUserDetails($_SESSION['user_login_id']);
 
     //retrieve all details

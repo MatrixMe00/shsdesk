@@ -31,7 +31,9 @@
     function getRole($role_id):string{
         global $connect;
 
-        $sql = "SELECT title FROM roles WHERE id=$role_id" or die($connect->error);
+        $sql = "SELECT title 
+            FROM roles 
+            WHERE id=$role_id" or die($connect->error);
         $res = $connect->query($sql);
 
         if($res->num_rows > 0){
@@ -235,8 +237,12 @@
      */
     function checkNewUser($user_id):bool {
         global $connect;
+        
+        $sql = "SELECT new_login 
+            FROM admins_table 
+            WHERE user_id=$user_id" or die($connect->error);
 
-        $res = $connect->query("SELECT new_login FROM admins_table WHERE user_id=$user_id");
+        $res = $connect->query($sql);
 
         if($res->num_rows > 0){
             $row = $res->fetch_array();
@@ -282,12 +288,13 @@
         }
 
         $result = $connect->query($sql);
-        $row = $result->fetch_array();
 
-        if($row){
+        if($result->num_rows > 0){
+            $row = $result->fetch_array();
+
             return $row;
         }else{
-            return $row[0];
+            return "error";
         }
     }
 
@@ -310,7 +317,7 @@
         if(isset($_SESSION['user_login_id'])){
             $user = getUserDetails($_SESSION['user_login_id']);
             $username = $user["username"];
-            $school_id = $user["school_id"];
+            // $school_id = $user["school_id"];
             $role = $user["role"];
             
             $sql = "SELECT ID 
@@ -327,24 +334,23 @@
             }
             
             if($read == false){
-                if($audience != "all" || $type != "all"){
-                    $sql .= " AND Read_by NOT LIKE '%$username%'";
-                }else{
-                    $sql .= " WHERE Read_by NOT LIKE '%$username%'";
+                $sql .= " AND Read_by NOT LIKE '$username'";
+
+                // //filter by school
+                // if(!empty($school_id)){
+                //     $sql .= " AND School_id = $school_id";
+                // }
+            }else{
+                if($role > 2){
+                    $sql .= " AND Read_by LIKE '$username'";
                 }
+                
             }
-
-            //filter by school
-            if(!empty($school_id)){
-                $sql .= " AND School_id = $school_id";
-            }
-
-            echo $sql;
 
             //generate total number
-            // $res = $connect->query($sql);
+            $res = $connect->query($sql);
 
-            // $total = $res->num_rows;
+            $total = $res->num_rows;
         }
         
         return $total;
@@ -353,12 +359,11 @@
     /**
      * The purpose of this function is to allow number of details to be found for replies
      * 
-     * @param string $comment_id This is the receives the id of the current comment box
-     * @param string $type This is the variable for taking the type of notification to count. It is defaulted as notice
+     * @param int $comment_id This is the receives the id of the current comment box
      * 
-     * @return int returns total number of notifications requested
+     * @return int returns total number of replies to a notification
      */
-    function replyCounter($comment_id):int{
+    function replyCounter($comment_id = 0, $read = null):int{
         global $connect;
 
         //variables that will be returned
@@ -367,12 +372,27 @@
         //get username
         if(isset($_SESSION['user_login_id'])){
             $user = getUserDetails($_SESSION['user_login_id']);
-            $user = $user["username"];
-            $school_id = $user["school_id"];
+            $username = $user["username"];
+            $role = $user["role"];
 
-            $sql = "SELECT ID 
-                    FROM reply
-                    WHERE Comment_id = '$comment_id'";
+            if($comment_id == 0){
+                //main purpose is for counting
+                $sql = "SELECT ID
+                        FROM reply
+                        WHERE Read_by NOT LIKE '$username'";
+                
+                //check if user is a superadmin
+                // if($role < 2){
+                //     $sql .= " AND AdminRead = FALSE";
+                // }else{
+                //     $sql .= " AND Read_by NOT LIKE '$username'";
+                // }
+            }else{
+                $sql = "SELECT ID 
+                FROM reply
+                WHERE Comment_id = '$comment_id'";
+            }
+            
 
             //generate total number
             $res = $connect->query($sql);

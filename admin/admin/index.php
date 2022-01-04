@@ -1,6 +1,16 @@
-<?php include_once("../../includes/session.php");
+<?php 
+    //depending on where the page is being called from
+    $this_url = $_SERVER["REQUEST_URI"];
+    $this_url = explode("/", $this_url);
+    $this_url = $this_url[count($this_url) - 2];
+    
+    if($this_url == "admin"){
+        include_once("../includes/session.php");
+    }else{
+        include_once("../../includes/session.php");
+    }
 
-if(!isset($_SESSION['user_login_id'])){
+if(isset($_SESSION['user_login_id'])){
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,11 +22,11 @@ if(!isset($_SESSION['user_login_id'])){
 <body ng-app="index_application">
     <?php
         //check if this is a new user
-        // if(checkNewUser(intval($_SESSION["user_login_id"])) == FALSE){
-            // require_once("page_parts/update_stat.php");
-        // }elseif(checkNewUser(intval($_SESSION["user_login_id"])) == "invalid-user"){
-        //     echo "User cannot be found! Please speak to the administrator";
-        // }else{
+        if(checkNewUser($_SESSION["user_login_id"]) == TRUE){
+            require_once($rootPath."/admin/admin/page_parts/update_stat.php");
+        }elseif(checkNewUser($_SESSION["user_login_id"]) == "invalid-user"){
+            echo "User cannot be found! Please speak to the administrator";
+        }else{
     ?>
     <nav>
         <div id="nav_holder">
@@ -52,7 +62,7 @@ if(!isset($_SESSION['user_login_id'])){
 
                             echo $greet;
                             ?>
-                        </span>, Admin
+                        </span>, <?php echo $user_username ?>
                         <div id="logout">
                             <span>Logout</span>
                         </div>
@@ -67,7 +77,7 @@ if(!isset($_SESSION['user_login_id'])){
                 <div class="head active">
                     <span>Dashboard</span>
                 </div>
-                <div class="item active" name="Dashboard" title="Dashboard" data-url="page_parts/dashboard.php">
+                <div class="item active" name="Dashboard" title="Dashboard" data-url="<?php echo $url?>/admin/admin/page_parts/dashboard.php">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/speedometer-outline.svg" alt="Dashboard" />
                     </div>
@@ -75,7 +85,7 @@ if(!isset($_SESSION['user_login_id'])){
                         <span>Dashboard</span>
                     </div>
                 </div>
-                <div class="item relative" name="Notification" title="Notification" data-url="page_parts/notification.php">
+                <div class="item relative" name="Notification" title="Notification" data-url="<?php echo $url?>/admin/admin/page_parts/notification.php">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/notifications-circle-outline.svg" alt="Dashboard" />
                     </div>
@@ -84,10 +94,28 @@ if(!isset($_SESSION['user_login_id'])){
                     </div>
                     <?php 
                         //count notifications
-                        if(notificationCounter() > 0){
+                        $total = 0;
+
+                        //unread notifications
+                        $result = $connect->query("SELECT DISTINCT n.*
+                            FROM notification n JOIN reply r
+                            ON n.ID = r.Comment_ID
+                            WHERE n.Read_by NOT LIKE '$user_username'");
+                        $total += $result->num_rows;
+
+                        //new replies
+                        $result = $connect->query("SELECT DISTINCT n.* 
+                            FROM notification n JOIN reply r 
+                            ON n.ID = r.Comment_id 
+                            WHERE r.Read_by NOT LIKE'$user_username'
+                            AND n.Read_by LIKE '$user_username'
+                            ORDER BY ID DESC");
+                        $total += $result->num_rows;
+
+                        if($total > 0){
                     ?>
                     <div class="news_number absolute danger flex flex-center-align flex-center-content">
-                        <span><?php echo notificationCounter();?></span>
+                        <span><?php echo $total;?></span>
                     </div>
                     <?php }?>
                 </div>
@@ -96,7 +124,7 @@ if(!isset($_SESSION['user_login_id'])){
                 <div class="head">
                     <span>Manage</span>
                 </div>
-                <div class="item" data-url="page_parts/placement.php" name="Placement" title="Placement List">
+                <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/placement.php" name="Placement" title="Placement List">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/people-outline.svg" alt="Placement" />
                     </div>
@@ -104,7 +132,7 @@ if(!isset($_SESSION['user_login_id'])){
                         <span>Placement List</span>
                     </div>
                 </div>
-                <div class="item" data-url="page_parts/enrol.php" name="Enrol" title="Enrolled Students">
+                <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/enrol.php" name="Enrol" title="Enrolled Students">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/enter.png" alt="Enrol" />
                     </div>
@@ -112,7 +140,7 @@ if(!isset($_SESSION['user_login_id'])){
                         <span>Enrolled Students</span>
                     </div>
                 </div>
-                <div class="item" data-url="page_parts/houses.php" name="House" title="Houses/Bed Capacity">
+                <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/houses.php" name="House" title="Houses/Bed Capacity">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/bed-outline.svg" alt="Placement" />
                     </div>
@@ -125,7 +153,7 @@ if(!isset($_SESSION['user_login_id'])){
                 <div class="head">
                     <span>House Allocation</span>
                 </div>
-                <div class="item" data-url="page_parts/allocation.php" name="student" title="Student House Allocation">
+                <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/allocation.php" name="student" title="Student House Allocation">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/home-outline.svg" alt="Home" />
                     </div>
@@ -138,7 +166,7 @@ if(!isset($_SESSION['user_login_id'])){
                 <div class="head active">
                     <span>Documents</span>
                 </div>
-                <div class="item active" name="Request" title="Request Document" data-url="page_parts/request.php">
+                <div class="item active" name="Request" title="Request Document" data-url="<?php echo $url?>/admin/admin/page_parts/request.php">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/hand-right-outline.svg" alt="request" />
                     </div>
@@ -146,7 +174,7 @@ if(!isset($_SESSION['user_login_id'])){
                         <span>Request Document</span>
                     </div>
                 </div>
-                <div class="item active" name="Report" title="Make Report" data-url="page_parts/report.php">
+                <div class="item active" name="Report" title="Make Report" data-url="<?php echo $url?>/admin/admin/page_parts/report.php">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="request" />
                     </div>
@@ -159,7 +187,7 @@ if(!isset($_SESSION['user_login_id'])){
                 <div class="head">
                     <span>Settings</span>
                 </div>
-                <div class="item" name="account" title="Personal Account" data-url="page_parts/person.php">
+                <div class="item" name="account" title="Personal Account" data-url="<?php echo $url?>/admin/admin/page_parts/person.php">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="" />
                     </div>
@@ -167,7 +195,7 @@ if(!isset($_SESSION['user_login_id'])){
                         <span>Personal Account</span>
                     </div>
                 </div>
-                <div class="item" name="password" title="Change Password" data-url="page_parts/change_password.php">
+                <div class="item" name="password" title="Change Password" data-url="<?php echo $url?>/admin/admin/page_parts/change_password.php">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/key-outline.svg" alt="" />
                     </div>
@@ -175,7 +203,7 @@ if(!isset($_SESSION['user_login_id'])){
                         <span>Change Password</span>
                     </div>
                 </div>
-                <div class="item" data-url="page_parts/admission.php" name="admission" title="Admission Details">
+                <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/admission.php" name="admission" title="Admission Details">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="" />
                     </div>
@@ -183,7 +211,7 @@ if(!isset($_SESSION['user_login_id'])){
                         <span>Admission Details</span>
                     </div>
                 </div>
-                <div class="item" data-url="page_parts/exeat.php" name="exeat" title="Exeat">
+                <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/exeat.php" name="exeat" title="Exeat">
                     <div class="icon">
                         <img src="<?php echo $url?>/assets/images/icons/logout.png" alt="exeat">
                     </div>
@@ -202,11 +230,31 @@ if(!isset($_SESSION['user_login_id'])){
     </div>
 
     <div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-        <?php @include_once("page_parts/newStudent.php")?>
+        <?php @include_once("<?php echo $url?>/admin/admin/page_parts/newStudent.php")?>
     </div>
 
     <div id="modal_3" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-        <?php include_once("page_parts/add_house.php")?>
+        <?php include_once("<?php echo $url?>/admin/admin/page_parts/add_house.php")?>
+    </div>
+
+    <div id="modal_yes_no" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+        <div class="yes_no_container">
+            <div class="body">
+                <p id="warning_content">Do you want to delete?</p>
+            </div>
+
+            <form action="<?php echo $url?>/admin/admin/submit.php" class="no_disp" name="yes_no_form" id="yes_no_form">
+                <input type="hidden" name="sid">
+                <input type="hidden" name="mode">
+                <input type="hidden" name="table">
+                <input type="hidden" name="submit" value="yes_no_submit">
+            </form>
+
+            <div class="foot btn flex flex-center-content flex-center-align">
+                <button type="button" name="yes_button" class="success" onclick="$('#yes_no_form').submit()">Yes</button>
+                <button type="button" name="no_button" class="red" onclick="$('#modal_yes_no').addClass('no_disp')">No</button>
+            </div>
+        </div>
     </div>
 
     <script src="<?php echo $url?>/admin/assets/scripts/angular_index.js?v=<?php echo time()?>"></script>
@@ -225,9 +273,9 @@ if(!isset($_SESSION['user_login_id'])){
                 ?>";
             $("div[name=" + nav_point + "]").click();
         })
-        //$("#rhs .body").load("page_parts/change_password.html");
+        //$("#rhs .body").load("<?php echo $url?>/admin/admin/page_parts/change_password.html");
     </script>
-    <?php // }
+    <?php }
         //close connection
         $connect->close();
     ?>

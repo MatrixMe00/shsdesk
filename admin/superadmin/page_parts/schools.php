@@ -1,6 +1,6 @@
 <?php include_once("../../../includes/session.php")?>
 <section class="section_container">
-<div class="content" style="background-color: #007bff;">
+<div class="content primary">
         <div class="head">
             <h2>
                 <?php
@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <div class="content" style="background-color: #dc3545">
+    <div class="content danger">
         <div class="head">
             <h2>
                 <?php

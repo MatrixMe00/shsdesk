@@ -1,4 +1,16 @@
 <?php include_once("../includes/session.php");?>
+
+<?php
+    //determine the page to show
+    if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
+        //determine which page to show per user role
+        if($user_details["role"] <= 2){
+            require("superadmin/index.php");
+        }else{
+            require("admin/index.php");
+        }
+    }else{
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -136,7 +148,7 @@
                 return false;
             }else{
                 //data of form
-                dataString = $(this).serialize() + "&submit=" + $("button[name=submit]").val();
+                dataString = $(this).serialize() + "&submit=" + $("button[name=submit]").val() + "_ajax";
 
                 reload = "";
                 //perform the validation and ajax request
@@ -146,6 +158,7 @@
                     cache: false,
                     dataType: "html",
                     type: "POST",
+                    async: false,
                     beforeSend: function(){
                         message = loadDisplay();
                         message_type = "load";
@@ -153,10 +166,11 @@
                         messageBoxTimeout("loginForm",message, message_type, time);
                     },
                     success: function(html){
-                        if(html.includes("login_success")){
+                        if(html == "login_success"){
                             message_type = "success";
                             message = "Login Successful";
                             time = 0;
+                            location.href = location.href;
                         }else if(html === "password_error"){
                             message_type = "error";
                             message = "Wrong Password was entered";
@@ -169,18 +183,7 @@
                             message_type = "error";
                             message = "Could not receive response from server, please try again later";
                         }
-                        messageBoxTimeout("loginForm",message, message_type, time);
-
-                        //if login was successful, reload this page via the user role
-                        if(html === "login_success"){
-                            //reload to normal admin page
-                            location.reload("admin/");
-                        }else if(html === "admin_login_success"){
-                            //reload into super admin page
-                            location.reload("superadmin/");
-                        }else{
-                            return false;
-                        }
+                        messageBoxTimeout("loginForm",message, message_type, time);                      
                     },
                     error: function(){
                         message = "Cannot connect to server. Please try again";
@@ -192,3 +195,8 @@
     </script>
 </body>
 </html>
+<?php 
+        //close the connection
+        $connect->close();
+    } 
+?>
