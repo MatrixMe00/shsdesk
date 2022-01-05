@@ -67,6 +67,8 @@
                     message = "You cannot use the same password";
                 }else if(result == "update-error"){
                     message = "Your data could not be updated. Please try again later or contact the admin";
+                }else if(result == "cannot login"){
+                    message = "Update was unsuccessful. Contact Admin for help";
                 }
 
                 $("#pMessage").html(message);

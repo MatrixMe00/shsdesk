@@ -1,13 +1,11 @@
 <?php
     //depending on where the page is being called from
     $this_url = $_SERVER["REQUEST_URI"];
-    $this_url = explode("/", $this_url);
-    $this_url = $this_url[count($this_url) - 2];
-    
-    if($this_url == "admin"){
-        include_once("../includes/session.php");
-    }else{
+
+    if(strpos($this_url, "admin/admin/") || strpos($this_url, "admin/superadmin/")){
         include_once("../../includes/session.php");
+    }else{
+        include_once("../includes/session.php");
     }
 ?>
 

@@ -9,9 +9,21 @@
     padding: 5px;
 }
 
-#placement_search #display .title_bar{
-    background-color: #8f9;
+#placement_search .display .title_bar{
     padding: 5px 8px 5px 5px;
+    color: white;
+}
+
+#placement_search .display{
+    margin: 7px auto;
+    border: 1px solid lightgrey;
+    padding: 0.2em;
+    padding-bottom: 0.5em;
+    max-height: 55vh;
+}
+
+#placement_search .display:hover{
+    box-shadow: 0 0 2px 0 #888;
 }
 
 .title_bar .close{

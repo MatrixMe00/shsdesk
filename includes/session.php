@@ -42,7 +42,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     //retrieve all details
     $user_id = $user_details['user_id'];
     $user_username = $user_details['username'];
-    $school_id = $user_details['school_id'];
+    $user_school_id = $user_details['school_id'];
     $user_role = getRole($user_details['role']);
     $user_email = $user_details['email'];
 }else{

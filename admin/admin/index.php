@@ -1,16 +1,14 @@
 <?php 
     //depending on where the page is being called from
     $this_url = $_SERVER["REQUEST_URI"];
-    $this_url = explode("/", $this_url);
-    $this_url = $this_url[count($this_url) - 2];
-    
-    if($this_url == "admin"){
-        include_once("../includes/session.php");
-    }else{
+
+    if(strpos($this_url, "admin/admin/") || strpos($this_url, "admin/superadmin/")){
         include_once("../../includes/session.php");
+    }else{
+        include_once("../includes/session.php");
     }
 
-if(isset($_SESSION['user_login_id'])){
+if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -230,11 +228,11 @@ if(isset($_SESSION['user_login_id'])){
     </div>
 
     <div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-        <?php @include_once("<?php echo $url?>/admin/admin/page_parts/newStudent.php")?>
+        <?php @include_once($rootPath."/admin/admin/page_parts/newStudent.php")?>
     </div>
 
     <div id="modal_3" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-        <?php include_once("<?php echo $url?>/admin/admin/page_parts/add_house.php")?>
+        <?php include_once($rootPath."/admin/admin/page_parts/add_house.php")?>
     </div>
 
     <div id="modal_yes_no" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
@@ -283,6 +281,8 @@ if(isset($_SESSION['user_login_id'])){
 </html>
 <?php
     }else{
+        include_once("../../includes/session.php");
+        
         header("location: $url/admin");
     }
 ?>

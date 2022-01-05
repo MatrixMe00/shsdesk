@@ -4,7 +4,6 @@
         <div class="head">
             <h2>
                 <?php
-                    $user_school_id = 1;
                     $res = $connect->query("SELECT indexNumber 
                     FROM cssps 
                     WHERE schoolID = $user_school_id");
@@ -70,9 +69,33 @@
             </div>
         </div>
     </div>
-    <div id="display" class="">
-        <div class="title_bar flex flex-space-content flex-center-align">
+    <div class="display">
+        <div class="title_bar flex flex-space-content flex-center-align teal">
             <div id="title">Registered Students</div>
+            <div id="close">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        <div id="content">
+            <div id="search" class="form" role="form">
+                <div class="flex flex-center-align">
+                    <label for="search">
+                        <input type="search" name="search" id="search" title="Search a name or index number here" placeholder="Search by index number or name...">
+                    </label>
+                    <div class="btn">
+                        <button>Search</button>
+                    </div>
+                </div>
+            </div>
+            <div id="body" class="empty">
+                Nothing to show. Click the "Registered Students" button to refresh this box, else make a search using the search field
+            </div>
+        </div>
+    </div>
+    <div class="display">
+        <div class="title_bar flex flex-space-content flex-center-align red">
+            <div id="title">Unregistered Students</div>
             <div id="close">
                 <span></span>
                 <span></span>

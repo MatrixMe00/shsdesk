@@ -68,20 +68,21 @@
                         <img src="<?php echo $url?>/assets/images/icons/id card.png" alt="password_icon">
                     </span>
                     <input type="text" name="fullname" id="fullname" class="text_input" placeholder="Full Name" autocomplete="off"
-                    title="Enter your full name">
+                    title="Enter your full name" value="<?php echo $user_details["fullname"] ?>">
                 </label>
                 <label for="email">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/mail-outline.svg" alt="password_icon">
                     </span>
                     <input type="email" name="email" id="email" class="text_input" placeholder="Email Address" autocomplete="off"
-                    title="Provide your email address">
+                    title="Provide your email address" value="<?php echo $user_details["email"] ?>">
                 </label>
                 <label for="contact">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="password_icon">
                     </span>
-                    <input type="tel" name="contact" id="contact" class="text_input" placeholder="Provide your contact" autocomplete="off">
+                    <input type="tel" name="contact" id="contact" class="text_input" placeholder="Provide your contact" autocomplete="off"
+                    value="<?php echo $user_details["fullname"] ?>">
                 </label>
                 <label for="username">
                     <span class="label_image">

@@ -1,4 +1,4 @@
-<form action="" name="addHouseForm" method="post">
+<form action="<?php echo $url?>/admin/admin/submit.php" method="POSTname="addHouseForm" method="post">
     <div class="head">
         <h2>Add A New House</h2>
     </div>
@@ -44,8 +44,19 @@
                 <button type="submit" name="submit" value="addHouse">Add House</button>
             </label>
             <label for="cancel" class="btn">
-                <button name="cancel" value="cancel" onclick="$(this).parents('#modal_3').addClass('no_disp')">Cancel</button>
+                <button type="reset" name="cancel" value="cancel" onclick="$(this).parents('#modal_3').addClass('no_disp')">Cancel</button>
             </label>
         </div>
     </div>
 </form>
+
+<script>
+    $("form[name=addHouseForm]").submit(function(e){
+        e.preventDefault();
+
+        dataString = $(this).serialize() + "&submit=" + $("button[name=submit]").val() + "_ajax";
+        // formSubmit($(this), $("form[name=addHouseForm] button[name=submit]"));
+
+        alert(dataString);
+    })
+</script>

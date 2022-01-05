@@ -142,13 +142,13 @@
             $default_password = MD5("Password@1");
 
             //create a usable login session for user
-            $sql = "INSERT INTO admins_table (email, password, school_id, role) VALUES (?,?,?,?)";
+            $sql = "INSERT INTO admins_table (email, password, school_id, contact, role) VALUES (?,?,?,?,?)";
 
             //prepare the insert statement
             $res = $connect->prepare($sql);
 
             //bind necessary parameters
-            $res->bind_param('ssii',$school_email, $default_password,$row["id"], 2);
+            $res->bind_param('ssisi',$school_email, $default_password,$row["id"], $technical_phone, 3);
 
             if($res->execute){
                 echo "<p>Your data has been recorded successfully!</p>
@@ -164,6 +164,6 @@
             echo "<p>An unexpected error occured! Please go back and resubmit the form again</p>";
         }
     }else{
-        echo "<p>An unexpected error occured! Please go back and make a submission";
+        echo "<p>Unidentified submission made! Please go back and make a submission";
     }
 ?>

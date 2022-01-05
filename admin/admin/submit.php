@@ -44,8 +44,25 @@
                     $res->bind_param("ssss",$new_username,$new_password,$email,$fullname);
 
                     if($res->execute()){
-                        //update the login info
-                        $_SESSION['user_login_id'] = $row["user_id"];
+                        //grab the time now
+                        $now = date('Y-m-d H:i:s');
+
+                        //create login awareness
+                        $sql = "INSERT INTO login_details (user_id, login_time) VALUES (".$row['user_id'].", '$now')";
+
+                        if($connect->query($sql)){
+                            //update user session id
+                            $_SESSION['user_login_id'] = $row['user_id'];
+
+                            //get this login id
+                            $sql = "SELECT MAX(id) AS id FROM login_details WHERE user_id=".$row['user_id'];
+                            $res = $connect->query($sql);
+
+                            //set as session's login id
+                            $_SESSION['login_id'] = $res->fetch_assoc()['id'];
+                        }else{
+                            echo 'cannot login';
+                        }
 
                         //reload or redirect admin page
                         if($submit == "new_user_update"){
@@ -61,6 +78,61 @@
             }else{
                 echo "wrong-email-fullname";
             }
+        }elseif($submit == "adminAddStudent" || $submit == "adminAddStudent_ajax"){
+            $student_index = strip_tags(stripslashes($_REQUEST["student_index"]));
+            $lname = strip_tags(stripslashes($_REQUEST["lname"]));
+            $oname = strip_tags(stripslashes($_REQUEST["oname"]));
+            $gender = strip_tags(stripslashes($_REQUEST["gender"]));
+            $boarding_status = strip_tags(stripslashes($_REQUEST["boarding_status"]));
+            $student_course = strip_tags(stripslashes($_REQUEST["student_course"]));
+            $aggregate = strip_tags(stripslashes($_REQUEST["aggregate"]));
+            $jhs = strip_tags(stripslashes($_REQUEST["jhs"]));
+            $dob = strip_tags(stripslashes($_REQUEST["dob"]));
+            $track_id = strip_tags(stripslashes($_REQUEST["track_id"]));
+            $school_id = $user_school_id;
+
+            //variable to hold messages
+            $message = "";
+
+            if(empty($student_index)){
+                $message = "index-number-empty";
+            }elseif(empty($lname)){
+                $message = "lastname-empty";
+            }elseif(empty($oname)){
+                $message = "no-other-name";
+            }elseif(empty($gender)){
+                $message = "gender-not-set";
+            }elseif(empty($boarding_status)){
+                $message = "boarding-status-not-set";
+            }elseif(empty($student_course)){
+                $message = "no-student-program-set";
+            }elseif(empty($aggregate)){
+                $message = "no-aggregate-set";
+            }elseif(intval($aggregate) < 6 || intval($aggregate) > 81){
+                $message = "aggregate-wrong";
+            }elseif(empty($jhs)){
+                $message = "no-jhs-set";
+            }elseif(empty($dob)){
+                $message = "no-dob";
+            }elseif(empty($track_id)){
+                $message = "no-track-id";
+            }else{
+                //format date
+                $dob = date("Y-m-d", strtotime($dob));
+
+                //insert data into CSSPS table
+                $sql = "INSERT INTO cssps (indexNumber,Lastname,Othernames,Gender,
+                        boardingStatus,programme, aggregate, jhsAttended, dob, trackID, schoolID) 
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("ssssssisssi",$student_index,$lname,$oname,$gender,$boarding_status,$student_course,
+                    $aggregate,$jhs,$dob,$track_id,$school_id);
+                $stmt->execute();
+
+                $message = "success";
+            }
+
+            echo $message;
         }
     }else{
         echo "no-submission";

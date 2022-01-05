@@ -25,32 +25,38 @@
                 //grab the required array data
                 $row = $query->fetch_array();
 
-                //grab the time now
-                $now = date('Y-m-d H:i:s');
+                //check for new user login
+                if(strtolower($username) != "new user" && strtolower($password) != "password@1"){
+                    //grab the time now
+                    $now = date('Y-m-d H:i:s');
 
-                //create login awareness
-                $sql = "INSERT INTO login_details (user_id, login_time) VALUES (".$row['user_id'].", '$now')";
+                    //create login awareness
+                    $sql = "INSERT INTO login_details (user_id, login_time) VALUES (".$row['user_id'].", '$now')";
 
-                if($connect->query($sql)){
+                    if($connect->query($sql)){
+                        //create a session object
+                        $_SESSION['user_login_id'] = $row['user_id'];
+
+                        //get this login id
+                        $sql = "SELECT MAX(id) AS id FROM login_details WHERE user_id=".$row['user_id'];
+                        $res = $connect->query($sql);
+
+                        //set as session's login id
+                        $_SESSION['login_id'] = $res->fetch_assoc()['id'];
+                    }else{
+                        echo 'cannot login';
+                    }
+                }else{
                     //create a session object
                     $_SESSION['user_login_id'] = $row['user_id'];
-
-                    //get this login id
-                    $sql = "SELECT MAX(id) AS id FROM login_details WHERE user_id=".$row['user_id'];
-                    $res = $connect->query($sql);
-
-                    //set as session's login id
-                    $_SESSION['login_id'] = $res->fetch_assoc()['id'];
-                    
-                    if($_POST['submit'] == "login"){
-                        $location = $_SERVER["HTTP_REFERER"];
-
-                        header("location: $location");
-                    }
-                    echo 'login_success';
-                }else{
-                    echo 'cannot login';
                 }
+
+                //redirect if the need be
+                if($_POST['submit'] == "login"){
+                    $location = $_SERVER["HTTP_REFERER"];
+                    header("location: $location");
+                }
+                echo 'login_success';
             }else{
                 echo "password_error";
             }
