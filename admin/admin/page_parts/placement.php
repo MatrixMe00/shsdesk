@@ -62,7 +62,7 @@
                 <button onclick="$('#modal').removeClass('no_disp')">Add New Student</button>
             </div>
             <div class="btn">
-                <button>Registered Students</button>
+                <button onclick="$('#lhs .menu .item.active').click()">Refresh</button>
             </div>
             <div class="btn">
                 <button type="button" onclick="$('#modal_2').removeClass('no_disp')">Import From Excel</button>
@@ -78,19 +78,60 @@
             </div>
         </div>
         <div id="content">
-            <div id="search" class="form" role="form">
+            <?php 
+                $sql = "SELECT * FROM cssps WHERE enroled=TRUE";
+                $res = $connect->query($sql);
+
+                if($res->num_rows > 0){
+            ?>
+            <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
                 <div class="flex flex-center-align">
-                    <label for="search">
-                        <input type="search" name="search" id="search" title="Search a name or index number here" placeholder="Search by index number or name...">
+                    <label for="search" style="width: 80%">
+                        <input type="search" name="search" id="search"
+                         title="Search a name or index number here" placeholder="Search by index number or name...">
                     </label>
+                    
                     <div class="btn">
-                        <button>Search</button>
+                        <button name="search_submit" value="register">Search</button>
                     </div>
                 </div>
             </div>
-            <div id="body" class="empty">
-                Nothing to show. Click the "Registered Students" button to refresh this box, else make a search using the search field
+            <div class="body">
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Index Number</td>
+                            <td>Fullname</td>
+                            <td>Boarding Status</td>
+                            <td>Program</td>
+                            <td>Gender</td>
+                            <td>Track Id</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while($row = $res->fetch_assoc()){?>
+                        <tr>
+                            <td><?php echo $row["indexNumber"] ?></td>
+                            <td><?php echo $row["Lastname"]." ".$row["Othernames"] ?></td>
+                            <td><?php echo $row["boardingStatus"] ?></td>
+                            <td><?php echo $row["programme"] ?></td>
+                            <td><?php echo $row["Gender"] ?></td>
+                            <td><?php echo $row["trackID"] ?></td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                    <tfoot class="no_disp">
+                        <tr>
+                            <td colspan="6">No Results returned</td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
+            <?php }else{ ?>
+            <div class="empty body" style="margin-top: 0.3em; padding-top: 1.3em; padding-bottom: 1.3em">
+                Nothing to show. Click the "Refresh" button to refresh this box, else make a search using the search field
+            </div>
+            <?php } ?> 
         </div>
     </div>
     <div class="display">
@@ -102,19 +143,60 @@
             </div>
         </div>
         <div id="content">
-            <div id="search" class="form" role="form">
+            <?php 
+                $sql = "SELECT * FROM cssps WHERE enroled=FALSE";
+                $res = $connect->query($sql);
+
+                if($res->num_rows > 0){
+            ?>
+            <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
                 <div class="flex flex-center-align">
-                    <label for="search">
-                        <input type="search" name="search" id="search" title="Search a name or index number here" placeholder="Search by index number or name...">
+                    <label for="search" style="width: 80%">
+                        <input type="search" name="search" id="search"
+                         title="Search a name or index number here" placeholder="Search by index number or name...">
                     </label>
+                    
                     <div class="btn">
-                        <button>Search</button>
+                        <button name="search_submit" value="unregister">Search</button>
                     </div>
                 </div>
             </div>
-            <div id="body" class="empty">
-                Nothing to show. Click the "Registered Students" button to refresh this box, else make a search using the search field
+            <div class="body">
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Index Number</td>
+                            <td>Fullname</td>
+                            <td>Boarding Status</td>
+                            <td>Program</td>
+                            <td>Gender</td>
+                            <td>Track Id</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while($row = $res->fetch_assoc()){?>
+                        <tr>
+                            <td><?php echo $row["indexNumber"] ?></td>
+                            <td><?php echo $row["Lastname"]." ".$row["Othernames"] ?></td>
+                            <td><?php echo $row["boardingStatus"] ?></td>
+                            <td><?php echo $row["programme"] ?></td>
+                            <td><?php echo $row["Gender"] ?></td>
+                            <td><?php echo $row["trackID"] ?></td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                    <tfoot class="no_disp">
+                        <tr>
+                            <td colspan="6">No Results returned</td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
+            <?php }else{ ?>
+            <div class="empty body" style="margin-top: 0.3em; padding-top: 1.3em; padding-bottom: 1.3em">
+                Nothing to show. Click the "Refresh" button to refresh this box, else make a search using the search field
+            </div>
+            <?php } ?>
         </div>
     </div>
 </section>
@@ -126,6 +208,8 @@
             <li>Your file should be a spreadsheet file</li>
             <li>Spreadsheet files with .xls or .xlsx as extensions are acceptable</li>
             <li>Your data should have headings for easy entry into the database</li>
+            <li>Make sure you have uploaded all your houses and their required details</li>
+            <li>If you could not download the file for manual house allocation, download it <a href="<?php echo $url?>/admin/admin/assets/files/default files/house_allocation.csv">here</a></li>
             <li>If you do not have the default spreadsheet file for upload, please click <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">here</a> to download</li>
         </ol>
         <br>
@@ -152,4 +236,4 @@
     </form>
 </div>
 
-<script src="assets/scripts/placement.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>"></script>

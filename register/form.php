@@ -32,6 +32,11 @@
         $category = $_POST["category"];
         $residence_status = $_POST["residence_status"];
         $sector = $_POST["sector"];
+        $autoHousePlace = $_POST["autoHousePlace"];
+
+        if($autoHousePlace == "true" || $autoHousePlace == "on"){
+            $autoHousePlace = true;
+        }
 
         //prevent empty entries
         if(!isset($school_name) || $school_name == null || $school_name == ""){
@@ -91,8 +96,17 @@
         }
 
         if(isset($_FILES["prospectus"]) && $_FILES["prospectus"]["tmp_name"] !== null){
-            $file_input_name = "prospectus";
-            $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+            //get file extension
+            $ext = strtolower(fileExtension("prospectus"));
+
+            if($ext =="pdf"){
+                $file_input_name = "prospectus";
+                $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+
+                $prostectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+            }else{
+                echo "<p>File provided for prospectus is not a PDF</p>";
+            }
 
             $prostectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
         }else{
@@ -103,10 +117,17 @@
         }
 
         if(isset($_FILES["admission_letter"]) && $_FILES["admission_letter"]["tmp_name"] !== null){
-            $file_input_name = "admission_letter";
-            $local_storage_directory = "$rootPath/admin/admin/assets/files/admission_letter/";
+            //get file extension
+            $ext = strtolower(fileExtension("admission_letter"));
 
-            $admissionDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+            if($ext =="pdf"){
+                $file_input_name = "admission_letter";
+                $local_storage_directory = "$rootPath/admin/admin/assets/files/admission_letter/";
+
+                $admissionDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+            }else{
+                echo "<p>File provided for admission letter is not a PDF</p>";
+            }            
         }else{
             echo "<p>Please provide your admission letter</p>";
             
@@ -122,13 +143,19 @@
         //store only the direct file paths
         $image_directory = $image_directory[1];
         $prostectusDirectory = $prostectusDirectory[1];
+        $admissionDirectory = $admissionDirectory[1];
 
         //query the database
-        $query = "INSERT INTO schools (logoPath, prospectusPath, admissionPath, schoolName, abbr, headName, techName, techContact, email, description, category, residence_status, sector) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
+        $query = "INSERT INTO schools (logoPath, prospectusPath, admissionPath, schoolName, abbr, 
+            headName, techName, techContact, email, description, category, residence_status, sector, 
+            autoHousePlace) 
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
 
         //prepare query for entry into database
         $result = $connect->prepare($query);
-        $result->bind_param("ssssssssssiss", $image_directory, $prostectusDirectory, $admissionDirectory, $school_name, $abbreviation, $head_name, $technical_name, $technical_phone, $school_email, $description, $category, $residence_status, $sector);
+        $result->bind_param("ssssssssssissi", $image_directory, $prostectusDirectory, $admissionDirectory, 
+        $school_name, $abbreviation, $head_name, $technical_name, $technical_phone, $school_email, $description, 
+        $category, $residence_status, $sector, $autoHousePlace);
 
         //execute the results
         if($result->execute()){
@@ -142,17 +169,24 @@
             $default_password = MD5("Password@1");
 
             //create a usable login session for user
-            $sql = "INSERT INTO admins_table (email, password, school_id, contact, role) VALUES (?,?,?,?,?)";
+            $sql = "INSERT INTO admins_table (fullname, email, password, school_id, contact, role) 
+                    VALUES (?,?,?,?,?,?)";
 
             //prepare the insert statement
             $res = $connect->prepare($sql);
 
             //bind necessary parameters
-            $res->bind_param('ssisi',$school_email, $default_password,$row["id"], $technical_phone, 3);
+            $res->bind_param('sssisi',$technical_name,$school_email, $default_password,$row["id"], $technical_phone, 3);
 
             if($res->execute){
-                echo "<p>Your data has been recorded successfully!</p>
-                <p>
+                echo "<p>Your data has been recorded successfully!</p>";
+                if($autoHousePlace != true){
+                    echo "<p>Student house allocation has not been set to automatic<br>
+                        Click <a href=\"$url/admin/admin/assets/files/default files/house_allocation.csv\">here</a> to download 
+                        required file to manually place students in required houses</p>";
+                }
+
+                echo "<p>
                    <u>Default Login Details</u><br><br>
                    <b>Username</b>: New User<br>
                    <b>Password</b>: Password@1

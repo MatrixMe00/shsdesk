@@ -166,6 +166,11 @@
                     </label>
                 </div>
 
+                <label for="autoHousePlace" class="checkbox">
+                    <input type="checkbox" name="autoHousePlace" id="autoHousePlace">
+                    <span class="label_title">Automatically Place students</span>
+                </label>
+
                 <div class="flex flex-center-align flex-wrap">
                     <label for="submit" class="btn btn_label">
                         <button type="submit" name="submit" value="register_school" class="img_btn">

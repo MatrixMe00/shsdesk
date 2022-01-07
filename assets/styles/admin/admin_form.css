@@ -79,7 +79,8 @@ form .body{
     padding: unset;
 }
 
-.body label.checkbox, .body label.radio{
+.body label.checkbox, .body label.radio,
+.body label.date{
     justify-content: flex-start;
     width: fit-content;
     background-color: transparent;
@@ -143,7 +144,8 @@ label.textarea span.label_image{
     align-self: flex-start;
 }
 
-label.checkbox span.label_title, label.radio span.label_title{
+label.checkbox span.label_title, label.radio span.label_title, 
+label.date span.label_title{
     margin: auto 0.3rem;
 }
 

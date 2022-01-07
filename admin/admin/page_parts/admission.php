@@ -86,7 +86,7 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="announce">
                 </span>
-                <textarea name="announcement" id="announcement" placeholder="Enter an announcement here..." 
+                <textarea name="announcement" id="announcement" placeholder="Enter an announcement here..." class="tinymce" 
                 autocomplete="off" title="Enter an announcement to be displayed when the student wants to log in or check admission"></textarea>
             </label>
             <label for="submit" class="btn">
@@ -101,3 +101,4 @@
     </form>
 
     <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>"></script>

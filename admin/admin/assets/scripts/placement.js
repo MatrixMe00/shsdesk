@@ -31,132 +31,36 @@ $(".title_bar #close").click(function(){
 })
 
 
-///this function will be used to parse a common timeout function for the message box
-function messageBoxTimeout(message, message_type, time=5){
-    //change the time to miliseconds
-    time = time * 1000;
-
-    $("#message_box").removeClass("error success load").addClass(message_type).show();
-    $("#message_box .message").html(message)
-
-    //prevent the timeout function if the time is set to 0
-    if(time > 0){
-        setTimeout(function(){
-            $("#message_box").removeClass("error success load");
-            $("#message_box").slideUp();
-            $("#message_box .message").html('');
-        }, time);
-    }
-}
-
-
 //uploading the excel file
-$("form[name=importForm").on('submit',(function(e){
+$("form[name=importForm").submit(function(e){
     e.preventDefault();
 
     if($("input#import").val() == ""){
-        messageBoxTimeout("No file has been chosen", "error");
+        messageBoxTimeout("importForm","No file has been chosen", "error");
     }else{
-        //grab the file uploaded
-        file = $("input#import").prop("files")[0];
-        submit = $("form[name=importForm] button[name=submit]").val();
-        alert(submit);
+        //submit the form
+        response = fileUpload($("form[name=importForm] input#import"), $(this), $("form[name=importForm] button[name=submit]"));
 
-        //create a new form data
-        form_data = new FormData();
+        if(response == true){
+            message = "Your file has been received";
+            type = "success";
+        }else{
+            type = "error";
 
-        //append the data into the form
-        form_data.append("import", file);
-        form_data.append("submit", submit);
-
-        //parse data into ajax
-        $.ajax({
-            url: $(this).prop("action"),
-            contentType: false,
-            data: form_data,
-            type: "POST",
-            dataType: "text",
-            cache: false,
-
-            beforeSend: function(){
-                messageBoxTimeout("Uploading...", "load", 0);
-            },
-            success: function(html){
-                message = "";
-                message_type = "";
-                time = 5;
-
-                if(html == "no-file"){
-                    message = "No file was found! Please upload an excel file to continue";
-                    message_type = "error";
-                }else{
-                    message = html;
-                    message_type = "load";
-                    time = 0;
-                }
-
-                //display according to reply received
-                messageBoxTimeout(message, message_type, time);
-            },
-            error: function(){
-                messageBoxTimeout("Error communicating with the server! Please try again later.", "error", 0);
+            if(response == "no-file"){
+                message = "No file has been chosen";
+            }else if(response.includes("Upload failed")){
+                message = "File could not be uploaded";
+            }else if(response == "extension-error"){
+                message = "Incorrect file type sent, please send correct file format"
+            }else{
+                message = response;
             }
-        });
+        }
+
+        messageBoxTimeout("importForm", message, type);
     }
-}))
-/*$("form[name=importForm]").submit(function(e){
-    e.preventDefault();
-
-    if($("input#import").val() == ""){
-        messageBoxTimeout("No file has been chosen", "error");
-    }else{
-        //grab the file uploaded
-        file = $("input#import").prop("files")[0];
-        submit = $("form[name=importForm] button[name=submit]").val();
-        alert(submit);
-
-        //create a new form data
-        form_data = new FormData();
-
-        //append the data into the form
-        form_data.append("import", file);
-        form_data.append("submit", submit);
-
-        //parse data into ajax
-        $.ajax({
-            url: $(this).prop("action"),
-            contentType: false,
-            data: new form_data,
-            type: "POST",
-            dataType: "text",
-            cache: false,
-
-            beforeSend: function(){
-                messageBoxTimeout("Uploading...", "load", 0);
-            },
-            success: function(html){
-                message = "";
-                message_type = "";
-                time = 5;
-
-                if(html == "no-file"){
-                    message = "No file was found! Please upload an excel file to continue";
-                    message_type = "error";
-                }else{
-                    message = html;
-                    message_type = "load";
-                    time = 0;
-                }
-
-                //display according to reply received
-                messageBoxTimeout(message, message_type, time);
-            },
-            error: function(){
-                messageBoxTimeout("Error communicating with the server! Please try again later.", "error", 0);
-            }
-        });
-    }
-})*/
+})
 
 //when the import form is closed
 $("form[name=importForm] button[name=close]").click(function(){
@@ -169,4 +73,71 @@ $("form[name=importForm] button[name=close]").click(function(){
 
     //hide the message box
     $("#message_box").hide();
+})
+
+//search button workout
+$(".display .btn button[name=search_submit]").click(function(){
+    search_value = $(this).parent().siblings("label[for=search]").children("input").val();
+
+    dataString = "search_value=" + search_value + "&submit=" + $(this).val();
+
+    table_foot = $(this).parents("#content").children(".body").children("table").children("tfoot");
+    table_body = $(this).parents("#content").children(".body").children("table").children("tbody");
+
+    //store initial data of the body
+    init_data = $(table_body).html();
+
+    td = $(table_foot).children("tr").children("td");
+
+    if(search_value == ""){
+        $(td).html("Search value is empty");
+        $(table_foot).removeClass("no_disp");
+
+        setTimeout(function(){
+            $(table_foot).addClass("no_disp");
+        },5000);
+    }else{
+        $(table_body).addClass("no_disp");
+
+        $.ajax({
+            url: $(this).parents("#content").children(".form.search").attr("data-action"),
+            data: dataString,
+            type: "get",
+            dataType: "html",
+            async: false,
+            beforeSend: function(){
+                //show a loading panel in foot
+                $(td).html("Fetching Results...");
+                $(table_foot).removeClass("no_disp");
+            },
+            success: function(html){
+                if(html == "no-result"){
+                    $(td).html("No results were found. Please make a valid search");
+                    $(table_foot).removeClass("no_disp");
+                }else{
+                    if(html.includes("total=")){
+                        val = html.split("total=");
+                        
+                        html = val[0];
+                        total = val[1];
+                        
+                        //display new data into
+                        $(table_body).html(html);
+                        $(table_body).removeClass("no_disp");
+                        
+                        //display total table foot
+                        $(table_foot).html(total + " results returned");
+                        $(table_foot).removeClass("no_disp");
+                    }else{
+                        $(td).html("An error occured. Please try again later.");
+                        $(table_foot).removeClass("no_disp");
+                    }                    
+                }
+            },
+            error: function(){
+                $(td).html("An interruption has occured");
+                $(table_foot, table_body).removeClass("no_disp");
+            }
+        })
+    }
 })

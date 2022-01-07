@@ -1,9 +1,12 @@
-<form action="<?php echo $url?>/admin/admin/submit.php" method="POSTname="addHouseForm" method="post">
+<form action="<?php echo $url?>/admin/admin/submit.php" method="POST" name="addHouseForm" method="post">
     <div class="head">
         <h2>Add A New House</h2>
     </div>
     <div class="body">
-        <input type="hidden" name="school_id" value="<?php echo $school_id?>">
+        <div id="message_box" class="success no_disp">
+            <span class="message">Here is a test message</span>
+            <div class="close"><span>&cross;</span></div>
+        </div>
         <label for="house_name">
             <span class="label_image">
                 <img src="<?php echo $url?>/assets/images/icons/home.png" alt="house name">
@@ -20,6 +23,10 @@
                 <label for="gender" class="radio">
                     <input type="radio" name="gender" id="gender_female" value="Female">
                     <span class="label_title">Female</span>
+                </label>
+                <label for="gender" class="radio">
+                    <input type="radio" name="gender" id="gender_both" value="Both">
+                    <span class="label_title">Both</span>
                 </label>
             </div>
         </div>
@@ -54,9 +61,36 @@
     $("form[name=addHouseForm]").submit(function(e){
         e.preventDefault();
 
-        dataString = $(this).serialize() + "&submit=" + $("button[name=submit]").val() + "_ajax";
-        // formSubmit($(this), $("form[name=addHouseForm] button[name=submit]"));
+        response = formSubmit($(this), $("form[name=addHouseForm] button[name=submit]"));
 
-        alert(dataString);
+        if(response == true){
+            message = "House has been added";
+            type = "success";
+
+            //close box and refresh page
+            setTimeout(function(){
+                $("form[name=addHouseForm] button[name=cancel]").click();
+                $('#lhs .menu .item.active').click();
+            },6000)
+            
+        }else{
+            type = "error";
+
+            if(response == "no-house-name"){
+                message = "House name field is empty";
+            }else if(response == "no-gender"){
+                message = "Please select a gender type";
+            }else if(response == "room-total-empty"){
+                message = "Total rooms field is empty";
+            }else if(response == "room-zero"){
+                message = "Total number of rooms cannot be less than 1";
+            }else if(response == "head-total-empty"){
+                message = "Heads per room field is empty";
+            }else if(response == "head-zero"){
+                message = "Heads per room cannot be less than 1";
+            }
+        }
+
+        messageBoxTimeout("addHouseForm",message, type);
     })
 </script>

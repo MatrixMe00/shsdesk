@@ -133,6 +133,39 @@
             }
 
             echo $message;
+        }elseif($submit == "addHouse" || $submit == "addHouse_ajax"){
+            $house_name = $_REQUEST["house_name"];
+            $gender = $_REQUEST["gender"];
+            $house_room_total = $_REQUEST["house_room_total"];
+            $head_per_room = $_REQUEST["head_per_room"];
+
+            $message = "";
+
+            if(empty($house_name)){
+                $message = "no-house-name";
+            }elseif(empty($gender)){
+                $message = "no-gender";
+            }elseif(empty($house_room_total)){
+                $message = "room-total-empty";
+            }elseif(intval($house_room_total) <= 0){
+                $message = "room-zero";
+            }elseif(empty($head_per_room)){
+                $message = "head-total-empty";
+            }elseif(intval($head_per_room) <= 0){
+                $message = "head-zero";
+            }else{
+                //query into database
+                $sql = "INSERT INTO houses (title, schoolID, totalRooms, headPerRoom, gender)
+                    VALUES (?,?,?,?,?)";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("sisss",$house_name, $user_school_id, $house_room_total, $head_per_room, $gender);
+                $stmt->execute();
+
+                $message = "success";
+            }
+
+            echo $message;
+            
         }
     }else{
         echo "no-submission";

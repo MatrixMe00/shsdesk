@@ -1,0 +1,6 @@
+.tox, .tox .tox-editor-container{
+    min-height: 15vh;
+    font-family: inherit;
+    background-color: whitesmoke;
+    width: 100%;
+}

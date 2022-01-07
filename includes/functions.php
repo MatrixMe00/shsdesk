@@ -205,13 +205,6 @@
                 $uploadOk = 1;
             }
 
-            // Allow certain file formats
-            if($file_type != "pdf" && $file_type != "PDF") {
-                echo "Sorry, only PDF files are allowed.";
-                $uploadOk = 0;
-                $file_name = "error";
-            }
-
             //now upload the file
             if($uploadOk == 1){
                 if(move_uploaded_file($_FILES[$file_input_name]["tmp_name"], $file_name)){
@@ -227,6 +220,19 @@
         }
 
         return $file_name;
+    }
+
+    /** 
+    * Function to retrieve file extension
+    * @param string $file_input_name Receives input field name for file
+    *
+    * @return string extension of file
+    */
+    function fileExtension(string $file_input_name):string{
+        $name = $_FILES[$file_input_name]["name"];
+        $name = explode(".", $name);
+
+        return end($name);
     }
 
     /**

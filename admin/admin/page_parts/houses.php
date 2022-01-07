@@ -5,7 +5,6 @@
         <div class="head">
             <h2>
                 <?php
-                    $user_school_id = 1;
                     $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id");
                     
                     echo $res->num_rows;
@@ -36,7 +35,7 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Female' AND boardingStatus = TRUE");
+                    $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Female' AND boardingStatus = 'Boarder'");
                     
                     echo $res->num_rows;
                 ?>
@@ -51,8 +50,7 @@
         <div class="head">
             <h2>
                 <?php
-                    $user_school_id = 1;
-                    $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND boardingStatus = FALSE");
+                    $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND boardingStatus = 'Day'");
                     
                     echo $res->num_rows;
                 ?>
@@ -79,7 +77,7 @@
     </div>
     <div class="body">
         <?php
-            $res = $connect->query("SELECT id FROM houses WHERE schoolID = $user_school_id");
+            $res = $connect->query("SELECT * FROM houses WHERE schoolID = $user_school_id");
 
             if($res->num_rows){
         ?>
@@ -91,20 +89,38 @@
                     <td>Gender</td>
                     <td>Rooms</td>
                     <td>Heads Per Room</td>
-                    <td>Occupancy</td>
+                    <td>Occupants</td>
                     <td>Status</td>
                 </tr>
             </thead>
             <tbody>
-                <?php while($row=$res->fetch_assoc()){?>
+                <?php 
+                    $count = 0;
+                    while($row=$res->fetch_assoc()){?>
                 <tr>
-                    <td>1</td>
-                    <td>Acolatse</td>
-                    <td>Females</td>
-                    <td>15</td>
-                    <td>30</td>
-                    <td>18</td>
-                    <td>Not Full</td>
+                    <td><?php echo ++$count ?></td>
+                    <td><?php echo $row["title"] ?></td>
+                    <td><?php echo $row["gender"] ?></td>
+                    <td><?php echo $row["totalRooms"] ?></td>
+                    <td><?php echo $row["headPerRoom"] ?></td>
+                    <td>
+                        <?php 
+                            $sql = "SELECT COUNT(indexNumber) AS total
+                                    FROM house_allocation
+                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"];
+                            $query = $connect->query($sql);
+                            
+                            $tot = $query->fetch_assoc()["total"];
+                            echo $tot;
+                        ?>
+                    </td>
+                    <td><?php 
+                        if($tot == ($row["headPerRoom"] * $row["totalRooms"])){
+                            echo "Full";
+                        }else{
+                            echo "Not Full";
+                        }
+                    ?></td>
                 </tr>
                 <?php } ?>
                 <!-- <tr>

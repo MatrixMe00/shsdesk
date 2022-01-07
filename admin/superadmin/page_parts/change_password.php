@@ -1,5 +1,5 @@
-<?php include_once("../../../includes/session.php")?>
-<form action="<?php echo $url?>/admin/submit.php" method="post" name="passwordChangeForm">
+<?php include_once("../../../includes/session.php");?>
+<form action="<?php echo $url?>/admin/submit.php" method="post" name="changePasswordForm">
     <div class="body">
         <div id="message_box" class="no_disp">
             <span class="message"></span>
@@ -9,7 +9,7 @@
             <span class="label_image">
                 <img src="<?php echo $url?>/assets/images/icons/lock.png" alt="password_icon">
             </span>
-            <input type="password" name="prev_password" id="prev_password" class="text_input password" placeholder="Your Old Password" autocomplete="off">
+            <input type="password" name="prev_password" id="prev_password" class="text_input password" placeholder="Your Current Password" autocomplete="off">
         </label>
         <label for="new_password">
             <span class="label_image">
@@ -38,12 +38,5 @@
     </div>
 </form>
 
-<script>
-    $("form[name=passwordChangeForm]").submit(function(e){
-        e.preventDefault();
-
-        //submit form
-        response = formSubmit($(this), $("form[name=passwordChangeForm] button[name=submit]"));
-    })
-</script>
 <script src="<?php echo $url?>/assets/scripts/form/general.js"></script>
+<script src="<?php echo $url?>/admin/assets/scripts/password.js"></script>

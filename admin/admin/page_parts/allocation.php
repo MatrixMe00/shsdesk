@@ -4,7 +4,7 @@
         <div class="head">
             <h2>
                 <?php
-                $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = 1");
+                $res = $connect->query("SELECT indexNumber FROM cssps WHERE schoolID = $user_school_id AND enroled = TRUE");
 
                 echo $res->num_rows;
                 ?>
@@ -19,14 +19,14 @@
         <div class="head">
             <h2>
                 <?php
-                $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = 1 AND boardingStatus = TRUE");
+                $res = $connect->query("SELECT indexNumber FROM cssps WHERE schoolID = $user_school_id AND boardingStatus = 'Boarder' AND enroled = TRUE");
 
                 echo $res->num_rows;
                 ?>
             </h2>
         </div>
         <div class="body">
-            <span>Boarding Students</span>
+            <span>Registered Boarding Students</span>
         </div>
     </div>
 
@@ -34,35 +34,40 @@
         <div class="head">
             <h2>
                 <?php
-                $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = 1 AND boardingStatus = FALSE");
+                $res = $connect->query("SELECT indexNumber FROM cssps WHERE schoolID = $user_school_id AND boardingStatus = 'Day' AND enroled = TRUE");
 
                 echo $res->num_rows;
                 ?>
             </h2>
         </div>
         <div class="body">
-            <span>Day Students</span>
+            <span>Registered Day Students</span>
         </div>
     </div>
 </section>
 
-<section class="section_container allocation flex-column flex-center-align">
-    <div class="head">
+<section class="section_container allocation flex-column">
+    <div class="head" style="align-self: center">
         <h2>Boarding Students</h2>
     </div>
-    <div class="body">
-        <?php
-            $res = $connect->query("SELECT * FROM house_allocation WHERE schoolID = 1 AND boardingStatus = TRUE");
+    <?php
+        $res = $connect->query("SELECT DISTINCT (a.indexNumber), a.studentLname, a.studentOname, b.title, c.programme 
+            FROM house_allocation a JOIN cssps c 
+            ON a.indexNumber = c.indexNumber
+            JOIN houses b
+            ON a.houseID = b.id
+            WHERE a.schoolID = $user_school_id AND a.boardingStatus = 'Boarder'");
 
-            if($res->num_rows > 0){
-        ?>
+        if($res->num_rows > 0){
+    ?>
+    <div class="body">
         <table>
             <thead>
                 <tr>
                     <td>Index Number</td>
                     <td>Full name</td>
                     <td>House</td>
-                    <td>Academic Year</td>
+                    <td>Program</td>
                 </tr>
             </thead>
             <tbody>
@@ -70,37 +75,46 @@
                 while($row = $res->fetch_assoc()){
             ?>
                 <tr>
-                    <td>0151223654</td>
-                    <td>John Doe</td>
-                    <td>Acolatse</td>
-                    <td>2021/2022</td>
+                    <td><?php echo $row["indexNumber"] ?></td>
+                    <td><?php echo $row["studentLname"]." ".$row["studentOname"] ?></td>
+                    <td><?php echo $row["title"] ?></td>
+                    <td><?php echo $row["programme"] ?></td>
                 </tr>
                 <?php } ?>
             </tbody>
-        </table>
-        <?php }else{
-            echo "<p style=\"margin-top: 5px; padding: 5px 10vw; background-color: white; border: 1px dashed lightgrey;\">No user data has been entered yet</p>";
-        }?>
+        </table>  
     </div>
+    <?php }else{
+        echo "
+            <div class=\"body empty\">
+                <p>No results were found. Try adding some more data</p>
+            </div>";
+        }
+    ?>
 </section>
 
-<section class="section_container allocation flex-column flex-center-align">
-    <div class="head">
+<section class="section_container allocation flex-column">
+    <div class="head" style="align-self: center">
         <h2>Day Students</h2>
     </div>
-    <div class="body">
     <?php
-            $res = $connect->query("SELECT * FROM house_allocation WHERE schoolID = 1 AND boardingStatus = FALSE");
+        $res = $connect->query("SELECT DISTINCT (a.indexNumber), a.studentLname, a.studentOname, b.title, c.programme 
+            FROM house_allocation a JOIN cssps c 
+            ON a.indexNumber = c.indexNumber
+            JOIN houses b
+            ON a.houseID = b.id
+            WHERE a.schoolID = $user_school_id AND a.boardingStatus = 'Day'");
 
-            if($res->num_rows > 0){
-        ?>
+        if($res->num_rows > 0){
+    ?>
+    <div class="body">
         <table>
             <thead>
                 <tr>
                     <td>Index Number</td>
                     <td>Full name</td>
                     <td>House</td>
-                    <td>Academic Year</td>
+                    <td>Program</td>
                 </tr>
             </thead>
             <tbody>
@@ -108,16 +122,20 @@
                 while($row = $res->fetch_assoc()){
             ?>
                 <tr>
-                    <td>0151223654</td>
-                    <td>John Doe</td>
-                    <td>Acolatse</td>
-                    <td>2021/2022</td>
+                    <td><?php echo $row["indexNumber"] ?></td>
+                    <td><?php echo $row["studentLname"]." ".$row["studentOname"] ?></td>
+                    <td><?php echo $row["title"] ?></td>
+                    <td><?php echo $row["programme"] ?></td>
                 </tr>
                 <?php } ?>
             </tbody>
-        </table>
-        <?php }else{
-            echo "<p style=\"margin-top: 5px; padding: 5px 10vw; background-color: white; border: 1px dashed lightgrey;\">No user data has been entered yet</p>";
-        }?>
+        </table>  
     </div>
+    <?php }else{
+        echo "
+            <div class=\"body empty\">
+                <p>No results were found. Try adding some more data</p>
+            </div>";
+        }
+    ?>
 </section>

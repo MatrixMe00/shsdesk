@@ -1,3 +1,5 @@
+<?php include_once("includes/session.php") ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,7 +73,7 @@
     <div id="cover"></div>
 
     <!--Forgot password Section-->
-    <form action="admin/submit.php" method="post" name="passwordForm">
+    <form action="<?php echo $url?>/admin/submit.php" method="post" name="passwordForm">
         <div class="back_btn no_disp">
             <button type="button" class="btn" title="Back">&leftarrow;</button>
         </div>
@@ -110,9 +112,15 @@
                     <span class="label_title">Show Password</span>
                 </label>
             </div>
-            <label for="submit" class="btn_label">
-                <button type="submit" name="submit" value="verify_password" disabled>Submit</button>
-            </label>
+            <div class="flex">
+                <label for="submit" class="btn_label">
+                    <button type="submit" name="submit" value="verify_password" disabled>Submit</button>
+                </label>
+                <label for="cancel" class="btn">
+                    <button type="reset" name="cancel">Cancel</button>
+                </label>
+            </div>
+            
         </div>
         <div class="foot">
             <p>
@@ -127,11 +135,12 @@
             <p>
                 <span>You password has been updated successfully</span>
             </p>
-            <p>Click <a href="">here</a> to login with your new details</p>
+            <p>Click <a href="<?php echo $url?>/admin/">here</a> to login with your new details</p>
         </div>
     </div>
 <script src="assets/scripts/form/general.js"></script>
 <script>
+    //check for valid email
     $("input#email").blur(function() {
         if($(this).val().length <= 5) {
             messageBoxTimeout("passwordForm","Email field is incomplete!", "error", 5);
@@ -163,14 +172,14 @@
                         user_id = data.split("+");
 
                         $("input[name=user_id]").val(user_id[1]);
+
+                        messageBoxTimeout("passwordForm","Email was found", "success", 5);
                     }else{
                         messageBoxTimeout("passwordForm","Email is invalid", "error", 7);
                         $("#password_change").addClass("no_disp");
                     }
                 },
                 complete: function(){
-                    $("button[name=submit]").html("Submit");
-
                     //hide the message box
                     $("#message_box").removeClass("load").addClass("no_disp");
                 },
@@ -196,6 +205,15 @@
         }else{
             $("button[name=submit]").prop("disabled", true);
         }
+
+        //display a message when its value is of same lenght with original and passwords match
+        if($(this).val().length == $("input#password").val().length){
+            if($(this).val() == $("input#password").val()){
+                messageBoxTimeout("passwordForm", "Passwords Match", "success", 5);
+            }else{
+                messageBoxTimeout("passwordForm", "Passwords Mismatch", "error", 5);
+            }
+        }
     })
 
     $("form").submit(function(e){
@@ -212,14 +230,12 @@
             },
             success: function(data){
                 if(data === "success"){
-                    $("#message_box").removeClass("load error").addClass("success");
-                    $("#message_box .message").html("Password has been changed successfully");
+                    messageBoxTimeout("passwordForm", "Password has been changed successfully", "success");
 
                     //disable all inputs
                     $("input#password, input#password2, button[name=submit]").prop("disabled", true);
                 }else{
-                    $("#message_box").removeClass("load error").addClass("success");
-                    $("#message_box .message").html("Password could not be changed. Try again later");
+                    messageBoxTimeout("passwordForm", "Password could not be changed. Try again later", "error");
 
                     //enable inputs and button
                     $("input#password, input#password2, button[name=submit]").prop("disabled", false);
@@ -228,10 +244,12 @@
         })
     })
 
-    $("button[name=reset]").click(function(){
+    $("button[name=cancel]").click(function(){
         $("#password_change").addClass("no_disp");
-        $("button[name=submit]").prop("disabled", false);
+        $("button[name=submit]").prop("disabled", true);
     })
 </script>
 </body>
 </html>
+
+<?php $connect->close() ?>

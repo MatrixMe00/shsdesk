@@ -47,7 +47,6 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     $user_email = $user_details['email'];
 }else{
     $user_role = "guest";
-    $school_id = 1;
 }
 
 ?>

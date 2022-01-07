@@ -1,25 +1,17 @@
 <?php include_once("../../../includes/session.php") ?>
 <section>
-    <form action="" method="post">
+    <form action="<?php echo $url?>/admin/admin/submit.php" method="post">
         <div class="head">
             <h2>Add A Student</h2>
         </div>
         <div class="body">
             <div class="joint">
-                <label for="student_name">
+                <label for="student_index">
                     <span class="label_image">
-                        <img src="<?php echo $url?>/assets/images/icons/home.png" alt="name">
+                        <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="name">
                     </span>
-                    <input type="text" name="student_name" id="student_name" placeholder="Name of Student*"
-                    required title="The full name of the student should be delivered here" pattern="[a-zA-Z\s]">
-                </label>
-                <label for="student_house">
-                    <span class="label_image">
-                        <img src="<?php echo $url?>/assets/images/icons/home.png" alt="house">
-                    </span>
-                    <select name="student_house" id="student_house">
-                        <option value="">Select the student's House*</option>
-                    </select>
+                    <input type="text" name="student_index" id="student_index" placeholder="index number Student*"
+                    required title="Index number of the student should be delivered here" pattern="[a-zA-Z\s]">
                 </label>
                 <label for="exeat_town">
                     <span class="label_image">
@@ -28,19 +20,28 @@
                     <input type="text" name="exeat_town" id="exeat_town" placeholder="Enter the name of the town*" 
                     title="Name of destination town by the student should be entered here" required>
                 </label>
-                <label for="exeat_date" class="flex-column flex-align-start flex-content-start">
+            </div>
+            <div class="joint">
+                <label for="exeat_date" class="flex-column flex-align-start flex-content-start date">
                     <span class="label_title">
                         Date for exeat
                     </span>
                     <input type="date" name="exeat_date" id="exeat_date" title="Date for exeat" required>
                 </label>
-                <label for="return_date" class="flex-column flex-align-start flex-content-start">
+                <label for="return_date" class="flex-column flex-align-start flex-content-start date">
                     <span class="label_title">
                         Date for Returning
                     </span>
                     <input type="date" name="return_date" id="return_date" title="Date for exeat" required>
                 </label>
             </div>
+            <label for="exeat_reason">
+                <span class="label_image">
+                    <img src="<?php echo $url?>/assets/images/icons/home.png" alt="reason">
+                </span>
+                <textarea name="exeat_reason" id="exeat_reason" placeholder="Reason for exeat [maximum of 80 characters]*" required 
+                title="Provide a reason for the exeat" maxlength="80"></textarea>
+            </label>
         </div>
     </form>
 </section>
