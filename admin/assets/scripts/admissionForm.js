@@ -231,7 +231,7 @@ $(".tabs span.tab_button").click(function(){
     $(this).addClass("active");
 
     //hide all views
-    fadeOutElement($(".form_views > div"));
+    $(".form_views > div").addClass("no_disp");
 
     //display its associated form view
     $("#" + $(this).attr("data-views")).removeClass("no_disp");

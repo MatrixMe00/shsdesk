@@ -20,6 +20,4 @@
     <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/notification.css?v=<?php echo time()?>">
 
     <!--Tiny MCE-->
-    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
-    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
     <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/tinymce.css?v=<?php echo time()?>">

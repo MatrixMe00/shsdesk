@@ -369,7 +369,7 @@
      * 
      * @return int returns total number of replies to a notification
      */
-    function replyCounter($comment_id = 0, $read = null):int{
+    function replyCounter($comment_id = 0):int{
         global $connect;
 
         //variables that will be returned
@@ -407,5 +407,33 @@
         }
         
         return $total;
+    }
+
+    /**
+     * Function to directly query database
+     * 
+     * @param string $columns This receives the roles to fetch
+     * @param string $table Receives table name
+     * @param string $where Receives a where clause command
+     * @param int $limit Number of rows to deliver. Default is 1
+     * 
+     * @return string|array
+     */
+    function fetchData(string $columns, string $table, string $where, int $limit = 1):array|string{
+        global $connect;
+
+        $sql = "SELECT $columns
+                FROM $table
+                WHERE $where
+                LIMIT $limit";
+        $query = $connect->query($sql);
+
+        if($query->num_rows > 0){
+            $result = $query->fetch_assoc();
+        }else{
+            $result = "empty";
+        }       
+
+        return $result;
     }
 ?>

@@ -1,17 +1,21 @@
 <?php include_once("../../../includes/session.php") ?>
 <section>
-    <form action="<?php echo $url?>/admin/admin/submit.php" method="post">
+    <form action="<?php echo $url?>/admin/admin/submit.php" method="post" name="exeatForm">
         <div class="head">
             <h2>Add A Student</h2>
         </div>
         <div class="body">
+            <div id="message_box" class="success no_disp">
+                <span class="message">Here is a test message</span>
+                <div class="close"><span>&cross;</span></div>
+            </div>
             <div class="joint">
                 <label for="student_index">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="name">
                     </span>
                     <input type="text" name="student_index" id="student_index" placeholder="index number Student*"
-                    required title="Index number of the student should be delivered here" pattern="[a-zA-Z\s]">
+                    required title="Index number of the student should be delivered here" pattern="[0-9]*">
                 </label>
                 <label for="exeat_town">
                     <span class="label_image">
@@ -26,7 +30,8 @@
                     <span class="label_title">
                         Date for exeat
                     </span>
-                    <input type="date" name="exeat_date" id="exeat_date" title="Date for exeat" required>
+                    <input type="date" name="exeat_date" id="exeat_date" title="Date for exeat" required
+                    value="<?php echo date("Y-m-d") ?>">
                 </label>
                 <label for="return_date" class="flex-column flex-align-start flex-content-start date">
                     <span class="label_title">
@@ -34,6 +39,16 @@
                     </span>
                     <input type="date" name="return_date" id="return_date" title="Date for exeat" required>
                 </label>
+                <label for="exeat_type">
+                    <span class="label_image">
+                        <img src="<?php echo $url?>/assets/images/icons/logout.png" alt="type">
+                    </span>
+                    <select name="exeat_type" id="exeat_type">
+                        <option value="">Select type of exeat</option>
+                        <option value="Internal">Internal Exeat</option>
+                        <option value="External">External Exeat</option>
+                    </select>
+                </label>                
             </div>
             <label for="exeat_reason">
                 <span class="label_image">
@@ -41,6 +56,10 @@
                 </span>
                 <textarea name="exeat_reason" id="exeat_reason" placeholder="Reason for exeat [maximum of 80 characters]*" required 
                 title="Provide a reason for the exeat" maxlength="80"></textarea>
+            </label>
+
+            <label for="submit" class="btn">
+                <button type="submit" name="submit" value="exeat_request">Give Exeat</button>
             </label>
         </div>
     </form>
@@ -50,6 +69,12 @@
     <div class="head">
         <h2>Students on exeat</h2>
     </div>
+    <?php 
+        $sql = "SELECT * FROM exeat WHERE school_id = $user_school_id";
+        $result = $connect->query($sql);
+
+        if($result->num_rows > 0){
+    ?>
     <div class="body">
         <table>
             <thead>
@@ -58,19 +83,53 @@
                     <td>House</td>
                     <td>Town</td>
                     <td>Leave Date</td>
+                    <td>Expected Return</td>
                     <td>Return Date</td>
                     <td>Status</td>  
                 </tr>
             </thead>
             <tbody>
+                <?php while($row = $result->fetch_assoc()){ ?>
                 <tr>
-                    <td>John Doe</td>
-                    <td>Adaklu</td>
-                    <td>Nsawam</td>
-                    <td>29-10-2021</td>
-                    <td>01-12-2021</td>
-                    <td>Not Returned</td>
+                    <td><?php 
+                            $column = "Lastname, Othernames";
+                            $table = "cssps";
+                            $where = "indexNumber='".$row["indexNumber"]."'";
+
+                            $data = fetchData($column, $table, $where);
+
+                            echo $data["Lastname"]." ".$data["Othernames"];
+                        ?>
+                    </td>
+                    <td><?php 
+                            $column = "title";
+                            $table = "houses";
+                            $where = "id=".$row["houseID"];
+
+                            $data = fetchData($column, $table, $where);
+
+                            echo $data["title"];
+                        ?>
+                    </td>
+                    <td><?php echo $row["exeatTown"] ?></td>
+                    <td><?php echo date("M j, Y", strtotime($row["exeatDate"])) ?></td>
+                    <td><?php echo date("M j, Y", strtotime($row["expectedReturn"])) ?></td>
+                    <td><?php echo date("M j, Y", strtotime($row["returnDate"])) ?></td>
+                    <td><?php
+                            if($row["returnStatus"] == false){
+                                echo "Not Returned";
+                            }else{
+                                echo "Returned";
+                            }
+                        ?>
+                    </td>
+                    <?php if($row["returnStatus"] == false){?>
+                    <td class="edit">
+                        <span class="item-event" data-item-id="<?php echo $row["id"]?>">Sign Returned</span>
+                    </td>
+                    <?php } ?>
                 </tr>
+                <?php }?>
             </tbody>
         </table>
     </div>
@@ -79,4 +138,50 @@
             <button title="Generates a report for the term on exeats made">Generate Report</button>
         </div>
     </div>
+    <?php }else{ ?>
+    <div class="body empty">
+        <p>No exeat has been made</p>
+    </div>
+    <?php } ?>
 </section>
+
+<script>
+    $("form[name=exeatForm]").submit(function(e){
+        e.preventDefault();
+
+        response = formSubmit($(this), $("form[name=exeatForm] button[name=submit]"));
+
+        if(response == true){
+            message = "Exeat provided successfully";
+            type = "success";
+        }else{
+            type = "error";
+
+            if(response == "no-index"){
+                message = "Index Number field is empty";
+            }else if(response == "no-town"){
+                message = "Please provied the exeat town";
+            }else if(response == "no-exeat-date"){
+                message = "Exeat date has not been provided";
+            }else if(response == "no-return-date"){
+                message = "Return date has not been provided";
+            }else if(response == "date-conflict"){
+                message = "Return date cannot be lower than exeat date";
+            }else if(response == "no-exeat-type"){
+                message = "Please specify the type of exeat";
+            }else if(response == "no-reason"){
+                message = "Please provide a reason for this exeat";
+            }else if(response == "range-error"){
+                message = "Reason should range between 3 and 80 characters";
+            }else if(response == "not-student"){
+                message = "Index number entered cannot be found. Please check and try again";
+            }else if(response == "not-registered"){
+                message = "Student has not been registered";
+            }else{
+                message = response;
+            }
+        }
+
+        messageBoxTimeout("exeatForm",message, type);
+    })
+</script>

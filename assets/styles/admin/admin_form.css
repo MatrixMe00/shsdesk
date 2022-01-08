@@ -147,6 +147,7 @@ label.textarea span.label_image{
 label.checkbox span.label_title, label.radio span.label_title, 
 label.date span.label_title{
     margin: auto 0.3rem;
+    flex: 1;
 }
 
 label.checkbox span.label_title::selection, label.radio span.label_title::selection{
@@ -162,6 +163,11 @@ label input, label textarea, label select{
     padding: 5px 8px;
     flex: 9;
     border: unset;
+}
+
+label input[type=checkbox], label [type=radio]{
+    width: initial;
+    flex: 0;
 }
 
 label textarea{

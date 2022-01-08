@@ -169,7 +169,7 @@
                     <input type="text" name="item_head" id="item_head" placeholder="Provide a title for this block*" required>
                 </label>
                 <label for="item_desc" class="flex">
-                    <textarea type="text" name="item_desc" id="item_desc" placeholder="Provide a  brief description about the carousel*" required></textarea>
+                    <textarea type="text" name="item_desc" id="item_desc" placeholder="Provide a  brief description about the carousel*" class="admin_tinymce" required></textarea>
                 </label>
                 <div class="flex flex-center-align flex-wrap">
                     <label for="item_button" class="checkbox">
@@ -206,3 +206,6 @@
 </section>
 
 <script src="<?php echo $url?>/admin/superadmin/assets/scripts/page_parts/home.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>"></script>

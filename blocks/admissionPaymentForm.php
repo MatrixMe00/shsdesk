@@ -65,7 +65,7 @@
                     </div>
                     <div class="flex">
                         <label for="submit" class="btn">
-                            <button type="button" name="submit" value="login" class="dbl_btn img_btn" id="paymentFormButton" onclick="$('form[name=admissionForm]').submit()" disabled>
+                            <button type="button" name="submit" value="login" class="dbl_btn img_btn" id="paymentFormButton" disabled>
                                 <img src="<?php echo $url?>/assets/images/icons/lock.png" alt="lock">
                                 <span>Continue</span>
                             </button>

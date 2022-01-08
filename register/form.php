@@ -3,7 +3,7 @@
 
     if(isset($_POST['submit']) && $_POST['submit'] == "register_school"){
         //take details
-        $form_id = $_POST["form_id"];
+        $form_id = $connect->real_escape_string($_POST["form_id"]);
 
         //check if the form is not already submitted
         $res = $connect->query("SELECT * FROM schools WHERE id=$form_id") or die($connect->error);
@@ -16,67 +16,79 @@
         }
 
         //school and technical's details
-        $school_name = $_POST["school_name"];
-        $abbreviation = $_POST["abbreviation"];
-        $head_name = $_POST["head_name"];
-        $technical_name = $_POST["technical_name"];
-        $technical_phone = $_POST["technical_phone"];
+        $school_name = $connect->real_escape_string($_POST["school_name"]);
+        $abbreviation = $connect->real_escape_string($_POST["abbreviation"]);
+        $head_name = $connect->real_escape_string($_POST["head_name"]);
+        $technical_name = $connect->real_escape_string($_POST["technical_name"]);
+        $technical_phone = $connect->real_escape_string($_POST["technical_phone"]);
         
-        //email address
-        $school_email = $_POST["school_email"];
+        //address
+        $school_email = $connect->real_escape_string($_POST["school_email"]);
+        $postal_address = $connect->real_escape_string($_POST["postal_address"]);
         
         //school's description
         $description = htmlentities($_POST["description"]);
 
         //other details of school
-        $category = $_POST["category"];
-        $residence_status = $_POST["residence_status"];
-        $sector = $_POST["sector"];
-        $autoHousePlace = $_POST["autoHousePlace"];
+        $category = $connect->real_escape_string($_POST["category"]);
+        $residence_status = $connect->real_escape_string($_POST["residence_status"]);
+        $sector = $connect->real_escape_string($_POST["sector"]);
+        $autoHousePlace = $connect->real_escape_string($_POST["autoHousePlace"]);
+        $admission_letter = $connect->real_escape_string($_POST["admission_letter"]);
 
         if($autoHousePlace == "true" || $autoHousePlace == "on"){
             $autoHousePlace = true;
         }
 
         //prevent empty entries
-        if(!isset($school_name) || $school_name == null || $school_name == ""){
+        if(empty($school_name) || $school_name == null || $school_name == ""){
             echo "<p>No School name was provided</p>";
             
             echo "<p>Please go back and complete the form</p>";
             exit(1);
-        }elseif(!isset($head_name) || $head_name == null || $head_name == ""){
+        }elseif(empty($head_name) || $head_name == null || $head_name == ""){
             echo "<p>The name of the Head of the school has not being captured</p>";
             
             echo "<p>Please go back and complete the form</p>";
             exit(1);
-        }elseif(!isset($technical_name) || $technical_name == null || $technical_name == ""){
+        }elseif(empty($technical_name) || $technical_name == null || $technical_name == ""){
             echo "<p>No technical support name has been provided</p>";
             
             echo "<p>Please go back and complete the form</p>";
             exit(1);
-        }elseif(!isset($technical_phone) || $technical_phone == null || $technical_phone == ""){
+        }elseif(empty($technical_phone) || $technical_phone == null || $technical_phone == ""){
             echo "<p>No technical support contact number has been provided";
             
             echo "<p>Please go back and complete the form</p>";
             exit(1);
-        }elseif(!isset($description) || $description == null || $description == ""){
+        }elseif(empty($school_email)){
+            echo "<p>No email has been provided. Please check and try again";
+
+            echo "<p>Please go back and complete the form</p>";
+            exit(1);
+        }elseif(empty($description) || $description == null || $description == ""){
             echo "<p>Please provide a brief description of your school</p>";
             
             echo "<p>Please go back and complete the form</p>";
             exit(1);
-        }elseif(!isset($category) || $category == null || $category == ""){
+        }elseif(empty($category) || $category == null || $category == ""){
             echo "<p>You have not selected the category of your school</p>";
             
             echo "<p>Please go back and complete the form</p>";
             exit(1);
-        }elseif(!isset($residence_status) || $residence_status == null || $residence_status == ""){
+        }elseif(empty($residence_status) || $residence_status == null || $residence_status == ""){
             echo "<p>Please provide the residence status of your school</p>";
             
             echo "<p>Please go back and complete the form</p>";
             exit(1);
-        }elseif(!isset($sector) || $sector == null || $sector == ""){
+        }elseif(empty($sector) || $sector == null || $sector == ""){
             echo "<p>Please provide the sector to which your school belongs</p>";
             
+            echo "<p>Please go back and complete the form</p>";
+            exit(1);
+        }elseif(empty($admission_letter) || $admission_letter == null || $admission_letter == ""){
+            echo "<p>Please provide a body for your admission letter</p>";
+
             echo "<p>Please go back and complete the form</p>";
             exit(1);
         }
@@ -95,6 +107,7 @@
             exit(1);
         }
 
+        //allow user to upload prospectus
         if(isset($_FILES["prospectus"]) && $_FILES["prospectus"]["tmp_name"] !== null){
             //get file extension
             $ext = strtolower(fileExtension("prospectus"));
@@ -106,6 +119,7 @@
                 $prostectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
             }else{
                 echo "<p>File provided for prospectus is not a PDF</p>";
+                echo "<p>Please go back and provide valid document form</p>";
             }
 
             $prostectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
@@ -116,45 +130,24 @@
             exit(1);
         }
 
-        if(isset($_FILES["admission_letter"]) && $_FILES["admission_letter"]["tmp_name"] !== null){
-            //get file extension
-            $ext = strtolower(fileExtension("admission_letter"));
-
-            if($ext =="pdf"){
-                $file_input_name = "admission_letter";
-                $local_storage_directory = "$rootPath/admin/admin/assets/files/admission_letter/";
-
-                $admissionDirectory = getFileDirectory($file_input_name, $local_storage_directory);
-            }else{
-                echo "<p>File provided for admission letter is not a PDF</p>";
-            }            
-        }else{
-            echo "<p>Please provide your admission letter</p>";
-            
-            echo "<p>Please go back and complete the form</p>";
-            exit(1);
-        }
-
         //remove the root path
         $image_directory = explode("$rootPath/",$image_directory);
         $prostectusDirectory = explode("$rootPath/", $prostectusDirectory);
-        $admissionDirectory = explode("$rootPath/", $admissionDirectory);
 
         //store only the direct file paths
         $image_directory = $image_directory[1];
         $prostectusDirectory = $prostectusDirectory[1];
-        $admissionDirectory = $admissionDirectory[1];
 
         //query the database
-        $query = "INSERT INTO schools (logoPath, prospectusPath, admissionPath, schoolName, abbr, 
+        $query = "INSERT INTO schools (logoPath, prospectusPath, admissionPath, schoolName, postalAddress, abbr, 
             headName, techName, techContact, email, description, category, residence_status, sector, 
             autoHousePlace) 
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
 
         //prepare query for entry into database
         $result = $connect->prepare($query);
-        $result->bind_param("ssssssssssissi", $image_directory, $prostectusDirectory, $admissionDirectory, 
-        $school_name, $abbreviation, $head_name, $technical_name, $technical_phone, $school_email, $description, 
+        $result->bind_param("sssssssssssissi", $image_directory, $prostectusDirectory, $admission_letter, 
+        $school_name, $postal_address, $abbreviation, $head_name, $technical_name, $technical_phone, $school_email, $description, 
         $category, $residence_status, $sector, $autoHousePlace);
 
         //execute the results
@@ -179,6 +172,11 @@
             $res->bind_param('sssisi',$technical_name,$school_email, $default_password,$row["id"], $technical_phone, 3);
 
             if($res->execute){
+                //insert data into admission details table
+                $sql = "INSERT INTO admissionDetails (schoolID, headName) 
+                VALUES (".$row["id"].",$head_name)";
+                $connect->query($sql);
+
                 echo "<p>Your data has been recorded successfully!</p>";
                 if($autoHousePlace != true){
                     echo "<p>Student house allocation has not been set to automatic<br>

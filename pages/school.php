@@ -38,14 +38,14 @@
                 <div class="desc">
                     <p><?php echo html_entity_decode($row["description"])?></p>
                 </div>
-                <div class="button flex flex-content-end">
+                <!-- <div class="button flex flex-content-end">
                     <div class="btn">
                         <button class="enrol_button">Enrol</button>
                     </div>
                     <div class="btn">
                         <button>Read More</button>
                     </div>                 
-                </div>
+                </div> -->
             </div>
         </div>
         <?php
@@ -75,11 +75,16 @@
     </div>
 
     <!--Document scripts-->
+    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/assets/scripts/head_foot.js?v=<?php echo time()?>"></script>
-    <script src="<?php echo $url?>/assets/scripts/admissionForm.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/admissionForm.js?v=<?php echo time(); ?>"></script>
 
     <!--Angular scripts-->
-    <script src="<?php echo $url?>/assets/scripts/angular_index.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/angular_index.js?v=<?php echo time()?>"></script>
+
+    <!--Payment scripts-->
+    <script src="<?php echo $url?>/assets/scripts/form/payForm.js?v=<?php echo time();?>"></script>
 
     <script>
         nav_height = $("nav").height();

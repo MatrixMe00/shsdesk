@@ -166,6 +166,80 @@
 
             echo $message;
             
+        }elseif($submit == "exeat_request" || $submit == "exeat_request_ajax"){
+            $student_index = $_REQUEST["student_index"];
+            $exeat_town = $_REQUEST["exeat_town"];
+            $exeat_date = $_REQUEST["exeat_date"];
+            $return_date = $_REQUEST["return_date"];
+            $exeat_type = $_REQUEST["exeat_type"];
+            $exeat_reason = $_REQUEST["exeat_reason"];
+
+            $message = "";
+
+            if(empty($student_index)){
+                $message = "no-index";
+            }elseif(empty($exeat_town)){
+                $message = "no-town";
+            }elseif(empty($exeat_date)){
+                $message = "no-exeat-date";
+            }elseif(empty($return_date)){
+                $message = "no-return-date";
+            }elseif(strtotime($exeat_date) > strtotime($return_date)){
+                $message = "date-conflict";
+            }elseif(empty($exeat_type)){
+                $message = "no-exeat-type";
+            }elseif(empty($exeat_reason)){
+                $message = "no-reason";
+            }elseif(strlen($exeat_reason) < 3 || strlen($exeat_reason) > 80){
+                $message = "range-error";
+            }else{
+                //validate index number
+                $sql = "SELECT houseID FROM house_allocation WHERE indexNumber=?";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("s",$student_index);
+                $stmt->execute();
+
+                $result = $stmt->get_result();
+
+                if($result->num_rows > 0){
+                    //format dates
+                    $exeat_date = date("Y-m-d", strtotime($exeat_date));
+                    $return_date = date("Y-m-d", strtotime($return_date));
+
+                    //get house id
+                    $column = "houseID";
+                    $table = "house_allocation";
+                    $where = "indexNumber='$student_index'";
+
+                    $data = fetchData($column, $table, $where);
+                    
+                    //parse data into database
+                    $sql = "INSERT INTO exeat (indexNumber,houseID,exeatTown,exeatDate,expectedReturn,exeatReason,exeatType,school_id)
+                        VALUES (?,?,?,?,?,?,?)";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("sisssssi",$student_index, $data["houseID"],$exeat_town,$exeat_date,$return_date,$exeat_reason,$exeat_type, $user_school_id);
+                    $stmt->execute();
+
+                    #code to send letter to parents will go here
+
+                    $message = "success";
+                }else{
+                    //check if user is registered
+                    $column = "enroled";
+                    $table = "cssps";
+                    $where = "indexNumber='$student_index'";
+
+                    $data = fetchData($column, $table, $where);
+
+                    if($data == "empty"){
+                        $message = "not-student";
+                    }elseif($data["enroled"] == false || $data["enroled"] == "false"){
+                        $message = "not-registered";
+                    }
+                }                
+            }
+
+            echo $message;
         }
     }else{
         echo "no-submission";

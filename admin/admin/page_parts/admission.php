@@ -7,26 +7,32 @@
                 <div class="close"><span>&cross;</span></div>
             </div>
 
-            <input type="hidden" name="school_id" id="school_id">
+            <?php 
+                $query = $connect->query("SELECT * FROM admissionDetails WHERE schoolID= $user_school_id");
+                $row = $query->fetch_assoc();
+            ?>
 
             <div class="joint">
                 <label for="head_name">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="head name">
                     </span>
-                    <input type="text" name="head_name" id="head_name" class="text_input" placeholder="Name of Head of School*" autocomplete="off" required>
+                    <input type="text" name="head_name" id="head_name" class="text_input" placeholder="Name of Head of School*" 
+                    autocomplete="off" required value="<?php echo $row["headName"] ?>">
                 </label>
                 <label for="head_title">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/bag-handle-outline.svg" alt="head title">
                     </span>
-                    <input type="text" name="head_title" id="head_title" class="text_input" placeholder="Title of Head*" autocomplete="off" title="Enter the title of the head provided above" required>
+                    <input type="text" name="head_title" id="head_title" class="text_input" placeholder="Title of Head*" autocomplete="off" 
+                    title="Enter the title of the head provided above" required value="<?php echo $row["titleOfHead"] ?>">
                 </label>
                 <label for="sms_id">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/chatbox-outline.svg" alt="sms id">
                     </span>
-                    <input type="text" name="sms_id" id="sms_id" class="text_input" placeholder="SMS Sender ID*" autocomplete="off" title="Provide the name to be seen when an sms is sent" required>
+                    <input type="text" name="sms_id" id="sms_id" class="text_input" placeholder="SMS Sender ID*" autocomplete="off" 
+                    title="Provide the name to be seen when an sms is sent" required value=<?php echo $row["smsID"] ?>>
                 </label>
             </div>
             
@@ -48,7 +54,7 @@
                         
                         echo "value=\"$admission_year\""
                     ?>
-                    title="This is generated automatically, but you can manually input the admission year" maxlength="4" minlength="4" pattern="[0-9]+" disabled>
+                    title="This is generated automatically, but you can manually input the admission year" maxlength="4" minlength="4" pattern="[0-9]+">
                 </label>
                 <label for="academic_year">
                     <span class="label_image">
@@ -71,7 +77,7 @@
 
                         echo "value=\"$prev_year / $next_year\"";
                     ?>
-                    title="Enter the current academic year" required maxlength="11" minlength="9" disabled>
+                    title="Enter the current academic year" required maxlength="11" minlength="9">
                 </label>
                 <label for="reopening">
                     <span class="label_image">
@@ -101,4 +107,6 @@
     </form>
 
     <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>"></script>

@@ -10,7 +10,7 @@
                             Step 3
                         </span>
                     </div>
-                    <div class="form_views">
+                    <div class="form_views" style="max-height: 60vh; overflow: auto">
                         <div id="view1" class="view_box">
                             <div class="head">
                                 <h2>Application Form</h2>
@@ -20,20 +20,25 @@
                                 <fieldset id="enrol_field">
                                     <legend>CSSPS Details</legend>
                                     <div class="joint">
-                                        <input type="hidden" name="transaction_id" id="ad_transaction_id"
-                                        ng-model="ad_transaction_id">
-
+                                        <label for="ad_transaction_id" class="no_disp">
+                                            <span class="label_image">
+                                                <img src="<?php echo $url?>/assets/images/icons/cash-outline.svg" alt="transaction">
+                                            </span>
+                                            <input type="text" name="ad_transaction_id" id="ad_transaction_id"
+                                            ng-model="ad_transaction_id" disabled placeholder="Transaction ID">
+                                        </label>
                                         <label for="shs_placed" class="no_disp">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/school-outline.svg" alt="shs">
                                             </span>
-                                            <input type="text" name="shs_placed" id="shs_placed" ng-model="shs_placed" disabled>
+                                            <input type="text" name="shs_placed" id="shs_placed" ng-model="shs_placed" disabled placeholder="SHS Name">
                                         </label>
                                         <label for="ad_enrol_code" class="no_disp">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/reader-outline.svg" alt="enrol code">
                                             </span>
-                                            <input type="text" name="ad_enrol_code" id="ad_enrol_code" ng-model="ad_enrol_code" placeholder="Enter Your Enrolment Code Here*" title="Enter your enrolment code which you received from the CSSPS" disabled>
+                                            <input type="text" name="ad_enrol_code" id="ad_enrol_code" ng-model="ad_enrol_code" placeholder="Your Enrolment Code*" 
+                                            title="Enter your enrolment code which you received from the CSSPS">
                                         </label>
                                         <label for="ad_index">
                                             <span class="label_image">
@@ -46,7 +51,8 @@
                                                 <img src="<?php echo $url?>/assets/images/icons/hashtag.png" alt="aggregate">
                                             </span>
                                             <input type="text" name="ad_aggregate" id="ad_aggregate" maxlength="2"
-                                            placeholder="Enter your aggregate here" required title="Enter your aggregate here" pattern="[0-9]+" ng-model="ad_aggregate">
+                                            placeholder="Enter your aggregate here" required title="Enter your aggregate here" pattern="[0-9]+" 
+                                            ng-model="ad_aggregate" disabled>
                                         </label>
                                         <label for="ad_course" class="no_disp">
                                             <span class="label_image">
@@ -91,7 +97,7 @@
                                             </span>
                                             <input type="text" name="ad_jhs" id="ad_jhs" 
                                             placeholder="Name of JHS School*" ng-model="ad_jhs" 
-                                            title="Enter the name of your JHS school" required>
+                                            title="Enter the name of your JHS school" required disabled>
                                         </label>
                                         <label for="ad_jhs_town">
                                             <span class="label_image">
@@ -176,7 +182,7 @@
                                                 <img src="<?php echo $url?>/assets/images/icons/man-outline.svg" alt="father">
                                             </span>
                                             <input type="text" name="ad_father_name" id="ad_father_name" pattern="[a-zA-Z\s]{5,}" autocomplete="off" 
-                                            placeholder="Name of Father" ng-model="ad_father_name" required 
+                                            placeholder="Name of Father" ng-model="ad_father_name" 
                                             title="Enter the full name of your father">
                                         </label>
                                         <label for="ad_father_occupation" ng-show="ad_father_name">
@@ -268,13 +274,13 @@
                                     <legend>Others</legend>
                                     <label for="ad_awards">
                                         <span class="label_image">
-                                            <img src="<?php echo $url?>" alt="award">
+                                            <img src="<?php echo $url?>/assets/images/icons/ticket-outline.svg" alt="award">
                                         </span>
                                         <input type="text" name="ad_awards" id="ad_awards" title="Enter any awards (separated by commas)" placeholder="School Awards" ng-model="ad_awards">
                                     </label>
                                     <label for="ad_position">
                                         <span class="label_image">
-                                            <img src="<?php echo $url?>" alt="icon">
+                                            <img src="<?php echo $url?>/assets/images/icons/ticket-outline.svg" alt="icon">
                                         </span>
                                         <input type="text" name="ad_position" id="ad_position" title="Enter any positions you held in JHS (separate by commas)" placeholder="Position Held" ng-model="ad_position">
                                     </label>
@@ -284,13 +290,13 @@
                                     <legend>Witness</legend>
                                     <label for="ad_witness">
                                         <span class="label_image">
-                                            <img src="<?php echo $url?>" alt="witness">
+                                            <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="witness">
                                         </span>
                                         <input type="text" name="ad_witness" id="ad_witness" ng-model="ad_witness" title="Your witness could be a teacher, pastor, snr/public/civil servant, etc" placeholder="Witness' Name*" required>
                                     </label>
                                     <label for="ad_witness_phone">
-                                        <span class="image_label">
-                                            <img src="<?php echo $url?>" alt="icon">
+                                        <span class="label_image">
+                                            <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="witness phone">
                                         </span>
                                         <input type="tel" name="ad_witness_phone" id="ad_witness_phone" ng-model="ad_witness_phone" required maxlength = "16" 
                                         placeholder="Witness' Contact Number*" title="Enter a valid phone number, and it should be only numbers" pattern="[0-9]+">
@@ -312,12 +318,12 @@
                                                 <span>SHS Name</span>
                                             </div>
                                             <div class="value">
-                                                <span>{{shs_placed}}</span>
+                                                <span id="res_shs_placed"></span>
                                             </div>
                                         </div>
                                         <div class="label">
                                             <div class="name">
-                                                <span>Enrol Code
+                                                <span>Enrol Code</span>
                                             </div>
                                             <div class="value">
                                                 <span>{{ad_enrol_code}}</span>
@@ -325,7 +331,7 @@
                                         </div>
                                         <div class="label">
                                             <div class="name">
-                                                <span>JHS Index Number
+                                                <span>JHS Index Number</span>
                                             </div>
                                             <div class="value">
                                                 <span>{{ad_index}}</span>
@@ -333,18 +339,18 @@
                                         </div>
                                         <div class="label">
                                             <div class="name">
-                                                <span>Six Aggregate
+                                                <span>Six Aggregate</span>
                                             </div>
                                             <div class="value">
-                                                <span>{{ad_aggregate}}</span>
+                                                <span id="res_ad_aggregate"></span>
                                             </div>
                                         </div>
                                         <div class="label">
                                             <div class="name">
-                                                <span>Course Chosen
+                                                <span>Course Chosen</span>
                                             </div>
                                             <div class="value">
-                                                <span>{{ad_course}}</span>
+                                                <span id="res_ad_course"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -358,7 +364,7 @@
                                                 <span>Lastname</span>
                                             </div>
                                             <div class="value">
-                                                <span>{{ad_lname}}</span>
+                                                <span id="res_ad_lname"></span>
                                             </div>
                                         </div>
                                         <div class="label">
@@ -366,7 +372,7 @@
                                                 <span>Other name(s)</span>
                                             </div>
                                             <div class="value">
-                                                <span>{{ad_oname}}</span>
+                                                <span id="res_ad_oname"></span>
                                             </div>
                                         </div>
                                         <div class="label">
@@ -374,15 +380,15 @@
                                                 <span>Gender</span>
                                             </div>
                                             <div class="value">
-                                                <span>{{ad_gender}}</span>
+                                                <span id="res_ad_gender"></span>
                                             </div>
                                         </div>
                                         <div class="label">
                                             <div class="name">
-                                                <span>JHS Attended
+                                                <span>JHS Attended</span>
                                             </div>
                                             <div class="value">
-                                                <span>{{ad_jhs}}</span>
+                                                <span id="res_ad_jhs"></span>
                                             </div>
                                         </div>
                                         <div class="label">
@@ -406,7 +412,7 @@
                                                 <span>Birthdate</span>
                                             </div>
                                             <div class="value">
-                                                <span>{{ad_birthdate}}</span>
+                                                <span id="res_ad_birthdate"></span>
                                             </div>
                                         </div>
                                         <div class="label">
@@ -577,4 +583,10 @@
                             <button type="reset" name="modal_cancel" value="cancel">Cancel</button>
                         </label>
                     </div>
+
+                    <div id="message_box" class="success no_disp">
+                        <span class="message"></span>
+                        <div class="close"><span>&cross;</span></div>
+                    </div>
+                    <a href="<?php echo $url?>/pdf_handle.php" style="display:none !important" id="handle_pdf" target="_blank"></a>
                 </form>

@@ -1,11 +1,12 @@
-<?php require_once("../../../includes/session.php")?>
+<?php require_once("../../../includes/session.php");
+    $price = fetchData("price","roles","id=".$user_details["role"])["price"];
+?>
 <section class="section_container">
     <div class="content blue">
         <div class="head">
             <h2>
                 <?php
-                $shsID = 3;
-                    $res = $connect->query("SELECT enrolDate FROM enrol_table WHERE shsID=$shsID");
+                    $res = $connect->query("SELECT enrolDate FROM enrol_table WHERE shsID=$user_school_id");
                     $i = 0;
 
                     if($res->num_rows > 0){
@@ -31,14 +32,20 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE shsID=$shsID");
+                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE shsID=$user_school_id");
                     
                     echo $res->num_rows;
                 ?>
             </h2>
         </div>
         <div class="body">
-            <span>Students Registered</span>
+            <span><?php 
+                if($res->num_rows > 1){
+                    echo "Students";
+                }else{
+                    echo "Student";
+                }
+            ?> Registered</span>
         </div>
     </div>
 
@@ -62,7 +69,13 @@
             </h2>
         </div>
         <div class="body">
-            <span>Students left to register</span>
+            <span><?php 
+                if($res->num_rows > 1){
+                    echo "Students";
+                }else{
+                    echo "Student";
+                }
+            ?> left to register</span>
         </div>
     </div>
 </section>
@@ -72,7 +85,7 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE interest = 'Athletics' AND shsID=$shsID");
+                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE interest LIKE '%Athletics%' AND shsID=$user_school_id");
                     
                     echo $res->num_rows;
                 ?>
@@ -87,7 +100,7 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE interest = 'Football' AND shsID=$shsID");
+                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE interest LIKE '%Football%' AND shsID=$user_school_id");
                     
                     echo $res->num_rows;
                 ?>
@@ -102,7 +115,7 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE interest = 'Debate Club' AND shsID=$shsID");
+                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE interest LIKE '%Debating Club%' AND shsID=$user_school_id");
                     
                     echo $res->num_rows;
                 ?>
@@ -117,7 +130,7 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE interest = 'Others' AND shsID=$shsID");
+                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE interest LIKE '%Others%' AND shsID=$user_school_id");
                     
                     echo $res->num_rows;
                 ?>
@@ -134,12 +147,12 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction FROM transaction WHERE schoolBought=$shsID");
+                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction FROM transaction WHERE schoolBought=$user_school_id");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){
                         if(date("Y",strtotime($row["Transaction_Date"])) == date("Y")){
-                            $amount += ($row["amountPaid"] - $row["Deduction"]) * 0.1;
+                            $amount += $price;
                         }else{
                             continue;
                         }
@@ -158,12 +171,12 @@
         <div class="head">
             <h2>GHC
             <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction FROM transaction WHERE schoolBought=$shsID");
+                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction FROM transaction WHERE schoolBought=$user_school_id");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){
                         if(date("W",strtotime($row["Transaction_Date"]) - 1) == date("W") - 1){
-                            $amount += ($row["amountPaid"] - $row["Deduction"]) * 0.1;
+                            $amount += $price;
                         }else{
                             continue;
                         }
@@ -182,12 +195,12 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction FROM transaction WHERE schoolBought=$shsID");
+                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction FROM transaction WHERE schoolBought=$user_school_id");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){
                         if(date("W",strtotime($row["Transaction_Date"])) == date("W")){
-                            $amount += ($row["amountPaid"] - $row["Deduction"]) * 0.1;
+                            $amount += $price;
                         }else{
                             continue;
                         }

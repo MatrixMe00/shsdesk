@@ -1,4 +1,7 @@
-<?php include_once("../../../includes/session.php")?>
+<?php include_once("../../../includes/session.php");
+    $price = fetchData("price","roles","id=".$user_details["role"])["price"];
+    $system_price = fetchData("price","roles","title='system'")["price"];
+?>
 
 <section class="section_container">
     <div class="content" style="background-color: #007bff;">
@@ -11,7 +14,13 @@
             </h2>
         </div>
         <div class="body">
-            <span>Schools Registered</span>
+            <span><?php 
+                if($res->num_rows > 1){
+                    echo "Schools";
+                }else{
+                    echo "School";
+                }
+            ?> Registered</span>
         </div>
     </div>
 
@@ -25,7 +34,13 @@
             </h2>
         </div>
         <div class="body">
-            <span>Students on System</span>
+            <span><?php 
+                if($res->num_rows > 1){
+                    echo "Students";
+                }else{
+                    echo "Student";
+                }
+            ?> on System</span>
         </div>
     </div>
 
@@ -48,7 +63,13 @@
             </h2>
         </div>
         <div class="body">
-            <span>Schools Deactivated</span>
+            <span><?php 
+                if($res->num_rows > 1){
+                    echo "Schools";
+                }else{
+                    echo "School";
+                }
+            ?> Deactivated</span>
         </div>
     </div>
 </section>
@@ -63,7 +84,7 @@
                     $amount = 0;
                     while($row = $res->fetch_array()){
                         if(date("Y",strtotime($row["Transaction_Date"])) == date("Y")){
-                            $amount += ($row["amountPaid"] - $row["Deduction"]) * 0.9;
+                            $amount += $price;
                         }else{
                             continue;
                         }
@@ -87,7 +108,7 @@
                     $amount = 0;
                     while($row = $res->fetch_array()){
                         if(date("W",strtotime($row["Transaction_Date"]) - 1) == date("W") - 1){
-                            $amount += ($row["amountPaid"] - $row["Deduction"]) * 0.9;
+                            $amount += $price;
                         }else{
                             continue;
                         }
@@ -111,7 +132,7 @@
                     $amount = 0;
                     while($row = $res->fetch_array()){
                         if(date("W",strtotime($row["Transaction_Date"])) == date("W")){
-                            $amount += ($row["amountPaid"] - $row["Deduction"]) * 0.9;
+                            $amount += $price;
                         }else{
                             continue;
                         }
@@ -123,6 +144,30 @@
         </div>
         <div class="body">
             <span>Made This Week</span>
+        </div>
+    </div>
+
+    <div class="content dark">
+        <div class="head">
+            <h2>GHC
+                <?php
+                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction FROM transaction");
+                    
+                    $amount = 0;
+                    while($row = $res->fetch_array()){
+                        if(date("Y",strtotime($row["Transaction_Date"])) == date("Y")){
+                            $amount += $system_price - $row["Deduction"];
+                        }else{
+                            continue;
+                        }
+                    }
+                    $amount = number_format(round($amount,2), 2);
+                    echo $amount;
+                ?>
+            </h2>
+        </div>
+        <div class="body">
+            <span>Made by System This Year</span>
         </div>
     </div>
 </section>

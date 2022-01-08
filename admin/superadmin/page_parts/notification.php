@@ -455,7 +455,7 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="message">
                 </span>
-                <textarea name="message" maxlength="400" placeholder="Enter your announcement in this space. You should not exceed 400 characters" required></textarea>
+                <textarea name="message" maxlength="400" placeholder="Enter your announcement in this space. You should not exceed 400 characters" class="admin_tinymce" required></textarea>
             </label>
             <div id="#aud">
                 <p style="padding-left: 12px">Select your audience</p>
@@ -562,3 +562,6 @@
 
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>">
 </script><script src="<?php echo $url?>/admin/assets/scripts/notification.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>"></script>

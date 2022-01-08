@@ -12,7 +12,7 @@
         <h3>About Us</h3>
     </div>
     <div class="body middle">
-        <div id="about_desc" class="desc" contenteditable="false">
+        <div id="about_desc" class="desc admin_tinymce" contenteditable="false">
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus explicabo ducimus, at atque labore ab ea nesciunt deserunt quaerat enim, consequuntur, voluptas reiciendis. 
             Quo asperiores officia qui inventore porro nostrum?</p>
             <p>Nihil perferendis dolores cumque quia praesentium magni vel quo rem placeat. 
@@ -21,7 +21,7 @@
             repellendus nostrum quaerat, sequi similique dolorem? Odio corporis dolore officiis ipsa expedita eveniet!</p>
         </div>
         <!-- <label for="about_desc" class="desc">
-            <textarea name="about_desc" id="about_desc" 
+            <textarea name="about_desc admin_tinymce" id="about_desc" 
             placeholder="Please provide a description about the website"></textarea>
         </label> -->
     </div>
@@ -253,7 +253,7 @@
                     <input type="text" name="item_head" id="item_head" placeholder="Provide a title for this gallery item*" required>
                 </label>
                 <label for="item_desc" class="flex">
-                    <textarea type="text" name="item_desc" id="item_desc" placeholder="Provide a  brief description about the gallery item*" required></textarea>
+                    <textarea type="text" name="item_desc" id="item_desc" placeholder="Provide a  brief description about the gallery item*" class="admin_tinymce" required></textarea>
                 </label>
                 <div class="flex flex-center-align flex-wrap">
                     <label for="item_button" class="checkbox">
@@ -290,3 +290,6 @@
 </section>
 
 <script src="<?php echo $url?>/admin/superadmin/assets/scripts/page_parts/home.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>"></script>

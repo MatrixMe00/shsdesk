@@ -18,7 +18,42 @@ $(document).ready(function(){
 
     //select the first tab of the form by default
     $("span.tab_button:nth-child(1)").click();
+
+    //default the admission form
+    $("form[name=admissionForm] button[name=modal_cancel]").click();
 })
+
+//function to be used to check if the next or submit button should be
+//shown in the admission form
+/**
+ * This function is used to check if the next or submit button should be shown in the admission form
+ * @returns {void} The function returns nothing
+ */
+ function admissionFormButtonChange()
+ {
+     //get the total number of levels we have
+     total = $(".tabs").children("span.tab_button").length;
+     var i = 1;
+     
+     for(i; i <= total; i++){
+         //search for the currently selected tab
+         if($(".tabs span.tab_button:nth-child(" + i + ")").hasClass("active") && i < total){
+             $("button[name=submit_admission] span").html("Next");
+             $("button[name=submit_admission]").prop("disabled", checkForm(i));
+ 
+             admission_button_tab_index = i;
+ 
+             break;
+         }else if($(".tabs span.tab_button:nth-child(" + i + ")").hasClass("active") && i == total){
+             $("button[name=submit_admission] span").html("Save");
+             $("button[name=submit_admission]").prop("disabled", checkForm(i));
+ 
+             break;
+         }
+     }
+ 
+     return;
+ }
 
 //fill the number of days depending on the selected month
 $("select[name=ad_month]").change(function(){
@@ -52,7 +87,7 @@ $("select[name=ad_month]").change(function(){
 //canceling results
 $("button[name=modal_cancel]").click(function(){
     admission_button_tab_index = 1;
-    fadeOutElement($(this).parents(".form_modal_box"));
+    $(this).parents(".form_modal_box").addClass("no_disp");
 
     if($(this).parents(".form_modal_box").prop("id") == "payment_form"){
         //enable all fields
@@ -63,6 +98,22 @@ $("button[name=modal_cancel]").click(function(){
     }else if($(this).parents(".form_modal_box").prop("id") == "admission"){
         //enable the index input field
         $("#ad_index").prop("disabled", false);
+
+        //display the continue
+        $("form[name=admissionForm] label[for=continue]").removeClass("no_disp");
+
+        //hide the submit button
+        $("form[name=admissionForm] label[for=submit_admission]").addClass("no_disp");
+
+        //submit button should turn to button and should be disabled
+        $("button[name=submit_admission]").prop("disabled", true).prop("type","button");
+
+        //click first tab
+        $(".tabs span.tab_button").addClass("no_disp").removeClass("incomplete");
+        $(".tabs span.tab_button:first-child").removeClass("no_disp").click();
+
+        //reset accepts
+        resetAccepts();
     }
 })
 
@@ -76,31 +127,24 @@ $("button[name=submit_admission]").click(function() {
     }
 
     $(".tabs span.tab_button:nth-child(" + admission_button_tab_index + ")").click();
+
+    if($(this).prop("type") == "submit"){
+        $("form[name=admissionForm]").submit();
+    }
 })
 
 //marking the button enabled when user agrees that data is correct
 $("label[for=agree]").click(function(){
-    if($("label[for=agree] input[name=agree]").prop("checked") == false){
-        $("button[name=submit_admission]").prop("disabled", true);
+    check = $("label[for=agree] input[name=agree]").prop("checked");
 
+    if(check == false){
         //change the type of the admission button
         $("button[name=submit_admission]").prop("type","button");
-
-        //show the other steps
-        // $(".tab_button").removeClass("no_disp");
-    }else{
-        $("button[name=submit_admission]").prop("disabled",false);
-
+    }else if(check == true){
         //change the type of the admission button
         $("button[name=submit_admission]").prop("type","submit");
-
-        //change the button name to submit
-        $("button[name=submit_admission] span").html("Submit");
-
-        //hide the other steps
-        // $(".tab_button").addClass("no_disp");
-        $(".tab_botton.active").removeClass("no_disp");
     }
+    $("button[name=submit_admission]").prop("disabled", !check);
 })
 
 //dynamically help the user when typing the phone number
@@ -173,7 +217,7 @@ $(".tabs span.tab_button").click(function(){
     $(this).addClass("active");
 
     //hide all views
-    fadeOutElement($(".form_views > div"));
+    $(".form_views > div").addClass("no_disp");
 
     //display its associated form view
     $("#" + $(this).attr("data-views")).removeClass("no_disp");
@@ -190,7 +234,7 @@ $("#admission input").blur(function(){
     admissionFormButtonChange();
 })
 
-$(".checkbox").click(function(){
+$("#view2 .checkbox").click(function(){
     admissionFormButtonChange();
 })
 
@@ -209,7 +253,7 @@ $("#payment_button, .enrol_button").click(function(){
 
     //when it is client side, by default, the index number section should display first
     //for verification before continuation
-    fadeOutElement($("form[name=admissionForm] fieldset"));
+    // $("form[name=admissionForm] fieldset").addClass("no_disp");
     $("form[name=admissionForm] #enrol_field").removeClass("no_disp");
 
     //on client side, do not display the other tabs when the user has not given the index number
@@ -279,7 +323,8 @@ $("button[name=continue]").click(function(){
     index_number = $("#ad_index").val();
     school_id = $("#student #school_select").val();
 
-    dataString = "submit=getStudentIndex&index_number=" + index_number + "&school_name=" + $("#school_admission_case #school_select option:selected").html();
+    dataString = "submit=getStudentIndex&index_number=" + index_number + "&school_name=" + 
+    $("#school_admission_case #school_select option:selected").html() + "&school_id=" + school_id;
 
     //parse through ajax and check input
     $.ajax({
@@ -289,14 +334,42 @@ $("button[name=continue]").click(function(){
         dataType: "json",
         cache: true,
         async: false,
+        beforeSend: function(){
+            $("#view1 .para_message").html("Checking index number, please wait...");
+        },
         success: function(json){
+            $("#view1 .para_message").html("Parts with * means they are required fields");
             data = JSON.parse(JSON.stringify(json));
 
             if(data["status"] == "success"){
                 //successful results should fill the form with needed data
+                $("form[name=admissionForm] #ad_aggregate").val(data["aggregate"]);
+                $("form[name=admissionForm] #ad_course").val(data["programme"]);
+                $("form[name=admissionForm] #ad_lname").val(data["Lastname"]);
+                $("form[name=admissionForm] #ad_oname").val(data["Othernames"]);
+                $("form[name=admissionForm] #ad_gender").val(data["Gender"]);
+                $("form[name=admissionForm] #ad_jhs").val(data["jhsAttended"]);
+                $("form[name=admissionForm] #ad_year").val(data["year"]);
+                $("form[name=admissionForm] #ad_month").val(data["month"]);
 
-                //display form information
-                fadeOutElement($("form[name=admissionForm] button[name=modal_cancel]"));
+                //prepare day to be entered
+                $("select#ad_month").change();
+                $("form[name=admissionForm] #ad_day").val(data["day"]);
+
+                $("form[name=admissionForm] #ad_birthdate").val(data["year"] + " " + $("#ad_month option:selected").html() + ", " + data["day"]);
+
+                //fill results with values
+                $("#res_ad_aggregate").html(data["aggregate"]);
+                $("#res_ad_course").html(data["programme"]);
+                $("#res_ad_lname").html(data["Lastname"]);
+                $("#res_ad_oname").html(data["Othernames"]);
+                $("#res_ad_gender").html(data["Gender"]);
+                $("#res_ad_jhs").html(data["jhsAttended"]);
+                $("#res_ad_birthdate").html($("#ad_birthdate").val());
+                
+
+                //remove this button and show the submit button
+                $("form[name=admissionForm] label[for=continue]").addClass("no_disp");
                 $("label[for=submit_admission]").removeClass("no_disp");
 
                 //display the fields
@@ -309,6 +382,9 @@ $("button[name=continue]").click(function(){
                 //provide the school's name
                 $("#shs_placed").val($("#school_admission_case #school_select option:selected").html());
 
+                //update school chosen
+                $("#res_shs_placed").html($("#shs_placed").val());
+                
                 //disable the index input field
                 $("#ad_index").prop("disabled", true);
             }else if(data["status"] == "wrong-school-select"){
@@ -348,89 +424,227 @@ $("button[name=continue]").click(function(){
                     $("#view1 .para_message").html("Parts with * means they are required fields");
                 },5000);
             }
+        },
+        error: function(r){
+            $("#view1 .para_message").html(JSON.stringify(r));
+
+            setTimeout(function(){
+                $("#view1 .para_message").html("Parts with * means they are required fields");
+            },5000);
         }
     })
-    /*if($("#ad_index").val() == "01234"){
-        //remove this button and show the submit button
-        $(this).addClass("no_disp");
-        $("label[for=submit_admission]").removeClass("no_disp");
-
-        //display the fields
-        $("form[name=admissionForm] fieldset").removeClass("no_disp");
-
-        //show all the elements in the enrol field
-        $("form[name=admissionForm] #enrol_field label").removeClass("no_disp");
-
-        //when the user has entered the index number
-        //provide the school's name
-        $("#shs_placed").val($("#school_admission_case #school_select option:selected").html());
-
-        //disable the index input field
-        $("#ad_index").prop("disabled", true);
-
-        //use ajax call to get the details of the student
-        $.ajax({
-            
-        })
-    }else{
-        //disable these controls for the time being so that user can take a look at the error
-        $(this).prop('disabled', true);
-        $('#ad_enrol').prop('disabled', true);
-        $('button[name=modal_cancel]').prop('disabled', true);
-
-        init = $("#view1 .para_message").html();
-        error_message = "Index number provided is invalid";
-        $("#view1 .para_message").html(error_message);
-
-        setTimeout(function(){
-            $("#view1 .para_message").html(init);
-
-            //enable the freezed controls
-            $('#ad_enrol').prop('disabled', false);
-            $('button[name=modal_cancel]').prop('disabled', false);
-        },5000);
-    }*/
 })
 
 //when the admission form cancel button is clicked, reset that form
 $("form[name=admissionForm] button[name=modal_cancel]").click(function(){
     //display continue button and hide the submit button
     $("button[name=continue]").removeClass("no_disp");
-    fadeOutElement($("label[for=submit_admission]"));
+    $("label[for=submit_admission]").addClass("no_disp");
 
     //hide the fields
-    fadeOutElement($("form[name=admissionForm] fieldset"));
+    $("form[name=admissionForm] fieldset").addClass("no_disp");
+
+    //display only enrol fieldset
+    $("form[name=admissionForm] fieldset#enrol_field").removeClass("no_disp");
 
     //hide all the elements in the enrol field
-    fadeOutElement($("form[name=admissionForm] #enrol_field label"));
+    $("form[name=admissionForm] #enrol_field label").addClass("no_disp");
+
+    //show only index number field
+    $("form[name=admissionForm] #enrol_field label[for=ad_index]").removeClass("no_disp");
 
     //enable the index input field
     $("#ad_index").prop("disabled", false);
-
-    //show view1
-    $("#view1 fieldset:first-child").removeClass("no_disp");
-
-    //hide all labels in view 1
-    fadeOutElement($("#view1 fieldset:first-child label"));
-
-    //reveal only index number portion
-    $("#view1 fieldset:first-child label[for=ad_index]").removeClass("no_disp");
 })
 
 //submit the admission form
 $("form[name=admissionForm]").submit(function(e){
     e.preventDefault();
+    
+    //data for disabled fields
+    dataString = "shs_placed=" + $("#shs_placed").val() + "&ad_index=" + $("#ad_index").val() + "&ad_aggregate=" + $("#ad_aggregate").val() + "&ad_course=" + $("#ad_course").val() + 
+    "&ad_jhs=" + $("#ad_jhs").val() + "&ad_transaction_id=" + $("#ad_transaction_id").val();
 
-    //change the date format to the standard format
-    date = $("#ad_year").val() + "-" + $("#ad_month").val() + "-" + $("#ad_day").val();
-    $("#ad_birtdate").val(date);
+    //strip form data into array form and attain total data
+    form_data = $(this).serializeArray();
+    split_lenght = form_data.length;
 
-    //getting the data being parsed
-    dataString = $(this).serialize() + "&submit=" + $("button[name=submit_admission]").val();
+    //variable to hold all user data
+    formData = "";
 
-    //ajax call
+    //loop and fill form data
+    counter = 0;
+    while(counter < split_lenght){
+        //grab each array data
+        new_data = form_data[counter];
+
+        key = new_data["name"];
+        value = new_data["value"];
+
+        //append to form data
+        if(formData != ""){
+            formData += "&" + key + "=" + value;
+        }else{
+            formData = key + "=" + value;
+        }
+
+        //move to next data
+        counter++;
+    }
+
+    //append submit if not found
+    if(!$(this).serialize().includes("&submit=")){
+        formData += "&submit=" + $("form[name=admissionForm] button[name=submit_admission]").val() + "_ajax";
+    }
+
+    //append disabled form fields
+    formData += "&" + dataString;
+
+    //parse data into database
     $.ajax({
-        url: url + "/submit.php",
-        data: dataString,
+        url: $(this).attr("action"),
+        data: formData,
+        method: "post",
+        dataType: "text",
+        cache: false,
+        async: false,
+        beforeSend: function(){
+            message = loadDisplay({size: "small"});
+            type = "load";
+            time = 0;
+
+            messageBoxTimeout("admissionForm", message, type, time);
+        },
+        success: function(text){
+            time = 5;
+
+            if(text == "success" || text.includes("success")){
+                message = "Enrolment was successful. Please wait as your letters are prepared";
+                type = "success";
+
+                messageBoxTimeout("admissionForm",message, type, 3);
+
+                //click on cancel and open blank tab in 3 seconds
+                setTimeout(function(){
+                    $("#handle_pdf")[0].click();
+                    $("button[name=modal_cancel]").click();
+                },3000);
+            }else{
+                response = text;
+                type = "error";
+
+                if(response == "no-transaction-id"){
+                    message = "No transaction id was provided";
+                    i = 1;
+                }else if(response == "no-index-number"){
+                    message = "No index number was provided";
+                    i = 1;
+                }else if(response == "no-enrolment-code"){
+                    message = "No enrolment code was provided";
+                    i = 1;
+                }else if(response == "wrong-school"){
+                    message = "Error with school name. Please report to admin";
+                    i = 1;
+                }else if(response == "no-aggeregate-score"){
+                    message = "Please enter your aggregate score";
+                    i = 1;
+                }else if(response == "no-course-set"){
+                    message = "Please provide the name of your selected program";
+                    i = 1;
+                }else if(response == "no-lname-set"){
+                    message = "Please provide your last name";
+                    i = 1;
+                }else if(response == "no-oname-set"){
+                    message = "Please provide your other name(s)";
+                    i = 1;
+                }else if(response == "no-gender-set"){
+                    message = "Please select your gender";
+                    i = 1;
+                }else if(response == "no-jhs-name-set"){
+                    message = "Please provide the name of your JHS";
+                    i = 1;
+                }else if(response == "no-jhs-town-set"){
+                    message = "Please provide the town in which JHS is found";
+                    i = 1;
+                }else if(response == "no-jhs-district-set"){
+                    message = "Please provide the district of your JHS";
+                    i = 1;
+                }else if(response == "no-year-set"){
+                    message = "Please select your year of birth";
+                    i = 1;
+                }else if(response == "no-month-set"){
+                    message = "Please select your month of birth";
+                    i = 1;
+                }else if(response == "no-day-set"){
+                    message = "Please select your day of birth";
+                    i = 1;
+                }else if(response == "no-birth-place-set"){
+                    message = "Please enter your place of birth";
+                    i = 1;
+                }else if(response == "no-father-name"){
+                    message = "Please provide your father's name";
+                    i = 2;
+                }else if(response == "no-f-occupation-set"){
+                    message = "Please provide your father's occupation";
+                    i = 2;
+                }else if(response == "no-mother-name"){
+                    message = "Please provide your mother's name";
+                    i = 2;
+                }else if(response == "no-m-occupation-set"){
+                    message = "Please provide your mother's occupation";
+                    i = 2;
+                }else if(response == "no-elder-name"){
+                    message = "Please provide your father, mother or a guardian";
+                    i = 2;
+                }else if(response == "no-residence-set"){
+                    message = "Please provide your residential address";
+                    i = 2;
+                }else if(response == "no-p-p-set"){
+                    message = "Please select your primary phone number";
+                    i = 2;
+                }else if(response == "p-p-short"){
+                    message = "Primary phone number is shorter than normal";
+                    i = 2;
+                }else if(response == "p-p-long"){
+                    message = "Primary phone number is longer than normal";
+                    i = 2;
+                }else if(response == "s-p-short"){
+                    message = "Secondary phone number is shorter than normal";
+                    i = 2;
+                }else if(response == "s-p-long"){
+                    message = "Secondary phone number is longer than normal";
+                    i = 2;
+                }else if(response == "no-interest-set"){
+                    message = "Please select at least one interest";
+                    i = 2;
+                }else if(response == "no-witness-set"){
+                    message = "Please provide a witness' name";
+                    i = 2;
+                }else if(response == "no-witness-phone"){
+                    message = "Please provide your witness' phone number";
+                    i = 2;
+                }else if(response == "witness-phone-long"){
+                    message = "Witness' phone number is longer than normal";
+                    i = 2;
+                }else if(response == "witness-phone-short"){
+                    message = "Witness' phone number is shorter than normal";
+                    i = 2;
+                }else{
+                    message = response;
+                    time = 0;
+                }
+                
+                //click respective head
+                $(".tabs span.tab_button:nth-child(" + i + ")").click();
+
+                messageBoxTimeout("admissionForm", message, type, time);
+            }
+        },
+        error: function(){
+            message = "Please check your internet connection and try again";
+            type = "error";
+
+            messageBoxTimeout(form_element.prop("name"), message, type);
+        }
     })
 })

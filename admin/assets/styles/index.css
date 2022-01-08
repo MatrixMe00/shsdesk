@@ -153,22 +153,19 @@
     padding: 0.4em 0 0.2em;
 }
 
-.section_main_block .body .item .edit,
-.page_setup .foot{
+.item-event{
     font-size: small;
     padding: 0.4em;
     cursor: default;
 }
 
-.section_main_block .body .item .edit span,
-.page_setup .foot span{
+.item-event{
     color: blue;
     cursor: pointer;
     padding: 0 2px;
 }
 
-.edit span:hover,
-.page_setup .foot span:hover{
+.item-event:hover{
     text-decoration: underline;
 }
 

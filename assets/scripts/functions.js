@@ -135,6 +135,19 @@ function fadeOutElement(element, time = 0.7){
     $(".description .detail:nth-child(" + i + ")").fadeIn();
 }
 
+//variables to be used to check if agree checkbox should be enabled or not in admission form
+var accept1 = false;
+var accept2 = false;
+
+/**
+ * Function to reset accept values
+ * 
+ * @return {void}
+ */
+function resetAccepts(){
+    accept1 = false;
+    accept2 = false;
+}
 //function to check the form and make submit button ready
 /**
  * This value is used for tracking changes in the admission form control
@@ -146,10 +159,6 @@ function checkForm(i){
     //return value
     return_value = true;
 
-    //variables to be used to check if agree checkbox should be enabled or not
-    accept1 = false;
-    accept2 = false;
-
     //cssps details
     shs_placed = $("#shs_placed").val();
     ad_enrol_code = $("#ad_enrol_code").val();
@@ -158,7 +167,6 @@ function checkForm(i){
     ad_course = $("#ad_course").val();
 
     //personal details of candidate
-    ad_fname = $("#ad_fname").val();
     ad_lname = $("#ad_lname").val();
     ad_oname = $("#ad_oname").val();
     ad_gender = $("#ad_gender").val();
@@ -195,7 +203,7 @@ function checkForm(i){
 
     if(parseInt(i) == 1){
         if(ad_enrol_code != "" && ad_index != "" && ad_aggregate != "" && ad_course != "" &&
-        ad_fname != "" && ad_lname != "" && ad_gender != "" && ad_jhs != "" && ad_jhs_town != "" &&
+        ad_oname != "" && ad_lname != "" && ad_gender != "" && ad_jhs != "" && ad_jhs_town != "" &&
         ad_jhs_district != "" && ad_year != "" && ad_month != "" && ad_day != "" && ad_birth_place != ""){
             $(".tab_button.active").removeClass("incomplete");
             return_value = false;
@@ -231,44 +239,23 @@ function checkForm(i){
 
     //enable or disable agree button
     if(accept1 && accept2){
-        $("label[for=agree] input[name=agree]").prop("disabled", true);
-    }else{
         $("label[for=agree] input[name=agree]").prop("disabled", false);
+        return_value = false;
+
+        if(parseInt(i) == 3){
+            val = $("label[for=agree] input[name=agree]").prop("checked");
+
+            if(val){
+                return_value = false;
+            }else{
+                return_value = true;
+            }
+        }
+    }else{
+        $("label[for=agree] input[name=agree]").prop("disabled", true);
     }
 
     return return_value;
-}
-
-//function to be used to check if the next or submit button should be
-//shown in the admission form
-/**
- * This function is used to check if the next or submit button should be shown in the admission form
- * @returns {void} The function returns nothing
- */
-function admissionFormButtonChange()
-{
-    //get the total number of levels we have
-    total = $(".tabs").children("span.tab_button").length;
-    var i = 1;
-    
-    for(i; i <= total; i++){
-        //search for the currently selected tab
-        if($(".tabs span.tab_button:nth-child(" + i + ")").hasClass("active") && i < total){
-            $("button[name=submit_admission] span").html("Next");
-            $("button[name=submit_admission]").prop("disabled", checkForm(i));
-
-            admission_button_tab_index = i;
-
-            break;
-        }else if($(".tabs span.tab_button:nth-child(" + i + ")").hasClass("active") && i == total){
-            $("button[name=submit_admission] span").html("Save");
-            $("button[name=submit_admission]").prop("disabled", checkForm(i));
-
-            break;
-        }
-    }
-
-    return;
 }
 
 /**

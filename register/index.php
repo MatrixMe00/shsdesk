@@ -2,22 +2,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<?php @include_once($rootPath.'/blocks/generalHead.php')?>
+    <?php @include_once($rootPath.'/blocks/generalHead.php')?>
+    <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/tinymce.css?v=<?php echo time()?>">
 
-<!--Document title-->
-<title>Register</title>
+    <!--Document title-->
+    <title>Register</title>
 
-<style>
-    @media screen and (min-width: 768px){
-        form{
-            width: 80vw;
-            position: relative;
-            left: 10vw;
-            right: 10vw;
-            margin: 10px 0;
+    <style>
+        @media screen and (min-width: 768px){
+            form{
+                width: 80vw;
+                position: relative;
+                left: 10vw;
+                right: 10vw;
+                margin: 10px 0;
+            }
         }
-    }
-</style>
+    </style>
 </head>
 <body>
     <main>
@@ -27,7 +28,7 @@
             </div>
             <div class="body">
                 <div id="message_box" class="no_disp">
-                    <span class="message">Here is a test message</span>
+                    <span class="message"></span>
                     <div class="close"><span>&cross;</span></div>
                 </div>
 
@@ -55,7 +56,7 @@
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/user.png" alt="abbr">
                         </span>
-                        <input type="text" name="abbreviation" id="abbreviation" title="Write the abbreviation of your school's name here" placeholder="Abbreviated name of school">
+                        <input type="text" name="abbreviation" class="text_input" id="abbreviation" title="Write the abbreviation of your school's name here" placeholder="Abbreviated name of school">
                     </label>
                     <label for="head_name">
                         <span class="label_image">
@@ -83,6 +84,12 @@
                             <img src="<?php echo $url?>/assets/images/icons/mail-outline.svg" alt="email_icon">
                         </span>
                         <input type="email" name="school_email" id="school_email" class="text_input" placeholder="School's email address">
+                    </label>
+                    <label for="postal_address">
+                        <span class="label_image">
+                            <img src="<?php echo $url?>/assets/images/icons/Sign Post.png" alt="postal">
+                        </span>
+                        <input type="text" name="postal_address" id="postal_address" class="text_input" placeholder="Postal Address*" required>
                     </label>
                 </div>
                 
@@ -133,9 +140,9 @@
                     <label for="residence_status">
                         <select name="residence_status" id="residence_status">
                             <option value="">Please select your residence status*</option>
-                            <option value="boarding">Boarding Only</option>
-                            <option value="day">Day Only</option>
-                            <option value="boarding/day">Boarding and Day</option>
+                            <option value="Boarding">Boarding Only</option>
+                            <option value="Day">Day Only</option>
+                            <option value="Boarding/Day">Boarding and Day</option>
                         </select>
                     </label>
                     <label for="sector">
@@ -147,24 +154,21 @@
                     </label>
                 </div>
                 
-                <div class="joint">
-                    <label for="prospectus" class="file_label">
-                        <span class="label_title">Please upload your Prospectus (PDF format)</span>
-                        <div class="fore_file_display">
-                            <input type="file" name="prospectus" id="prospectus" accept=".pdf">
-                            <span class="plus">+</span>
-                            <span class="display_file_name">Choose or drag your file here</span>
-                        </div>
-                    </label>
-                    <label for="admission_letter" class="file_label">
-                        <span class="label_title">Please upload a sample of your admission letter (PDF format)</span>
-                        <div class="fore_file_display">
-                            <input type="file" name="admission_letter" id="admission_letter" accept=".pdf">
-                            <span class="plus">+</span>
-                            <span class="display_file_name">Choose or drag your file here</span>
-                        </div>
-                    </label>
-                </div>
+                <label for="prospectus" class="file_label">
+                    <span class="label_title">Please upload your Prospectus (PDF format)</span>
+                    <div class="fore_file_display">
+                        <input type="file" name="prospectus" id="prospectus" accept=".pdf">
+                        <span class="plus">+</span>
+                        <span class="display_file_name">Choose or drag your file here</span>
+                    </div>
+                </label>
+                    
+                <label for="admission_letter" class="textarea">
+                    <span class="label_image">
+                        <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="admission" srcset="">
+                    </span>
+                    <textarea name="admission_letter" id="admission_letter" cols="30" rows="10" class="tinymce" placeholder="Please provide a body for your admission letter. Refer to the demo document to know what is expected of you"></textarea>
+                </label>
 
                 <label for="autoHousePlace" class="checkbox">
                     <input type="checkbox" name="autoHousePlace" id="autoHousePlace">
@@ -193,6 +197,10 @@
 
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
     <script>        
         $(document).ready(function(){
             //this process will automatically fill the options of the category with numbers
