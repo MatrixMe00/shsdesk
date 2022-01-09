@@ -1,8 +1,7 @@
-
 <?php
     require_once("tcpdf/tcpdf.php");
     require_once("includes/session.php");
-    
+
     //create a custom header
     class MYPDF extends TCPDF {
         // public function Header(){
@@ -48,12 +47,13 @@
 </head>
 
 <body>
-    <a href="<?php echo $url?>/admin/admin/assets/files/prospectus/Over 100 Biblical Names Of God – UrbanAreas.net.pdf" id="save">Click Me</a>
+    <a href="<?php echo $url."/".$_SESSION["ad_school_prospectus"]?>" id="save">Click Me</a>
     <button id="btn"></button>
     <div id="span">
         <span>Prospectus downloaded successfully. Click anywhere to download admission form</span>
     </div>
     <?php 
+        //unset the prospectus session so as to create pdf upon reload
         $_SESSION["ad_school_prospectus"] = null;
     ?>
 
@@ -72,10 +72,12 @@
 </body>
 <?php
         }else{
+            $session_set = false;
             //prevent admin logged in from signing out upon session destroy
             if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                 $session_id = $_SESSION["user_login_id"];
                 $login_id = $_SESSION["login_id"];
+                $session_set = true;
             }
 
             //create a new pdf document
@@ -261,13 +263,16 @@
             //writing data into pdf  
             $pdf->Text(20, 210, '');
 
-            // //destroy session
-            // session_destroy();
+            //destroy session
+            session_destroy();
 
-            // //set destroyed admin sessions
-            // session_start();
-            // $_SESSION["login_id"] = $login_id;
-            // $_SESSION["user_login_id"] = $session_id;
+            //set destroyed admin sessions
+            if($session_set){
+                session_start();
+                $_SESSION["login_id"] = $login_id;
+                $_SESSION["user_login_id"] = $session_id;
+            }
+            
 
             //output data
             $pdf->Output("Admission Form | $lastname.pdf");

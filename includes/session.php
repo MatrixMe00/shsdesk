@@ -6,10 +6,6 @@ $host = "localhost";
 $hostname = "root";
 $host_password = "";
 $dbname = "shsdesk";
-/*$host = "sql307.epizy.com";
-$hostname = "epiz_30746634";
-$host_password = "mMIquj7k2Pmn";
-$dbname = "epiz_30746634_shsdesk";*/
 
 @$connect = new mysqli($host,$hostname,$host_password, $dbname);
 

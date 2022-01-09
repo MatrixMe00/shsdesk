@@ -25,19 +25,19 @@
             </div>
         </div>
         <div id="buttons">
-            <a href="http://localhost/shsdesk/index.php" class="button">
+            <a href="<?php echo $url?>/index.php" class="button">
                 <span>Home</span>
             </a>
-            <a href="http://localhost/shsdesk/pages/about.php" class="button">
+            <a href="<?php echo $url?>/pages/about.php" class="button">
                 <span>About</span>
             </a>
-            <a href="http://localhost/shsdesk/pages/school.php" class="button">
+            <a href="<?php echo $url?>/pages/school.php" class="button">
                 <span>Schools</span>
             </a>
-            <a href="http://localhost/shsdesk/pages/faq.php" class="button">
+            <a href="<?php echo $url?>/pages/faq.php" class="button">
                 <span>FAQ</span>
             </a>
-            <a href="http://localhost/shsdesk/pages/contact.php" class="button">
+            <a href="<?php echo $url?>/pages/contact.php" class="button">
                 <span>Contact Us</span>
             </a>
         </div>

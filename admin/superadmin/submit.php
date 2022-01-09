@@ -205,10 +205,11 @@
                 exit(1);
             }
 
-            $sql = "INSERT INTO notification (Sender_id, Audience, School_id, Notification_type, Title, Description, Item_Read, Read_by) VALUES 
-                    (?,?,?,?,?,?,?,?)" or die("Connection error");
+            $date_now = date("d-m-Y H:i:s");
+            $sql = "INSERT INTO notification (Sender_id, Audience, School_id, Notification_type, Title, Description, Item_Read, Read_by, Date) VALUES 
+                    (?,?,?,?,?,?,?,?,?)" or die("Connection error");
             $res = $connect->prepare($sql);
-            $res->bind_param("isisssis",$sender_id,$audience,$school_id,$notification_type,$title,$message,$item_read,$read_by);
+            $res->bind_param("isisssiss",$sender_id,$audience,$school_id,$notification_type,$title,$message,$item_read,$read_by,$date_now);
             
             if($res->execute()){
                 if($submit == "make_announcement"){
@@ -248,10 +249,11 @@
                 echo "no-recepient-id";
                 exit(1);
             }else{
-                $sql = "INSERT INTO reply (Sender_id, Recipient_id, Comment_id, Message, AdminRead, Read_by) VALUES 
-                        (?,?,?,?,?,?)";
+                $date_now = date("d-m-Y H:i:s");
+                $sql = "INSERT INTO reply (Sender_id, Recipient_id, Comment_id, Message, AdminRead, Read_by, Date) VALUES 
+                        (?,?,?,?,?,?,?)";
                 $res = $connect->prepare($sql);
-                $res->bind_param("iiisis", $user_id, $recepient_id, $comment_id, $reply, $admin_read, $read_by);
+                $res->bind_param("iiisiss", $user_id, $recepient_id, $comment_id, $reply, $admin_read, $read_by,$date_now);
 
                 if($res->execute()){
                     $username = getUserDetails($user_id);

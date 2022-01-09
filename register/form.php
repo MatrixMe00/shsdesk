@@ -161,15 +161,17 @@
             //set the default password
             $default_password = MD5("Password@1");
 
+            $date_now = date("d-m-Y H:i:s");
+
             //create a usable login session for user
-            $sql = "INSERT INTO admins_table (fullname, email, password, school_id, contact, role) 
-                    VALUES (?,?,?,?,?,?)";
+            $sql = "INSERT INTO admins_table (fullname, email, password, school_id, contact, role, adYear) 
+                    VALUES (?,?,?,?,?,?,?)";
 
             //prepare the insert statement
             $res = $connect->prepare($sql);
 
             //bind necessary parameters
-            $res->bind_param('sssisi',$technical_name,$school_email, $default_password,$row["id"], $technical_phone, 3);
+            $res->bind_param('sssisis',$technical_name,$school_email, $default_password,$row["id"], $technical_phone, 3, $date_now);
 
             if($res->execute){
                 //insert data into admission details table
