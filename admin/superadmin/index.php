@@ -14,10 +14,18 @@
 <html lang="en">
 <head>
     <?php require_once($rootPath.'/admin/generalHead.php')?>
-    <title>Welcome SuperAdmin</title>
+    <title>Welcome SuperAdmin | <?php echo $user_details["username"] ?></title>
 </head>
 
 <body ng-app="index_application">
+    <?php
+        //check if this is a new user
+        if(checkNewUser($_SESSION["user_login_id"]) == TRUE){
+            require_once($rootPath."/admin/admin/page_parts/update_stat.php");
+        }elseif(checkNewUser($_SESSION["user_login_id"]) == "invalid-user"){
+            echo "User cannot be found! Please speak to the administrator";
+        }else{
+    ?>
     <nav>
         <div id="nav_holder">
             <div id="logo">
@@ -247,21 +255,27 @@
     <script>
         $(document).ready(function() {
             nav_point = "<?php
-                if(isset($_GET["nav_point"]) && $_GET["nav_point"] != null){
-                    echo $_GET["nav_point"];
+                if((isset($_GET["nav_point"]) && $_GET["nav_point"] != null) || (isset($_SESSION["nav_point"]) && !empty($_SESSION["nav_point"]))){
+                    if(isset($_GET["nav_point"]))
+                        echo $_GET["nav_point"];
+                    else
+                        echo $_SESSION["nav_point"];
                 }else{
                     echo "Dashboard";
                 }
                 ?>";
             $("div[name=" + nav_point + "]").click();
         })
-        //$("#rhs .body").load("<?php echo $url?>/admin/superadmin/page_parts/change_password.html");
     </script>
+    <?php }
+        
+        //close connection
+        $connect->close();
+    ?>
 </body>
 </html>
 <?php 
-        //close connection
-        $connect->close();
+        
     }else{
     header("location: $url/admin");
 }

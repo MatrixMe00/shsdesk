@@ -27,7 +27,7 @@
         <section id="gallery" class="flex flex-wrap flex-center-content">
             <?php
                 $result = $connect->query("SELECT item_img, image_alt, item_head, item_desc
-                FROM pageItemDisplays
+                FROM pageitemdisplays
                 WHERE active=TRUE AND item_type='gallery' AND item_page='about'");
 
                 if($result->num_rows > 0){

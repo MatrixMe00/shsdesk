@@ -107,7 +107,7 @@
                 }
 
                 //query into database
-                $sql = "INSERT INTO pageItemDisplays(item_img,image_alt, item_page, item_type, item_head, 
+                $sql = "INSERT INTO pageitemdisplays(item_img,image_alt, item_page, item_type, item_head, 
                 item_desc, item_url, item_button,button_text, active) VALUES(?,?,?,?,?,?,?,?,?,?)";
 
                 //prepare the values for entry

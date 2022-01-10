@@ -3,7 +3,7 @@
         <h2>Add A New House</h2>
     </div>
     <div class="body">
-        <div id="message_box" class="success no_disp">
+        <div class="message_box success no_disp">
             <span class="message">Here is a test message</span>
             <div class="close"><span>&cross;</span></div>
         </div>
@@ -24,10 +24,10 @@
                     <input type="radio" name="gender" id="gender_female" value="Female">
                     <span class="label_title">Female</span>
                 </label>
-                <label for="gender" class="radio">
+                <!-- <label for="gender" class="radio">
                     <input type="radio" name="gender" id="gender_both" value="Both">
                     <span class="label_title">Both</span>
-                </label>
+                </label> -->
             </div>
         </div>
         

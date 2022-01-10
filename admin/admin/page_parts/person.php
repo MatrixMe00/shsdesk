@@ -1,4 +1,8 @@
-<?php include_once("../../../includes/session.php");?>
+<?php include_once("../../../includes/session.php");
+
+    //set nav_point session
+    $_SESSION["nav_point"] = "account";
+?>
 <section class="page_setup" id="users">
     <div class="head">
         <h3>Users on System</h3>
@@ -58,7 +62,7 @@
             <h2>My Account</h2>
         </div>
         <div class="body">
-            <div id="message_box" class="success no_disp">
+            <div class="message_box success no_disp">
                 <span class="message"></span>
                 <div class="close"><span>&cross;</span></div>
             </div>

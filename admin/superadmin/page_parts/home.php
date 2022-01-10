@@ -1,4 +1,8 @@
-<?php include_once("../../../includes/session.php")?>
+<?php include_once("../../../includes/session.php");
+
+    //add nav point session
+    $_SESSION["nav_point"] = "Index";
+?>
 <section draggable="true">
     <div class="head">
         <div class="intro">
@@ -18,7 +22,7 @@
     <div class="body no_disp">
         <?php
             $result = $connect->query("SELECT * 
-            FROM pageItemDisplays 
+            FROM pageitemdisplays 
             WHERE active=TRUE AND item_page='home' AND item_type='carousel'");
 
             if($result->num_rows > 0){
@@ -80,7 +84,7 @@
     <div class="body no_disp">
         <?php
             $result = $connect->query("SELECT * 
-            FROM pageItemDisplays 
+            FROM pageitemdisplays 
             WHERE active=FALSE AND item_page='home' AND item_type='carousel'");
 
             if($result->num_rows > 0){

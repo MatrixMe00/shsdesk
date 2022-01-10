@@ -27,7 +27,7 @@
                 <h2>Add Your School</h2>
             </div>
             <div class="body">
-                <div id="message_box" class="no_disp">
+                <div class="message_box no_disp">
                     <span class="message"></span>
                     <div class="close"><span>&cross;</span></div>
                 </div>
@@ -167,7 +167,7 @@
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="admission" srcset="">
                     </span>
-                    <textarea name="admission_letter" id="admission_letter" cols="30" rows="10" class="tinymce" placeholder="Please provide a body for your admission letter. Refer to the demo document to know what is expected of you"></textarea>
+                    <textarea name="admission_letter" id="admission_letter" class="tinymce" placeholder="Please provide a body for your admission letter. Refer to the demo document to know what is expected of you"></textarea>
                 </label>
 
                 <label for="autoHousePlace" class="checkbox">
@@ -267,28 +267,7 @@
             $("select[name=category]").val($(this).val());
         })
 
-        //function to show a message
-        function shortDisplay(message, className, time = 5){
-            //display the message box
-            $("#message_box").addClass(className).show();
-            $("#message_box .message").html(message);
-
-            //calculate the time
-            time *= 1000;
-
-            if(time > 0){
-                //hide the message box
-                setInterval(function(){
-                    $("#message_box").removeClass("success error load").hide();
-                    $("#message_box .message").html("");
-                }, time);
-            }
-        }
-
         $("form").submit(function(event){
-            //event.preventDefault();
-            formData = $(this).serialize() + "&submit=" + $("button[name=submit]").val();
-
             $(this).submit();
         })
     </script>

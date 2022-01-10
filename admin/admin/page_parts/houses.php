@@ -1,4 +1,8 @@
-<?php include_once("../../../includes/session.php")?>
+<?php include_once("../../../includes/session.php");
+
+    //set nav_point session
+    $_SESSION["nav_point"] = "House";
+?>
 
 <section class="section_container">
     <div class="content" style="background-color: #007bff;">
@@ -20,7 +24,7 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Male' AND boardingStatus = TRUE");
+                    $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Male' AND boardingStatus = 'Boarder'");
                     
                     echo $res->num_rows;
                 ?>
@@ -107,7 +111,7 @@
                         <?php 
                             $sql = "SELECT COUNT(indexNumber) AS total
                                     FROM house_allocation
-                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"];
+                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Boarder'";
                             $query = $connect->query($sql);
                             
                             $tot = $query->fetch_assoc()["total"];

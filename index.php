@@ -7,6 +7,9 @@
     <!--Document title-->
     <title>SHSDESK</title>
 
+    <!--Meta data-->
+    <meta name="description" content="">
+
     <!--Stylesheets-->
     <link rel="stylesheet" href="assets/styles/index_page.css?v=<?php echo time()?>">
     <link rel="stylesheet" href="assets/styles/admissionForm.css?v=<?php echo time()?>">
@@ -23,7 +26,7 @@
                 <div class="img_container">
                     <?php
                         $result = $connect->query("SELECT item_img, image_alt
-                        FROM pageItemDisplays
+                        FROM pageitemdisplays
                         WHERE active=TRUE AND item_type='carousel' AND item_page='home'");
 
                         if($result->num_rows > 0){
@@ -43,7 +46,7 @@
                 <div class="description">
                     <?php
                         $result = $connect->query("SELECT item_head, item_desc, item_button, button_text
-                        FROM pageItemDisplays
+                        FROM pageitemdisplays
                         WHERE active=TRUE AND item_type='carousel' AND item_page='home'");
 
                         if($result->num_rows > 0){

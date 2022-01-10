@@ -14,7 +14,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
 <html lang="en">
 <head>
     <?php @include_once($rootPath.'/admin/generalHead.php')?>
-    <title>Welcome Admin</title>
+    <title>Welcome Admin | <?php echo $user_details["username"] ?></title>
 </head>
 
 <body ng-app="index_application">
@@ -263,15 +263,17 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     <script>
         $(document).ready(function() {
             nav_point = "<?php
-                if(isset($_GET["nav_point"]) && $_GET["nav_point"] != null){
-                    echo $_GET["nav_point"];
+                if((isset($_GET["nav_point"]) && $_GET["nav_point"] != null) || (isset($_SESSION["nav_point"]) && !empty($_SESSION["nav_point"]))){
+                    if(isset($_GET["nav_point"]))
+                        echo $_GET["nav_point"];
+                    else
+                        echo $_SESSION["nav_point"];
                 }else{
                     echo "Dashboard";
                 }
                 ?>";
             $("div[name=" + nav_point + "]").click();
         })
-        //$("#rhs .body").load("<?php echo $url?>/admin/admin/page_parts/change_password.html");
     </script>
     <?php }
         //close connection

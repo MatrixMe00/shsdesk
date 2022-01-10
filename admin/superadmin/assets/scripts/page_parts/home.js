@@ -259,7 +259,7 @@ $("input[name=item_img]").change(function(){
 $("span.item-event").click(function(){
     item_id = $(this).attr("data-item-id");
     item_event = $(this).attr("data-item-event");
-    table = "pageItemDisplays";
+    table = "pageitemdisplays";
 
     if(item_event == "edit"){
 

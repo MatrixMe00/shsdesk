@@ -18,7 +18,7 @@
                 <h2>Contact Us</h2>
             </div>
             <div class="body">
-                <div id="message_box" class="no_disp">
+                <div class="message_box no_disp">
                     <span class="message">Here is a test message</span>
                     <div class="close"><span>&cross;</span></div>
                 </div>
@@ -66,15 +66,15 @@
         //change the time to miliseconds
         time = time * 1000;
 
-        $("#message_box").removeClass("error success load").addClass(message_type).show();
-        $("#message_box .message").html(message)
+        $(".message_box").removeClass("error success load").addClass(message_type).show();
+        $(".message_box .message").html(message)
 
         //prevent the timeout function if the time is set to 0
         if(time > 0){
             setTimeout(function(){
-                $("#message_box").removeClass("error success load");
-                $("#message_box").slideUp();
-                $("#message_box .message").html('');
+                $(".message_box").removeClass("error success load");
+                $(".message_box").slideUp();
+                $(".message_box .message").html('');
             }, time);
         }
     }

@@ -53,7 +53,7 @@
                 <select name="boarding_status" id="boarding_status">
                     <option value="">Select Boarding Status</option>
                     <option value="Day">Day</option>
-                    <option value="Boarding">Boarding</option>
+                    <option value="Boarder">Boarding</option>
                 </select>
             </label>
             <label for="student_course">

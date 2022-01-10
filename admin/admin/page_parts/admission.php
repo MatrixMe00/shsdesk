@@ -1,14 +1,18 @@
-    <?php include_once("../../../includes/session.php")?>
+    <?php include_once("../../../includes/session.php");
+    
+        //set nav_point session
+        $_SESSION["nav_point"] = "admission";
+    ?>
 
-    <form action="" method="post" name="admissionDetailsForm">
+    <form action="" method="post" name="admissiondetailsForm">
         <div class="body">
-            <div id="message_box" class="no_disp">
+            <div class="message_box no_disp">
                 <span class="message">Here is a test message</span>
                 <div class="close"><span>&cross;</span></div>
             </div>
 
             <?php 
-                $query = $connect->query("SELECT * FROM admissionDetails WHERE schoolID= $user_school_id");
+                $query = $connect->query("SELECT * FROM admissiondetails WHERE schoolID= $user_school_id");
                 $row = $query->fetch_assoc();
             ?>
 
@@ -96,7 +100,7 @@
                 autocomplete="off" title="Enter an announcement to be displayed when the student wants to log in or check admission"></textarea>
             </label>
             <label for="submit" class="btn">
-                <button type="submit" name="submit" value="admissionDetails">Save</button>
+                <button type="submit" name="submit" value="admissiondetails">Save</button>
             </label>
         </div>
         <div class="foot">

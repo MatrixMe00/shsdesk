@@ -28,32 +28,32 @@ $(".item").click(function(){
 
         //using ajax, get contents of document
         $.ajax({
-        url: $(this).attr("data-url"),
-        type: "GET",
-        cache: false,
-        dataType: "html",
+            url: $(this).attr("data-url"),
+            type: "GET",
+            cache: false,
+            dataType: "html",
 
-        beforeSend: function(){
-            element = "<div class=\"relative\" style=\"height: " + rhs_height + "px\">" + 
-                        loadDisplay({
-                            circular: true,
-                            full: true
-                        }) + 
-                        "</div>";
-            $("#rhs .body").html(element);
-        },
-
-        success: function(html){
-            $("#rhs .body").html(html);
-        },
-
-        error: function(){
-            errorElement = "<div class=\"item empty\"  style=\"height: " + rhs_height + "px\">\n" + 
-                            "<p>Requested page could not be loaded. Please try again later. If this continues after three spaced tries, contact the admin for help.</p>\n" + 
+            beforeSend: function(){
+                element = "<div class=\"relative\" style=\"height: " + rhs_height + "px\">" + 
+                            loadDisplay({
+                                circular: true,
+                                full: true
+                            }) + 
                             "</div>";
-            $("#rhs .body").html(errorElement);
-        }
-    })
+                $("#rhs .body").html(element);
+            },
+
+            success: function(html){
+                $("#rhs .body").html(html);
+            },
+
+            error: function(){
+                errorElement = "<div class=\"item empty\"  style=\"height: " + rhs_height + "px\">\n" + 
+                                "<p>This page is currently unavailable to you. Try again later</p>\n" + 
+                                "</div>";
+                $("#rhs .body").html(errorElement);
+            }
+        })
     }else{
         $("#rhs .body").html("No data is available");
     }

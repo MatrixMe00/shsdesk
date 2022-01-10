@@ -1,4 +1,8 @@
-<?php require_once("../../../includes/session.php");?>
+<?php require_once("../../../includes/session.php");
+
+    //add nav point session
+    $_SESSION["nav_point"] = "Notification";
+?>
 
 <section>
     <p>Notifications will be displayed here</p>
@@ -439,7 +443,7 @@
             <h2>Make an Announcement</h2>
         </div>
         <div class="body">
-            <div id="message_box" class="no_disp">
+            <div class="message_box no_disp">
                 <span class="message"></span>
                 <div class="close"><span>&cross;</span></div>
             </div>

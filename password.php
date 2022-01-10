@@ -81,7 +81,7 @@
             <h2>Forgot Password</h2>
         </div>
         <div class="body">
-            <div id="message_box" class="no_disp">
+            <div class="message_box no_disp">
                 <span class="message"></span>
                 <div class="close"><span>&cross;</span></div>
             </div>
@@ -181,7 +181,7 @@
                 },
                 complete: function(){
                     //hide the message box
-                    $("#message_box").removeClass("load").addClass("no_disp");
+                    $(".message_box").removeClass("load").addClass("no_disp");
                 },
                 error: function(){
                     messageBoxTimeout("passwordForm","Error communicating with server", "error", 5);
@@ -225,8 +225,8 @@
             type: $(this).prop("method"),
             dataType: "html",
             beforeSend: function(){
-                $("#message_box").removeClass("no_disp success error").addClass("load");
-                $("#message_box .message").html("Please Wait...");
+                $(".message_box").removeClass("no_disp success error").addClass("load");
+                $(".message_box .message").html("Please Wait...");
             },
             success: function(data){
                 if(data === "success"){

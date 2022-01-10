@@ -1,4 +1,8 @@
-<?php include_once("../../../includes/session.php") ?>
+<?php include_once("../../../includes/session.php");
+
+    //add nav point session
+    $_SESSION["nav_point"] = "faq";
+?>
 <section class="section_container">
     <div class="content" style="background-color: #007bff;">
         <div class="head">

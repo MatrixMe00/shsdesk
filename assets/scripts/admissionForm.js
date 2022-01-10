@@ -114,6 +114,8 @@ $("button[name=modal_cancel]").click(function(){
 
         //reset accepts
         resetAccepts();
+
+        $("#interest").val('');
     }
 })
 

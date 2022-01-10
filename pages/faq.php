@@ -127,7 +127,7 @@
                 <h2>Send Us A Question</h2>
             </div>
             <div class="body">
-                <div id="message_box" class="no_disp">
+                <div class="message_box no_disp">
                     <span class="message">Here is a test message</span>
                     <div class="close"><span>&cross;</span></div>
                 </div>

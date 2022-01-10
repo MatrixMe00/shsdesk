@@ -66,7 +66,7 @@
             <h2>Login</h2>
         </div>
         <div class="body">
-            <div id="message_box" class="no_disp">
+            <div class="message_box no_disp">
                 <span class="message"></span>
                 <div class="close"><span>&cross;</span></div>
             </div>
@@ -104,15 +104,15 @@
             time *= 1000;
 
             //display message and its type
-            $("#message_box").fadeIn().addClass(message_type);
-            $("#message_box .message").html(message);
+            $(".message_box").fadeIn().addClass(message_type);
+            $(".message_box .message").html(message);
 
             if(time){
                 //automatically hide the message box
                 setTimeout(function(){
                     //remove all classes and messages
-                    $("#message_box").fadeOut().removeClass("load success error");
-                    $("#message_box .message").html("");
+                    $(".message_box").fadeOut().removeClass("load success error");
+                    $(".message_box .message").html("");
                 }, time)
             }
         }

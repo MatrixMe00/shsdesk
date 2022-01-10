@@ -296,7 +296,7 @@ form .foot{
     font-size: small;
 }
 
-#message_box{
+.message_box{
     padding: 5px;
     border: 1px solid transparent;
     text-align: center;
@@ -304,25 +304,25 @@ form .foot{
     font-size: small;
 }
 
-#message_box.success{
+.message_box.success{
     border-color: green;
     background-color: lightgreen;
     color: whitesmoke;
 }
 
-#message_box.error{
+.message_box.error{
     border-color: red;
     background-color: coral;
     color: whitesmoke;
 }
 
-#message_box.load{
+.message_box.load{
     border-color: grey;
     background-color: transparent;
     color: black;
 }
 
-#message_box .close{
+.message_box .close{
     position: absolute;
     top: 1%;
     right: 1%;

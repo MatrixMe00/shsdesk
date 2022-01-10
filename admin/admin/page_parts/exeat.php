@@ -1,11 +1,15 @@
-<?php include_once("../../../includes/session.php") ?>
+<?php include_once("../../../includes/session.php");
+
+    //set nav_point session
+    $_SESSION["nav_point"] = "exeat";
+?>
 <section>
     <form action="<?php echo $url?>/admin/admin/submit.php" method="post" name="exeatForm">
         <div class="head">
             <h2>Add A Student</h2>
         </div>
         <div class="body">
-            <div id="message_box" class="success no_disp">
+            <div class="message_box success no_disp">
                 <span class="message">Here is a test message</span>
                 <div class="close"><span>&cross;</span></div>
             </div>

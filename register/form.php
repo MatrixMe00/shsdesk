@@ -175,7 +175,7 @@
 
             if($res->execute){
                 //insert data into admission details table
-                $sql = "INSERT INTO admissionDetails (schoolID, headName) 
+                $sql = "INSERT INTO admissiondetails (schoolID, headName) 
                 VALUES (".$row["id"].",$head_name)";
                 $connect->query($sql);
 

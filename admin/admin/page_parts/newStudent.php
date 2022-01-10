@@ -5,7 +5,7 @@
         <h2>Add A New Student</h2>
     </div>
     <div class="body">
-        <div id="message_box" class="success no_disp">
+        <div class="message_box success no_disp">
             <span class="message"></span>
             <div class="close"><span>&cross;</span></div>
         </div>

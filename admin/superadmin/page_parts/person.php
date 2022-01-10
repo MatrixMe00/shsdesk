@@ -1,4 +1,8 @@
-<?php include_once("../../../includes/session.php");?>
+<?php include_once("../../../includes/session.php");
+
+    //add nav point session
+    $_SESSION["nav_point"] = "account";
+?>
 <section class="page_setup" id="users">
     <div class="head">
         <h3>Users on System</h3>
@@ -57,38 +61,43 @@
     </div>
 </section>
 
-    <form action="" method="post" class="" name="user_account_form">
+<form action="<?php echo $url?>/admin/submit.php" method="post" class="" name="user_account_form">
         <div class="head">
             <h2>My Account</h2>
         </div>
         <div class="body">
+            <div class="message_box success no_disp">
+                <span class="message"></span>
+                <div class="close"><span>&cross;</span></div>
+            </div>
             <div class="joint">
                 <label for="fullname">
                     <span class="label_image">
-                        <img src="<?php echo $url?>/assets/images/icons/id card.png" alt="password_icon">
+                        <img src="<?php echo $url?>/assets/images/icons/id card.png" alt="fullname">
                     </span>
                     <input type="text" name="fullname" id="fullname" class="text_input" placeholder="Full Name" autocomplete="off"
                     title="Enter your full name" value="<?php echo $user_details["fullname"] ?>">
                 </label>
                 <label for="email">
                     <span class="label_image">
-                        <img src="<?php echo $url?>/assets/images/icons/mail-outline.svg" alt="password_icon">
+                        <img src="<?php echo $url?>/assets/images/icons/mail-outline.svg" alt="email">
                     </span>
                     <input type="email" name="email" id="email" class="text_input" placeholder="Email Address" autocomplete="off"
                     title="Provide your email address" value="<?php echo $user_details["email"] ?>">
                 </label>
                 <label for="contact">
                     <span class="label_image">
-                        <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="password_icon">
+                        <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="contact">
                     </span>
                     <input type="tel" name="contact" id="contact" class="text_input" placeholder="Provide your contact" autocomplete="off"
-                    value="<?php echo $user_details["fullname"] ?>">
+                    value="<?php echo $user_details["contact"] ?>">
                 </label>
                 <label for="username">
                     <span class="label_image">
-                        <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="password_icon">
+                        <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="username">
                     </span>
-                    <input type="text" name="username" id="username" class="text_input" placeholder="Enter your username" minlength="8" autocomplete="off">
+                    <input type="text" name="username" id="username" class="text_input" placeholder="Enter your username" minlength="8" 
+                    autocomplete="off" value="<?php echo $user_details["username"] ?>">
                 </label>
             </div>
             <div class="flex">
@@ -98,3 +107,5 @@
             </div>
         </div>
     </form>
+
+    <script type="text/javascript" src="<?php echo $url?>/admin/assets/scripts/person.js?v=<?php echo time()?>"></script>

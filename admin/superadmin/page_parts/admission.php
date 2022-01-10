@@ -1,8 +1,8 @@
     <?php include_once("../../../includes/session.php")?>
 
-    <form action="" method="post" name="admissionDetailsForm">
+    <form action="" method="post" name="admissiondetailsForm">
         <div class="body">
-            <div id="message_box" class="success">
+            <div class="message_box success">
                 <span class="message">Here is a test message</span>
                 <div class="close"><span>&cross;</span></div>
             </div>
@@ -90,7 +90,7 @@
                 autocomplete="off" title="Enter an announcement to be displayed when the student wants to log in or check admission"></textarea>
             </label>
             <label for="submit" class="btn">
-                <button type="submit" name="submit" value="admissionDetails">Save</button>
+                <button type="submit" name="submit" value="admissiondetails">Save</button>
             </label>
         </div>
         <div class="foot">

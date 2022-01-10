@@ -1,4 +1,8 @@
-<?php require_once("../../../includes/session.php");?>
+<?php require_once("../../../includes/session.php");
+
+    //set nav_point session
+    $_SESSION["nav_point"] = "Notification";
+?>
 
 <section>
     <p>Notifications will be displayed here</p>
@@ -41,7 +45,6 @@
                     <?php }?>
                 </span>
                 <span class="item-event close_reply no_disp">Close Reply</span>
-                <span class="item-event" data-item-id="<?php echo $row["ID"]?>" data-item-event="delete">Delete</span>
             </div>
             <div class="reply_container no_disp">
                 <?php if(replyCounter($row["ID"]) > 0){
@@ -145,7 +148,6 @@
                     <?php }?>
                 </span>
                 <span class="item-event close_reply no_disp">Close Reply</span>
-                <span class="item-event" data-item-id="<?php echo $row["ID"]?>" data-item-event="delete">Delete</span>
             </div>
             <div class="reply_container no_disp">
                 <?php if(replyCounter($row["ID"]) > 0){
@@ -250,7 +252,6 @@
                     <?php }?>
                 </span>
                 <span class="item-event close_reply no_disp">Close Reply</span>
-                <span class="item-event" data-item-id="<?php echo $row["ID"]?>" data-item-event="delete">Delete</span>
             </div>
             <div class="reply_container no_disp">
                 <?php if(replyCounter($row["ID"]) > 0){

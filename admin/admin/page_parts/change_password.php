@@ -1,7 +1,11 @@
-<?php include_once("../../../includes/session.php");?>
+<?php include_once("../../../includes/session.php");
+
+    //set nav_point session
+    $_SESSION["nav_point"] = "password";
+?>
 <form action="<?php echo $url?>/admin/submit.php" method="post" name="changePasswordForm">
     <div class="body">
-        <div id="message_box" class="no_disp">
+        <div class="message_box no_disp">
             <span class="message"></span>
             <div class="close"><span>&cross;</span></div>
         </div>

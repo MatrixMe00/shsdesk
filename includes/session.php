@@ -27,7 +27,8 @@ $domain_name = $_SERVER['HTTP_HOST'];
 $url = $protocol.$domain_name."/shsdesk";
 
 //start a session
-session_start();
+if(!session_start())
+    session_start();
 
 date_default_timezone_set("Africa/Accra");
 

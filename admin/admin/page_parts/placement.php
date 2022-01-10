@@ -1,4 +1,8 @@
-<?php include_once("../../../includes/session.php")?>
+<?php include_once("../../../includes/session.php");
+
+    //set nav_point session
+    $_SESSION["nav_point"] = "Placement";
+?>
 <section class="section_container">
     <div class="content" style="background-color: #007bff;">
         <div class="head">
@@ -17,7 +21,7 @@
         </div>
     </div>
 
-    <div class="content" style="background-color: #20c997">
+    <div class="content teal">
         <div class="head">
             <h2>
                 <?php
@@ -34,7 +38,7 @@
         </div>
     </div>
 
-    <div class="content" style="background-color: #ffc107">
+    <div class="content danger">
         <div class="head">
             <h2>
                 <?php
@@ -79,7 +83,7 @@
         </div>
         <div id="content">
             <?php 
-                $sql = "SELECT * FROM cssps WHERE enroled=TRUE";
+                $sql = "SELECT * FROM cssps WHERE enroled=TRUE AND schoolID = $user_school_id";
                 $res = $connect->query($sql);
 
                 if($res->num_rows > 0){
@@ -144,7 +148,7 @@
         </div>
         <div id="content">
             <?php 
-                $sql = "SELECT * FROM cssps WHERE enroled=FALSE";
+                $sql = "SELECT * FROM cssps WHERE enroled=FALSE AND schoolID = $user_school_id";
                 $res = $connect->query($sql);
 
                 if($res->num_rows > 0){
@@ -213,7 +217,7 @@
             <li>If you do not have the default spreadsheet file for upload, please click <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">here</a> to download</li>
         </ol>
         <br>
-        <div id="message_box" class="no_disp">
+        <div class="message_box no_disp">
             <span class="message">Here is a test message</span>
             <div class="close"><span>&cross;</span></div>
         </div>

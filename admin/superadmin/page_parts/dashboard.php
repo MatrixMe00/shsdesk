@@ -1,6 +1,9 @@
 <?php include_once("../../../includes/session.php");
     $price = fetchData("price","roles","id=".$user_details["role"])["price"];
     $system_price = fetchData("price","roles","title='system'")["price"];
+
+    //add nav point session
+    $_SESSION["nav_point"] = "Dashboard";
 ?>
 
 <section class="section_container">

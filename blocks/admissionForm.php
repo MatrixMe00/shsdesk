@@ -569,6 +569,11 @@
                         </div>
                     </div>
                     
+                    <div class="message_box success no_disp">
+                        <span class="message"></span>
+                        <div class="close"><span>&cross;</span></div>
+                    </div>
+                    
                     <div class="flex">
                         <label for="continue" class="btn">
                             <button name="continue" type="button" disabled >Continue</button>
@@ -582,11 +587,6 @@
                         <label for="modal_cancel" class="btn dbl_btn_label">
                             <button type="reset" name="modal_cancel" value="cancel">Cancel</button>
                         </label>
-                    </div>
-
-                    <div id="message_box" class="success no_disp">
-                        <span class="message"></span>
-                        <div class="close"><span>&cross;</span></div>
                     </div>
                     <a href="<?php echo $url?>/pdf_handle.php" style="display:none !important" id="handle_pdf" target="_blank"></a>
                 </form>

@@ -3,7 +3,7 @@
                         <h2>Payment Method</h2>
                     </div>
                     <div class="body">
-                        <div id="message_box" class="success no_disp">
+                        <div class="message_box success no_disp">
                             <span class="message">Here is a test message</span>
                             <div class="close"><span>&cross;</span></div>
                         </div>

@@ -26,6 +26,11 @@
     scroll-behavior: smooth;
 }
 
+/*tables*/
+table{
+    display: table !important;
+}
+
 /*naming the colors*/
 .blue, .primary{
     background-color: var(--blue);

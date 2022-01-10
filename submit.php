@@ -171,12 +171,15 @@
                             $total = $result->num_rows;
                             
                             while($row = $result->fetch_assoc()){
-                                $house += array(
+                                $new = array(
                                     array(
                                         "id" => $row["id"],
                                         "totalHeads" => intval($row["headPerRoom"]) * intval($row["totalRooms"])
                                     )                                    
                                 );
+
+                                //add to house array
+                                $house = array_merge($house, $new);
                             }
 
                             //search for last house allocation entry
@@ -187,16 +190,18 @@
                                 LIMIT 1";
                             $result = $connect->query($sql);
 
+                            $hid = $result->fetch_assoc()["houseID"];
+
                             //fetch student details for entry
                             $student_details = fetchData("*", "cssps", "indexNumber=$ad_index");
 
                             if($result->num_rows == 1){
                                 //retrieve house id
-                                $id = $result->fetch_assoc()["houseID"];
+                                $id = $hid;
 
-                                //get total number of students in house
-                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$id");
-
+                                //get total number of boarding students in house
+                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$id AND boardingStatus='Boarder'");
+                                
                                 if(is_array($ttl)){
                                     $ttl = $ttl["total"];
                                 }
@@ -206,17 +211,22 @@
                                 for($i = 0; $i < $total; $i++){
                                     //try choosing the next house
                                     if($house[$i]["id"] == $id){
+                                        //check immediate available houses
                                         if($i+1 < $total && $ttl < $house[$i+1]["totalHeads"]){
                                             $next_room = $house[$i+1]["id"];
                                         }elseif($i-1 >= 0 && $ttl < $house[$i-1]["totalHeads"]){                                            
                                             $next_room = $house[$i-1]["id"];
+                                        }elseif($i+1 == $total && $ttl < $house[0]["totalHeads"]){
+                                            $next_room = $house[0]["id"];
                                         }
-
+                                        
                                         if($next_room > 0){
                                             break;
                                         }
                                     }
                                 }
+
+                                echo "next room: $next_room";
 
                                 //parse entry into allocation table
                                 $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
@@ -245,11 +255,12 @@
                     //details for school
                     $_SESSION["ad_school_name"] = $school["schoolName"];
                     $_SESSION["ad_box_address"] = $school["postalAddress"];
-                    $_SESSION["ad_school_phone"] = $school["techContact"];
+                    $_SESSION["ad_school_phone"] = "+".$school["techContact"];
                     $_SESSION["ad_school_head"] = $school["headName"];
                     $_SESSION["ad_it_admin"] = $school["techName"];
                     $_SESSION["ad_message"] = $school["admissionPath"];
                     $_SESSION["ad_school_prospectus"] = $school["prospectusPath"];
+                    $_SESSION["ad_reopening"] = fetchData("reopeningDate","admissiondetails","schoolID=$shs_placed");
 
                     //student details
                     $_SESSION["ad_stud_index"] = $ad_index;
