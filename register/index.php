@@ -18,6 +18,14 @@
                 margin: 10px 0;
             }
         }
+
+        #demo_doc{
+            padding-left: 1.5em; color: blue
+        }
+
+        #demo_doc:hover{
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -50,46 +58,50 @@
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/user.png" alt="fullname_logo">
                         </span>
-                        <input type="text" name="school_name" id="school_name" class="text_input" placeholder="Name of School" pattern="[a-zA-Z\s]{6,}">
+                        <input type="text" name="school_name" id="school_name" class="text_input" placeholder="Name of School" pattern="[a-zA-Z\s]{6,}"
+                        title="Please provide the name of your school" required>
                     </label>
                     <label for="abbreviation">
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/user.png" alt="abbr">
                         </span>
-                        <input type="text" name="abbreviation" class="text_input" id="abbreviation" title="Write the abbreviation of your school's name here" placeholder="Abbreviated name of school">
+                        <input type="text" name="abbreviation" class="text_input" id="abbreviation" 
+                        title="Write the abbreviation of your school's name here" placeholder="Abbreviated name of school">
                     </label>
                     <label for="head_name">
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/user.png" alt="head name">
                         </span>
                         <input type="text" name="head_name" id="head_name" class="text_input" placeholder="Name of School Head" pattern="[a-zA-Z\s]{6,}"
-                        title='Provide the name of the head of the institution'>
+                        title='Provide the name of the head of your institution' required>
                     </label>
                     <label for="technical_name">
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/user.png" alt="fullname_logo">
                         </span>
                         <input type="text" name="technical_name" id="technical_name" class="text_input" placeholder="Name of Technical Support Personnel" pattern="[a-zA-Z\s]{6,}"
-                        title="This is the name of the technical support personnel. It is the same that people will call for assitance">
+                        title="This is the name of the technical support personnel. It is the same that people will call for assitance" required>
                     </label>
                     <label for="technical_phone">
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="call">
                         </span>
                         <input type="tel" name="technical_phone" id="technical_phone" class="text_input" placeholder="Technical Person Phone Contact*"
-                        title="Personnel's phone contact. This person is probably the school's administrator">
+                        title="Personnel's phone contact. This person is probably the school's [IT] administrator" required>
                     </label>
                     <label for="school_email">
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/mail-outline.svg" alt="email_icon">
                         </span>
-                        <input type="email" name="school_email" id="school_email" class="text_input" placeholder="School's email address">
+                        <input type="email" name="school_email" id="school_email" class="text_input" placeholder="School's email address"
+                        title="Please provide your school email" required>
                     </label>
                     <label for="postal_address">
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/Sign Post.png" alt="postal">
                         </span>
-                        <input type="text" name="postal_address" id="postal_address" class="text_input" placeholder="Postal Address*" required>
+                        <input type="text" name="postal_address" id="postal_address" class="text_input" placeholder="Postal Address*" required
+                        title="Please provide your postal address. It will be useful in details of the admission form">
                     </label>
                 </div>
                 
@@ -97,7 +109,8 @@
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="icon">
                     </span>
-                    <textarea type="text" name="description" id="description" placeholder="Provide a  brief description about the school*"></textarea>
+                    <textarea type="text" name="description" id="description" placeholder="Provide a  brief description about the school [800 characters max]*"
+                    class="tinymce" required maxlength="800" title="Provide a brief description about your school"></textarea>
                 </label>
 
                 <div class="joint flex-wrap">
@@ -138,7 +151,7 @@
                 
                 <div class="joint">
                     <label for="residence_status">
-                        <select name="residence_status" id="residence_status">
+                        <select name="residence_status" id="residence_status" required>
                             <option value="">Please select your residence status*</option>
                             <option value="Boarding">Boarding Only</option>
                             <option value="Day">Day Only</option>
@@ -162,7 +175,8 @@
                         <span class="display_file_name">Choose or drag your file here</span>
                     </div>
                 </label>
-                    
+                
+                <p id="demo_doc"><a href="<?php echo $url?>/admin/admin/assets/files/default files/Admission_Form__Demo.pdf">Download Demo Admission Letter [PDF]</a></p>
                 <label for="admission_letter" class="textarea">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="admission" srcset="">
@@ -196,80 +210,14 @@
     </main>
 
     <?php @include_once($rootPath.'/blocks/footer.php')?>
+    
+    <!--Document Scripts-->
+    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/form/register.js"></script>
 
+    <!--TinyMCE scripts-->
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>"></script>
-    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
-    <script>        
-        $(document).ready(function(){
-            //this process will automatically fill the options of the category with numbers
-            /*$("select[name=category]").ready(function(){
-                //count the number of options
-                option_total = $(this).children("option").length;
-
-                for(var i=2; i <= option_total; i++){
-                    //fill the options with their respective values
-                    $(this).children("option:nth-child(" + i + ")").attr("value",i);
-                }
-            })*/
-        })
-
-        //concerning the files that will be chosen
-        $("input[type=file]").change(function(){
-            //get the value of the image name
-            image_path = $(this).val();
-
-            //strip the path name to file name only
-            image_name = image_path.split("C:\\fakepath\\");
-
-            //store the name of the file into the display div
-            if(image_path != ""){
-                $(this).siblings(".plus").hide();
-                $(this).siblings(".display_file_name").html(image_name);       
-            }else{
-                $(this).siblings(".plus").css("display","initial");
-                $(this).siblings(".display_file_name").html("Choose or drag your file here");
-            }
-        })
-
-        //the avatar of te school
-        $("input[name=avatar]").change(function(){
-            if($(this).val() != ''){
-                //show the selected image
-                $("label[for=display_avatar]").show();  
-
-                //make the file ready for display
-                var file = $("input[type=file]").get(0).files[0];
-
-                if(file){
-                    //create a variable to make a read class instance
-                    reader = new FileReader();
-
-                    reader.onload = function(){
-                        //pass the result to the image element
-                        $("#display_avatar img").attr("src", reader.result);
-                    }
-
-                    //make the reading data a demo url
-                    reader.readAsDataURL(file);
-                }
-            }else{
-                //hide the selected image
-                $("label[for=display_avatar]").hide();
-
-                //empty the image src
-                $("#display_avatar img").prop("src", "");
-            }
-        })
-
-        $("input[name=other_category]").blur(function(){
-            $("select[name=category]").val($(this).val());
-        })
-
-        $("form").submit(function(event){
-            $(this).submit();
-        })
-    </script>
 </body>
 </html>

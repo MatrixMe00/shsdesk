@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
+
 :root {
     --blue: #007bff;
     --indigo: #6610f2;
@@ -22,8 +24,32 @@
     --dark: #343a40;
 }
 
+form label .title_message{
+    background-color: rgba(15,15,15,0.85);
+    color: white;
+    border-radius: 5px;
+    display: none;
+    margin-top: 3px;
+    padding: 5px 8px;
+}
+
+form label .title_message:hover{
+    background-color: rgba(15, 15, 15, 0.95);
+}
+
+/*display the title message when the textbox is in focus*/
+label input:focus~.title_message, label textarea:focus~.title_message{
+    display: block;
+    position: absolute;
+    top: 110%;
+    z-index: 2;
+    left: 0;
+    right: 0;
+}
+
 *{
     scroll-behavior: smooth;
+    font-family: 'Times New Roman', 'Merriweather', serif;
 }
 
 /*tables*/
@@ -178,6 +204,8 @@ form img{
     height: 100vh;
     width: 100vw;
     top: 0;
+    left: 0;
+    right: 0;
 }
 
 .flex{

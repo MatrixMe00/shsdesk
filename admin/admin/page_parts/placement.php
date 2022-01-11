@@ -133,7 +133,7 @@
             </div>
             <?php }else{ ?>
             <div class="empty body" style="margin-top: 0.3em; padding-top: 1.3em; padding-bottom: 1.3em">
-                Nothing to show. Click the "Refresh" button to refresh this box, else make a search using the search field
+                Nothing to show. Click the "Refresh" button to refresh the page
             </div>
             <?php } ?> 
         </div>
@@ -198,7 +198,7 @@
             </div>
             <?php }else{ ?>
             <div class="empty body" style="margin-top: 0.3em; padding-top: 1.3em; padding-bottom: 1.3em">
-                Nothing to show. Click the "Refresh" button to refresh this box, else make a search using the search field
+                Nothing to show. Click the "Refresh" button to refresh this box
             </div>
             <?php } ?>
         </div>
@@ -240,4 +240,9 @@
     </form>
 </div>
 
+<div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <?php @include_once($rootPath."/admin/admin/page_parts/newStudent.php")?>
+</div>
+
 <script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js"></script>

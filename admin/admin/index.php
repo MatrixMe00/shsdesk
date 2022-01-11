@@ -227,10 +227,6 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
         </section>
     </div>
 
-    <div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-        <?php @include_once($rootPath."/admin/admin/page_parts/newStudent.php")?>
-    </div>
-
     <div id="modal_3" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
         <?php include_once($rootPath."/admin/admin/page_parts/add_house.php")?>
     </div>

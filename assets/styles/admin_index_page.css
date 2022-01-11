@@ -33,7 +33,7 @@ nav{
     color: whitesmoke;
     font-weight: bold;
     font-feature-settings: "curs" "cswh" "jalt";
-    font-family: gabriola;
+    font-family: gabriola, 'Merriweather', serif !important;
 }
 
 nav #nav_holder{

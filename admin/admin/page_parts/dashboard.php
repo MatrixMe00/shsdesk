@@ -65,7 +65,7 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM cssps WHERE enroled = FALSE");
+                    $res = $connect->query("SELECT indexNumber FROM cssps WHERE enroled = FALSE AND schoolID = $user_school_id");
                     
                     echo $res->num_rows;
                 ?>

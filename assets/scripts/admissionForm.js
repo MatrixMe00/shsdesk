@@ -173,7 +173,7 @@ $("input[type=tel]").keyup(function(){
     $(this).prop("maxlength",maxlength);
 })
 
-//remove spaces from phone numbery
+//remove spaces from phone number
 $("input[type=tel]").blur(function(){
     i = 0;
     value = $(this).val();

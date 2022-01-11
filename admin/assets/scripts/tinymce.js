@@ -1,5 +1,5 @@
 //tiny mce textareas
-$("textarea.tinymce").tinymce({
+$(".tinymce").tinymce({
     menubar: false,
     plugins: [
         "advlist autolink lists link image charmap print preview anchor",

@@ -1,3 +1,21 @@
+$(document).ready(function(){
+    //get all input labels and add their titles when they are focused
+    $("label input").html(function(){
+        //grab the html content
+        message_span = "<span class='title_message'></span>";
+        parent = $(this).parent();
+
+        //add relative class to parent
+        $(parent).addClass("relative");
+
+        //check and see if this has a title addressed to it
+        if($(this).attr("title") != null){
+            $(parent).append(message_span);
+            $(this).siblings(".title_message").html($(this).attr("title"));
+        }
+    })
+})
+
 $(".text_input").on({
     focus: function(){
         $(this).parent().css("border-bottom-color", "lightseagreen");

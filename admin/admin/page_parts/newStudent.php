@@ -35,7 +35,7 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="othernames">
                 </span>
-                <input type="text" name="oname" id="oname"
+                <input type="text" name="oname" id="oname" required
                 placeholder="Other Name(s)" title="Enter other names of the student">
             </label>
             <label for="gender">
@@ -102,55 +102,7 @@
             <button type="submit" name="submit" value="adminAddStudent">Save</button>
         </label>
         <label for="cancel" class="btn">
-            <button type="reset" name="cancel" onclick="$(this).parents('#modal').addClass('no_disp')">Cancel</button>
+            <button type="reset" name="cancel">Cancel</button>
         </label>
     </div>
 </form>
-
-<script>
-    $("form[name=adminAddStudent]").submit(function(event){
-        event.preventDefault();
-
-        //prepare defaults for message box
-        form_name="adminAddStudent";
-        time = 5;
-
-        //send data
-        response = formSubmit($(this), $("form[name=adminAddStudent] button[name=submit]"));
-        
-        if(response == true){
-            message = "Data for " + $("form[name=adminAddStudent] #lname").val() + " was added successfully";
-            message_type = "success";
-        }else{
-            message_type = "error";
-
-            if(response == "index-number-empty"){
-                message = "No index number was provided";
-            }else if(response == "lastname-empty"){
-                message = "No lastname was provided";
-            }else if(response == "no-other-name"){
-                message = "Othername field is empty";
-            }else if(response == "gender-not-set"){
-                message = "Please select a gender";
-            }else if(response == "boardin-status-not-set"){
-                message = "Please select a boarding status";
-            }else if(response == "no-student-program-set"){
-                message = "You have not specified student's program";
-            }else if(response == "no-aggregate-set"){
-                message = "No aggregate score has been provided";
-            }else if(response == "aggregate-wrong"){
-                message = "Aggregate score is invalid";
-            }else if(response == "no-jhs-set"){
-                message = "You have not provided student's JHS school";
-            }else if(response == "no-dob"){
-                message = "Please provide student's date of birth";
-            }else if(response == "no-track-id"){
-                message = "Please provide student's track id";
-            }else{
-                message = "An unknown error has occured. Please try again later";
-            }
-        }
-
-        messageBoxTimeout(form_name, message, message_type, time);
-    })
-</script>

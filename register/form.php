@@ -33,11 +33,11 @@
         $category = $connect->real_escape_string($_POST["category"]);
         $residence_status = $connect->real_escape_string($_POST["residence_status"]);
         $sector = $connect->real_escape_string($_POST["sector"]);
-        $autoHousePlace = $connect->real_escape_string($_POST["autoHousePlace"]);
+        @$autoHousePlace = $connect->real_escape_string($_POST["autoHousePlace"]);
         $admission_letter = $connect->real_escape_string($_POST["admission_letter"]);
 
-        if($autoHousePlace == "true" || $autoHousePlace == "on"){
-            $autoHousePlace = true;
+        if(@$autoHousePlace == "true" || @$autoHousePlace == "on"){
+            @$autoHousePlace = true;
         }
 
         //prevent empty entries
@@ -170,17 +170,20 @@
             //prepare the insert statement
             $res = $connect->prepare($sql);
 
+            $row_id = intval($row["id"]);
+            $role = 3;
+            
             //bind necessary parameters
-            $res->bind_param('sssisis',$technical_name,$school_email, $default_password,$row["id"], $technical_phone, 3, $date_now);
+            $res->bind_param('sssisis',$technical_name,$school_email, $default_password,$row_id, $technical_phone, $role, $date_now);
 
-            if($res->execute){
+            if($res->execute()){
                 //insert data into admission details table
                 $sql = "INSERT INTO admissiondetails (schoolID, headName) 
                 VALUES (".$row["id"].",$head_name)";
                 $connect->query($sql);
 
                 echo "<p>Your data has been recorded successfully!</p>";
-                if($autoHousePlace != true){
+                if(@$autoHousePlace != true){
                     echo "<p>Student house allocation has not been set to automatic<br>
                         Click <a href=\"$url/admin/admin/assets/files/default files/house_allocation.csv\">here</a> to download 
                         required file to manually place students in required houses</p>";
@@ -189,10 +192,12 @@
                 echo "<p>
                    <u>Default Login Details</u><br><br>
                    <b>Username</b>: New User<br>
-                   <b>Password</b>: Password@1
+                   <b>Password</b>: Password@1<br><br>
+                   
+                   Upon registration, you shall be asked for your full name [$technical_name] and email [$school_email]. Please do well to provide the right details
                 </p>";
     
-                echo "<p>Click <a href=\"".$url."admin/\">here</a> to log into your portal</p>";
+                echo "<p>Click <a href=\"".$url."/admin/\">here</a> to log into your portal</p>";
             }
         }else{
             echo "<p>An unexpected error occured! Please go back and resubmit the form again</p>";

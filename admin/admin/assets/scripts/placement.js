@@ -72,7 +72,7 @@ $("form[name=importForm] button[name=close]").click(function(){
     $("#display_file_name").html("Choose or drag your file here");
 
     //hide the message box
-    $(".message_box").hide();
+    $("#message_box").hide();
 })
 
 //search button workout

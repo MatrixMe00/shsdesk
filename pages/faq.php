@@ -176,13 +176,7 @@
     </footer>
 
     <script src="<?php echo $url?>/assets/scripts/head_foot.js"></script>
-    <script>
-        //alert("This page will be added to the project only if you want it to be added");
-
-        //form settings
-        $("form").submit(function(e){
-            e.preventDefault();
-        })
-    </script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/faq.js"></script>
 </body>
 </html>
