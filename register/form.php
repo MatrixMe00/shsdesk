@@ -27,7 +27,7 @@
         $postal_address = $connect->real_escape_string($_POST["postal_address"]);
         
         //school's description
-        $description = htmlentities($_POST["description"]);
+        $description = htmlentities($_POST["description"], ENT_QUOTES);
 
         //other details of school
         $category = $connect->real_escape_string($_POST["category"]);
