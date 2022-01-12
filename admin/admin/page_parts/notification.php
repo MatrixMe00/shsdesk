@@ -8,30 +8,33 @@
     <p>Notifications will be displayed here</p>
 </section>
 
+<?php 
+    $result = $connect->query("SELECT DISTINCT n.* 
+        FROM notification n JOIN reply r 
+        ON n.ID = r.Comment_id 
+        WHERE r.Read_by NOT LIKE '%$user_username%'
+        AND n.Read_by LIKE '%$user_username%'
+        ORDER BY ID DESC");
+
+    if($result->num_rows > 0){
+?>
 <section class="page_setup">
     <div class="head">
         <h2>New Replies</h2>
     </div>
-    <?php 
-        $result = $connect->query("SELECT DISTINCT n.* 
-        FROM notification n JOIN reply r 
-        ON n.ID = r.Comment_id 
-        WHERE r.Read_by NOT LIKE'$user_username'
-        AND n.Read_by LIKE '$user_username'
-        ORDER BY ID DESC");
-
+    <?php
         if($result->num_rows > 0){
     ?>
     <div class="body">
         <?php while($row = $result->fetch_assoc()){ ?>
-        <div class="notif_box flex flex-column relative">
+        <div data-box-number="<?php echo $row["ID"] ?>" class="notif_box flex flex-column relative unread">
             <div class="top">
                 <h4><?php echo $row["Title"]?></h4>
                 <span class="username"><?php echo getUserDetails($row["Sender_id"])["username"]?></span>
                 <span class="date"><?php echo date("jS F, Y",strtotime($row["Date"]))?></span>
             </div>
             <div class="middle">
-                <p><?php echo $row["Description"]?></p>
+                <p><?php echo html_entity_decode($row["Description"])?></p>
             </div>
             <div class="foot">
                 <span class="item-event flex-center-align replies">
@@ -65,14 +68,16 @@
                         <h5><?php echo $rep["username"]." to ".$rep["username1"] ?></h5>
                     </div>
                     <div class="middle">
-                        <p><?php echo $rep["Message"]?></p>
+                        <p><?php echo html_entity_decode($rep["Message"], ENT_QUOTES)?></p>
                     </div>
                     <div class="foot">
                         <?php if($rep["Sender_id"] == $user_id && date("d-m-Y",strtotime($rep["Date"])) == date("d-m-Y")){?>
                         <span class="item-event" data-item-id="<?php echo $rep["ID"]?>">Edit</span>
                         <?php }?>
                         <span class="item-event reply-reply" data-sender-id="<?php echo $rep["Sender_id"]?>" data-sender-name="<?php echo $rep["username"]?>">Reply</span>
+                        <?php if($rep["Sender_id"] == $user_id){ ?>
                         <span class="item-event" data-item-id="<?php echo $rep["ID"]?>" data-item-event="delete">Delete</span>
+                        <?php } ?>
                         <span class="item-event date"><?php
                             if(date("d-m-y") == date("d-m-y", strtotime($rep["Date"]))){
                                 echo "- Today, ".date("h:i:s A", strtotime($rep["Date"]));
@@ -89,7 +94,7 @@
                     <p>No replies are available for this comment. Be the first to reply</p>
                 </div>
                 <?php } ?>
-                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/superadmin/submit.php" method="POST">
+                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/submit.php" method="POST">
                     <label for="reply">
                         <input type="text" name="reply" placeholder="Reply Username...">
                     </label>
@@ -101,40 +106,41 @@
                     <input type="hidden" name="user_id" value="<?php echo $user_id?>">
                     <input type="hidden" name="school_id" value="<?php echo $school_id?>">
                 </div>
+                <span class="load_message" style="display:none; font-size: small; padding: 0.3em 0.5em; margin-left: 0.4em"></span>
             </div>
         </div>
         <?php } ?>
     </div>
-    <?php }else{?>
-    <div class="body empty">
-        <p>You have no unread replies on any notification</p>
-    </div>
-    <?php } ?>
+    <?php }?>
 </section>
+<?php } ?>
 
+<?php
+    $result = $connect->query("SELECT *
+        FROM notification
+        WHERE Read_by NOT LIKE '%$user_username%'
+        OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')
+        ORDER BY ID DESC");
+
+    if($result->num_rows > 0){
+?>
 <section class="page_setup">
     <div class="head">
         <h2>Unread Notifications</h2>
     </div>
     <?php
-        $result = $connect->query("SELECT DISTINCT n.*
-        FROM notification n JOIN reply r
-        ON n.ID = r.Comment_ID
-        WHERE n.Read_by NOT LIKE '$user_username'
-        ORDER BY ID DESC");
-
         if($result->num_rows > 0){
     ?>
     <div class="body">
         <?php while($row = $result->fetch_assoc()){ ?>
-        <div class="notif_box flex flex-column relative">
+        <div data-box-number="<?php echo $row["ID"] ?>" class="notif_box flex flex-column relative unread">
             <div class="top">
                 <h4><?php echo $row["Title"]?></h4>
                 <span class="username"><?php echo getUserDetails($row["Sender_id"])["username"]?></span>
                 <span class="date"><?php echo date("jS F, Y",strtotime($row["Date"]))?></span>
             </div>
             <div class="middle">
-                <p><?php echo $row["Description"]?></p>
+                <p><?php echo html_entity_decode($row["Description"])?></p>
             </div>
             <div class="foot">
                 <span class="item-event flex-center-align replies" data-sender-id="<?php echo $row["Sender_id"]?>">
@@ -168,14 +174,16 @@
                         <h5><?php echo $rep["username"]." to ".$rep["username1"] ?></h5>
                     </div>
                     <div class="middle">
-                        <p><?php echo $rep["Message"]?></p>
+                        <p><?php echo html_entity_decode($rep["Message"], ENT_QUOTES)?></p>
                     </div>
                     <div class="foot">
                         <?php if($rep["Sender_id"] == $user_id && date("d-m-Y",strtotime($rep["Date"])) == date("d-m-Y")){?>
                         <span class="item-event" data-item-id="<?php echo $rep["ID"]?>">Edit</span>
                         <?php }?>
                         <span class="item-event reply-reply" data-sender-id="<?php echo $rep["Sender_id"]?>" data-sender-name="<?php echo $rep["username"]?>">Reply</span>
+                        <?php if($rep["Sender_id"] == $user_id){ ?>
                         <span class="item-event" data-item-id="<?php echo $rep["ID"]?>" data-item-event="delete">Delete</span>
+                        <?php } ?>
                         <span class="item-event date"><?php
                             if(date("d-m-y") == date("d-m-y", strtotime($rep["Date"]))){
                                 echo "- Today, ".date("h:i:s A", strtotime($rep["Date"]));
@@ -192,7 +200,7 @@
                     <p>No replies are available for this comment. Be the first to reply</p>
                 </div>
                 <?php } ?>
-                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/superadmin/submit.php" method="POST">
+                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/submit.php" method="POST">
                     <label for="reply">
                         <input type="text" name="reply" placeholder="Reply Username...">
                     </label>
@@ -204,16 +212,14 @@
                     <input type="hidden" name="user_id" value="<?php echo $user_id?>">
                     <input type="hidden" name="school_id" value="<?php echo $school_id?>">
                 </div>
+                <span class="load_message" style="display:none; font-size: small; padding: 0.3em 0.5em; margin-left: 0.4em"></span>
             </div>
         </div>
         <?php } ?>
     </div>
-    <?php }else{?>
-    <div class="body empty">
-        <p>You have no unread notification</p>
-    </div>
-    <?php } ?>
+    <?php }?>
 </section>
+<?php } ?>
 
 <section class="page_setup">
     <div class="head">
@@ -221,24 +227,24 @@
     </div>
     <?php
         $result = $connect->query("SELECT DISTINCT n.* 
-                FROM notification n JOIN reply r 
-                ON n.ID = r.Comment_id 
-                WHERE n.Sender_id = $user_id
-                AND r.Read_by LIKE '$user_username'
-                ORDER BY ID DESC");
+            FROM notification n JOIN reply r 
+            ON n.ID = r.Comment_id 
+            WHERE r.Read_by LIKE '%$user_username%'
+            AND n.Read_by LIKE '%$user_username%'
+            ORDER BY ID DESC");
         if($result->num_rows > 0){
             
     ?>
     <div class="body">
         <?php while($row = $result->fetch_assoc()){ ?>
-        <div class="notif_box flex flex-column relative">
+        <div data-box-number="<?php echo $row["ID"] ?>" class="notif_box flex flex-column relative">
             <div class="top">
                 <h4><?php echo $row["Title"]?></h4>
                 <span class="username"><?php echo getUserDetails($row["Sender_id"])["username"]?></span>
                 <span class="date"><?php echo date("jS F, Y",strtotime($row["Date"]))?></span>
             </div>
             <div class="middle">
-                <p><?php echo $row["Description"]?></p>
+                <p><?php echo html_entity_decode($row["Description"])?></p>
             </div>
             <div class="foot">
                 <span class="item-event flex-center-align replies" data-sender-id="<?php echo $row["Sender_id"]?>">
@@ -272,14 +278,16 @@
                         <h5><?php echo $rep["username"]." to ".$rep["username1"] ?></h5>
                     </div>
                     <div class="middle">
-                        <p><?php echo $rep["Message"]?></p>
+                        <p><?php echo html_entity_decode($rep["Message"], ENT_QUOTES)?></p>
                     </div>
                     <div class="foot">
                         <?php if($rep["Sender_id"] == $user_id && date("d-m-Y",strtotime($rep["Date"])) == date("d-m-Y")){?>
                         <span class="item-event" data-item-id="<?php echo $rep["ID"]?>">Edit</span>
                         <?php }?>
                         <span class="item-event reply-reply" data-sender-id="<?php echo $rep["Sender_id"]?>" data-sender-name="<?php echo $rep["username"]?>">Reply</span>
+                        <?php if($rep["Sender_id"] == $user_id){ ?>
                         <span class="item-event" data-item-id="<?php echo $rep["ID"]?>" data-item-event="delete">Delete</span>
+                        <?php } ?>
                         <span class="item-event date"><?php
                             if(date("d-m-y") == date("d-m-y", strtotime($rep["Date"]))){
                                 echo "- Today, ".date("h:i:s A", strtotime($rep["Date"]));
@@ -296,7 +304,7 @@
                     <p>No replies are available for this comment. Be the first to reply</p>
                 </div>
                 <?php } ?>
-                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/superadmin/submit.php" method="POST">
+                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/submit.php" method="POST">
                     <label for="reply">
                         <input type="text" name="reply" placeholder="Reply Username...">
                     </label>
@@ -308,13 +316,14 @@
                     <input type="hidden" name="user_id" value="<?php echo $user_id?>">
                     <input type="hidden" name="school_id" value="<?php echo $school_id?>">
                 </div>
+                <span class="load_message" style="display:none; font-size: small; padding: 0.3em 0.5em; margin-left: 0.4em"></span>
             </div>
         </div>
         <?php } ?>
     </div>
     <?php }else{?>
     <div class="body empty">
-        <p>No notifications have been made or some notifications are unread</p>
+        <p>There are no notifications to display yet</p>
     </div>
     <?php } ?>
 </section>

@@ -168,11 +168,9 @@
         }elseif($submit == "make_announcement" || $submit == "make_announcement_ajax"){
             //retrieve needed data
             $title = $_REQUEST["title"];
-            $message = htmlentities($_REQUEST["message"]);
+            $message = htmlentities($_REQUEST["message"], ENT_QUOTES);
             $audience = $_REQUEST["audience"];
             $notification_type = $_REQUEST["notification_type"];
-
-            echo $audience;
 
             //get details from session
             if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] != null){
@@ -222,62 +220,6 @@
                 }                
             }else{
                 echo "error making announcement";
-            }
-        }elseif($submit == "btn_reply" || $submit == "btn_reply_ajax"){
-            $reply = $_REQUEST["reply"];
-            $comment_id = $_REQUEST["comment_id"];
-            $user_id = $_REQUEST["user_id"];
-            $school_id = $_REQUEST["school_id"];
-            $recepient_id = $_REQUEST["recepient_id"];
-            $admin_read = true;
-            $read_by = $user_username;
-
-            //filter out any error
-            if(empty($reply)){
-                echo "no-reply";
-                exit(1);
-            }elseif(strlen($reply) < 2){
-                echo "reply-short";
-                exit(1);
-            }elseif(empty($comment_id)){
-                echo "no-comment-id";
-                exit(1);
-            }elseif(empty($user_id) || $user_id < 1){
-                echo "no-user-id";
-                exit(1);
-            }elseif(empty($recepient_id) || $recepient_id < 1){
-                echo "no-recepient-id";
-                exit(1);
-            }else{
-                $date_now = date("d-m-Y H:i:s");
-                $sql = "INSERT INTO reply (Sender_id, Recipient_id, Comment_id, Message, AdminRead, Read_by, Date) VALUES 
-                        (?,?,?,?,?,?,?)";
-                $res = $connect->prepare($sql);
-                $res->bind_param("iiisiss", $user_id, $recepient_id, $comment_id, $reply, $admin_read, $read_by,$date_now);
-
-                if($res->execute()){
-                    $username = getUserDetails($user_id);
-                    $username1 = getUserDetails($recepient_id);
-
-                    $row = array(
-                        "status" => "success",
-                        "username" => $username["username"],
-                        "username1" => $username1["username"]
-                    );
-
-                    if($submit == "btn_reply"){
-                        //redirect to previous page
-                        $location = $_SERVER["HTTP_REFERER"];
-
-                        header("location: $location");
-                    }
-                }else{
-                    $row = array(
-                        "status" => "error"
-                    );
-                }
-                
-                echo json_encode($row);
             }
         }
     }else{

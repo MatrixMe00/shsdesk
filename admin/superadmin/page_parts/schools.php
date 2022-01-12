@@ -112,4 +112,4 @@
     </div>
 </section>
 
-<script src="<?php echo $url?>/admin/superadmin/admin/scripts/schools.js"></script>
+<script src="<?php echo $url?>/admin/superadmin/assets/scripts/schools.js?v=<?php echo time()?>"></script>

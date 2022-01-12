@@ -160,7 +160,15 @@
 
                                 if($res->num_rows > 0){
                                     while($row = $res->fetch_assoc()){
-                                        echo "<option value=\"".$row["id"]."\">".$row["schoolName"]."</option>";
+                                        //check if school has at least two houses in the system
+                                        $house_check = fetchData("COUNT(DISTINCT(title)) AS total", "houses", "schoolID=".$row["id"])["total"];
+                                        if($house_check > 1){
+                                            //check if there is at least one student uploaded on the system
+                                            $students = fetchData("COUNT(indexNumber) AS total", "cssps", "schoolID=".$row["id"])["total"];
+                                            if($students > 0){
+                                                echo "<option value=\"".$row["id"]."\">".$row["schoolName"]."</option>";
+                                            }
+                                        }
                                     }
                                 }
                             ?>
@@ -180,7 +188,15 @@
 
                                 if($res->num_rows > 0){
                                     while($row = $res->fetch_assoc()){
-                                        echo "<option value=\"".$row["id"]."\">".$row["schoolName"]."</option>";
+                                        //check if school has at least two houses in the system
+                                        $house_check = fetchData("COUNT(DISTINCT(title)) AS total", "houses", "schoolID=".$row["id"])["total"];
+                                        if($house_check > 1){
+                                            //check if there is at least one student uploaded on the system
+                                            $students = fetchData("COUNT(indexNumber) AS total", "cssps", "schoolID=".$row["id"])["total"];
+                                            if($students > 0){
+                                                echo "<option value=\"".$row["id"]."\">".$row["schoolName"]."</option>";
+                                            }
+                                        }
                                     }
                                 }
                             ?>

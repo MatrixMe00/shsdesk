@@ -8,30 +8,33 @@
     <p>Notifications will be displayed here</p>
 </section>
 
+<?php 
+    $result = $connect->query("SELECT DISTINCT n.* 
+        FROM notification n JOIN reply r 
+        ON n.ID = r.Comment_id 
+        WHERE r.Read_by NOT LIKE '%$user_username%'
+        AND n.Read_by LIKE '%$user_username%'
+        ORDER BY ID DESC");
+
+    if($result->num_rows > 0){
+?>
 <section class="page_setup">
     <div class="head">
         <h2>New Replies</h2>
     </div>
     <?php 
-        $result = $connect->query("SELECT DISTINCT n.* 
-        FROM notification n JOIN reply r 
-        ON n.ID = r.Comment_id 
-        WHERE r.Read_by NOT LIKE'$user_username'
-        AND n.Read_by LIKE '$user_username'
-        ORDER BY ID DESC");
-
         if($result->num_rows > 0){
     ?>
     <div class="body">
         <?php while($row = $result->fetch_assoc()){ ?>
-        <div class="notif_box flex flex-column relative">
+        <div data-box-number="<?php echo $row["ID"] ?>" class="notif_box flex flex-column relative unread">
             <div class="top">
                 <h4><?php echo $row["Title"]?></h4>
                 <span class="username"><?php echo getUserDetails($row["Sender_id"])["username"]?></span>
                 <span class="date"><?php echo date("jS F, Y",strtotime($row["Date"]))?></span>
             </div>
             <div class="middle">
-                <p><?php echo $row["Description"]?></p>
+                <p><?php echo html_entity_decode($row["Description"])?></p>
             </div>
             <div class="foot">
                 <span class="item-event" data-item-id="<?php echo $row["ID"]?>">Edit</span>
@@ -67,7 +70,7 @@
                         <h5><?php echo $rep["username"]." to ".$rep["username1"] ?></h5>
                     </div>
                     <div class="middle">
-                        <p><?php echo $rep["Message"]?></p>
+                        <p><?php echo html_entity_decode($rep["Message"], )?></p>
                     </div>
                     <div class="foot">
                         <?php if($rep["Sender_id"] == $user_id && date("d-m-Y",strtotime($rep["Date"])) == date("d-m-Y")){?>
@@ -91,7 +94,7 @@
                     <p>No replies are available for this comment. Be the first to reply</p>
                 </div>
                 <?php } ?>
-                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/superadmin/submit.php" method="POST">
+                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/submit.php" method="POST">
                     <label for="reply">
                         <input type="text" name="reply" placeholder="Reply Username...">
                     </label>
@@ -103,40 +106,41 @@
                     <input type="hidden" name="user_id" value="<?php echo $user_id?>">
                     <input type="hidden" name="school_id" value="<?php echo $school_id?>">
                 </div>
+                <span class="load_message" style="display: none; font-size: small; padding: 0.3em 0.5em; margin-left: 0.4em"></span>
             </div>
         </div>
         <?php } ?>
     </div>
-    <?php }else{?>
-    <div class="body empty">
-        <p>You have no unread replies on any notification</p>
-    </div>
-    <?php } ?>
+    <?php }?>
 </section>
+<?php } ?>
 
+<?php
+    $result = $connect->query("SELECT DISTINCT n.*
+        FROM notification n JOIN reply r
+        ON n.ID = r.Comment_ID
+        WHERE n.Read_by NOT LIKE '%$user_username%'
+        ORDER BY ID DESC");
+
+    if($result->num_rows > 0){
+?>
 <section class="page_setup">
     <div class="head">
         <h2>Unread Notifications</h2>
     </div>
     <?php
-        $result = $connect->query("SELECT DISTINCT n.*
-        FROM notification n JOIN reply r
-        ON n.ID = r.Comment_ID
-        WHERE n.Read_by NOT LIKE '$user_username'
-        ORDER BY ID DESC");
-
         if($result->num_rows > 0){
     ?>
     <div class="body">
         <?php while($row = $result->fetch_assoc()){ ?>
-        <div class="notif_box flex flex-column relative">
+        <div data-box-number="<?php echo $row["ID"] ?>" class="notif_box flex flex-column relative unread">
             <div class="top">
                 <h4><?php echo $row["Title"]?></h4>
                 <span class="username"><?php echo getUserDetails($row["Sender_id"])["username"]?></span>
                 <span class="date"><?php echo date("jS F, Y",strtotime($row["Date"]))?></span>
             </div>
             <div class="middle">
-                <p><?php echo $row["Description"]?></p>
+                <p><?php echo html_entity_decode($row["Description"])?></p>
             </div>
             <div class="foot">
                 <span class="item-event" data-item-id="<?php echo $row["ID"]?>">Edit</span>
@@ -172,7 +176,7 @@
                         <h5><?php echo $rep["username"]." to ".$rep["username1"] ?></h5>
                     </div>
                     <div class="middle">
-                        <p><?php echo $rep["Message"]?></p>
+                        <p><?php echo html_entity_decode($rep["Message"], )?></p>
                     </div>
                     <div class="foot">
                         <?php if($rep["Sender_id"] == $user_id && date("d-m-Y",strtotime($rep["Date"])) == date("d-m-Y")){?>
@@ -196,7 +200,7 @@
                     <p>No replies are available for this comment. Be the first to reply</p>
                 </div>
                 <?php } ?>
-                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/superadmin/submit.php" method="POST">
+                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/submit.php" method="POST">
                     <label for="reply">
                         <input type="text" name="reply" placeholder="Reply Username...">
                     </label>
@@ -208,41 +212,36 @@
                     <input type="hidden" name="user_id" value="<?php echo $user_id?>">
                     <input type="hidden" name="school_id" value="<?php echo $school_id?>">
                 </div>
+                <span class="load_message" style="display: none; font-size: small; padding: 0.3em 0.5em; margin-left: 0.4em"></span>
             </div>
         </div>
         <?php } ?>
     </div>
-    <?php }else{?>
-    <div class="body empty">
-        <p>No notifications have been made. Make an announcement or notification</p>
-    </div>
-    <?php } ?>
+    <?php }?>
 </section>
+<?php } ?>
 
 <section class="page_setup">
     <div class="head">
-        <h2>Your Notifications</h2>
+        <h2>Your Announcements</h2>
     </div>
     <?php
-        $result = $connect->query("SELECT DISTINCT n.* 
-                FROM notification n JOIN reply r 
-                ON n.ID = r.Comment_id 
-                WHERE n.Sender_id = $user_id
-                AND r.Read_by LIKE '$user_username'
+        $result = $connect->query("SELECT * 
+                FROM notification
+                WHERE Sender_id = $user_id
                 ORDER BY ID DESC");
-        if($result->num_rows > 0){
-            
+        if($result->num_rows > 0){            
     ?>
     <div class="body">
         <?php while($row = $result->fetch_assoc()){ ?>
-        <div class="notif_box flex flex-column relative">
+        <div data-box-number="<?php echo $row["ID"] ?>" class="notif_box flex flex-column relative">
             <div class="top">
                 <h4><?php echo $row["Title"]?></h4>
                 <span class="username"><?php echo getUserDetails($row["Sender_id"])["username"]?></span>
                 <span class="date"><?php echo date("jS F, Y",strtotime($row["Date"]))?></span>
             </div>
             <div class="middle">
-                <p><?php echo $row["Description"]?></p>
+                <p><?php echo html_entity_decode($row["Description"])?></p>
             </div>
             <div class="foot">
                 <span class="item-event" data-item-id="<?php echo $row["ID"]?>">Edit</span>
@@ -278,7 +277,7 @@
                         <h5><?php echo $rep["username"]." to ".$rep["username1"] ?></h5>
                     </div>
                     <div class="middle">
-                        <p><?php echo $rep["Message"]?></p>
+                        <p><?php echo html_entity_decode($rep["Message"], ENT_QUOTES)?></p>
                     </div>
                     <div class="foot">
                         <?php if($rep["Sender_id"] == $user_id && date("d-m-Y",strtotime($rep["Date"])) == date("d-m-Y")){?>
@@ -302,7 +301,7 @@
                     <p>No replies are available for this comment. Be the first to reply</p>
                 </div>
                 <?php } ?>
-                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/superadmin/submit.php" method="POST">
+                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/submit.php" method="POST">
                     <label for="reply">
                         <input type="text" name="reply" placeholder="Reply Username...">
                     </label>
@@ -314,13 +313,14 @@
                     <input type="hidden" name="user_id" value="<?php echo $user_id?>">
                     <input type="hidden" name="school_id" value="<?php echo $school_id?>">
                 </div>
+                <span class="load_message" style="display: none; font-size: small; padding: 0.3em 0.5em; margin-left: 0.4em"></span>
             </div>
         </div>
         <?php } ?>
     </div>
     <?php }else{?>
     <div class="body empty">
-        <p>No notifications have been made. Make an announcement or notification</p>
+        <p>You have not created a new notification. Press the make announcement button to create one</p>
     </div>
     <?php } ?>
     <div class="foot">
@@ -332,29 +332,29 @@
 
 <section class="page_setup">
     <div class="head">
-        <h2>Other Notifications</h2>
+        <h2>Other Announcements</h2>
     </div>
     <?php
         $result = $connect->query("SELECT DISTINCT n.* 
                 FROM notification n JOIN reply r 
                 ON n.ID = r.Comment_id 
                 WHERE n.Sender_id != $user_id
-                AND r.Read_by LIKE '$user_username'
-                AND n.Read_by LIKE '$user_username'
+                AND r.Read_by LIKE '%$user_username%'
+                AND n.Read_by LIKE '%$user_username%'
                 ORDER BY ID DESC");
         if($result->num_rows > 0){
             
     ?>
     <div class="body">
         <?php while($row = $result->fetch_assoc()){ ?>
-        <div class="notif_box flex flex-column relative">
+        <div data-box-number="<?php echo $row["ID"] ?>" class="notif_box flex flex-column relative">
             <div class="top">
                 <h4><?php echo $row["Title"]?></h4>
                 <span class="username"><?php echo getUserDetails($row["Sender_id"])["username"]?></span>
                 <span class="date"><?php echo date("jS F, Y",strtotime($row["Date"]))?></span>
             </div>
             <div class="middle">
-                <p><?php echo $row["Description"]?></p>
+                <p><?php echo html_entity_decode($row["Description"])?></p>
             </div>
             <div class="foot">
                 <span class="item-event" data-item-id="<?php echo $row["ID"]?>">Edit</span>
@@ -390,7 +390,7 @@
                         <h5><?php echo $rep["username"]." to ".$rep["username1"] ?></h5>
                     </div>
                     <div class="middle">
-                        <p><?php echo $rep["Message"]?></p>
+                        <p><?php echo html_entity_decode($rep["Message"], )?></p>
                     </div>
                     <div class="foot">
                         <?php if($rep["Sender_id"] == $user_id && date("d-m-Y",strtotime($rep["Date"])) == date("d-m-Y")){?>
@@ -414,7 +414,7 @@
                     <p>No replies are available for this comment. Be the first to reply</p>
                 </div>
                 <?php } ?>
-                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/superadmin/submit.php" method="POST">
+                <div class="reply_tab flex" role="form" data-action="<?php echo $url?>/admin/submit.php" method="POST">
                     <label for="reply">
                         <input type="text" name="reply" placeholder="Reply Username...">
                     </label>
@@ -426,13 +426,14 @@
                     <input type="hidden" name="user_id" value="<?php echo $user_id?>">
                     <input type="hidden" name="school_id" value="<?php echo $school_id?>">
                 </div>
+                <span class="load_message" style="display: none; font-size: small; padding: 0.3em 0.5em; margin-left: 0.4em"></span>
             </div>
         </div>
         <?php } ?>
     </div>
     <?php }else{?>
     <div class="body empty">
-        <p>No notifications have been made by other superadmins.</p>
+        <p>No super admin has made an announcement yet.</p>
     </div>
     <?php } ?>
 </section>
@@ -450,6 +451,7 @@
             <input type="hidden" name="notification_type" value="notice">
             <input type="hidden" name="school_id" value="<?php echo $school_id?>">
             <label for="title">
+                <span class="load_message" style="display: none; font-size: small; padding: 0.3em 0.5em; margin-left: 0.4em"></span>
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/easel-outline.svg" alt="title">
                 </span>
@@ -459,7 +461,7 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="message">
                 </span>
-                <textarea name="message" maxlength="400" placeholder="Enter your announcement in this space. You should not exceed 400 characters" class="admin_tinymce" required></textarea>
+                <textarea name="message" maxlength="400" placeholder="Enter your announcement in this space. You should not exceed 400 characters" class="admin_tinymce"></textarea>
             </label>
             <div id="#aud">
                 <p style="padding-left: 12px">Select your audience</p>
@@ -528,7 +530,7 @@
     <?php } ?>
 </section>
 
-<section id="requests" class="page_setup">
+<section id="reports" class="page_setup">
     <div class="head">
         <h3>System Reports</h3>
     </div>
@@ -564,8 +566,8 @@
     <?php } ?>
 </section>
 
-<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>">
-</script><script src="<?php echo $url?>/admin/assets/scripts/notification.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.js">
+</script><script src="<?php echo $url?>/admin/assets/scripts/notification.js"></script>
 <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
-    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
-    <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce.js"></script>

@@ -11,7 +11,7 @@ $(".item").click(function(){
     $(parent).children(".head").addClass("active");
 
     //change the contents on the rhs
-    $("#rhs .head #title").html($(this).children(".menu_name").children("span").text());
+    $("#rhs .head #title #head").html($(this).children(".menu_name").children("span").text());
 
     //display the contents of the said property
     if($(this).attr("data-url")){

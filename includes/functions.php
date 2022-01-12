@@ -415,7 +415,7 @@
      * @param string $columns This receives the roles to fetch
      * @param string $table Receives table name
      * @param string $where Receives a where clause command
-     * @param int $limit Number of rows to deliver. Default is 1
+     * @param int $limit Number of rows to deliver. Default is 1. Use 0 to fetch everything
      * 
      * @return string|array
      */
@@ -424,12 +424,22 @@
 
         $sql = "SELECT $columns
                 FROM $table
-                WHERE $where
-                LIMIT $limit";
+                WHERE $where";
+        
+        //determine if it should set all or some
+        if($limit > 0){
+            $sql .= " LIMIT $limit";
+        }
+        
         $query = $connect->query($sql);
 
         if($query->num_rows > 0){
-            $result = $query->fetch_assoc();
+            if($query->num_rows == 1){
+                $result = $query->fetch_assoc();
+            }else{
+                $result = $query->fetch_all();
+            }
+                
         }else{
             $result = "empty";
         }       

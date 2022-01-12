@@ -17,7 +17,7 @@
     <title>Welcome SuperAdmin | <?php echo $user_details["username"] ?></title>
 </head>
 
-<body ng-app="index_application">
+<body>
     <?php
         //check if this is a new user
         if(checkNewUser($_SESSION["user_login_id"]) == TRUE){
@@ -95,18 +95,18 @@
                         $total = 0;
 
                         //unread notifications
-                        $result = $connect->query("SELECT DISTINCT n.*
-                            FROM notification n JOIN reply r
-                            ON n.ID = r.Comment_ID
-                            WHERE n.Read_by NOT LIKE '$user_username'");
+                        $result = $connect->query("SELECT *
+                            FROM notification
+                            WHERE Read_by NOT LIKE '%$user_username%'
+                            OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')");
                         $total += $result->num_rows;
 
                         //new replies
                         $result = $connect->query("SELECT DISTINCT n.* 
                             FROM notification n JOIN reply r 
                             ON n.ID = r.Comment_id 
-                            WHERE r.Read_by NOT LIKE'$user_username'
-                            AND n.Read_by LIKE '$user_username'
+                            WHERE r.Read_by NOT LIKE '%$user_username%'
+                            AND n.Read_by LIKE '%$user_username%'
                             ORDER BY ID DESC");
                         $total += $result->num_rows;
 
@@ -213,7 +213,7 @@
         </section>
         <section id="rhs">
             <div class="head">
-                <h3 id="title">Dashboard</h3>
+            <h3 id="title">SHSDesk / <span id="head"></span></h3>
             </div>
             <div class="body"></div>
         </section>

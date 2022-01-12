@@ -184,6 +184,135 @@
             }
 
             echo $message;
+        }elseif($submit == "btn_reply" || $submit == "btn_reply_ajax"){
+            $reply = $_REQUEST["reply"];
+            $comment_id = $_REQUEST["comment_id"];
+            $user_id = $_REQUEST["user_id"];
+            $school_id = $_REQUEST["school_id"];
+            $recepient_id = $_REQUEST["recepient_id"];
+
+            if($user_details["role"] <= 2)
+                $admin_read = true;
+            else
+                $admin_read = false;
+
+            $read_by = $user_username;
+
+            $message = "";
+            $row = array();
+
+            //filter out any error
+            if(empty($reply)){
+                $message = "no-reply";
+            }elseif(strlen($reply) < 2){
+                $message = "reply-short";
+            }elseif(empty($comment_id)){
+                $message = "no-comment-id";
+            }elseif(empty($user_id) || $user_id < 1){
+                $message = "no-user-id";
+            }elseif(empty($recepient_id) || $recepient_id < 1){
+                $message = "no-recepient-id";
+            }elseif($recepient_id == $user_id){
+                $message = "same-user";
+            }else{
+                $date_now = date("d-m-Y H:i:s");
+                $sql = "INSERT INTO reply (Sender_id, Recipient_id, Comment_id, Message, AdminRead, Read_by, Date) VALUES 
+                        (?,?,?,?,?,?,?)";
+                $res = $connect->prepare($sql);
+                $res->bind_param("iiisiss", $user_id, $recepient_id, $comment_id, $reply, $admin_read, $read_by,$date_now);
+
+                if($res->execute()){
+                    $username = getUserDetails($user_id);
+                    $username1 = getUserDetails($recepient_id);
+
+                    $row = array(
+                        "status" => "success",
+                        "username" => $username["username"],
+                        "username1" => $username1["username"]
+                    );
+
+                    if($submit == "btn_reply"){
+                        //redirect to previous page
+                        $location = $_SERVER["HTTP_REFERER"];
+
+                        header("location: $location");
+                    }
+                }else{
+                    $row = array(
+                        "status" => "error",
+                    );
+                }
+            }
+
+            if(!empty($message) || $message != ""){
+                $row += array(
+                    "message" => $message
+                );
+            }
+
+            echo json_encode($row);
+        }elseif($submit == "mark_read"){
+            $comment_id = $_REQUEST["comment_id"];
+            $username = $user_username;
+
+            //flags
+            $notif_flag = false;
+            $reply_flag = false;
+
+            //check if notification is read by current user
+            $is_read = fetchData("Read_by","notification","ID=$comment_id AND Read_by LIKE '%$username%'");
+            
+            if($is_read == "empty"){
+                //fetch the data from that data
+                $record = fetchData("Read_by","notification","ID=$comment_id");
+
+                if($record != "empty"){
+                    //retrieve the data
+                    $record = $record["Read_by"];
+                    
+                    //add user data
+                    $record .= ", $username";
+
+                    $sql = "UPDATE notification SET Read_by='$record' WHERE ID=$comment_id";
+
+                    if($connect->query($sql))
+                        $notif_flag = true;
+                }
+            }elseif(is_array($is_read)){
+                $notif_flag = true;
+            }
+
+            //search for all records in the reply table where user has not read anything
+            $is_read = fetchData("Read_by","reply","Comment_id=$comment_id AND Read_by NOT LIKE '%$username%'", 0);
+            if(is_array($is_read)){
+                //check if array is multidimensional
+                if(count($is_read) == count($is_read, COUNT_RECURSIVE)){
+                    foreach ($is_read as $key => $value){
+                        $value = "$value, $username";
+                    }
+                }else{
+                    //just pick one line since all rows will be the same
+                    foreach ($is_read[0] as $key => $value){
+                        $value = "$value, $username";
+                    }
+                }
+
+                if($user_details["role"] <= 2){
+                    $sql = "UPDATE reply SET Read_by='$value', AdminRead=1 WHERE Comment_id=$comment_id AND Read_by NOT LIKE '%$username%'";
+                }else{
+                    $sql = "UPDATE reply SET Read_by='$value' WHERE Comment_id=$comment_id AND Read_by NOT LIKE '%$username%'";
+                }
+
+                //query database
+                if($connect->query($sql))
+                    $reply_flag = true;
+            }elseif($is_read == "empty"){
+                $reply_flag = true;
+            }
+
+            if($reply_flag && $notif_flag){
+                echo "success";
+            }
         }
     }else{
         echo "no-submission";

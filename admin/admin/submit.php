@@ -41,6 +41,10 @@
                     //update the content
                     $sql = "UPDATE admins_table SET username=?, password=?, new_login=0 WHERE email=? AND fullname=?";
                     $res = $connect->prepare($sql);
+
+                    //hash password
+                    $new_password = MD5($new_password);
+                    
                     $res->bind_param("ssss",$new_username,$new_password,$email,$fullname);
 
                     if($res->execute()){

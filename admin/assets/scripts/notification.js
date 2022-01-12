@@ -158,6 +158,9 @@ $(".reply_tab label[for=submit] button[name=submit]").click(function(){
                 //disable the reply input
                 $(parent).children("label[for=reply]").children("input[name=reply]").prop("disabled",true);
                 $(this).prop("disabled", true);
+
+                //show a loading message
+                $(parent).siblings(".load_message").fadeIn().addClass("light").html("Loading...");
             },
             success: function(text){
                 text = JSON.parse(JSON.stringify(text));
@@ -166,8 +169,34 @@ $(".reply_tab label[for=submit] button[name=submit]").click(function(){
                 if(text["status"] == "success"){
                     //empty the reply input field
                     $(parent).children("label[for=reply]").children("input[name=reply]").val("");
+
+                    //display a success message
+                    $(parent).siblings(".load_message").removeClass("light danger").addClass("success").html("Reply sent");
+                    setTimeout(function(){
+                        $(parent).siblings(".load_message").removeClass("success").fadeOut().html("");
+                    }, 4000);
                 }else{
-                    alert("Reply was not sent! An error was encountered");
+                    message = text["message"];
+
+                    if(message == "no-reply"){
+                        message = "No message was detected. Please enter a message";
+                    }else if(message == "reply-short"){
+                        message = "Message lentgh unacceptable. Enter at least two characters";
+                    }else if(message == "no-comment-id"){
+                        message = "Notification for this message could not be found. Error!";
+                    }else if(message == "no-user-id"){
+                        message = "Please reload the page to see if you are logged in";
+                    }else if(message == "no-recepient-id"){
+                        message = "No recepient was detected";
+                    }else if(message == "same-user"){
+                        message = "Disallowed! You cannot reply yourself";
+                    }
+
+                    $(parent).siblings(".load_message").removeClass("light success").addClass("danger").fadeIn().html(message);
+
+                    setTimeout(function(){
+                        $(parent).siblings(".load_message").removeClass("danger").fadeOut().html("");
+                    }, 5000);
                 }
             },
             complete: function(){
@@ -235,9 +264,8 @@ $("span.item-event").click(function(){
         $("#modal_yes_no").removeClass("no_disp");
 
         //message to display
-        item_header = $(this).parents(".item").children(".top").children(".flex").children(".content_title").children("h4").html();``
-        $("#modal_yes_no p#warning_content").html("Do you want to delete block titled \"<b>" + 
-        item_header + "</b>\"");
+        // item_header = $(this).parents(".item").children(".top").children(".flex").children(".content_title").children("h4").html();``
+        $("#modal_yes_no p#warning_content").html("Do you want to delete this message?");
 
         //fill form with needed details
         $("#modal_yes_no input[name=sid]").val(item_id);
@@ -256,5 +284,46 @@ $("span.item-event").click(function(){
         $("#modal_yes_no input[name=sid]").val(item_id);
         $("#modal_yes_no input[name=mode]").val(item_event);
         $("#modal_yes_no input[name=table]").val(table);
+    }
+})
+
+//marking notifications and replies as read upon hover
+$(".notif_box.unread").mouseenter(function(){
+    //get number of notifications
+    var news_number = parseInt($("#lhs .item.active .news_number span").html());
+
+    //mark as read in database
+    comment_id = $(this).attr("data-box-number");
+
+    //grab submit url from reply box
+    submit_url = $(this).children(".reply_container").children(".reply_tab").attr("data-action");
+
+    //parse a dataString
+    dataString = "comment_id=" + comment_id + "&submit=mark_read";
+
+    //mark as read in database
+    if($(this).hasClass("unread")){
+        // $(this).removeClass("unread").addClass("read");
+        $.ajax({
+            url: submit_url,
+            data: dataString,
+            type: "get",
+            dataType: "text",
+            async: false,
+            success: function (text){
+                if(text == "success"){
+                    //mark as read box
+                    $(this).removeClass("unread").addClass("read");
+                    
+                    //hide baloon when results reach 0
+                    if(news_number - 1 == 0){
+                        $("#lhs .item.active .news_number").fadeOut();
+                    }
+
+                    //subtract from total
+                    $("#lhs .item.active .news_number span").html(news_number - 1);
+                }
+            }
+        })        
     }
 })

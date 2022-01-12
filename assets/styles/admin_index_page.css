@@ -107,18 +107,18 @@ nav #nav_holder{
 
 #user_name #logout{
     position: absolute;
-    top: 80%;
     right: 0;
     left: 0;
     background-color:rgba(15,15,15, 0.75);
-    padding-left: 5px;
+    padding: 0.5pc;
+    padding-left: 1pc;
     cursor: pointer;
     display: none;
 }
 
 #user_name #logout:hover{
     background-color: rgb(15,15,15);
-    padding-left: 7px;
+    padding-left: 0.5pc;
 }
 
 div.container>section{
