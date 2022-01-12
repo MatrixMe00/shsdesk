@@ -150,7 +150,10 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction FROM transaction WHERE schoolBought=$user_school_id");
+                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction 
+                        FROM transaction 
+                        WHERE schoolBought=$user_school_id
+                        AND Transaction_Expired=TRUE");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){
@@ -174,7 +177,10 @@
         <div class="head">
             <h2>GHC
             <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction FROM transaction WHERE schoolBought=$user_school_id");
+                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction 
+                        FROM transaction 
+                        WHERE schoolBought=$user_school_id
+                        AND Transaction_Expired=TRUE");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){
@@ -198,7 +204,10 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction FROM transaction WHERE schoolBought=$user_school_id");
+                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction 
+                        FROM transaction 
+                        WHERE schoolBought=$user_school_id
+                        AND Transaction_Expired=TRUE");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){

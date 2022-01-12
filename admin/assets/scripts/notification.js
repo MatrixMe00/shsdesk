@@ -287,8 +287,8 @@ $("span.item-event").click(function(){
     }
 })
 
-//marking notifications and replies as read upon hover
-$(".notif_box.unread").mouseenter(function(){
+//marking notifications and replies as read upon mouse leave
+$(".notif_box.unread").mouseleave(function(){
     //get number of notifications
     var news_number = parseInt($("#lhs .item.active .news_number span").html());
 
