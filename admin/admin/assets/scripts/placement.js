@@ -103,7 +103,7 @@ $(".display .btn button[name=search_submit]").click(function(){
             url: $(this).parents("#content").children(".form.search").attr("data-action"),
             data: dataString,
             type: "get",
-            dataType: "html",
+            dataType: "json",
             async: false,
             beforeSend: function(){
                 //show a loading panel in foot
@@ -111,22 +111,19 @@ $(".display .btn button[name=search_submit]").click(function(){
                 $(table_foot).removeClass("no_disp");
             },
             success: function(html){
-                if(html == "no-result"){
+                html = JSON.parse(JSON.stringify(html));
+
+                if(html["data"] == "no-result"){
                     $(td).html("No results were found. Please make a valid search");
                     $(table_foot).removeClass("no_disp");
                 }else{
-                    if(html.includes("total=")){
-                        val = html.split("total=");
-                        
-                        html = val[0];
-                        total = val[1];
-                        
+                    if(html["data"].includes("<tr>")){                        
                         //display new data into
-                        $(table_body).html(html);
+                        $(table_body).html(html["data"]);
                         $(table_body).removeClass("no_disp");
                         
                         //display total table foot
-                        $(table_foot).html(total + " results returned");
+                        $(table_foot).html(html["total"] + " results returned");
                         $(table_foot).removeClass("no_disp");
                     }else{
                         $(td).html("An error occured. Please try again later.");

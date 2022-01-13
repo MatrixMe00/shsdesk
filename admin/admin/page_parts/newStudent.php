@@ -97,7 +97,7 @@
             </label>
         </div>
     </div>
-    <div class="foot">
+    <div class="foot flex">
         <label for="submit" class="btn">
             <button type="submit" name="submit" value="adminAddStudent">Save</button>
         </label>

@@ -24,7 +24,7 @@
     --dark: #343a40;
 }
 
-form label .title_message{
+label .title_message{
     background-color: rgba(15,15,15,0.85);
     color: white;
     border-radius: 5px;
@@ -33,7 +33,7 @@ form label .title_message{
     padding: 5px 8px;
 }
 
-form label .title_message:hover{
+label .title_message:hover{
     background-color: rgba(15, 15, 15, 0.95);
 }
 

@@ -66,7 +66,7 @@
                 <button onclick="$('#modal').removeClass('no_disp')">Add New Student</button>
             </div>
             <div class="btn">
-                <button onclick="$('#lhs .menu .item.active').click()">Refresh</button>
+                <button onclick="location.reload()">Refresh</button>
             </div>
             <div class="btn">
                 <button type="button" onclick="$('#modal_2').removeClass('no_disp')">Import From Excel</button>
@@ -91,7 +91,7 @@
             <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
                 <div class="flex flex-center-align">
                     <label for="search" style="width: 80%">
-                        <input type="search" name="search" id="search"
+                        <input type="search" name="search"
                          title="Search a name or index number here" placeholder="Search by index number or name...">
                     </label>
                     
@@ -156,7 +156,7 @@
             <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
                 <div class="flex flex-center-align">
                     <label for="search" style="width: 80%">
-                        <input type="search" name="search" id="search"
+                        <input type="search" name="search"
                          title="Search a name or index number here" placeholder="Search by index number or name...">
                     </label>
                     
@@ -246,3 +246,4 @@
 
 <script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>"></script>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js"></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>

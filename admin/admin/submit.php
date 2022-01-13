@@ -244,6 +244,88 @@
             }
 
             echo $message;
+        }elseif($submit == "register"){
+            //get search data
+            $search_value = $connect->real_escape_string($_REQUEST["search_value"]);
+
+            if(empty($search_value)){
+                echo "no-search-value";
+            }else{
+                $sql = "SELECT * FROM cssps WHERE enroled=TRUE 
+                AND schoolID = $user_school_id AND (indexNumber 
+                LIKE '%$search_value%' OR Lastname LIKE '%$search_value%' 
+                OR Othernames LIKE '%$search_value%')";
+                $query = $connect->query($sql);
+
+                $table_data = "";
+                $total = 0;
+
+                if($query->num_rows > 0){
+                    $total = $query->num_rows;
+
+                    while($row = $query->fetch_assoc()){
+                        $table_data .= "
+                    <tr>
+                        <td>".$row["indexNumber"]."</td>
+                        <td>".$row["Lastname"]." ".$row["Othernames"]."</td>
+                        <td>".$row["boardingStatus"]."</td>
+                        <td>".$row["programme"]."</td>
+                        <td>".$row["Gender"]."</td>
+                        <td>".$row["trackID"]."</td>
+                    </tr>
+                        ";
+                    }
+                }else{
+                    $table_data = "no-result";
+                }
+            }
+            $data = array(
+                "total" => $total,
+                "data" => $table_data
+            );
+
+            echo json_encode($data);
+        }elseif($submit == "unregister"){
+            //get search data
+            $search_value = $_REQUEST["search_value"];
+
+            if(empty($search_value)){
+                echo "no-search-value";
+            }else{
+                $sql = "SELECT * FROM cssps WHERE enroled=FALSE 
+                AND schoolID=$user_school_id AND (indexNumber LIKE '%$search_value%' 
+                OR Lastname LIKE '%$search_value%' OR Othernames LIKE '%$search_value%')";
+
+                $query = $connect->query($sql);
+
+                $table_data = "";
+                $total = 0;
+
+                if($query->num_rows > 0){
+                    $total = $query->num_rows;
+
+                    while($row = $query->fetch_assoc()){
+                        $table_data .= "
+                    <tr>
+                        <td>".$row["indexNumber"]."</td>
+                        <td>".$row["Lastname"]." ".$row["Othernames"]."</td>
+                        <td>".$row["boardingStatus"]."</td>
+                        <td>".$row["programme"]."</td>
+                        <td>".$row["Gender"]."</td>
+                        <td>".$row["trackID"]."</td>
+                    </tr>
+    ";
+                    }
+                }else{
+                    $table_data = "no-result";
+                }
+            }
+            $data = array(
+                "total" => $total,
+                "data" => $table_data
+            );
+
+            echo json_encode($data);
         }
     }else{
         echo "no-submission";
