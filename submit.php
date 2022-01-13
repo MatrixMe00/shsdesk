@@ -20,8 +20,8 @@
             $ad_course = $connect->real_escape_string($_POST["ad_course"]);
 
             //personal details of candidate
-            $ad_lname = $connect->real_escape_string($_POST["ad_lname"]);
-            $ad_oname = $connect->real_escape_string($_POST["ad_oname"]);
+            $ad_lname = formatName($connect->real_escape_string($_POST["ad_lname"]));
+            $ad_oname = formatName($connect->real_escape_string($_POST["ad_oname"]));
             $ad_gender = $connect->real_escape_string($_POST["ad_gender"]);
             $ad_jhs = $connect->real_escape_string($_POST["ad_jhs"]);
             $ad_jhs_town = $connect->real_escape_string($_POST["ad_jhs_town"]);

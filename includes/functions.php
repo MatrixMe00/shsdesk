@@ -446,4 +446,44 @@
 
         return $result;
     }
+
+    /**
+     * This is a function to format entry of names into database
+     * 
+     * @param string $name The name of the person to be formated
+     * @return string formated name
+     */
+    function formatName(string $name){
+        //separate them by spaces
+        $new_name = explode(" ",$name);
+
+        //reset the name variable
+        $name = "";
+
+        //make needed changes to name
+        foreach ($new_name as $key => $value) {
+            $value_size = strlen($value);
+
+            //make formatting here
+            for ($i=0; $i < $value_size; $i++) { 
+                //capitalize only first alphabet or any value after a hyphen
+                if($i == 0 || $value[$i-1] == "-"){
+                    $value[$i] = strtoupper($value[$i]);
+                }else{
+                    //make any other value lowercase
+                    $value[$i] = strtolower($value[$i]);
+                }
+            }
+
+            //push new value into name
+            if(strlen($name) == 0){
+                $name = $value;
+            }else{
+                $name .= " $value";
+            }
+        }
+
+        //return name
+        return $name;
+    }
 ?>
