@@ -310,7 +310,7 @@
         }
 
         //output data
-        $pdf->Output("Admission Form | Demo.pdf");
+        $pdf->Output("Admission Form | $lastname.pdf");
     }else{
         echo "No result to deliver";
     }

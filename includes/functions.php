@@ -448,7 +448,7 @@
     }
 
     /**
-     * This is a function to format entry of names into database
+     * This is a function to format entry of names into proper nouns
      * 
      * @param string $name The name of the person to be formated
      * @return string formated name
@@ -485,5 +485,27 @@
 
         //return name
         return $name;
+    }
+
+    /**
+     * A function to separate names in camelCase
+     * 
+     * @param string $name This is the name to be separated
+     * @return string returns the separated name
+     */
+    function separateNames(string $name){
+        $temp_name = "";
+        for($i=0; $i < strlen($name); $i++){
+            if($name[$i] != strtoupper($name[$i])){
+                $temp_name .= $name[$i];
+            }elseif(($i-1 >= 0) && $name[$i] == strtoupper($name[$i]) && $name[$i-1] == strtoupper($name[$i-1])){
+                $temp_name .= $name[$i];
+            }else{
+                //separate with space
+                $temp_name .= " ".$name[$i];
+            }
+        }
+
+        return $temp_name;
     }
 ?>

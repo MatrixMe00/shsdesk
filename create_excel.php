@@ -4,6 +4,13 @@
     //call autoload
     require($rootPath."/PhpSpreadSheet/autoload.php");
 
+    if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
+        $submit = $_REQUEST["submit"];
+    }else{
+        echo "Invalid request received";
+        exit();
+    }
+
     //load spreadsheet class
     use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -24,19 +31,49 @@
                       "Y","Z");
 
     //sql statement
-    $school_id = 3;
+    if($submit == "enrolment"){
+        $sql = "SELECT e.*, s.schoolName, h.title AS houseName
+            FROM enrol_table e JOIN schools s
+            ON e.shsID = s.id
+            JOIN house_allocation ho
+            ON e.indexNumber = ho.indexNumber
+            JOIN houses h
+            ON h.id = ho.houseID
+            WHERE e.shsID=$user_school_id";
 
-    $sql = "SELECT c.* FROM cssps c JOIN schools s
-        ON c.schoolID=s.ID
-        JOIN houses h
-        ON  WHERE c.schoolID=$school_id";
+            //exception headers, end it with an empty field
+            $exception_headers = array("shsID","");
+
+            //title
+            $filename = "Enrolment Details | ";
+    }elseif($submit == "houses"){
+        $sql = "SELECT h.indexNumber, h.studentLname AS lastname, h.studentOname as othername(s), h.studentYearLevel, h.studentGender, h.boardingStatus, h1.title AS house name
+        FROM house_allocation h JOIN houses h1
+        ON h.houseID=h1.id
+        WHERE schoolID=$user_school_id";
+
+        $exception_headers = array("");
+
+        $filename = "House Allocation | ";
+    }
+
+    //complete file name
+    $filename .= getSchoolDetail($user_school_id)["schoolName"];
+    
     $query = $connect->query($sql);
+
+    //generate nothing if there are no rows
+    if($query->num_rows <= 0){
+        echo "There are no results to be displayed. No Document was generated";
+        exit(1);
+    }
 
     //take field names
     $field_names = array_keys($query->fetch_assoc());
 
-    //exception headers, end it with an empty field
-    $exception_headers = array("schoolID","");
+    $current_col_names = array();
+
+    $headerCounter = 0;
     
     //Take number of columns
     $number_of_columns = count($field_names) - (count($exception_headers) - 1);
@@ -44,8 +81,29 @@
     //fill current columns with column names
     $current_col_names = array();
 
-    for($i=0; $i < $number_of_columns; $i++){
-        $current_col_names[$i] = $all_col_names[$i];
+    if($number_of_columns <= count($all_col_names)){
+        for($i=0; $i < $number_of_columns; $i++){
+            $current_col_names[$i] = $all_col_names[$i];
+        }
+    }else{
+        $temp_number_of_columns = $number_of_columns;
+        for($i=0; $i < intval($number_of_columns / count($all_col_names))+1; $i++){
+            if($temp_number_of_columns > count($all_col_names)){
+                $ttl = count($all_col_names);
+                $temp_number_of_columns -= count($all_col_names);
+            }else{
+                $ttl = $number_of_columns % count($all_col_names);
+            }
+
+            for($j=0; $j < $ttl; $j++){
+                if($i > 0){
+                    $current_col_names[$headerCounter] = $all_col_names[$i-1].$all_col_names[$j];
+                }else{
+                    $current_col_names[$headerCounter] = $all_col_names[$j];
+                }
+                $headerCounter++;
+            }
+        }
     }
 
     //Provide a title
@@ -55,7 +113,7 @@
     $merged_cells = $current_col_names[0]."1:".end($current_col_names)."1";
     $sheet->mergeCells($merged_cells);
 
-    //counters
+    //counter resets
     $exceptionCounter = 0;
     $headerCounter = 0;
     
@@ -71,7 +129,7 @@
             $cellName = $current_col_names[$headerCounter]."2";
 
             //enter value into cells
-            $sheet->setCellValue($cellName, $value);
+            $sheet->setCellValue($cellName, formatName(separateNames($value)));
 
             //move to next header
             $headerCounter++;
@@ -92,7 +150,7 @@
                 $cellName = $current_col_names[$headerCounter].$rowCounter;
     
                 //enter value into cells
-                $sheet->setCellValue($cellName, formatName($result[$value]));
+                $sheet->setCellValueExplicit($cellName, formatName($result[$value]), "s");
     
                 //move to next header
                 $headerCounter++;
@@ -110,7 +168,7 @@
     }
 
     //automatically size up columns
-    for($column = "A"; $column <= $sheet->getHighestColumn(); $column++){
+    for($column = "A"; $column != $sheet->getHighestColumn(); $column++){
         $sheet->getColumnDimension($column)->setAutoSize(TRUE);
     }
 
@@ -118,7 +176,7 @@
     header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
     //define file name
-    header("Content-Disposition: attachment;filename=\"sqlTestSchoolName.xlsx\"");
+    header("Content-Disposition: attachment;filename=\"$filename.xlsx\"");
 
     //create an IOFactory to ask for location for save file
     $writer = IOFactory::createWriter($spreadsheet, "Xlsx");

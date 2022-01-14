@@ -1,8 +1,12 @@
 /**
  * This function will be used to determine load events for message boxes
+ * 
  * @param {string} size This parameter will hold the size of the buttons
+ * Acceptable sizes are v-small, small, med and large
  * @param {string} display This parameter will hold the type of shape the buttons should take
+ * Acceptable values are semi-round and rounded. Default is semi-round
  * @param {string} animation This param is for taking animation classes
+ * Acceptable values are anim-swing, anim-fade, anim-fade-swing. Default is anim-swing
  * @param {boolean} full This is for verifying if the div should be for full screen or not
  * @param {boolean} circular This is for displaying a circular loader
  * @param {string} circleColor This is for providing a color for a circular loader
@@ -10,6 +14,7 @@
  * @param {string} span2 This is for taking the color for the second span
  * @param {string} span3 This is for taking the color for the third span
  * @param {string} span4 This is for taking the color for the fourth span
+ * 
  * @returns {string} Returns a string of the created div element
  */
  function loadDisplay(element = {
@@ -344,6 +349,93 @@ function fileUpload(file_element, form_element, submit_element, messageBox = tru
 }
 
 /**
+ * This function will be used to parse any file type into the database
+ * 
+ * @param {string} file_element This takes the element name of the file
+ * @param {string} form_element This takes a specified form element
+ * @param {string} submit_element This takes the name of the submit button
+ * @param {boolean} messageBox This tests if there is a message box
+ * 
+ * @return {boolean|array} Returns a boolean value or an array
+ */
+
+ function jsonFileUpload(file_element, form_element, submit_element, messageBox = true){
+    formData = new FormData();
+
+    //preparing file and submit values
+    file = $(file_element).prop("files")[0];
+    file_name = $(file_element).attr("name");
+    submit_value = $(submit_element).prop("value");
+
+    //strip form data into array form and attain total data
+    form_data = $(form_element).serializeArray();
+    split_lenght = form_data.length;
+
+    //loop and fill form data
+    counter = 0;
+    while(counter < split_lenght){
+        //grab each array data
+        new_data = form_data[counter];
+
+        key = new_data["name"];
+        value = new_data["value"];
+
+        //append to form data
+        formData.append(key, value);
+
+        //move to next data
+        counter++;
+    }
+
+    //append name and value of file
+    formData.append(file_name, file);
+
+    //append submit if not found
+    if(!$(form_element).serialize().includes("&submit=")){
+        formData.append("submit", submit_value + "_ajax");
+    }
+
+    response = null;
+    
+    $.ajax({
+        url: $(form_element).attr("action"),
+        data: formData,
+        method: "post",
+        dataType: "json",
+        cache: false,
+        async: false,
+        contentType: false,
+        processData: false,
+        beforeSend: function(){
+            if(messageBox){
+                message = loadDisplay({size: "small"});
+                type = "load";
+                time = 0;
+
+                messageBoxTimeout(form_element.prop("name"), message, type, time);
+            }            
+        },
+        success: function(text){
+            text = JSON.parse(JSON.stringify(text));
+
+            if(text["status"] == "success" || text["status"].includes("success")){
+                response = true;
+            }else{
+                response = text;
+            }
+        },
+        error: function(){
+            message = "Please check your internet connection and try again";
+            type = "error";
+
+            messageBoxTimeout(form_element.prop("name"), message, type);
+        }
+    })
+
+    return response;
+}
+
+/**
  * This function will be used to send textual information from forms
  * 
  * @param {any} form_element This takes the form element object
@@ -410,6 +502,91 @@ function formSubmit(form_element, submit_element, messageBox = true){
         },
         success: function(text){
             if(text == "success" || text.includes("success")){
+                response = true;
+            }else{
+                response = text;
+            }
+        },
+        error: function(){
+            message = "Please check your internet connection and try again";
+            type = "error";
+
+            messageBoxTimeout(form_element.prop("name"), message, type);
+        }
+    })
+
+    return response;
+}
+
+/**
+ * This function will be used to send textual information from forms
+ * 
+ * @param {any} form_element This takes the form element object
+ * @param {any} submit_element This takes the submit element of the form
+ * @param {boolean} messageBox This tests if there is a message box
+ * 
+ * @return {boolean|array} returns a boolean value or an array
+ */
+ function jsonFormSubmit(form_element, submit_element, messageBox = true){
+    // formData = new FormData();
+
+    //submit value
+    submit = $(submit_element).val();
+
+    //strip form data into array form and attain total data
+    form_data = $(form_element).serializeArray();
+    split_lenght = form_data.length;
+
+    //variable to hold all user data
+    formData = "";
+
+    //loop and fill form data
+    counter = 0;
+    while(counter < split_lenght){
+        //grab each array data
+        new_data = form_data[counter];
+
+        key = new_data["name"];
+        value = new_data["value"];
+
+        //append to form data
+        if(formData != ""){
+            formData += "&" + key + "=" + value;
+        }else{
+            formData = key + "=" + value;
+        }
+
+        //move to next data
+        counter++;
+    }
+
+    //append submit if not found
+    if(!$(form_element).serialize().includes("&submit=")){
+        formData += "&submit=" + submit + "_ajax";
+    }
+
+    response = null;
+    
+    $.ajax({
+        url: $(form_element).attr("action"),
+        data: formData,
+        method: "post",
+        dataType: "json",
+        cache: false,
+        async: false,
+        beforeSend: function(){
+            if(messageBox){
+                message = loadDisplay({size: "small"});
+                type = "load";
+                time = 0;
+
+                messageBoxTimeout(form_element.prop("name"), message, type, time);
+            }
+        },
+        success: function(text){
+            text = JSON.parse(JSON.stringify(text));
+
+            if(text["status"] == "success" || text["status"].includes("success")){
                 response = true;
             }else{
                 response = text;

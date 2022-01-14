@@ -22,10 +22,10 @@
             //personal details of candidate
             $ad_lname = formatName($connect->real_escape_string($_POST["ad_lname"]));
             $ad_oname = formatName($connect->real_escape_string($_POST["ad_oname"]));
-            $ad_gender = $connect->real_escape_string($_POST["ad_gender"]);
-            $ad_jhs = $connect->real_escape_string($_POST["ad_jhs"]);
-            $ad_jhs_town = $connect->real_escape_string($_POST["ad_jhs_town"]);
-            $ad_jhs_district = $connect->real_escape_string($_POST["ad_jhs_district"]);
+            $ad_gender = formatName($connect->real_escape_string($_POST["ad_gender"]));
+            $ad_jhs = formatName($connect->real_escape_string($_POST["ad_jhs"]));
+            $ad_jhs_town = formatName($connect->real_escape_string($_POST["ad_jhs_town"]));
+            $ad_jhs_district = formatName($connect->real_escape_string($_POST["ad_jhs_district"]));
 
             //birthdate
             $ad_year = $connect->real_escape_string($_POST["ad_year"]);
@@ -34,28 +34,28 @@
             $ad_birthdate = $ad_year."-".$ad_month."-".$ad_day;
             $ad_birthdate = date("Y-m-d", strtotime($ad_birthdate));
 
-            $ad_birth_place = $connect->real_escape_string($_POST["ad_birth_place"]);
+            $ad_birth_place = formatName($connect->real_escape_string($_POST["ad_birth_place"]));
 
             //parents particulars
-            $ad_father_name = $connect->real_escape_string($_POST["ad_father_name"]);
-            $ad_father_occupation = $connect->real_escape_string($_POST["ad_father_occupation"]);
-            $ad_mother_name = $connect->real_escape_string($_POST["ad_mother_name"]);
-            $ad_mother_occupation = $connect->real_escape_string($_POST["ad_mother_occupation"]);
-            $ad_guardian_name = $connect->real_escape_string($_POST["ad_guardian_name"]);
+            $ad_father_name = formatName($connect->real_escape_string($_POST["ad_father_name"]));
+            $ad_father_occupation = formatName($connect->real_escape_string($_POST["ad_father_occupation"]));
+            $ad_mother_name = formatName($connect->real_escape_string($_POST["ad_mother_name"]));
+            $ad_mother_occupation = formatName($connect->real_escape_string($_POST["ad_mother_occupation"]));
+            $ad_guardian_name = formatName($connect->real_escape_string($_POST["ad_guardian_name"]));
             $ad_resident = $connect->real_escape_string($_POST["ad_resident"]);
             $ad_postal_address = $connect->real_escape_string($_POST["ad_postal_address"]);
             $ad_phone = $connect->real_escape_string($_POST["ad_phone"]);
             $ad_other_phone = $connect->real_escape_string($_POST["ad_other_phone"]);
 
             //interests
-            $interest = $connect->real_escape_string($_POST["interest"]);
+            $interest = formatName($connect->real_escape_string($_POST["interest"]));
 
             //others
-            $ad_awards = $connect->real_escape_string($_POST["ad_awards"]);
-            $ad_position = $connect->real_escape_string($_POST["ad_position"]);
+            $ad_awards = formatName($connect->real_escape_string($_POST["ad_awards"]));
+            $ad_position = formatName($connect->real_escape_string($_POST["ad_position"]));
 
             //witness
-            $ad_witness = $connect->real_escape_string($_POST["ad_witness"]);
+            $ad_witness = formatName($connect->real_escape_string($_POST["ad_witness"]));
             $ad_witness_phone = $connect->real_escape_string($_POST["ad_witness_phone"]);
 
             $current_date = date("Y-m-d");

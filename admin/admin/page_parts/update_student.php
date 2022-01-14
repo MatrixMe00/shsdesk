@@ -1,8 +1,13 @@
 <?php @include_once('../../../includes/session.php')?>
 
-<form action="<?php echo $url?>/admin/admin/submit.php" method="get" class="fixed" name="adminAddStudent">
+<div class="flex flex-column flex-center-align flex-center-content">
+    <div id="getLoader"></div>
+    <span class="item-event" style="color: white; margin-top: 10px; padding-left: 10px; text-align: center">Cancel</span>
+</div>
+
+<form action="<?php echo $url?>/admin/admin/submit.php" method="get" class="fixed" name="adminUpdateStudent">
     <div class="head">
-        <h2>Update Student Details</h2>
+        <h2>Add A New Student</h2>
     </div>
     <div class="body">
         <div class="message_box success no_disp">
@@ -48,8 +53,6 @@
                     <option value="Female">Female</option>
                 </select>
             </label>
-        </div>
-        <div class="joint">
             <label for="boarding_status">
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/bed-outline.svg" alt="boarding_status">
@@ -60,6 +63,24 @@
                     <option value="Boarder">Boarding</option>
                 </select>
             </label>
+
+            <label for="house" class="no_disp">
+                <span class="label_image">
+                    <img src="<?php echo $url?>/assets/images/icons/home.png" alt="house">
+                </span>
+                <select name="house" id="house" disabled>
+                    <option value="">Select House</option>
+                    <?php 
+                        $query = $connect->query("SELECT id, title, Gender FROM houses WHERE schoolID = $user_school_id");
+
+                        while($row = $query->fetch_assoc()){
+                    ?>
+                    <option value="<?php echo $row["id"]?>"><?php echo $row["title"]." - ".$row["Gender"] ?></option>
+                    <?php } ?>
+                </select>
+            </label>
+        </div>
+        <div class="joint">
             <label for="student_course">
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/book-outline.svg" alt="course">
@@ -99,10 +120,10 @@
     </div>
     <div class="foot flex">
         <label for="submit" class="btn">
-            <button type="submit" name="submit" value="adminUpdateStudent">Save</button>
+            <button type="submit" name="submit" class="primary" value="" disabled>Update</button>
         </label>
         <label for="cancel" class="btn">
-            <button type="reset" name="cancel">Cancel</button>
+            <button type="reset" name="cancel" class="danger">Cancel</button>
         </label>
     </div>
 </form>

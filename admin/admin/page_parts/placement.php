@@ -73,6 +73,9 @@
             </div>
         </div>
     </div>
+    <div class="display secondary">
+        <p style="text-align: center;">Click on a row to make changes to student details [Test Version]</p>
+    </div>
     <div class="display">
         <div class="title_bar flex flex-space-content flex-center-align teal">
             <div id="title">Registered Students</div>
@@ -83,7 +86,10 @@
         </div>
         <div id="content">
             <?php 
-                $sql = "SELECT * FROM cssps WHERE enroled=TRUE AND schoolID = $user_school_id";
+                $sql = "SELECT c.*, e.enrolCode 
+                    FROM cssps c JOIN enrol_table e
+                    ON c.indexNumber = e.indexNumber
+                    WHERE c.enroled=TRUE AND c.schoolID = $user_school_id";
                 $res = $connect->query($sql);
 
                 if($res->num_rows > 0){
@@ -105,6 +111,7 @@
                     <thead>
                         <tr>
                             <td>Index Number</td>
+                            <td>Enrol Code</td>
                             <td>Fullname</td>
                             <td>Boarding Status</td>
                             <td>Program</td>
@@ -114,8 +121,9 @@
                     </thead>
                     <tbody>
                         <?php while($row = $res->fetch_assoc()){?>
-                        <tr>
+                        <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="true">
                             <td><?php echo $row["indexNumber"] ?></td>
+                            <td><?php echo $row["enrolCode"] ?></td>
                             <td><?php echo $row["Lastname"]." ".$row["Othernames"] ?></td>
                             <td><?php echo $row["boardingStatus"] ?></td>
                             <td><?php echo $row["programme"] ?></td>
@@ -179,7 +187,7 @@
                     </thead>
                     <tbody>
                         <?php while($row = $res->fetch_assoc()){?>
-                        <tr>
+                        <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="false">
                             <td><?php echo $row["indexNumber"] ?></td>
                             <td><?php echo $row["Lastname"]." ".$row["Othernames"] ?></td>
                             <td><?php echo $row["boardingStatus"] ?></td>
@@ -206,14 +214,14 @@
 </section>
 
 <div id="modal_2" class="fixed no_disp form_modal_form">
-    <form action="<?php echo $url?>/admin/admin/submit.php" name="importForm" enctype="multipart/form-data" method="POST">
+    <form action="<?php echo $url?>/read_excel.php" name="importForm" enctype="multipart/form-data" method="POST">
         <h5>NB:</h5>
         <ol>
             <li>Your file should be a spreadsheet file</li>
             <li>Spreadsheet files with .xls or .xlsx as extensions are acceptable</li>
             <li>Your data should have headings for easy entry into the database</li>
             <li>Make sure you have uploaded all your houses and their required details</li>
-            <li>If you could not download the file for manual house allocation, download it <a href="<?php echo $url?>/admin/admin/assets/files/default files/house_allocation.csv">here</a></li>
+            <li>If you could not download the file for manual house allocation, download it <a href="<?php echo $url?>/admin/admin/assets/files/default files/house_allocation.xlsx">here</a></li>
             <li>If you do not have the default spreadsheet file for upload, please click <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">here</a> to download</li>
         </ol>
         <br>
@@ -244,6 +252,11 @@
     <?php @include_once($rootPath."/admin/admin/page_parts/newStudent.php")?>
 </div>
 
+<div id="updateStudent" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <?php @include_once($rootPath."/admin/admin/page_parts/update_student.php")?>
+</div>
+
 <script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>"></script>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js"></script>
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/table.js?v=<?php echo time()?>"></script>

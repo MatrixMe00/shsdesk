@@ -55,6 +55,13 @@ label input:focus~.title_message, label textarea:focus~.title_message{
 /*tables*/
 table{
     display: table !important;
+    border: 1px solid lightgrey;
+    width: 95%;
+    margin: 2.5%;
+}
+
+table tbody{
+    overflow: auto;
 }
 
 /*naming the colors*/
@@ -63,6 +70,15 @@ table{
     color: white;
 }
 
+button.blue:hover, button.primary:hover{
+    background-color: rgb(50,50,255);
+}
+
+button:disabled{
+    background-color: initial !important;
+    color: #555 !important;
+    cursor: default !important;
+}
 .indigo{
     background-color: var(--indigo);
     color: white;
@@ -76,7 +92,11 @@ table{
 .red, .danger{
     background-color: var(--red);
     color: white;
-} 
+}
+
+button.red:hover, button.danger:hover{
+    background-color: rgb(255,50,50);
+}
 
 .pink{
     background-color: var(--pink);
@@ -327,12 +347,6 @@ form img{
 
 form button{
     max-width: 180px;
-}
-
-table{
-    border: 1px solid lightgrey;
-    width: 95%;
-    margin: 2.5%;
 }
 
 td{

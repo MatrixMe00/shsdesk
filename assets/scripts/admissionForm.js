@@ -92,6 +92,7 @@ $("button[name=modal_cancel]").click(function(){
     if($(this).parents(".form_modal_box").prop("id") == "payment_form"){
         //enable all fields
         $("form[name=paymentForm] input").prop("disabled", false);
+        $("form[name=paymentForm]")[0].reset();
 
         //keep the amount section disabled
         $("#pay_amount").prop("disabled", true);
@@ -114,6 +115,9 @@ $("button[name=modal_cancel]").click(function(){
 
         //reset accepts
         resetAccepts();
+
+        //reset form
+        $("form[name=admissionForm]")[0].reset();
 
         $("#interest").val('');
     }

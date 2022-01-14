@@ -4,14 +4,7 @@
     if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != NULL){
         $submit = $_REQUEST["submit"];
 
-        if($submit == "upload" || $submit == "upload_ajax"){
-            if(isset($_FILES['import']) && $_FILES["import"]["tmp_name"] != NULL){
-                echo "okay";
-            }else{
-                echo "no-file";
-                exit(1);
-            }
-        }elseif($submit == "new_user_update" || $submit == "new_user_update_ajax"){
+        if($submit == "new_user_update" || $submit == "new_user_update_ajax"){
             $new_username = strip_tags(stripslashes($_REQUEST["new_username"]));
             $new_password = strip_tags(stripslashes($_REQUEST["new_password"]));
             $fullname = strip_tags(stripslashes($_REQUEST["fullname"]));
@@ -124,6 +117,68 @@
                 //format date
                 $dob = date("Y-m-d", strtotime($dob));
 
+                //verify if index number is unavailable
+                $valid = fetchData("*","cssps","indexNumber='$student_index'");
+
+                if($valid == "empty"){
+                    //insert data into CSSPS table
+                    $sql = "INSERT INTO cssps (indexNumber,Lastname,Othernames,Gender,
+                            boardingStatus,programme, aggregate, jhsAttended, dob, trackID, schoolID) 
+                            VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("ssssssisssi",$student_index,$lname,$oname,$gender,$boarding_status,$student_course,
+                        $aggregate,$jhs,$dob,$track_id,$school_id);
+                    $stmt->execute();
+
+                    $message = "success";
+                }else{
+                    $message = "data-exist";
+                }
+            }
+
+            echo $message;
+        }elseif($submit == "adminUpdateStudent" || $submit == "adminUpdateStudent_ajax"){
+            $student_index = strip_tags(stripslashes($_REQUEST["student_index"]));
+            $lname = strip_tags(stripslashes($_REQUEST["lname"]));
+            $oname = strip_tags(stripslashes($_REQUEST["oname"]));
+            $gender = strip_tags(stripslashes($_REQUEST["gender"]));
+            $boarding_status = strip_tags(stripslashes($_REQUEST["boarding_status"]));
+            $student_course = strip_tags(stripslashes($_REQUEST["student_course"]));
+            $aggregate = strip_tags(stripslashes($_REQUEST["aggregate"]));
+            $jhs = strip_tags(stripslashes($_REQUEST["jhs"]));
+            $dob = strip_tags(stripslashes($_REQUEST["dob"]));
+            $track_id = strip_tags(stripslashes($_REQUEST["track_id"]));
+            $school_id = $user_school_id;
+
+            //variable to hold messages
+            $message = "";
+
+            if(empty($student_index)){
+                $message = "index-number-empty";
+            }elseif(empty($lname)){
+                $message = "lastname-empty";
+            }elseif(empty($oname)){
+                $message = "no-other-name";
+            }elseif(empty($gender)){
+                $message = "gender-not-set";
+            }elseif(empty($boarding_status)){
+                $message = "boarding-status-not-set";
+            }elseif(empty($student_course)){
+                $message = "no-student-program-set";
+            }elseif(empty($aggregate)){
+                $message = "no-aggregate-set";
+            }elseif(intval($aggregate) < 6 || intval($aggregate) > 81){
+                $message = "aggregate-wrong";
+            }elseif(empty($jhs)){
+                $message = "no-jhs-set";
+            }elseif(empty($dob)){
+                $message = "no-dob";
+            }elseif(empty($track_id)){
+                $message = "no-track-id";
+            }else{
+                //format date
+                $dob = date("Y-m-d", strtotime($dob));
+
                 //insert data into CSSPS table
                 $sql = "INSERT INTO cssps (indexNumber,Lastname,Othernames,Gender,
                         boardingStatus,programme, aggregate, jhsAttended, dob, trackID, schoolID) 
@@ -137,6 +192,33 @@
             }
 
             echo $message;
+        }elseif($submit == "fetchStudentDetails"){
+            $index_number = $_REQUEST["index_number"];
+            $registered = $_REQUEST["registered"];
+
+            if($registered == "true"){
+                $sql = "SELECT c.*, h.houseID 
+                    FROM cssps c JOIN house_allocation h
+                    ON c.indexNumber = h.indexNumber 
+                    WHERE c.indexNumber='$index_number'";
+            }else{
+                $sql = "SELECT * FROM cssps WHERE indexNumber='$index_number' AND enroled=FALSE";
+            }
+            
+            $query = $connect->query($sql);
+
+            $result = array();
+
+            if($query->num_rows > 0){
+                $result = $query->fetch_assoc();
+                $result += array(
+                    "status" => "success"
+                );
+            }else{
+                $result = array("status" => "no-result", "sql" => $sql);
+            }
+
+            echo json_encode($result);
         }elseif($submit == "addHouse" || $submit == "addHouse_ajax"){
             $house_name = $_REQUEST["house_name"];
             $gender = $_REQUEST["gender"];
@@ -251,10 +333,12 @@
             if(empty($search_value)){
                 echo "no-search-value";
             }else{
-                $sql = "SELECT * FROM cssps WHERE enroled=TRUE 
-                AND schoolID = $user_school_id AND (indexNumber 
-                LIKE '%$search_value%' OR Lastname LIKE '%$search_value%' 
-                OR Othernames LIKE '%$search_value%')";
+                $sql = "SELECT c.*, e.enrolCode 
+                    FROM cssps c JOIN enrol_table e
+                    ON c.indexNumber = e.indexNumber
+                    WHERE c.enroled=TRUE AND c.schoolID = $user_school_id 
+                    AND (c.indexNumber LIKE '%$search_value%' OR c.Lastname LIKE 
+                    '%$search_value%' OR c.Othernames LIKE '%$search_value%')";
                 $query = $connect->query($sql);
 
                 $table_data = "";
@@ -267,6 +351,7 @@
                         $table_data .= "
                     <tr>
                         <td>".$row["indexNumber"]."</td>
+                        <td>".$row["enrolCode"]."</td>
                         <td>".$row["Lastname"]." ".$row["Othernames"]."</td>
                         <td>".$row["boardingStatus"]."</td>
                         <td>".$row["programme"]."</td>

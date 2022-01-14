@@ -47,6 +47,7 @@ $("form[name=adminAddStudent]").submit(function(event){
         $("form[name=adminAddStudent] .foot button").prop("disable", true);
 
         //flag that data entry is true
+        data_entry = true;
 
         //enable buttons and reset the form
         setTimeout(function(){
@@ -79,6 +80,8 @@ $("form[name=adminAddStudent]").submit(function(event){
             message = "Please provide student's date of birth";
         }else if(response == "no-track-id"){
             message = "Please provide student's track id";
+        }else if(response == "data-exist"){
+            message = "Index number already exists in database. Please enter another one";
         }else{
             message = "An unknown error has occured. Please try again later";
         }

@@ -34,6 +34,8 @@ $(".title_bar #close").click(function(){
 //uploading the excel file
 $("form[name=importForm").submit(function(e){
     e.preventDefault();
+    $("form[name=importForm] .message_box").css("overflow","auto");
+    $("form[name=importForm] .message_box").css("max-height","300px");
 
     if($("input#import").val() == ""){
         messageBoxTimeout("importForm","No file has been chosen", "error");
@@ -58,7 +60,7 @@ $("form[name=importForm").submit(function(e){
             }
         }
 
-        messageBoxTimeout("importForm", message, type);
+        messageBoxTimeout("importForm", message, type, 0);
     }
 })
 

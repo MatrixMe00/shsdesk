@@ -20,10 +20,15 @@
     padding: 0.2em;
     padding-bottom: 0.5em;
     max-height: 55vh;
+    overflow: auto;
 }
 
 #placement_search .display:hover{
     box-shadow: 0 0 2px 0 #888;
+}
+
+#placement_search .display .body{
+    overflow: auto;
 }
 
 .title_bar .close{

@@ -103,6 +103,8 @@ $("#yes_no_form").submit(function(){
     })
 })
 
+
+
 $("#logout").click(function(){
     var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[1];
     location.href = url + "/admin/logout.php";
