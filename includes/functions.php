@@ -94,20 +94,30 @@
 
             //if file already exists, try to create another filename
             if(file_exists($image_directory)){
+                //split into directories
+                $image_directory = explode("/", $image_directory);
+
+                //get file directory path
+                $file_directory = "";
+
+                foreach ($image_directory as $row){
+                    if($row != end($image_directory))
+                        $file_directory .= "$row/";
+                }
+
+                $filename = end($image_directory);
+
+                //reset the path
+                $image_directory = $file_directory.$filename;
+
+                //set a counter to count image number for new name
                 $counter = 1;
 
-                //split the pathname and extension
-                $temp_image_directory = explode(".",$image_directory);
-                $filename_path = $temp_image_directory[0];
-                $file_extension = $temp_image_directory[1];
-
-                //loop through until unique file is found
+                //create a new image name till unique name is formed
                 while(file_exists($image_directory)){
-                    //set the filename path into a new filename path
-                    $temp_image_directory = $filename_path."_".$counter++;
+                    $image_directory = $file_directory.$filename."_$counter";
                     
-                    //set the new path for checking
-                    $image_directory = $temp_image_directory.".".$file_extension;
+                    $counter++;
                 }
 
                 //when loop is over, let the image be prepared for upload
@@ -188,17 +198,21 @@
                 $counter = 1;
 
                 //split the pathname and extension
-                $temp_file_name = explode(".",$file_name);
-                $filename_path = $temp_file_name[0];
-                $file_extension = $temp_file_name[1];
+                $temp_file_name = explode("/",$file_name);
+
+                $file_directory = "";
+
+                foreach ($temp_file_name as $row){
+                    if($row != end($temp_file_name)){
+                        $file_directory .= "$row/";
+                    }
+                }
+                $filename = end($temp_file_name);
 
                 //loop through until unique file is found
                 while(file_exists($file_name)){
                     //set the filename path into a new filename path
-                    $temp_file_name = $filename_path."_".$counter++;
-                    
-                    //set the new path for checking
-                    $file_name = $temp_file_name.".".$file_extension;
+                    $file_name = $file_directory.$filename."_".$counter++;
                 }
 
                 //when loop is over, let the image be prepared for upload
