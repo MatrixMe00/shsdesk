@@ -4,7 +4,7 @@
     $_SESSION["nav_point"] = "Placement";
 ?>
 <section class="section_container">
-    <div class="content" style="background-color: #007bff;">
+    <div class="content primary">
         <div class="head">
             <h2>
                 <?php
@@ -71,11 +71,22 @@
             <div class="btn">
                 <button type="button" onclick="$('#modal_2').removeClass('no_disp')">Import From Excel</button>
             </div>
+            <?php 
+                $res = $connect->query("SELECT COUNT(indexNumber) AS total FROM cssps WHERE schoolID = $user_school_id")->fetch_assoc()["total"];
+                if(intval($res) > 0){
+            ?>
+            <div class="btn">
+                <button id="del_all" title="This deletes all saved data from your records. Data would need to be reuploaded again">Delete All Records</button>
+            </div>
+            <?php } ?>
         </div>
     </div>
-    <div class="display secondary">
-        <p style="text-align: center;">Click on a row to make changes to student details [Test Version]</p>
+
+    <div class="display light">
+        <p style="text-align: center; padding: 1em">This section holds data on students who have been placed into your school. You can manually 
+        add a student using the "Add New Student" button or import a list of placed students using the "Import From Excel" button</p>
     </div>
+    
     <div class="display">
         <div class="title_bar flex flex-space-content flex-center-align teal">
             <div id="title">Registered Students</div>
@@ -98,7 +109,8 @@
                 <div class="flex flex-center-align">
                     <label for="search" style="width: 80%">
                         <input type="search" name="search"
-                         title="Search a name or index number here" placeholder="Search by index number or name...">
+                         title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
+                         autocomplete="off">
                     </label>
                     
                     <div class="btn">
@@ -129,6 +141,10 @@
                             <td><?php echo $row["programme"] ?></td>
                             <td><?php echo $row["Gender"] ?></td>
                             <td><?php echo $row["trackID"] ?></td>
+                            <td class="flex flex-wrap">
+                                <span class="item-event edit">Edit</span>
+                                <span class="item-event delete">Delete</span>
+                            </td>
                         </tr>
                         <?php } ?>
                     </tbody>
@@ -165,7 +181,8 @@
                 <div class="flex flex-center-align">
                     <label for="search" style="width: 80%">
                         <input type="search" name="search"
-                         title="Search a name or index number here" placeholder="Search by index number or name...">
+                         title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
+                         autocomplete="off">
                     </label>
                     
                     <div class="btn">
@@ -194,6 +211,10 @@
                             <td><?php echo $row["programme"] ?></td>
                             <td><?php echo $row["Gender"] ?></td>
                             <td><?php echo $row["trackID"] ?></td>
+                            <td class="flex flex-wrap">
+                                <span class="item-event edit">Edit</span>
+                                <span class="item-event delete">Delete</span>
+                            </td>
                         </tr>
                         <?php } ?>
                     </tbody>
@@ -246,6 +267,24 @@
             </label>
         </div>
     </form>
+</div>
+
+<div id="table_del" class="modal_yes_no fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <div class="yes_no_container">
+        <div class="body">
+            <p id="warning_content">Do you want to delete?</p>
+        </div>
+
+        <form action="<?php echo $url?>/admin/admin/submit.php" class="no_disp" name="table_yes_no_form" id="table_yes_no_form">
+            <input type="hidden" name="indexNumber">
+            <input type="hidden" name="submit" value="table_yes_no_submit">
+        </form>
+
+        <div class="foot btn flex flex-center-content flex-center-align">
+            <button type="button" name="yes_button" class="success" onclick="$('#table_yes_no_form').submit();">Yes</button>
+            <button type="button" name="no_button" class="red" onclick="$('#table_del').addClass('no_disp')">No</button>
+        </div>
+    </div>
 </div>
 
 <div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">

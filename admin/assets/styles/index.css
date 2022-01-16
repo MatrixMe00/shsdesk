@@ -203,19 +203,19 @@ button.selected{
         display: none;
     }
 
-    #modal_yes_no .yes_no_container{
+    .modal_yes_no .yes_no_container{
         width: 99%;
     }
 }
 
 /*styling for yes no modal*/
-#modal_yes_no .yes_no_container{
+.modal_yes_no .yes_no_container{
     width: 95%;
     background-color: #eee;
     padding: 2.5%;
 }
 
-#modal_yes_no .body{
+.modal_yes_no .body{
     padding: 5vh 5vw;
     text-align: center;
     margin: 10px auto;
@@ -223,12 +223,12 @@ button.selected{
     background-color: #fff;
 }
 
-#modal_yes_no .foot{
+.modal_yes_no .foot{
     width: inherit;
     cursor: default;
 }
 
-#modal_yes_no .foot button{
+.modal_yes_no .foot button{
     margin: auto 5%;
     padding: 10px 8px;
     color: white;
@@ -237,19 +237,19 @@ button.selected{
     font-size: 1rem;
 }
 
-#modal_yes_no .foot button:first-child{
+.modal_yes_no .foot button:first-child{
     margin-left: unset;
 }
 
-#modal_yes_no .foot button:last-child{
+.modal_yes_no .foot button:last-child{
     margin-right: unset;
 }
 
-#modal_yes_no .foot button:first-child:hover{
+.modal_yes_no .foot button:first-child:hover{
     background-color: forestgreen;
 }
 
-#modal_yes_no .foot button:last-child:hover{
+.modal_yes_no .foot button:last-child:hover{
     background-color: #ff3322;
 }
 

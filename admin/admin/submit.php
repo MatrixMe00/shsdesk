@@ -357,6 +357,10 @@
                         <td>".$row["programme"]."</td>
                         <td>".$row["Gender"]."</td>
                         <td>".$row["trackID"]."</td>
+                        <td class=\"flex\">
+                            <span class=\"item-event edit\">Edit</span>
+                            <span class=\"item-event delete\">Delete</span>
+                        </td>
                     </tr>
                         ";
                     }
@@ -398,6 +402,10 @@
                         <td>".$row["programme"]."</td>
                         <td>".$row["Gender"]."</td>
                         <td>".$row["trackID"]."</td>
+                        <td class=\"flex\">
+                            <span class=\"item-event edit\">Edit</span>
+                            <span class=\"item-event delete\">Delete</span>
+                        </td>
                     </tr>
     ";
                     }
@@ -411,6 +419,38 @@
             );
 
             echo json_encode($data);
+        }elseif($submit == "table_yes_no_submit"){
+            $indexNumber = $_REQUEST["indexNumber"];
+
+            //delete record
+            if($indexNumber == "all"){
+                $sql = "DELETE FROM cssps WHERE schoolID=$user_school_id";
+            }else{
+                $sql = "DELETE FROM cssps WHERE indexNumber='$indexNumber'";
+            }
+            if($connect->query($sql)){
+                if($indexNumber == "all"){
+                    $sql = "DELETE FROM enrol_table WHERE shsID=$user_school_id";
+                }else{
+                    $sql = "DELETE FROM enrol_table WHERE indexNumber='$indexNumber'";
+                }
+                if($connect->query($sql)){
+                    if($indexNumber == "all"){
+                        $sql = "DELETE FROM house_allocation WHERE schoolID=$user_school_id";
+                    }else{
+                        $sql = "DELETE FROM house_allocation WHERE indexNumber='$indexNumber'";
+                    }
+                    if($connect->query($sql)){
+                        echo "success";
+                    }else{
+                        echo "Student detail could not be removed from house allocated";
+                    }
+                }else{
+                    echo "Could not remove student from your enrolment list";
+                }
+            }else{
+                echo "Could not remove student from cssps";
+            }
         }
     }else{
         echo "no-submission";

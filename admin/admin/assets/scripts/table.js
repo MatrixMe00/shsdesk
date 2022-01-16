@@ -1,7 +1,7 @@
-$("table tbody tr").click(function(){
+$("table tbody tr .edit").click(function(){
     //take id number
-    id_number = $(this).attr("data-index");
-    registered = $(this).attr("data-register");
+    id_number = $(this).parents("tr").attr("data-index");
+    registered = $(this).parents("tr").attr("data-register");
 
     dataString = "index_number=" + id_number + "&registered=" + registered + "&submit=fetchStudentDetails";
 
@@ -66,6 +66,68 @@ $("table tbody tr").click(function(){
             $("form[name=adminUpdateStudent] button[name=cancel]").click();
         }
     })
+})
+
+$("table tbody tr .delete").click(function(){
+    item_id = $(this).parents("tr").attr("data-index");
+    fullname = $(this).parents("tr").children("td:nth-child(2)").html();
+
+    //display yes no modal box
+    $("#table_del").removeClass("no_disp");
+
+    //message to display
+    // item_header = $(this).parents(".item").children(".top").children(".flex").children(".content_title").children("h4").html();``
+    $("#table_del p#warning_content").html("Do you want to remove <b>" + fullname + "</b> from your database?");
+
+    //fill form with needed details
+    $("#table_del input[name=indexNumber]").val(item_id);
+})
+
+//delete all records button
+$("button#del_all").click(function(){
+    item_id = "all";
+    fullname = "all records".toUpperCase();
+
+    //display yes no modal box
+    $("#table_del").removeClass("no_disp");
+
+    //message to display
+    $("#table_del p#warning_content").html("Are you sure you want to remove <b>" + fullname + "</b> from your database?");
+
+    //fill form with needed details
+    $("#table_del input[name=indexNumber]").val(item_id);
+})
+
+$("#table_del form").submit(function(e){
+    e.preventDefault();
+    response = formSubmit($(this), $("form[name=table_yes_no_form] input[name=submit]", false));
+    if(response == true){
+        if($("#table_del input[name=indexNumber]").val() == "all"){
+            location.reload();
+        }
+
+        //remove row from table
+        registered = $("tr[data-index=" + $("#table_del input[name=indexNumber]").val() + "]").attr("data-register");
+        $("tr[data-index=" + $("#table_del input[name=indexNumber]").val() + "]").remove();
+
+        cssps_head = $(".content:first-child .head h2");
+        comp_head = $(".content:nth-child(2) .head h2");
+        not_comp_head = $(".content:last-child .head h2")
+        
+        $(cssps_head).html(parseInt($(cssps_head).html())-1);
+
+        if(registered == "true"){
+            $(comp_head).html(parseInt($(comp_head).html())-1);
+        }else{
+            $(not_comp_head).html(parseInt($(not_comp_head).html())-1);
+        }
+    }else{
+        alert(response);
+    }
+
+    //reset form and delete
+    $("#table_del form")[0].reset();
+    $("#table_del").addClass("no_disp");
 })
 
 //close form

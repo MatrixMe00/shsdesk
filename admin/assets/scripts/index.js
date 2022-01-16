@@ -98,7 +98,7 @@ $("#yes_no_form").submit(function(){
         },
 
         complete: function(){
-            $("#modal_yes_no button[name=no_button]").click();
+            $("#gen_del button[name=no_button]").click();
         }
     })
 })

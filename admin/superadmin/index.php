@@ -227,7 +227,7 @@
         <?php include_once("<?php echo $url?>/admin/superadmin/page_parts/add_house.php")?>
     </div>
 
-    <div id="modal_yes_no" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <div id="gen_del" class="modal_yes_no fixed flex flex-center-content flex-center-align form_modal_box no_disp">
         <div class="yes_no_container">
             <div class="body">
                 <p id="warning_content">Do you want to delete?</p>
@@ -242,7 +242,7 @@
 
             <div class="foot btn flex flex-center-content flex-center-align">
                 <button type="button" name="yes_button" class="success" onclick="$('#yes_no_form').submit()">Yes</button>
-                <button type="button" name="no_button" class="red" onclick="$('#modal_yes_no').addClass('no_disp')">No</button>
+                <button type="button" name="no_button" class="red" onclick="$('#gen_del').addClass('no_disp')">No</button>
             </div>
         </div>
     </div>

@@ -32,6 +32,7 @@ $(".title_bar #close").click(function(){
 
 
 //uploading the excel file
+var importSuccess = false;
 $("form[name=importForm").submit(function(e){
     e.preventDefault();
     $("form[name=importForm] .message_box").css("overflow","auto");
@@ -44,10 +45,13 @@ $("form[name=importForm").submit(function(e){
         response = fileUpload($("form[name=importForm] input#import"), $(this), $("form[name=importForm] button[name=submit]"));
 
         if(response == true){
-            message = "Your file has been received";
+            message = "Data has been recorded successfully";
             type = "success";
+
+            importSuccess = true;
         }else{
             type = "error";
+            importSuccess = false;
 
             if(response == "no-file"){
                 message = "No file has been chosen";
@@ -74,7 +78,12 @@ $("form[name=importForm] button[name=close]").click(function(){
     $("#display_file_name").html("Choose or drag your file here");
 
     //hide the message box
-    $("#message_box").hide();
+    $("form[name=importForm] .message_box").hide();
+
+    //reload page
+    if(importSuccess){
+        location.reload();
+    }
 })
 
 //search button workout
@@ -99,44 +108,25 @@ $(".display .btn button[name=search_submit]").click(function(){
             $(table_foot).addClass("no_disp");
         },5000);
     }else{
-        $(table_body).addClass("no_disp");
+        //covert search value to lower case
+        search_value = search_value.toLowerCase();
 
-        $.ajax({
-            url: $(this).parents("#content").children(".form.search").attr("data-action"),
-            data: dataString,
-            type: "get",
-            dataType: "json",
-            async: false,
-            beforeSend: function(){
-                //show a loading panel in foot
-                $(td).html("Fetching Results...");
-                $(table_foot).removeClass("no_disp");
-            },
-            success: function(html){
-                html = JSON.parse(JSON.stringify(html));
-
-                if(html["data"] == "no-result"){
-                    $(td).html("No results were found. Please make a valid search");
-                    $(table_foot).removeClass("no_disp");
-                }else{
-                    if(html["data"].includes("<tr>")){                        
-                        //display new data into
-                        $(table_body).html(html["data"]);
-                        $(table_body).removeClass("no_disp");
-                        
-                        //display total table foot
-                        $(table_foot).html(html["total"] + " results returned");
-                        $(table_foot).removeClass("no_disp");
-                    }else{
-                        $(td).html("An error occured. Please try again later.");
-                        $(table_foot).removeClass("no_disp");
-                    }                    
-                }
-            },
-            error: function(){
-                $(td).html("An interruption has occured");
-                $(table_foot, table_body).removeClass("no_disp");
-            }
+        //get parent table row
+        tr = $(this).parents(".form").siblings(".body").children("table").children("tbody").children("tr");
+        $(tr).filter(function(){
+            $(this).toggle(
+                $(this).text().toLowerCase().indexOf(search_value) > -1
+            );
         })
+
+        //count number of visible results
+        tr = $(this).parents(".form").siblings(".body").children("table").children("tbody").children("tr:visible");
+
+        if(tr.length > 0)
+            $(td).html(tr.length + " results returned");
+        else
+            $(td).html("No results were returned");
+
+        $(table_foot).removeClass("no_disp");
     }
 })

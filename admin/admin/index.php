@@ -26,7 +26,35 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             echo "User cannot be found! Please speak to the administrator";
         }else{
     ?>
-    <nav>
+    <?php 
+        //determine if user system is active or not
+        $data = getSchoolDetail($user_school_id, true);
+        if($data["Active"] == FALSE){
+            echo "<nav id='not-active'>
+            ";
+            $status = "Status: Not-Active";
+        }else{
+            $status = "Status: Active";
+        }
+        //check if house and students are set
+        $house_check = fetchData("COUNT(DISTINCT(title)) AS total", "houses", "schoolID=$user_school_id")["total"];
+            if($house_check > 1){
+                //check if there is at least one student uploaded on the system
+                $students = fetchData("COUNT(indexNumber) AS total", "cssps", "schoolID=$user_school_id")["total"];
+                if($students <= 0){
+                    echo "<nav id='not-display'>";
+                    $status = "Status: Not Active [No Student Uploaded]";
+                }else{
+                    echo "<nav>";
+                }
+            }else{
+                echo "<nav id='not-display'>";
+                $status = "Status: Not Active [No House Uploaded]";
+            }
+        // else{
+        //     echo "id='not-display'";
+        // }
+    ?>
         <div id="nav_holder">
             <div id="logo">
                 <div id="name">
@@ -71,6 +99,11 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     </nav>
     <div class="container">
         <section id="lhs">
+            <div id="nav_status" class="menu">
+                <div class="head" style="font-size: small; background-color:rgba(15,15,15, 0.6)">
+                    <span><?php echo $status ?></span>
+                </div>
+            </div>
             <div class="menu">
                 <div class="head active">
                     <span>Dashboard</span>
@@ -231,7 +264,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
         <?php include_once($rootPath."/admin/admin/page_parts/add_house.php")?>
     </div>
 
-    <div id="modal_yes_no" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <div id="gen_del" class="modal_yes_no fixed flex flex-center-content flex-center-align form_modal_box no_disp">
         <div class="yes_no_container">
             <div class="body">
                 <p id="warning_content">Do you want to delete?</p>
@@ -246,7 +279,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
 
             <div class="foot btn flex flex-center-content flex-center-align">
                 <button type="button" name="yes_button" class="success" onclick="$('#yes_no_form').submit()">Yes</button>
-                <button type="button" name="no_button" class="red" onclick="$('#modal_yes_no').addClass('no_disp')">No</button>
+                <button type="button" name="no_button" class="red" onclick="$('#gen_del').addClass('no_disp')">No</button>
             </div>
         </div>
     </div>

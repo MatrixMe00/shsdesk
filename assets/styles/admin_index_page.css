@@ -45,7 +45,17 @@ nav #nav_holder{
     width: 100%;
 }
 
+nav#not-active #nav_holder{
+    background-color: rgba(230, 50, 50);
+}
 
+nav#not-display #nav_holder{
+    background-color:rgba(230, 100, 100, 1)
+}
+
+nav#no-house #nav_holder{
+    background-color: rgba(255, 80,80);
+}
 
 #logo{
     flex: 2;
@@ -156,7 +166,7 @@ div.container{
 }
 
 .menu .head.active, .menu .head:hover, .menu:hover > .head{
-    background-color:rgba(15,15,15, 0.6)
+    background-color:rgba(15,15,15, 0.6);
 }
 
 .menu .item{
@@ -328,7 +338,7 @@ div.container{
 
 .body table td{
     padding: 3px;
-    min-width: 10vw;
+    cursor: default;
 }
 
 .body table thead td{

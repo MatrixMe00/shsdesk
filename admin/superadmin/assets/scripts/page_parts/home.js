@@ -265,29 +265,29 @@ $("span.item-event").click(function(){
 
     }else if(item_event == "delete"){
         //display yes no modal box
-        $("#modal_yes_no").removeClass("no_disp");
+        $("#gen_del").removeClass("no_disp");
 
         //message to display
         item_header = $(this).parents(".item").children(".top").children(".flex").children(".content_title").children("h4").html();
-        $("#modal_yes_no p#warning_content").html("Do you want to delete block titled \"<b>" + 
+        $("#gen_del p#warning_content").html("Do you want to delete block titled \"<b>" + 
         item_header + "</b>\"");
 
         //fill form with needed details
-        $("#modal_yes_no input[name=sid]").val(item_id);
-        $("#modal_yes_no input[name=mode]").val(item_event);
-        $("#modal_yes_no input[name=table]").val(table);
+        $("#gen_del input[name=sid]").val(item_id);
+        $("#gen_del input[name=mode]").val(item_event);
+        $("#gen_del input[name=table]").val(table);
     }else if(item_event == "activate" || item_event == "deactivate"){
         //display yes no modal box
-        $("#modal_yes_no").removeClass("no_disp");
+        $("#gen_del").removeClass("no_disp");
 
         //message to display
         item_header = $(this).parents(".item").children(".top").children(".flex").children(".content_title").children("h4").html();
-        $("#modal_yes_no p#warning_content").html("Do you want to " + item_event + " block titled \"<b>" + 
+        $("#gen_del p#warning_content").html("Do you want to " + item_event + " block titled \"<b>" + 
         item_header + "</b>\"");
 
         //fill form with needed details
-        $("#modal_yes_no input[name=sid]").val(item_id);
-        $("#modal_yes_no input[name=mode]").val(item_event);
-        $("#modal_yes_no input[name=table]").val(table);
+        $("#gen_del input[name=sid]").val(item_id);
+        $("#gen_del input[name=mode]").val(item_event);
+        $("#gen_del input[name=table]").val(table);
     }
 })
