@@ -34,10 +34,8 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             ";
             $status = "Status: Not-Active";
         }else{
-            $status = "Status: Active";
-        }
-        //check if house and students are set
-        $house_check = fetchData("COUNT(DISTINCT(title)) AS total", "houses", "schoolID=$user_school_id")["total"];
+            //check if house and students are set
+            $house_check = fetchData("COUNT(DISTINCT(title)) AS total", "houses", "schoolID=$user_school_id")["total"];
             if($house_check > 1){
                 //check if there is at least one student uploaded on the system
                 $students = fetchData("COUNT(indexNumber) AS total", "cssps", "schoolID=$user_school_id")["total"];
@@ -46,14 +44,13 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                     $status = "Status: Not Active [No Student Uploaded]";
                 }else{
                     echo "<nav>";
+                    $status = "Status: Active";
                 }
             }else{
                 echo "<nav id='not-display'>";
                 $status = "Status: Not Active [No House Uploaded]";
             }
-        // else{
-        //     echo "id='not-display'";
-        // }
+        }
     ?>
         <div id="nav_holder">
             <div id="logo">
