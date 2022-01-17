@@ -87,7 +87,7 @@ $("form[name=importForm] button[name=close]").click(function(){
 })
 
 //search button workout
-$(".display .btn button[name=search_submit]").click(function(){
+$(".btn button[name=search_submit]").click(function(){
     search_value = $(this).parent().siblings("label[for=search]").children("input").val();
 
     dataString = "search_value=" + search_value + "&submit=" + $(this).val();
@@ -112,7 +112,7 @@ $(".display .btn button[name=search_submit]").click(function(){
         search_value = search_value.toLowerCase();
 
         //get parent table row
-        tr = $(this).parents(".form").siblings(".body").children("table").children("tbody").children("tr");
+        tr = $(this).parents(".form, .head").siblings(".body").children("table").children("tbody").children("tr");
         $(tr).filter(function(){
             $(this).toggle(
                 $(this).text().toLowerCase().indexOf(search_value) > -1
@@ -120,7 +120,7 @@ $(".display .btn button[name=search_submit]").click(function(){
         })
 
         //count number of visible results
-        tr = $(this).parents(".form").siblings(".body").children("table").children("tbody").children("tr:visible");
+        tr = $(this).parents(".form, .head").siblings(".body").children("table").children("tbody").children("tr:visible");
 
         if(tr.length > 0)
             $(td).html(tr.length + " results returned");

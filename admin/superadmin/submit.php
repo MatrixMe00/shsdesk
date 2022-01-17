@@ -12,15 +12,15 @@
                 exit(1);
             }
         }elseif($submit == "page_item_upload" || $submit == "page_item_upload_ajax"){
-            $image_alt = $_POST["image_alt"];
-            $item_page = $_POST["item_page"];
-            $item_type = $_POST["item_type"];
-            $item_head = $_POST["item_head"];
-            $item_desc = $_POST["item_desc"];
-            $item_button = $_POST["item_button"];
-            $button_text = $_POST["real_button_text"];
-            $button_url = $_POST["button_url"];
-            $activate = $_POST["activate"];
+            $image_alt = $connect->real_escape_string($_POST["image_alt"]);
+            $item_page = $connect->real_escape_string($_POST["item_page"]);
+            $item_type = $connect->real_escape_string($_POST["item_type"]);
+            $item_head = $connect->real_escape_string($_POST["item_head"]);
+            $item_desc = htmlentities($_POST["item_desc"]);
+            $item_button = $connect->real_escape_string($_POST["item_button"]);
+            $button_text = $connect->real_escape_string($_POST["real_button_text"]);
+            $button_url = $connect->real_escape_string($_POST["button_url"]);
+            $activate = $connect->real_escape_string($_POST["activate"]);
             
             //upload the image
             $image_input_name = "item_img";
@@ -167,10 +167,10 @@
 
         }elseif($submit == "make_announcement" || $submit == "make_announcement_ajax"){
             //retrieve needed data
-            $title = $_REQUEST["title"];
+            $title = $connect->real_escape_string($_REQUEST["title"]);
             $message = htmlentities($_REQUEST["message"], ENT_QUOTES);
-            $audience = $_REQUEST["audience"];
-            $notification_type = $_REQUEST["notification_type"];
+            $audience = $connect->real_escape_string($_REQUEST["audience"]);
+            $notification_type = $connect->real_escape_string($_REQUEST["notification_type"]);
 
             //get details from session
             if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] != null){

@@ -59,6 +59,9 @@
      */
     function getImageDirectory(string $image_input_name, string $local_storage_directory, string $default_image_path = ""):string{
         if(isset($_FILES[$image_input_name]) && $_FILES[$image_input_name]["tmp_name"] != null){
+            //compress the image to 40% quality
+            $_FILES[$image_input_name]["tmp_name"] = compress($_FILES[$image_input_name]["tmp_name"], $_FILES[$image_input_name]["tmp_name"], 40);
+            
             //get a local directory
             $image_directory = $local_storage_directory;
 
@@ -107,15 +110,18 @@
 
                 $filename = end($image_directory);
 
+                //split file name into name and extension
+                $filename = explode(".", $filename);
+
                 //reset the path
-                $image_directory = $file_directory.$filename;
+                $image_directory = $file_directory.$filename[0].".".$filename[1];
 
                 //set a counter to count image number for new name
                 $counter = 1;
 
                 //create a new image name till unique name is formed
                 while(file_exists($image_directory)){
-                    $image_directory = $file_directory.$filename."_$counter";
+                    $image_directory = $file_directory.$filename[0]."_$counter".".".$filename[1];
                     
                     $counter++;
                 }
@@ -127,8 +133,7 @@
             //now upload the file
             if($uploadOk == 1){
                 if(move_uploaded_file($_FILES[$image_input_name]["tmp_name"], $image_directory)){
-                    //compress the image to 40% quality
-                    $image_directory = compress($image_directory, $image_directory, 40);
+                    #process complete
                 }else{
                     $image_directory = "upload_fail";
                 }
@@ -190,9 +195,6 @@
             //raise a flag for upload
             $uploadOk = 1;
 
-            //get the file type
-            $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-
             //if file already exists, try to create another filename
             if(file_exists($file_name)){
                 $counter = 1;
@@ -208,11 +210,14 @@
                     }
                 }
                 $filename = end($temp_file_name);
+                
+                //divide filename into name and extension
+                $filename = explode(".", $filename);
 
                 //loop through until unique file is found
                 while(file_exists($file_name)){
                     //set the filename path into a new filename path
-                    $file_name = $file_directory.$filename."_".$counter++;
+                    $file_name = $file_directory.$filename[0]."_".$counter++.".".$filename[1];
                 }
 
                 //when loop is over, let the image be prepared for upload
@@ -222,9 +227,7 @@
             //now upload the file
             if($uploadOk == 1){
                 if(move_uploaded_file($_FILES[$file_input_name]["tmp_name"], $file_name)){
-                    return $file_name;
-                }else{
-                    echo "<p>Upload failed</p>";
+                    $file_name = $file_name;
                 }
             }else{
                 echo "<p>Upload failed</p>";

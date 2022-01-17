@@ -4,7 +4,7 @@
     $_SESSION["nav_point"] = "Placement";
 ?>
 <section class="section_container">
-    <div class="content primary">
+    <div class="content primary cssps">
         <div class="head">
             <h2>
                 <?php
@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <div class="content teal">
+    <div class="content teal reg_comp">
         <div class="head">
             <h2>
                 <?php
@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <div class="content danger">
+    <div class="content danger reg_uncomp">
         <div class="head">
             <h2>
                 <?php

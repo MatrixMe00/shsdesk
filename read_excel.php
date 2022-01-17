@@ -138,7 +138,8 @@
                                         $jhsAttended = $cellValue;
                                         break;
                                     case 8:
-                                        $dob = $cellValue;
+                                        $val = PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($cellValue);
+                                        $dob = date("Y-m-d", $val);
                                         break;
                                     case 9:
                                         $trackID = $cellValue;

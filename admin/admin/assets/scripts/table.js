@@ -110,9 +110,9 @@ $("#table_del form").submit(function(e){
         registered = $("tr[data-index=" + $("#table_del input[name=indexNumber]").val() + "]").attr("data-register");
         $("tr[data-index=" + $("#table_del input[name=indexNumber]").val() + "]").remove();
 
-        cssps_head = $(".content:first-child .head h2");
-        comp_head = $(".content:nth-child(2) .head h2");
-        not_comp_head = $(".content:last-child .head h2")
+        cssps_head = $(".content.cssps .head h2");
+        comp_head = $(".content.reg_comp .head h2");
+        not_comp_head = $(".content.reg_uncomp .head h2");
         
         $(cssps_head).html(parseInt($(cssps_head).html())-1);
 

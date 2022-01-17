@@ -120,7 +120,7 @@
     </div>
     <div class="foot flex">
         <label for="submit" class="btn">
-            <button type="submit" name="submit" class="primary" value="" disabled>Update</button>
+            <button type="submit" name="submit" class="primary" value="adminUpdateStudent">Update</button>
         </label>
         <label for="cancel" class="btn">
             <button type="reset" name="cancel" class="danger">Cancel</button>

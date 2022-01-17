@@ -41,15 +41,8 @@
                 </div>
 
                 <?php
-                    $res = $connect->query("SELECT id FROM schools ORDER BY DESC LIMIT 1");
-
-                    if(@$res->num_rows > 0){
-                        $row = $res->fetch_array();
-                        $form_id = $row["id"];
-                        $form_id += 1;
-                    }else{
-                        $form_id = 1;
-                    }
+                    $res = $connect->query("SELECT MAX(id) AS id FROM schools");
+                    $form_id = $res->fetch_assoc()["id"] + 1;
                 ?>
                 <input type="hidden" name="form_id" value="<?php echo $form_id?>">
 
@@ -59,49 +52,50 @@
                             <img src="<?php echo $url?>/assets/images/icons/user.png" alt="fullname_logo">
                         </span>
                         <input type="text" name="school_name" id="school_name" class="text_input" placeholder="Name of School" pattern="[a-zA-Z\s]{6,}"
-                        title="Please provide the name of your school" required>
+                        autocomplete="off" title="Please provide the name of your school" required>
+                        
                     </label>
                     <label for="abbreviation">
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/user.png" alt="abbr">
                         </span>
                         <input type="text" name="abbreviation" class="text_input" id="abbreviation" 
-                        title="Write the abbreviation of your school's name here" placeholder="Abbreviated name of school">
+                        autocomplete="off" title="Write the abbreviation of your school's name here" placeholder="Abbreviated name of school">
                     </label>
                     <label for="head_name">
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/user.png" alt="head name">
                         </span>
                         <input type="text" name="head_name" id="head_name" class="text_input" placeholder="Name of School Head" pattern="[a-zA-Z\s]{6,}"
-                        title='Provide the name of the head of your institution' required>
+                        autocomplete="off" title='Provide the name of the head of your institution' required>
                     </label>
                     <label for="technical_name">
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/user.png" alt="fullname_logo">
                         </span>
                         <input type="text" name="technical_name" id="technical_name" class="text_input" placeholder="Name of Technical Support Personnel" pattern="[a-zA-Z\s]{6,}"
-                        title="This is the name of the technical support personnel. It is the same that people will call for assitance" required>
+                        autocomplete="off" title="This is the name of the technical support personnel. It is the same that people will call for assitance" required>
                     </label>
                     <label for="technical_phone">
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="call">
                         </span>
                         <input type="tel" name="technical_phone" id="technical_phone" class="text_input" placeholder="Technical Person Phone Contact*"
-                        title="Personnel's phone contact. This person is probably the school's [IT] administrator" required>
+                        autocomplete="off" title="Personnel's phone contact. This person is probably the school's [IT] administrator" required>
                     </label>
                     <label for="school_email">
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/mail-outline.svg" alt="email_icon">
                         </span>
                         <input type="email" name="school_email" id="school_email" class="text_input" placeholder="School's email address"
-                        title="Please provide your school email" required>
+                        autocomplete="off" title="Please provide your school email" required>
                     </label>
                     <label for="postal_address">
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/Sign Post.png" alt="postal">
                         </span>
                         <input type="text" name="postal_address" id="postal_address" class="text_input" placeholder="Postal Address*" required
-                        title="Please provide your postal address. It will be useful in details of the admission form">
+                        autocomplete="off" title="Please provide your postal address. It will be useful in details of the admission form">
                     </label>
                 </div>
                 
@@ -110,7 +104,7 @@
                         <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="icon">
                     </span>
                     <textarea type="text" name="description" id="description" placeholder="Provide a  brief description about the school [800 characters max]*"
-                    class="tinymce" required maxlength="800" title="Provide a brief description about your school"></textarea>
+                    class="tinymce" maxlength="800" autocomplete="off" title="Provide a brief description about your school"></textarea>
                 </label>
 
                 <div class="joint flex-wrap">

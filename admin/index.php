@@ -83,7 +83,8 @@
                 <input type="password" name="password" id="password" class="text_input" placeholder="Your Password" autocomplete="off">
             </label>
             <label for="pass_forg">
-                <p onclick="window.location.href = '<?php echo $url?>/password.php'">Forgot Your Password?</p>
+                <p onclick="location.href='<?php echo $url?>/register'" style="margin-right: 10px">Register</p>
+                <p onclick="location.href='<?php echo $url?>/password.php'">Forgot Your Password?</p>
             </label>
             <label for="submit" class="btn_label">
                 <button type="submit" name="submit" value="login">Login</button>

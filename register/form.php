@@ -179,13 +179,13 @@
             if($res->execute()){
                 //insert data into admission details table
                 $sql = "INSERT INTO admissiondetails (schoolID, headName) 
-                VALUES (".$row["id"].",$head_name)";
+                VALUES (".$row["id"].",'$head_name')";
                 $connect->query($sql);
 
                 echo "<p>Your data has been recorded successfully!</p>";
                 if(@$autoHousePlace != true){
                     echo "<p>Student house allocation has not been set to automatic<br>
-                        Click <a href=\"$url/admin/admin/assets/files/default files/house_allocation.csv\">here</a> to download 
+                        Click <a href=\"$url/admin/admin/assets/files/default files/house_allocation.xlsx\">here</a> to download 
                         required file to manually place students in required houses</p>";
                 }
 

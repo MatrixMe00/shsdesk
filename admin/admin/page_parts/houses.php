@@ -70,9 +70,11 @@
     <div class="btn">
         <button onclick="$('#modal_3').removeClass('no_disp')">Add New House</button>
     </div>
+    <?php if($_SESSION["real_status"]){?>
     <div class="btn">
         <button>Generate Report</button>
     </div>
+    <?php } ?>
 </section>
 
 <section>
@@ -127,15 +129,6 @@
                     ?></td>
                 </tr>
                 <?php } ?>
-                <!-- <tr>
-                    <td>2</td>
-                    <td>Vodzi</td>
-                    <td>Males</td>
-                    <td>15</td>
-                    <td>30</td>
-                    <td>25</td>
-                    <td>Not Full</td>
-                </tr> -->
             </tbody>
         </table>
         <?php }else{

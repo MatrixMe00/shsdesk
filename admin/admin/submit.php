@@ -180,12 +180,12 @@
                 $dob = date("Y-m-d", strtotime($dob));
 
                 //insert data into CSSPS table
-                $sql = "INSERT INTO cssps (indexNumber,Lastname,Othernames,Gender,
-                        boardingStatus,programme, aggregate, jhsAttended, dob, trackID, schoolID) 
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+                $sql = "UPDATE cssps SET indexNumber=?, Lastname=?, Othernames=?, Gender=?, boardingStatus=?,
+                        programme=?, aggregate=?, jhsAttended=?, dob=?, trackID=?, schoolID=? 
+                        WHERE indexNumber=?";
                 $stmt = $connect->prepare($sql);
-                $stmt->bind_param("ssssssisssi",$student_index,$lname,$oname,$gender,$boarding_status,$student_course,
-                    $aggregate,$jhs,$dob,$track_id,$school_id);
+                $stmt->bind_param("ssssssisssis",$student_index,$lname,$oname,$gender,$boarding_status,$student_course,
+                    $aggregate,$jhs,$dob,$track_id,$school_id, $student_index);
                 $stmt->execute();
 
                 $message = "success";
