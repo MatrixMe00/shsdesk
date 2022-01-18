@@ -42,7 +42,7 @@
 <?php if($_SESSION["real_status"]){?>
 <section class="flex flex-wrap flex-center-align"> 
     <div class="btn">
-    <button name="submit" value="request_enrol" class="request_btn">Request Report</button>
+    <button name="submit" value="request_enrol" class="request_btn cyan">Request Report</button>
     </div>
 </section>
  <?php } ?>

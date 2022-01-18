@@ -231,7 +231,7 @@
                 $message = "no-house-name";
             }elseif(empty($gender)){
                 $message = "no-gender";
-            }elseif(empty($house_room_total)){
+            }/*elseif(empty($house_room_total)){
                 $message = "room-total-empty";
             }elseif(intval($house_room_total) <= 0){
                 $message = "room-zero";
@@ -239,12 +239,15 @@
                 $message = "head-total-empty";
             }elseif(intval($head_per_room) <= 0){
                 $message = "head-zero";
-            }else{
+            }*/else{
                 //query into database
-                $sql = "INSERT INTO houses (title, schoolID, totalRooms, headPerRoom, gender)
-                    VALUES (?,?,?,?,?)";
+                // $sql = "INSERT INTO houses (title, schoolID, totalRooms, headPerRoom, gender)
+                //     VALUES (?,?,?,?,?)";
+                $sql = "INSERT INTO houses (title, schoolID, gender)
+                    VALUES (?,?,?)";
                 $stmt = $connect->prepare($sql);
-                $stmt->bind_param("sisss",$house_name, $user_school_id, $house_room_total, $head_per_room, $gender);
+                // $stmt->bind_param("sisss",$house_name, $user_school_id, $house_room_total, $head_per_room, $gender);
+                $stmt->bind_param("sis", $house_name, $user_school_id, $gender);
                 $stmt->execute();
 
                 $message = "success";

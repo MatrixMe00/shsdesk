@@ -79,6 +79,17 @@ button:disabled{
     color: #555 !important;
     cursor: default !important;
 }
+
+button.dark:hover, button.gray-dark:hover{
+    background-color: var(--light);
+    color: var(--dark);
+}
+
+button.cyan:hover, button.info:hover{
+    background-color: var(--primary);
+}
+
+
 .indigo{
     background-color: var(--indigo);
     color: white;

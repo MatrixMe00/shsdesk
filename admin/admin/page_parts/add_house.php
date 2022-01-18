@@ -27,14 +27,14 @@
                     <input type="radio" name="gender" id="gender_female" value="Female">
                     <span class="label_title">Female</span>
                 </label>
-                <!-- <label for="gender" class="radio">
+                <label for="gender" class="radio">
                     <input type="radio" name="gender" id="gender_both" value="Both">
                     <span class="label_title">Both</span>
-                </label> -->
+                </label>
             </div>
         </div>
         
-        <div class="joint">
+        <!-- <div class="joint">
             <label for="house_room_total">
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/push-outline.svg" alt="total rooms">
@@ -49,7 +49,7 @@
                 <input type="number" name="head_per_room" id="head_per_room" placeholder="Number of heads per room*" min="1" required
                 title="Enter the number of students required to make a room in the house full">
             </label>
-        </div>
+        </div> -->
 
         <div class="flex">
             <label for="submit" class="btn">

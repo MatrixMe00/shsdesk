@@ -1,38 +1,66 @@
 <?php 
-$image_directory = "/home/vol1_1/epizy.com/epiz_30746634/shsdesk.epizy.com/htdocs/admin/admin/assets/images/schools/IMG-20211016-WA0019.jpg";
-//if file already exists, try to create another filename
-if($image_directory != null){
-    //split into directories
-    $image_directory = explode("/", $image_directory);
+include_once("includes/session.php");
+$ad_gender = "Male";
+$shs_placed = 3;
 
-    //get file directory path
-    $file_directory = "";
+//count number of houses of the school
+$sql = "SELECT id
+FROM houses
+WHERE schoolID = $shs_placed AND gender = '$ad_gender' OR gender='Both'";
+$result = $connect->query($sql);
 
-    foreach ($image_directory as $row){
-        if($row != end($image_directory))
-            $file_directory .= "$row/";
+//create an array for details
+$house = array();
+
+if($result->num_rows > 0){
+$total = $result->num_rows;
+$count = 0;
+
+//fill array
+while($row = $result->fetch_assoc()){
+    $house[$count] = $row["id"];
+    $count++;
+}
+
+//search for last house allocation entry
+$sql = "SELECT indexNumber, houseID
+    FROM house_allocation
+    WHERE schoolID = $shs_placed
+    ORDER BY indexNumber DESC
+    LIMIT 1";
+$result = $connect->query($sql);
+
+$hid = $result->fetch_assoc()["houseID"];
+
+//fetch student details for entry
+// $student_details = fetchData("*", "cssps", "indexNumber=$ad_index");
+
+if($result->num_rows == 1){
+    //retrieve house id
+    $id = $hid;
+
+    $next_room = 0;
+
+    for($i = 0; $i < $total; $i++){
+        //try choosing the next house
+        if($house[$i] == $id){
+            //check immediate available houses
+            if($i+1 < $total){
+                $next_room = $house[$i+1];
+            }elseif($i-1 >= 0){                                            
+                $next_room = $house[$i-1];
+            }elseif($i+1 == $total){
+                $next_room = $house[0];
+            }
+            
+            if($next_room > 0){
+                break;
+            }
+        }
     }
 
-    //retrieve file name
-    $filename = end($image_directory);
-
-    //break name into name and extension
-    $filename = explode(".",$filename);
-
-    //reset the path
-    $image_directory = $file_directory.$filename[0].".".$filename[1];
-
-    //set a counter to count image number for new name
-    $counter = 1;
-
-    //create a new image name till unique name is formed
-    while($counter <= 5){
-        $image_directory = $file_directory.$filename[0]."_$counter.".$filename[1];
-        
-        $counter++;
-    }
-
-    //when loop is over, let the image be prepared for upload
-    $uploadOk = 1;
+    echo "next room: $next_room<br>
+    Last Room: $id";
+}
 }
 ?>

@@ -99,7 +99,7 @@
     </div>
     <div class="foot flex">
         <label for="submit" class="btn">
-            <button type="submit" name="submit" value="adminUpdateStudent">Save</button>
+            <button type="submit" name="submit" value="adminAddStudent">Save</button>
         </label>
         <label for="cancel" class="btn">
             <button type="reset" name="cancel">Cancel</button>

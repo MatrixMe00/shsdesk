@@ -4,8 +4,7 @@ main{
 
 main .school{
     background-color: #eee;
-    flex: 1 1 250px;
-    width: fit-content;
+    flex: 1 1 550px;
     padding: 1vh 0.6vw;
     margin: 0.3vh;
 }

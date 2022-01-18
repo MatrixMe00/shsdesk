@@ -53,10 +53,25 @@
 <?php if($_SESSION["real_status"]){?>
 <section class="flex flex-wrap flex-center-align"> 
     <div class="btn">
-        <button>Generate Report</button>
+        <button class="cyan">Generate Report</button>
+    </div>
+    <div class="btn">
+        <button onclick="$('#modal_2').removeClass('no_disp')" <?php
+            $autoHousePlace = getSchoolDetail($user_school_id, true)["autoHousePlace"];
+            if($autoHousePlace)
+                echo "disabled";
+        ?>>Import Allocation List</button>
     </div>
 </section>
  <?php } ?>
+
+ <section>
+     <div class="display light">
+        <p style="text-align: center; padding: 1em">In this section you are allowed to upload students who are to be
+        manually uploaded by you. Manual house allocation will have to upload their document via </p>
+    </div>
+ </section>
+
 
 <section class="section_container allocation flex-column">
     <div class="head" style="align-self: center">
@@ -86,11 +101,15 @@
             <?php
                 while($row = $res->fetch_assoc()){
             ?>
-                <tr>
+                <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="true">
                     <td><?php echo $row["indexNumber"] ?></td>
                     <td><?php echo $row["studentLname"]." ".$row["studentOname"] ?></td>
                     <td><?php echo $row["title"] ?></td>
                     <td><?php echo $row["programme"] ?></td>
+                    <td class="flex flex-wrap">
+                        <span class="item-event edit">Edit</span>
+                        <span class="item-event delete">Delete</span>
+                    </td>
                 </tr>
                 <?php } ?>
             </tbody>
@@ -133,11 +152,15 @@
             <?php
                 while($row = $res->fetch_assoc()){
             ?>
-                <tr>
+                <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="true">
                     <td><?php echo $row["indexNumber"] ?></td>
                     <td><?php echo $row["studentLname"]." ".$row["studentOname"] ?></td>
                     <td><?php echo $row["title"] ?></td>
                     <td><?php echo $row["programme"] ?></td>
+                    <td class="flex flex-wrap">
+                        <span class="item-event edit">Edit</span>
+                        <span class="item-event delete">Delete</span>
+                    </td>
                 </tr>
                 <?php } ?>
             </tbody>
@@ -151,3 +174,66 @@
         }
     ?>
 </section>
+
+<?php if(!$autoHousePlace){ ?>
+<div id="modal_2" class="fixed no_disp form_modal_form">
+    <form action="<?php echo $url?>/read_excel.php" name="importForm" enctype="multipart/form-data" method="POST">
+        <h5>NB:</h5>
+        <ol>
+            <li>Your file should be a spreadsheet file</li>
+            <li>Spreadsheet files with .xls or .xlsx as extensions are acceptable</li>
+            <li>Your data should have headings for easy entry into the database</li>
+            <li>Make sure you have uploaded all your houses and their required details</li>
+            <li>If you could not download the file for manual house allocation, download it <a href="<?php echo $url?>/admin/admin/assets/files/default files/house_allocation.xlsx">here</a></li>
+        </ol>
+        <br>
+        <div class="message_box no_disp">
+            <span class="message">Here is a test message</span>
+            <div class="close"><span>&cross;</span></div>
+        </div>
+        <label for="import" class="file_label">
+            <span class="label_title">Upload your file here</span>
+            <div class="fore_file_display">
+                <input type="file" name="import" id="import" accept=".xls, .xlsx">
+                <span id="plus">+</span>
+                <span id="display_file_name">Choose or drag your file here</span>
+            </div>
+        </label>
+        <div class="flex">
+            <label for="submit" class="btn">
+                <button type="submit" name="submit" value="upload">Upload</button>
+            </label>
+            <label for="close" class="btn">
+                <button type="reset" name="close">Close</button>
+            </label>
+        </div>
+    </form>
+</div>
+<?php } ?>
+
+<div id="updateStudent" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <?php @include_once($rootPath."/admin/admin/page_parts/update_student.php")?>
+</div>
+
+<div id="table_del" class="modal_yes_no fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <div class="yes_no_container">
+        <div class="body">
+            <p id="warning_content">Do you want to delete?</p>
+        </div>
+
+        <form action="<?php echo $url?>/admin/admin/submit.php" class="no_disp" name="table_yes_no_form" id="table_yes_no_form">
+            <input type="hidden" name="indexNumber">
+            <input type="hidden" name="submit" value="table_yes_no_submit">
+        </form>
+
+        <div class="foot btn flex flex-center-content flex-center-align">
+            <button type="button" name="yes_button" class="success" onclick="$('#table_yes_no_form').submit();">Yes</button>
+            <button type="button" name="no_button" class="red" onclick="$('#table_del').addClass('no_disp')">No</button>
+        </div>
+    </div>
+</div>
+
+<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js"></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/table.js?v=<?php echo time()?>"></script>

@@ -63,20 +63,21 @@
         </div>
         <div class="body flex flex-wrap">
             <div class="btn">
-                <button onclick="$('#modal').removeClass('no_disp')">Add New Student</button>
+                <button onclick="$('#modal').removeClass('no_disp')" class="cyan">Add New Student</button>
             </div>
             <div class="btn">
-                <button onclick="location.reload()">Refresh</button>
+                <button onclick="location.reload()" class="secondary">Refresh</button>
             </div>
             <div class="btn">
-                <button type="button" onclick="$('#modal_2').removeClass('no_disp')">Import From Excel</button>
+                <button type="button" onclick="$('#modal_2').removeClass('no_disp')" class="teal">Import From Excel</button>
             </div>
             <?php 
                 $res = $connect->query("SELECT COUNT(indexNumber) AS total FROM cssps WHERE schoolID = $user_school_id")->fetch_assoc()["total"];
                 if(intval($res) > 0){
             ?>
             <div class="btn">
-                <button id="del_all" title="This deletes all saved data from your records. Data would need to be reuploaded again">Delete All Records</button>
+                <button id="del_all" title="This deletes all saved data from your records. Data would need to be reuploaded again"
+                class="red">Delete All Records</button>
             </div>
             <?php } ?>
         </div>
@@ -242,7 +243,6 @@
             <li>Spreadsheet files with .xls or .xlsx as extensions are acceptable</li>
             <li>Your data should have headings for easy entry into the database</li>
             <li>Make sure you have uploaded all your houses and their required details</li>
-            <li>If you could not download the file for manual house allocation, download it <a href="<?php echo $url?>/admin/admin/assets/files/default files/house_allocation.xlsx">here</a></li>
             <li>If you do not have the default spreadsheet file for upload, please click <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">here</a> to download</li>
         </ol>
         <br>

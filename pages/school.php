@@ -21,7 +21,7 @@
             if($result->num_rows > 0){
                 while($row = $result->fetch_assoc()){
         ?>
-        <div class="school flex flex-center-content flex-center-align">
+        <div class="school flex flex-center-content flex-center-align flex-column">
             <div class="head">
                 <div class="image_div">
                     <img src="<?php echo $url?>/<?php echo $row["logoPath"]?>" alt="School Name">
