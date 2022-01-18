@@ -148,6 +148,7 @@
             $jhs = strip_tags(stripslashes($_REQUEST["jhs"]));
             $dob = strip_tags(stripslashes($_REQUEST["dob"]));
             $track_id = strip_tags(stripslashes($_REQUEST["track_id"]));
+            $house = strip_tags(stripslashes($_REQUEST["house"]));
             $school_id = $user_school_id;
 
             //variable to hold messages
@@ -175,20 +176,33 @@
                 $message = "no-dob";
             }elseif(empty($track_id)){
                 $message = "no-track-id";
+            }elseif(empty($house)){
+                $message = "no-house";
             }else{
                 //format date
                 $dob = date("Y-m-d", strtotime($dob));
 
-                //insert data into CSSPS table
-                $sql = "UPDATE cssps SET indexNumber=?, Lastname=?, Othernames=?, Gender=?, boardingStatus=?,
+                //update data in CSSPS table
+                $sql = "UPDATE cssps SET Lastname=?, Othernames=?, Gender=?, boardingStatus=?,
                         programme=?, aggregate=?, jhsAttended=?, dob=?, trackID=?, schoolID=? 
                         WHERE indexNumber=?";
                 $stmt = $connect->prepare($sql);
-                $stmt->bind_param("ssssssisssis",$student_index,$lname,$oname,$gender,$boarding_status,$student_course,
+                $stmt->bind_param("sssssisssis",$lname,$oname,$gender,$boarding_status,$student_course,
                     $aggregate,$jhs,$dob,$track_id,$school_id, $student_index);
-                $stmt->execute();
-
-                $message = "success";
+                if($stmt->execute()){
+                    //make update to house allocation
+                    $sql = "UPDATE house_allocation SET studentLname=?, studentOname=?, houseID=?, studentGender=?, boardingStatus=? 
+                        WHERE indexNumber=?";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("ssisss", $lname, $oname, $house, $gender, $boarding_status, $student_index);
+                    if($stmt->execute()){
+                        $message = "success";
+                    }else{
+                        $message = "Could not update details";
+                    }
+                }else{
+                    $message = "Could not update details";
+                }  
             }
 
             echo $message;

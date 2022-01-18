@@ -68,11 +68,11 @@
 
 <section class="flex flex-wrap flex-center-align">
     <div class="btn">
-        <button onclick="$('#modal').removeClass('no_disp')">Add New House</button>
+        <button onclick="$('#modal').removeClass('no_disp')" class="secondary">Add New House</button>
     </div>
     <?php if($_SESSION["real_status"]){?>
     <div class="btn">
-        <button>Generate Report</button>
+        <button name="submit" value="houses" class="request_btn cyan">Generate Report</button>
     </div>
     <?php } ?>
 </section>

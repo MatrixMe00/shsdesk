@@ -89,7 +89,14 @@ button.cyan:hover, button.info:hover{
     background-color: var(--primary);
 }
 
+button.secondary:hover, button.grey:hover{
+    color: initial;
+    background-color: initial;
+}
 
+button.teal:hover{
+    background-color: rgb(62, 150, 100);
+}
 .indigo{
     background-color: var(--indigo);
     color: white;

@@ -70,11 +70,7 @@ function messageBoxTimeout(form_name, message, message_type, time=5){
     }
 }
 
-//load loaders on ajax start and end
-$(document)
-    .ajaxStart(function () {
-        messageBoxTimeout($("form").parent().children("form").prop("name"), loadDisplay(), "load", 0);
-    })
-    .ajaxStop(function (){
-        $("form[name=" + $("form").parent().children("form").prop("name") + "] .message_box .close").click();
-    })
+$("button.request_btn").click(function(){
+    this_url = url + "/create_excel.php";
+    location.href = this_url + "?submit=" + $(this).val();
+})

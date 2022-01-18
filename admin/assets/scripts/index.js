@@ -103,9 +103,13 @@ $("#yes_no_form").submit(function(){
     })
 })
 
-
-
 $("#logout").click(function(){
     var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[1];
+    //var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[0];
     location.href = url + "/admin/logout.php";
+})
+
+//generate reports
+$("button.request_btn").click(function(){
+    
 })

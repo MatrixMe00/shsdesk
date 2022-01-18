@@ -47,10 +47,10 @@
             //title
             $filename = "Enrolment Details | ";
     }elseif($submit == "houses"){
-        $sql = "SELECT h.indexNumber, h.studentLname AS lastname, h.studentOname as othername(s), h.studentYearLevel, h.studentGender, h.boardingStatus, h1.title AS house name
+        $sql = "SELECT h.indexNumber, h.studentLname AS lastname, h.studentOname as `othername(s)`, h.studentYearLevel, h.studentGender, h.boardingStatus, h1.title AS `house name`
         FROM house_allocation h JOIN houses h1
         ON h.houseID=h1.id
-        WHERE schoolID=$user_school_id";
+        WHERE h.schoolID=$user_school_id";
 
         $exception_headers = array("");
 

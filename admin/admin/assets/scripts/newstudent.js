@@ -101,7 +101,7 @@ $("form[name=adminUpdateStudent]").submit(function(event){
     response = formSubmit($(this), $("form[name=adminUpdateStudent] button[name=submit]"));
     
     if(response == true){
-        message = "Data for " + $("form[name=adminUpdateStudent] #lname").val() + " was added successfully";
+        message = "Data for " + $("form[name=adminUpdateStudent] #lname").val() + " was updated successfully";
         message_type = "success";
         time = 3;
 
@@ -114,7 +114,7 @@ $("form[name=adminUpdateStudent]").submit(function(event){
         //enable buttons and reset the form
         setTimeout(function(){
             $("form[name=adminUpdateStudent] .foot button").prop("disable", false);
-            $("form[name=adminUpdateStudent] button[name=cancel]").click();
+            location.reload();
         }, 3000);
         
     }else{
@@ -145,9 +145,9 @@ $("form[name=adminUpdateStudent]").submit(function(event){
         }else if(response == "data-exist"){
             message = "Index number already exists in database. Please enter another one";
         }else{
-            message = "An unknown error has occured. Please try again later";
+            message = response;
         }
     }
 
-    messageBoxTimeout(form_name, message, message_type, time);
+    messageBoxTimeout(form_name, message, message_type, 0);
 })
