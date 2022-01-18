@@ -1,8 +1,13 @@
 <?php @include_once('../../../includes/session.php')?>
 
-<form action="<?php echo $url?>/admin/admin/submit.php" method="POST" name="addHouseForm" method="post">
+<div class="flex flex-column flex-center-align flex-center-content my_loader">
+    <div id="getLoader"></div>
+    <span class="item-event cancel" style="color: white; margin-top: 10px; padding-left: 10px; text-align: center">Cancel</span>
+</div>
+
+<form action="<?php echo $url?>/admin/admin/submit.php" method="POST" name="updateHouseForm" method="post" class="no_disp">
     <div class="head">
-        <h2>Add A New House</h2>
+        <h2>Update Details For <span id="houseName"></span></h2>
     </div>
     <div class="body">
         <div class="message_box success no_disp">
@@ -13,8 +18,7 @@
             <span class="label_image">
                 <img src="<?php echo $url?>/assets/images/icons/home.png" alt="house name">
             </span>
-            <input type="text" name="house_name" id="house_name" placeholder="Name of House*" required
-            title="Please enter the name of the house in the field">
+            <input type="text" name="house_name" id="house_name" placeholder="Name of House*" required>
         </label>
         <div>
             <p style="padding-left: 12px">Choose the gender qualified for this house</p>
@@ -39,24 +43,22 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/push-outline.svg" alt="total rooms">
                 </span>
-                <input type="number" name="house_room_total" id="house_room_total" placeholder="Total Number of Rooms*" min="1" required
-                title="Enter the total number of rooms in the house">
+                <input type="number" name="house_room_total" id="house_room_total" placeholder="Total Number of Rooms*" min="1" required>
             </label>
             <label for="head_per_room">
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/people-outline.svg" alt="head per room">
                 </span>
-                <input type="number" name="head_per_room" id="head_per_room" placeholder="Number of heads per room*" min="1" required
-                title="Enter the number of students required to make a room in the house full">
+                <input type="number" name="head_per_room" id="head_per_room" placeholder="Number of heads per room*" min="1" required>
             </label>
         </div>
 
         <div class="flex">
             <label for="submit" class="btn">
-                <button type="submit" name="submit" value="addHouse">Add House</button>
+                <button type="submit" name="submit" value="updateHouse">Update House</button>
             </label>
             <label for="cancel" class="btn">
-                <button type="reset" name="cancel" value="cancel" onclick="$(this).parents('#modal').addClass('no_disp')">Cancel</button>
+                <button type="reset" name="cancel" value="cancel" onclick="$(this).parents('#modal_1').addClass('no_disp')">Cancel</button>
             </label>
         </div>
     </div>

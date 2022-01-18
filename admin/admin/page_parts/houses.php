@@ -68,7 +68,7 @@
 
 <section class="flex flex-wrap flex-center-align">
     <div class="btn">
-        <button onclick="$('#modal_3').removeClass('no_disp')">Add New House</button>
+        <button onclick="$('#modal').removeClass('no_disp')">Add New House</button>
     </div>
     <?php if($_SESSION["real_status"]){?>
     <div class="btn">
@@ -103,7 +103,7 @@
                 <?php 
                     $count = 0;
                     while($row=$res->fetch_assoc()){?>
-                <tr>
+                <tr data-item-id="<?php echo $row["id"] ?>">
                     <td><?php echo ++$count ?></td>
                     <td><?php echo $row["title"] ?></td>
                     <td><?php echo $row["gender"] ?></td>
@@ -127,6 +127,10 @@
                             echo "Not Full";
                         }
                     ?></td>
+                    <td class="flex flex-wrap">
+                        <span class="item-event edit">Edit</span>
+                        <span class="item-event delete">Delete</span>
+                    </td>
                 </tr>
                 <?php } ?>
             </tbody>
@@ -137,3 +141,14 @@
         ?>
     </div>
 </section>
+
+<div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <?php include_once($rootPath."/admin/admin/page_parts/add_house.php")?>
+</div>
+
+<div id="modal_1" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <?php include_once($rootPath."/admin/admin/page_parts/updateHouse.php")?>
+</div>
+
+<script src="<?php echo $url?>/admin/admin/assets/scripts/addHouse.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>

@@ -131,8 +131,9 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                         //unread notifications
                         $result = $connect->query("SELECT *
                             FROM notification
-                            WHERE Read_by NOT LIKE '%$user_username%'
-                            OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')");
+                            WHERE (Read_by NOT LIKE '%$user_username%' AND Audience='all')
+                            OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')
+                            ORDER BY ID DESC");
                         $total += $result->num_rows;
 
                         //new replies
@@ -261,17 +262,13 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
         </section>
     </div>
 
-    <div id="modal_3" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-        <?php include_once($rootPath."/admin/admin/page_parts/add_house.php")?>
-    </div>
-
     <div id="gen_del" class="modal_yes_no fixed flex flex-center-content flex-center-align form_modal_box no_disp">
         <div class="yes_no_container">
             <div class="body">
                 <p id="warning_content">Do you want to delete?</p>
             </div>
 
-            <form action="<?php echo $url?>/admin/admin/submit.php" class="no_disp" name="yes_no_form" id="yes_no_form">
+            <form action="<?php echo $url?>/admin/submit.php" class="no_disp" name="yes_no_form" id="yes_no_form">
                 <input type="hidden" name="sid">
                 <input type="hidden" name="mode">
                 <input type="hidden" name="table">

@@ -331,6 +331,7 @@ function fileUpload(file_element, form_element, submit_element, messageBox = tru
             }            
         },
         success: function(text){
+            $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
             if(text == "success" || text.includes("success")){
                 response = true;
             }else{
@@ -416,6 +417,7 @@ function fileUpload(file_element, form_element, submit_element, messageBox = tru
             }            
         },
         success: function(text){
+            $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
             text = JSON.parse(JSON.stringify(text));
 
             if(text["status"] == "success" || text["status"].includes("success")){
@@ -501,6 +503,7 @@ function formSubmit(form_element, submit_element, messageBox = true){
             }
         },
         success: function(text){
+            $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
             if(text == "success" || text.includes("success")){
                 response = true;
             }else{
@@ -584,6 +587,7 @@ function formSubmit(form_element, submit_element, messageBox = true){
             }
         },
         success: function(text){
+            $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
             text = JSON.parse(JSON.stringify(text));
 
             if(text["status"] == "success" || text["status"].includes("success")){

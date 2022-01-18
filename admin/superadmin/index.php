@@ -233,7 +233,7 @@
                 <p id="warning_content">Do you want to delete?</p>
             </div>
 
-            <form action="<?php echo $url?>/admin/superadmin/submit.php" class="no_disp" name="yes_no_form" id="yes_no_form">
+            <form action="<?php echo $url?>/admin/submit.php" class="no_disp" name="yes_no_form" id="yes_no_form">
                 <input type="hidden" name="sid">
                 <input type="hidden" name="mode">
                 <input type="hidden" name="table">

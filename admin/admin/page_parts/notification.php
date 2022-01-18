@@ -118,7 +118,7 @@
 <?php
     $result = $connect->query("SELECT *
         FROM notification
-        WHERE Read_by NOT LIKE '%$user_username%'
+        WHERE (Read_by NOT LIKE '%$user_username%' AND Audience='all')
         OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')
         ORDER BY ID DESC");
 

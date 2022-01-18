@@ -50,6 +50,14 @@
     </div>
 </section>
 
+<?php if($_SESSION["real_status"]){?>
+<section class="flex flex-wrap flex-center-align"> 
+    <div class="btn">
+        <button>Generate Report</button>
+    </div>
+</section>
+ <?php } ?>
+
 <section class="section_container allocation flex-column">
     <div class="head" style="align-self: center">
         <h2>Boarding Students</h2>

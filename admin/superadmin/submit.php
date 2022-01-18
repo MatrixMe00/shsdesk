@@ -129,42 +129,6 @@
                     echo "error";
                 }
             }
-        }elseif($submit == "yes_no_submit" || $submit == "yes_no_submit_ajax"){
-            $sid = $_REQUEST["sid"];
-            $mode = $_REQUEST["mode"];
-            $table = $_REQUEST["table"];
-
-            if($mode == "activate"){
-                $activate = 1;
-            }elseif($mode == "deactivate"){
-                $activate = 0;
-            }
-
-            //sql statement
-            if($mode == "delete"){
-                $sql = "DELETE FROM $table 
-                WHERE id=$sid" or die($connect->error);
-            }elseif($mode == "activate" || $mode == "deactivate"){
-                $sql = "UPDATE $table 
-            SET Active = $activate
-            WHERE id=$sid" or die($connect->error);
-            }
-            
-            //responses
-            if($connect->query($sql)){
-                if($submit == "yes_no_submit"){
-                    //redirect to previous page
-                    $location = $_SERVER["HTTP_REFERER"];
-
-                    header("location: $location");
-                }else{
-                    echo "update-success";
-                }
-                
-            }else{
-                echo "update-error";
-            }
-
         }elseif($submit == "make_announcement" || $submit == "make_announcement_ajax"){
             //retrieve needed data
             $title = $connect->real_escape_string($_REQUEST["title"]);

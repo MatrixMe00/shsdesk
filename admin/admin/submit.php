@@ -252,6 +252,50 @@
 
             echo $message;
             
+        }elseif($submit == "updateHouse" || $submit == "updateHouse_ajax"){
+            $house_name = $_REQUEST["house_name"];
+            $gender = $_REQUEST["gender"];
+            $house_room_total = $_REQUEST["house_room_total"];
+            $head_per_room = $_REQUEST["head_per_room"];
+            $id = $_REQUEST["id"];
+
+            $message = "";
+
+            if(empty($house_name)){
+                $message = "no-house-name";
+            }elseif(empty($gender)){
+                $message = "no-gender";
+            }elseif(empty($house_room_total)){
+                $message = "room-total-empty";
+            }elseif(intval($house_room_total) <= 0){
+                $message = "room-zero";
+            }elseif(empty($head_per_room)){
+                $message = "head-total-empty";
+            }elseif(intval($head_per_room) <= 0){
+                $message = "head-zero";
+            }else{
+                //query into database
+                $sql = "UPDATE houses SET title=?, totalRooms=?, headPerRoom=?, gender=?
+                WHERE id=?";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("ssssi",$house_name, $house_room_total, $head_per_room, $gender,$id);
+                $stmt->execute();
+
+                $message = "success";
+            }
+
+            echo $message;
+            
+        }elseif($submit == "fetchHouseDetails"){
+            $id = $_REQUEST["id"];
+            $result = fetchData("*","houses","id=$id");
+            if($result == "empty"){
+                $result = array("status" => "error");
+            }else{
+                $result += array("status" => "success");
+            }
+
+            echo json_encode($result);
         }elseif($submit == "exeat_request" || $submit == "exeat_request_ajax"){
             $student_index = $_REQUEST["student_index"];
             $exeat_town = $_REQUEST["exeat_town"];

@@ -39,6 +39,14 @@
     </div>
 </section>
 
+<?php if($_SESSION["real_status"]){?>
+<section class="flex flex-wrap flex-center-align"> 
+    <div class="btn">
+    <button name="submit" value="request_enrol" class="request_btn">Request Report</button>
+    </div>
+</section>
+ <?php } ?>
+
 <section id="content">
     <?php 
         $sql = "SELECT DISTINCT c.*, e.enrolDate, e.enrolCode
@@ -51,9 +59,6 @@
         if($res->num_rows > 0){
     ?>
     <div class="head">
-        <div class="btn">
-            <button name="submit" value="request_enrol" class="request_btn">Request Report</button>
-        </div>
         <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
             <div class="flex flex-center-align">
                 <label for="search" style="width: 80%">

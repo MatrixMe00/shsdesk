@@ -309,7 +309,7 @@ $(".notif_box.unread").mouseleave(function(){
             data: dataString,
             type: "get",
             dataType: "text",
-            async: false,
+            async: true,
             success: function (text){
                 if(text == "success"){
                     //mark as read box
