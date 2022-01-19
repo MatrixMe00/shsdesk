@@ -117,6 +117,11 @@
             $contact = $_POST["contact"];
             $username = $_POST["username"];
 
+            if(strlen($contact) < 10){
+                echo "Invalid contact number presented";
+                exit(1);
+            }
+
             if($fullname != $user_details["fullname"] || $email != $user_details["email"] ||
                $contact != $user_details["contact"] || $username != $user_details["username"] ){
                 $sql = "UPDATE admins_table SET fullname=?, email=?, contact=?, username=? WHERE user_id = $user_id";
@@ -133,10 +138,10 @@
 
                         //update primary user table
                         if($query->num_rows > 0){
-                            $sql = "UPDATE schools SET techName=?, email=?, techContact=? 
-                            WHERE id=$user_school_id";
+                            $sql = "UPDATE schools SET techName=?, techContact=? 
+                            WHERE id=$user_school_id AND techName='".$user_details["fullname"]."'";
                             $stmt = $connect->prepare($sql);
-                            $stmt->bind_param("sss", $fullname, $email, $contact);
+                            $stmt->bind_param("ss", $fullname, $contact);
                             $stmt->execute();
                         }
                     }
@@ -147,6 +152,57 @@
             }else{
                 echo "no-change";
             }
+        }elseif($submit == "addAdmin" || $submit == "addAdmin_ajax"){
+            $fullname = $_POST["fullname"];
+            $email = $_POST["email"];
+            $contact = $_POST["contact"];
+            $role = $_POST["role"];
+
+            if(isset($_POST["username"]))
+                $username = $_POST["username"];
+            else
+                $username = "New User";
+
+            if(isset($_POST["password"]))
+                $password = $_POST["password"];
+            else
+                $password = MD5("Password@1");
+
+            if(isset($_POST["school"])){
+                $school = $_POST["school"];
+
+                if($school == "NULL" || $school == NULL){
+                    $school = null;
+                }
+            }else{
+                $school = $user_school_id;
+            }
+
+            $message = "";
+
+            if(empty($fullname)){
+                $message = "Please provide a full name";
+            }elseif(empty($email)){
+                $message = "Please provide an email for user";
+            }elseif(empty($contact)){
+                $message = "No contact detail provided";
+            }elseif(strlen($contact) < 10){
+                $message = "Contact number is invalid";
+            }elseif(empty($role)){
+                $message = "No role has been set";
+            }else{
+                $sql = "INSERT INTO admins_table (fullname, username, email, password, school_id, contact, role) VALUES (?,?,?,?,?,?,?)";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("ssssisi", $fullname, $username,$email, $password, $school_id, $contact, $role);
+
+                if($stmt->execute()){
+                    $message = "success";
+                }else{
+                    $message = "insert-error";
+                }
+            }
+
+            echo $message;
         }elseif($submit == "change_password" || $submit == "change_password_ajax"){
             $prev_password = $_POST["prev_password"];
             $new_password = $_POST["new_password"];

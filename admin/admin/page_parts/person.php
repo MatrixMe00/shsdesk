@@ -5,10 +5,10 @@
 ?>
 <section class="page_setup" id="users">
     <div class="head">
-        <h3>Users on System</h3>
+        <h3>Users on your System</h3>
     </div>
     <?php 
-        $result = $connect->query("SELECT a.fullname, a.username, a.role, a.adYear, s.schoolName, r.title AS roleTitle 
+        $result = $connect->query("SELECT a.*, s.schoolName, r.title AS roleTitle 
         FROM admins_table a JOIN schools s
         ON a.school_id = s.id
         JOIN roles r
@@ -30,17 +30,24 @@
                 </div>
                 <?php } ?>
                 <div class="role">
-                    <span><?php echo $row["roleTitle"]?></span>
+                    <span><?php echo formatName($row["roleTitle"])?></span>
                 </div>
                 <div class="member_since">
-                    <span>Since <?php echo date("dS F, Y", strtotime($row["adYear"]))?></span>
+                    <span>Added on <?php echo date("jS F, Y", strtotime($row["adYear"]))?></span>
                 </div>
             </div>
             <div class="foot">
-                <span class="item-event">Edit</span>
-                <span class="item-event">Activate</span>
-                <span class="item-event">Delete</span>
-                <span class="item-event">Promote</span>
+                <?php if($user_id == $row["user_id"]){ ?>
+                <span class="item-event edit">Edit</span>
+                <?php } ?>
+                <span class="item-event"><?php 
+                    if($row["Active"] == true && $user_id != $row["user_id"]){
+                        echo "Deactivate";
+                    }elseif($user_id != $row["user_id"]){
+                        echo "Activate";
+                    }
+                ?></span>
+                <span class="item-event delete" data-user-id="<?php echo $row["user_id"]?>">Delete</span>
             </div>
         </div>
         <?php } ?>
@@ -50,14 +57,17 @@
         <p>No users were found in the system</p>
     </div>
     <?php }?>
+    <?php if($user_details["role"] == 3){ ?>
     <div class="base-foot">
         <div class="btn">
-            <button>Add a new user</button>
+            <button onclick="$('#adminAdd').removeClass('no_disp')" class="cyan">Add a new user</button>
         </div>
     </div>
+    <?php } ?>
 </section>
 
-    <form action="<?php echo $url?>/admin/submit.php" method="post" class="" name="user_account_form">
+<div id="editAccount" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+<form action="<?php echo $url?>/admin/submit.php" method="post" class="" name="user_account_form">
         <div class="head">
             <h2>My Account</h2>
         </div>
@@ -92,7 +102,7 @@
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="username">
                     </span>
-                    <input type="text" name="username" id="username" class="text_input" placeholder="Enter your username" minlength="8" 
+                    <input type="text" name="username" id="username" class="text_input" placeholder="Enter your username" minlength="5" 
                     autocomplete="off" value="<?php echo $user_details["username"] ?>">
                 </label>
             </div>
@@ -100,8 +110,19 @@
                 <label for="submit" class="btn">
                     <button type="submit" name="submit" value="user_detail_update">Update</button>
                 </label>
+                <label for="cancel" class="btn">
+                    <button name="cancel" onclick="$('#editAccount').addClass('no_disp')">Cancel</button>
+                </label>
             </div>
         </div>
     </form>
+</div>
+    
+    <?php if($user_details["role"] == 3){ ?>
+    <div id="adminAdd" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+        <?php require_once($rootPath."/admin/adminAdd.php") ?>
+    </div>
+    <?php } ?>
 
     <script type="text/javascript" src="<?php echo $url?>/admin/assets/scripts/person.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
