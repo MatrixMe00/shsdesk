@@ -96,7 +96,7 @@
                     <td>Rooms</td>
                     <td>Heads Per Room</td>
                     <td>Occupants</td>
-                    <td>Status</td>
+                    <!-- <td>Status</td> -->
                 </tr>
             </thead>
             <tbody>
@@ -120,13 +120,13 @@
                             echo $tot;
                         ?>
                     </td>
-                    <td><?php 
+                    <!-- <td><?php 
                         if($tot == ($row["headPerRoom"] * $row["totalRooms"])){
                             echo "Full";
                         }else{
                             echo "Not Full";
                         }
-                    ?></td>
+                    ?></td> -->
                     <td class="flex flex-wrap">
                         <span class="item-event edit">Edit</span>
                         <span class="item-event delete">Delete</span>

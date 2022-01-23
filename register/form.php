@@ -66,6 +66,9 @@
 
             echo "<p>Please go back and complete the form</p>";
             exit(1);
+        }elseif(fetchData("email","schools","email='$school_email'") != "empty"){
+            echo "<p>The email provided is already in use by another school admin. Please provide your proper school email</p>";
+            exit(1);
         }elseif(empty($description) || $description == null || $description == ""){
             echo "<p>Please provide a brief description of your school</p>";
             

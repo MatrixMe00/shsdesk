@@ -275,14 +275,12 @@
                                 LIMIT 1";
                             $result = $connect->query($sql);
 
-                            $hid = $result->fetch_assoc()["houseID"];
-
                             //fetch student details for entry
                             $student_details = fetchData("*", "cssps", "indexNumber=$ad_index");
 
                             if($result->num_rows == 1){
                                 //retrieve house id
-                                $id = $hid;
+                                $id = $result->fetch_assoc()["houseID"];
 
                                 $next_room = 0;
 
@@ -317,8 +315,10 @@
                                     VALUES(?,?,?,?,?,?,?)";
                                 $stmt = $connect->prepare($sql);
                                 $stmt->bind_param("sississ", $student_details["indexNumber"], $student_details["schoolID"], $student_details["Lastname"], $student_details["Othernames"],
-                                    $house[0]["id"], $student_details["Gender"], $student_details["boardingStatus"]);
+                                    $house[0], $student_details["Gender"], $student_details["boardingStatus"]);
                                 $stmt->execute();
+                            }else{
+                                $message = "error";
                             }
                         }
                     }

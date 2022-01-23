@@ -2,9 +2,15 @@ function payWithPaystack(){
     //0551234987
     cust_amount = $("#pay_amount").val().split(" ");
     cust_amount = parseInt(cust_amount[1]) * 100;
+    cust_email = $("form[name=paymentForm] .body #pay_email").val();
+
+    if(cust_email == ""){
+        cust_email = "successinnovativehub@gmail.com";
+    }
+
     var handler = PaystackPop.setup({
         key: 'pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca',
-        email: $("form[name=paymentForm] .body #pay_email").val(),
+        email: cust_email,
         amount: cust_amount,
         currency: "GHS",
         // ref: ,

@@ -4,7 +4,7 @@
     <div class="head">
         <h2>Add New User</h2>
     </div>
-    <p style="margin: 10px auto; padding: 5px; border: thin solid #eee; text-align: center;" id="pMessage">You are seeing this form because you are currently registered as a new user</p>
+    <p style="margin: 10px auto; padding: 5px; border: thin solid #eee; text-align: center;" id="pMessage">Please fill out the spaces below</p>
     <div class="body">
         <label class="flex-wrap flex-column" style="align-items: flex-start;" for="fullname">
             <span class="label_title" style="margin-right: 5px;">Provide full name</span>

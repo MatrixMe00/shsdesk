@@ -51,7 +51,7 @@
             </a>
         </div>
         <div class="member_div">
-            <a href="<?php echo $url?>/customPDFGenerator.php">
+            <a href="<?php echo $url?>/admin/admin/assets/files/default files/Admission_Form__Demo.pdf">
                 <button id="btn_ad">Admission letter is ready for download | Download [PDF]</button>
             </a>
         </div>

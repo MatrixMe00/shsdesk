@@ -124,38 +124,45 @@
 
             if($fullname != $user_details["fullname"] || $email != $user_details["email"] ||
                $contact != $user_details["contact"] || $username != $user_details["username"] ){
-                $sql = "UPDATE admins_table SET fullname=?, email=?, contact=?, username=? WHERE user_id = $user_id";
-                $stmt = $connect->prepare($sql);
-                $stmt->bind_param("ssss", $fullname, $email, $contact, $username);
+                //check if username already exists
+                $username_exist = fetchData("username", "admins_table", "username='$username'");
 
-                if($stmt->execute()){
-                    //cascade data in schools table if its an IT person
-                    if($user_details["role"] == 3){
-                        $sql = "SELECT techName, email, techContact
-                        FROM schools WHERE id=$user_school_id";
+                if($username_exist == "empty"){
+                    $sql = "UPDATE admins_table SET fullname=?, email=?, contact=?, username=? WHERE user_id = $user_id";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("ssss", $fullname, $email, $contact, $username);
 
-                        $query = $connect->query($sql);
+                    if($stmt->execute()){
+                        //cascade data in schools table if its an IT person
+                        if($user_details["role"] == 3){
+                            $sql = "SELECT techName, email, techContact
+                            FROM schools WHERE id=$user_school_id";
 
-                        //update primary user table
-                        if($query->num_rows > 0){
-                            $sql = "UPDATE schools SET techName=?, techContact=? 
-                            WHERE id=$user_school_id AND techName='".$user_details["fullname"]."'";
-                            $stmt = $connect->prepare($sql);
-                            $stmt->bind_param("ss", $fullname, $contact);
-                            $stmt->execute();
+                            $query = $connect->query($sql);
+
+                            //update primary user table
+                            if($query->num_rows > 0){
+                                $sql = "UPDATE schools SET techName=?, techContact=? 
+                                WHERE id=$user_school_id AND techName='".$user_details["fullname"]."'";
+                                $stmt = $connect->prepare($sql);
+                                $stmt->bind_param("ss", $fullname, $contact);
+                                $stmt->execute();
+                            }
                         }
+                        echo "success";
+                    }else{
+                        echo "update-error";
                     }
-                    echo "success";
                 }else{
-                    echo "update-error";
-                }
+                    echo "Selected username already exists. Please enter a new username";
+                }                
             }else{
                 echo "no-change";
             }
         }elseif($submit == "addAdmin" || $submit == "addAdmin_ajax"){
             $fullname = $_POST["fullname"];
             $email = $_POST["email"];
-            $contact = $_POST["contact"];
+            $contact = $_POST["user_contact"];
             $role = $_POST["role"];
 
             if(isset($_POST["username"]))
@@ -191,9 +198,28 @@
             }elseif(empty($role)){
                 $message = "No role has been set";
             }else{
-                $sql = "INSERT INTO admins_table (fullname, username, email, password, school_id, contact, role) VALUES (?,?,?,?,?,?,?)";
+                //insert current role if it does not exist in database
+                if(strtolower($role) == "others"){
+                    $new_role = $_REQUEST["other_role"];
+                    $price = 0;
+                    $access = 1;
+
+                    $sql = "INSERT INTO roles (title, price, access, school_id) VALUES (?,?,?,?)";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("siii", $new_role, $price, $access, $user_school_id);
+                    if($stmt->execute()){
+                        //grab the current id for this role
+                        $role = fetchData("id","roles","title='$new_role' AND school_id=$user_school_id")["id"];
+                    }else{
+                        echo "Problem adding new role";
+                        exit(1);
+                    }                    
+                }
+
+                $date_added = date("Y-m-d H:i:s");
+                $sql = "INSERT INTO admins_table (fullname, username, email, password, school_id, contact, role, adYear) VALUES (?,?,?,?,?,?,?,?)";
                 $stmt = $connect->prepare($sql);
-                $stmt->bind_param("ssssisi", $fullname, $username,$email, $password, $school_id, $contact, $role);
+                $stmt->bind_param("ssssisis", $fullname, $username,$email, $password, $user_school_id, $contact, $role, $date_added);
 
                 if($stmt->execute()){
                     $message = "success";
@@ -382,12 +408,18 @@
 
             //sql statement
             if($mode == "delete"){
-                $sql = "DELETE FROM $table 
-                WHERE id=$sid" or die($connect->error);
+                if($table != "admins_table"){
+                    $sql = "DELETE FROM $table 
+                        WHERE id=$sid" or die($connect->error);
+                }else{
+                    $sql = "DELETE FROM $table 
+                        WHERE user_id=$sid" or die($connect->error);
+                }
+                
             }elseif($mode == "activate" || $mode == "deactivate"){
                 $sql = "UPDATE $table 
-            SET Active = $activate
-            WHERE id=$sid" or die($connect->error);
+                    SET Active = $activate
+                    WHERE id=$sid" or die($connect->error);
             }
             
             //responses

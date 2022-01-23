@@ -13,7 +13,7 @@
         ON a.school_id = s.id
         JOIN roles r
         ON a.role = r.id 
-        WHERE s.id = $user_school_id AND r.access = TRUE") or die($connect->error);
+        WHERE s.id = $user_school_id AND r.access = TRUE AND a.username!='New User'") or die($connect->error);
 
         if($result->num_rows > 0){
     ?>
@@ -47,7 +47,9 @@
                         echo "Activate";
                     }
                 ?></span>
+                <?php if($row["user_id"] != $user_id){?>
                 <span class="item-event delete" data-user-id="<?php echo $row["user_id"]?>">Delete</span>
+                <?php }?>
             </div>
         </div>
         <?php } ?>
@@ -57,14 +59,71 @@
         <p>No users were found in the system</p>
     </div>
     <?php }?>
-    <?php if($user_details["role"] == 3){ ?>
+</section>
+
+<?php 
+    $result = $connect->query("SELECT a.*, s.schoolName, r.title AS roleTitle 
+        FROM admins_table a JOIN schools s
+        ON a.school_id = s.id
+        JOIN roles r
+        ON a.role = r.id 
+        WHERE s.id = $user_school_id AND r.access = TRUE AND a.username='New User'") or die($connect->error);
+
+    if($result->num_rows > 0){
+?>
+<section class="page_setup" id="users">
+    <div class="head">
+        <h3>Users yet to register on your System</h3>
+    </div>
+    <div class="middle">
+        <?php while($row = $result->fetch_assoc()){?>
+        <div class="user_container flex flex-column">
+            <div class="top">
+                <h4><?php echo $row["fullname"] ?></h4>
+            </div>
+            <div class="desc flex flex-wrap">
+                <?php if($row["schoolName"] != null){ ?>
+                <div class="school_name">
+                    <span><?php echo $row["schoolName"] ?></span>
+                </div>
+                <?php } ?>
+                <div class="role">
+                    <span><?php echo formatName($row["roleTitle"])?></span>
+                </div>
+                <div class="member_since">
+                    <span>Added on <?php echo date("jS F, Y", strtotime($row["adYear"]))?></span>
+                </div>
+            </div>
+            <div class="foot">
+                <?php if($user_id == $row["user_id"]){ ?>
+                <span class="item-event edit">Edit</span>
+                <?php } ?>
+                <span class="item-event"><?php 
+                    if($row["Active"] == true && $user_id != $row["user_id"]){
+                        echo "Deactivate";
+                    }elseif($user_id != $row["user_id"]){
+                        echo "Activate";
+                    }
+                ?></span>
+                <?php if($row["user_id"] != $user_id){?>
+                <span class="item-event delete" data-user-id="<?php echo $row["user_id"]?>">Delete</span>
+                <?php }?>
+            </div>
+        </div>
+        <?php } ?>
+    </div>
+</section>
+<?php } ?>
+
+<?php if($user_details["role"] == 3){ ?>
+<section>
     <div class="base-foot">
         <div class="btn">
             <button onclick="$('#adminAdd').removeClass('no_disp')" class="cyan">Add a new user</button>
         </div>
     </div>
-    <?php } ?>
 </section>
+<?php } ?>
 
 <div id="editAccount" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
 <form action="<?php echo $url?>/admin/submit.php" method="post" class="" name="user_account_form">

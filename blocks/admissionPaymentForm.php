@@ -21,8 +21,8 @@
                                     <span class="label_image">
                                         <img src="<?php echo $url?>/assets/images/icons/mail-outline.svg" alt="email">
                                     </span>
-                                    <input type="email" name="pay_email" id="pay_email" class="text_input" placeholder="Your Email"
-                                    title="Provide an email so that secured information about your transaction can be passed there" autocomplete="off" required>
+                                    <input type="email" name="pay_email" id="pay_email" class="text_input" placeholder="Your Email [optional]"
+                                    title="Provide an email so that secured information about your transaction can be passed there" autocomplete="off">
                                 </label>
                             </div>
                             

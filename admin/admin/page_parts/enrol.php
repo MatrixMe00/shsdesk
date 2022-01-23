@@ -39,7 +39,7 @@
     </div>
 </section>
 
-<?php if($_SESSION["real_status"]){?>
+<?php if(isset($_SESSION["real_status"]) && $_SESSION["real_status"]){?>
 <section class="flex flex-wrap flex-center-align"> 
     <div class="btn">
         <button name="submit" value="enrolment" class="request_btn cyan">Generate Report</button>

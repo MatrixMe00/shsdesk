@@ -16,6 +16,7 @@ $("form").submit(function(e){
         },4000);
     }else{
         html = $("#pMessage").html();
+        message = "";
 
         if(result == "wrong-email-fullname"){
            message = "Email or fullname provided is wrong. Please check and try again";
@@ -27,6 +28,8 @@ $("form").submit(function(e){
             message = "Your data could not be updated. Please try again later or contact the admin";
         }else if(result == "cannot login"){
             message = "Update was unsuccessful. Contact Admin for help";
+        }else{
+            message = result;
         }
 
         $("#pMessage").html(message);

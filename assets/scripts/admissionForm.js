@@ -269,7 +269,7 @@ $("#payment_button, .enrol_button").click(function(){
 
 //enabling the payment button when needed info is available
 $("#payment_form form input").keyup(function(){
-    if(($("#pay_fullname").val() != "" && $("#pay_phone").val() != "" && $("#pay_email").val() != "") || $("#pay_reference").val() != ""){
+    if(($("#pay_fullname").val() != "" && $("#pay_phone").val() != "") || $("#pay_reference").val() != ""){
         $("#payment_form form button[name=submit]").prop("disabled",false);
         $("#payment_form form label.btn_label img").prop("src",url + "/assets/images/icons/lock-open-outline.svg");
     }else{

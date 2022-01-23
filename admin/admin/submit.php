@@ -31,45 +31,52 @@
                 }elseif($new_password == $old_password){
                     echo "same-password";
                 }else{
-                    //update the content
-                    $sql = "UPDATE admins_table SET username=?, password=?, new_login=0 WHERE email=? AND fullname=?";
-                    $res = $connect->prepare($sql);
+                    //check if the username already exists in database
+                    $user_exist = fetchData("username","admins_table","username='$new_username'");
 
-                    //hash password
-                    $new_password = MD5($new_password);
-                    
-                    $res->bind_param("ssss",$new_username,$new_password,$email,$fullname);
+                    if($user_exist == "empty"){
+                        //update the content
+                        $sql = "UPDATE admins_table SET username=?, password=?, new_login=0 WHERE email=? AND fullname=?";
+                        $res = $connect->prepare($sql);
 
-                    if($res->execute()){
-                        //grab the time now
-                        $now = date('Y-m-d H:i:s');
+                        //hash password
+                        $new_password = MD5($new_password);
+                        
+                        $res->bind_param("ssss",$new_username,$new_password,$email,$fullname);
 
-                        //create login awareness
-                        $sql = "INSERT INTO login_details (user_id, login_time) VALUES (".$row['user_id'].", '$now')";
+                        if($res->execute()){
+                            //grab the time now
+                            $now = date('Y-m-d H:i:s');
 
-                        if($connect->query($sql)){
-                            //update user session id
-                            $_SESSION['user_login_id'] = $row['user_id'];
+                            //create login awareness
+                            $sql = "INSERT INTO login_details (user_id, login_time) VALUES (".$row['user_id'].", '$now')";
 
-                            //get this login id
-                            $sql = "SELECT MAX(id) AS id FROM login_details WHERE user_id=".$row['user_id'];
-                            $res = $connect->query($sql);
+                            if($connect->query($sql)){
+                                //update user session id
+                                $_SESSION['user_login_id'] = $row['user_id'];
 
-                            //set as session's login id
-                            $_SESSION['login_id'] = $res->fetch_assoc()['id'];
+                                //get this login id
+                                $sql = "SELECT MAX(id) AS id FROM login_details WHERE user_id=".$row['user_id'];
+                                $res = $connect->query($sql);
+
+                                //set as session's login id
+                                $_SESSION['login_id'] = $res->fetch_assoc()['id'];
+                            }else{
+                                echo 'cannot login';
+                            }
+
+                            //reload or redirect admin page
+                            if($submit == "new_user_update"){
+                                $location = $_SERVER["HTTP_REFERER"];
+                                header("location:$location");
+                            }else{
+                                echo "success";
+                            }
                         }else{
-                            echo 'cannot login';
-                        }
-
-                        //reload or redirect admin page
-                        if($submit == "new_user_update"){
-                            $location = $_SERVER["HTTP_REFERER"];
-                            header("location:$location");
-                        }else{
-                            echo "success";
+                            echo "update-error";
                         }
                     }else{
-                        echo "update-error";
+                        echo "Username already exist. Please select a new username";
                     }
                 }
             }else{

@@ -195,7 +195,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                     </div>
                 </div>
             </div>
-            <div class="menu">
+            <!-- <div class="menu">
                 <div class="head active">
                     <span>Documents</span>
                 </div>
@@ -215,7 +215,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                         <span>Make a Report</span>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class="menu">
                 <div class="head">
                     <span>Settings</span>
