@@ -1,11 +1,11 @@
 <?php include_once("../includes/session.php"); ?>
 
-<form action="<?php echo $url?>/admin/submit.php" method="post" class="fixed" style="overflow: auto" name="addAdmin">
+<form action="<?php echo $url?>/admin/submit.php" method="post" class="fixed" style="overflow: hidden" name="addAdmin">
     <div class="head">
         <h2>Add New User</h2>
     </div>
     <p style="margin: 10px auto; padding: 5px; border: thin solid #eee; text-align: center;" id="pMessage">Please fill out the spaces below</p>
-    <div class="body">
+    <div class="body" style="max-height: 50vh; overflow: auto">
         <label class="flex-wrap flex-column" style="align-items: flex-start;" for="fullname">
             <span class="label_title" style="margin-right: 5px;">Provide full name</span>
             <input style="width: 100%" type="text" name="fullname" id="fullname" required title="Enter full name that the individual should use for registration"

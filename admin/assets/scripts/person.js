@@ -58,6 +58,35 @@ $("#users .item-event.edit").click(function(){
 	$("#editAccount").removeClass("no_disp");
 })
 
+$("#users .item-event.dev").click(function(){
+    //retrieve data to deliver results
+    dataString = "submit=retrieveDetails&id=" + $(this).attr("data-user-id");
+    
+    $.ajax({
+        url: $("form[name=addAdmin]").attr("action"),
+        data: dataString,
+        dataType: "json",
+        success: function (json){
+            json = JSON.parse(JSON.stringify(json));
+
+            if(json["status"] == "success"){
+                //fill table with data
+                $("form #fullname").val(json["fullname"]);
+                $("form #user_id").val(json["user_id"]);
+                $("form #email").val(json["email"]);
+                $("form #contact").val(json["contact"]);
+                $("form #username").val(json["username"]);
+            }else{
+                alert("User Undefined");
+                $("#editAccount").addClass("no_disp");
+            }
+        },
+        error: function (){
+            alert("Error communicating with server. Try again after a page refresh");
+        }
+    })
+})
+
 $("form[name=addAdmin]").submit(function(e){
     e.preventDefault();
 
@@ -77,27 +106,46 @@ $("form[name=addAdmin]").submit(function(e){
     }else{
         html = $("#pMessage").html();
         message = "";
-
-        if(result == "wrong-email-fullname"){
-           message = "Email or fullname provided is wrong. Please check and try again";
-        }else if(result == "same-username"){
-            message = "You cannot use the same username";
-        }else if(result == "same-password"){
-            message = "You cannot use the same password";
-        }else if(result == "update-error"){
-            message = "Your data could not be updated. Please try again later or contact the admin";
-        }else if(result == "cannot login"){
-            message = "Update was unsuccessful. Contact Admin for help";
-        }else if(result == "insert-error"){
+        
+        if(result == "insert-error"){
 			message = "Problem adding user to your database. Reload page and try again";
 		}else{
             message = result;
         }
 
-        $("#pMessage").html(message);
+        $("#pMessage").html(message).addClass("danger");
 
         setTimeout(function(){
-            $("#pMessage").html(html);
+            $("#pMessage").html(html).removeClass("danger");
         },5000);
     }
+})
+
+//activate or deactivate a user
+$(".item-event.status").click(function(){
+    me = $(this);
+    text = $(this).html();
+    user_id = $(this).attr("data-user-id");
+
+    if(text.toLowerCase() == "activate"){
+        stat = 1;
+    }else{
+        stat = 0;
+    }
+
+    $.ajax({
+        url: $("form[name=user_account_form]").prop("action"),
+        data: "submit=status_modify&stat=" + stat + "&user_id=" + user_id,
+        cache: false,
+        success: function (){
+            if(text.toLowerCase() == "activate"){
+                $(me).html("Deactivate");
+            }else{
+                $(me).html("Activate");
+            }
+        },
+        error: function (){
+            alert("User status could not be modified. Try again later");
+        }
+    })
 })

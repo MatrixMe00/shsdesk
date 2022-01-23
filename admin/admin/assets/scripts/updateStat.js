@@ -32,10 +32,10 @@ $("form").submit(function(e){
             message = result;
         }
 
-        $("#pMessage").html(message);
+        $("#pMessage").html(message).addClass("danger");
 
         setTimeout(function(){
-            $("#pMessage").html(html);
+            $("#pMessage").html(html).removeClass("danger");
         },5000);
     }
 })

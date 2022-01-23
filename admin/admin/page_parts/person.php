@@ -40,14 +40,16 @@
                 <?php if($user_id == $row["user_id"]){ ?>
                 <span class="item-event edit">Edit</span>
                 <?php } ?>
-                <span class="item-event"><?php 
+                <?php if($user_details["role"] <= 4){ ?>
+                <span class="item-event status" data-user-id="<?php echo $row["user_id"]?>"><?php 
                     if($row["Active"] == true && $user_id != $row["user_id"]){
                         echo "Deactivate";
                     }elseif($user_id != $row["user_id"]){
                         echo "Activate";
                     }
                 ?></span>
-                <?php if($row["user_id"] != $user_id){?>
+                <?php } ?>
+                <?php if($row["user_id"] != $user_id && $user_details["role"] == 3){?>
                 <span class="item-event delete" data-user-id="<?php echo $row["user_id"]?>">Delete</span>
                 <?php }?>
             </div>
@@ -98,7 +100,8 @@
                 <?php if($user_id == $row["user_id"]){ ?>
                 <span class="item-event edit">Edit</span>
                 <?php } ?>
-                <span class="item-event"><?php 
+                <span class="item-event status" data-user-id="<?php echo $row["user_id"]?>">
+                <?php 
                     if($row["Active"] == true && $user_id != $row["user_id"]){
                         echo "Deactivate";
                     }elseif($user_id != $row["user_id"]){

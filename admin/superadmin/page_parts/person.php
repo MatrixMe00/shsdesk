@@ -47,9 +47,15 @@
             </div>
             <div class="foot">
                 <?php if($user_details["role"] == 1 || $row["user_id"] == $user_id){?>
-                <span class="item-event edit" data-user-id="<?php echo $row["user_id"]?>">Edit</span>
+                <span class="item-event edit<?php
+                    if($user_details["role"] == 1){
+                        echo " dev";
+                    }
+                ?>" data-user-id="<?php echo $row["user_id"]?>">Edit</span>
                 <?php }?>
-                <span class="item-event"><?php 
+                <?php if(strtolower($row["roleTitle"]) != "developer"){?>
+                <span class="item-event status" data-user-id="<?php echo $row["user_id"]?>">
+                <?php 
                     if($row["Active"] == true && $user_id != $row["user_id"]){
                         echo "Deactivate";
                     }elseif($user_id != $row["user_id"]){
@@ -57,8 +63,9 @@
                     }
                 ?></span>
                 <span class="item-event delete" data-user-id="<?php echo $row["user_id"]?>">Delete</span>
+                <?php }?>
                 <?php if($user_details["role"] == 1){?>
-                <span class="item-event" data-user-id="<?php echo $row["user_id"]?>">Promote</span>
+                <!-- <span class="item-event" data-user-id="<?php echo $row["user_id"]?>">Promote</span> -->
                 <?php }?>
             </div>
         </div>
@@ -105,10 +112,15 @@
                 </div>
             </div>
             <div class="foot">
-                <?php if($user_id == $row["user_id"]){ ?>
-                <span class="item-event edit">Edit</span>
-                <?php } ?>
-                <span class="item-event"><?php 
+                <?php if($user_details["role"] == 1 || $row["user_id"] == $user_id){?>
+                <span class="item-event edit<?php
+                    if($user_details["role"] == 1){
+                        echo " dev";
+                    }
+                ?>" data-user-id="<?php echo $row["user_id"]?>">Edit</span>
+                <?php }?>
+                <span class="item-event status" data-user-id="<?php echo $row["user_id"]?>">
+                <?php 
                     if($row["Active"] == true && $user_id != $row["user_id"]){
                         echo "Deactivate";
                     }elseif($user_id != $row["user_id"]){
@@ -136,6 +148,9 @@
                 <div class="close"><span>&cross;</span></div>
             </div>
             <div class="joint">
+                <?php if($user_details["role"] == 1){?>
+                <input type="hidden" name="user_id" id="user_id">
+                <?php } ?>
                 <label for="fullname">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/id card.png" alt="fullname">

@@ -144,6 +144,7 @@
     $rowCounter = 3;
 
     //send value into selected cells
+    $query = $connect->query($sql);
     while($result=$query->fetch_assoc()){
         foreach ($field_names as $row => $value){
             if($value != $exception_headers[$exceptionCounter]){

@@ -60,9 +60,13 @@ $("form").submit(function(e){
                     message_type = "error";
                     message = "Username entered is invalid or could not be found";
                     time = 10;
+                }else if(html == "not-active"){
+                    message = "Your account has been disabled. Contact admin for more info";
+                    time = 0;
+                    message_type = "error";
                 }else{
                     message_type = "error";
-                    message = "Could not receive response from server, please try again later";
+                    message = html;
                 }
                 messageBoxTimeout("loginForm",message, message_type, time);                      
             },

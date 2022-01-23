@@ -127,6 +127,11 @@
                 //check if username already exists
                 $username_exist = fetchData("username", "admins_table", "username='$username'");
 
+                //for developer, editing another detail
+                if(isset($_REQUEST["user_id"]) && $_REQUEST["user_id"] != null){
+                    $user_id = $_REQUEST["user_id"];
+                }
+
                 if($username_exist == "empty"){
                     $sql = "UPDATE admins_table SET fullname=?, email=?, contact=?, username=? WHERE user_id = $user_id";
                     $stmt = $connect->prepare($sql);
@@ -436,7 +441,35 @@
             }else{
                 echo "update-error";
             }
+        }elseif($submit == "status_modify" || $submit == "status_modify_ajax"){
+            $stat = $_REQUEST["stat"];
+            $id = $_REQUEST["user_id"];
 
+            //modify user active status
+            $sql = "UPDATE admins_table SET Active=? WHERE user_id = ?";
+            $stmt = $connect->prepare($sql);
+            $stmt->bind_param("ii", $stat, $id);
+            $stmt->execute();
+        }elseif($submit == "retrieveDetails"){
+            $id = $_REQUEST["id"];
+
+            $column = "*";
+            $table = "admins_table";
+            $where = "user_id=$id";
+
+            $data = fetchData($column, $table, $where);
+
+            if($data != "empty"){
+                $data += array(
+                    "status" => "success"
+                );
+            }else{
+                $data = array(
+                    "status" => "empty"
+                );
+            }
+
+            echo json_encode($data);
         }
     }else{
         echo "no-submission";

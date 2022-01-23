@@ -99,7 +99,7 @@
 
     <script src="<?php echo $url?>/assets/scripts/form/general.js"></script>
     <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>"></script>
-    <script src="assets/scripts/init.js"></script>
+    <script src="assets/scripts/init.js?v=<?php echo time()?>"></script>
 </body>
 </html>
 <?php 

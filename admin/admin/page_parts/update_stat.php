@@ -1,11 +1,11 @@
     <div class="form_modal_box flex flex-center-align flex-center-content">
         <form action="<?php echo $url?>/admin/admin/submit.php" method="post" 
-        style="width: 80vw; max-height: 80vh; overflow: auto" name="update_new_user">
+        style="width: 80vw; max-height: 80vh; overflow: hidden" name="update_new_user">
             <div class="head">
                 <h2>Change Username and Password</h2>
             </div>
             <p style="margin: 10px auto; padding: 5px; border: thin solid #eee; text-align: center;" id="pMessage">You are seeing this form because you are currently registered as a new user</p>
-            <div class="body">
+            <div class="body" style="max-height: 50vh; overflow: auto">
                 <label class="flex-wrap flex-column" style="align-items: flex-start;" for="fullname">
                     <span class="label_title" style="margin-right: 5px;">Please provide your full name</span>
                     <input style="width: 100%" type="text" name="fullname" id="fullname" required title="Enter your full name you used for registration"
