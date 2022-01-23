@@ -88,6 +88,7 @@
     }
 
     //create a custom header
+
     class MYPDF extends TCPDF {
         // public function Header(){
         //     $image_file = "assets/images/default/thought-catalog-xHaZ5BW9AY0-unsplash.jpg";
@@ -95,12 +96,18 @@
         //     $this->SetTextColor(167, 147, 68);
         //     $this->Image($image_file, 11, 3, 20, 20);
         // }
+        
+        private $name;
+
+        public function setFooterSchoolName($name){
+            $this->name = $name;
+        }
 
         public function Footer(){
             $this->SetY(-10);
             $this->SetFont("", "B", 8);
             $this->Cell($this->GetCharWidth('Page '.$this->getPage()),10,'Page '.$this->getAliasNumPage().' of '.$this->getAliasNbPages(),"T",false, 'L', 0, '', 0, false, 'T', 'M');
-            $this->Cell(0,10,'SHSDesk','T',false, 'C', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0,10,$this->name,'T',false, 'C', 0, '', 0, false, 'T', 'M');
             
         }
     }
@@ -108,18 +115,23 @@
     if(isset($_SESSION["ad_stud_index"]) && !empty($_SESSION["ad_stud_index"])){
         $session_set = false;
         //prevent admin logged in from signing out upon session destroy
-        if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
-            $session_id = $_SESSION["user_login_id"];
-            $login_id = $_SESSION["login_id"];
-            $nav_point = $_SESSION["nav_point"];
-            $session_set = true;
-        }
+        // if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
+        //     $session_id = $_SESSION["user_login_id"];
+        //     $login_id = $_SESSION["login_id"];
+        //     $nav_point = $_SESSION["nav_point"];
+        //     $session_set = true;
+        // }
 
         //create a new pdf document
         $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         //user lastname
         $lastname = $_SESSION["ad_stud_lname"];
+
+        //set footer name with school name
+        $school_name = $_SESSION["ad_school_name"];
+
+        $pdf->setFooterSchoolName($school_name);
 
         //set document information
         $pdf->SetCreator(PDF_CREATOR);
@@ -164,7 +176,6 @@
         $it_name = $_SESSION["ad_it_admin"];
         $box_address = $_SESSION["ad_box_address"];
         $school_phone = remakeNumber($_SESSION["ad_school_phone"]);
-        $school_name = $_SESSION["ad_school_name"];
 
         $html = <<<HTML
         <head>
@@ -299,7 +310,7 @@
         $pdf->Text(20, 210, '');
 
         //destroy session
-        session_destroy();
+        // session_destroy();
 
         //set destroyed admin sessions
         if($session_set){

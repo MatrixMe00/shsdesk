@@ -331,7 +331,13 @@
                     //details for school
                     $_SESSION["ad_school_name"] = $school["schoolName"];
                     $_SESSION["ad_box_address"] = $school["postalAddress"];
-                    $_SESSION["ad_school_phone"] = "+".$school["techContact"];
+
+                    if($school["techContact"][0] != "0" && $school["techContact"] != "+"){
+                        $_SESSION["ad_school_phone"] = "+".$school["techContact"];
+                    }else{
+                        $_SESSION["ad_school_phone"] = $school["techContact"];
+                    }
+                    
                     $_SESSION["ad_school_head"] = $school["headName"];
                     $_SESSION["ad_it_admin"] = $school["techName"];
                     $_SESSION["ad_message"] = $school["admissionPath"];
@@ -480,7 +486,9 @@
 
         if($submit == "getStudentIndex" || $submit == "getStudentIndex_ajax"){
             $index_number = $_GET["index_number"];
-            $school_id = $_GET["school_id"];
+
+            if(isset($_GET["school_id"]))
+                $school_id = $_GET["school_id"];
 
             $sql = "SELECT *
                     FROM cssps
@@ -491,10 +499,21 @@
             if($result->num_rows == 1){
                 $row = $result->fetch_array();
 
-                if($row["enroled"] === true){
+                if($row["enroled"] == true && isset($_GET["school_id"])){
                     $array = array(
                         "status" => "already-registered"
                     );
+                }elseif(!isset($_REQUEST["school_id"])){
+                    if($row["enroled"] == false){
+                        $array = array(
+                            "status" => "not-registered"
+                        );
+                    }else{
+                        $array = array(
+                            "status" => "student_success"
+                        );
+                    }
+                    
                 }else{
                     //check if right school is selected
                     if($row["schoolID"] == $school_id){
