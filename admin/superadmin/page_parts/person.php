@@ -20,7 +20,7 @@
         $result = $connect->query("SELECT a.*, r.title AS roleTitle 
         FROM admins_table a JOIN roles r
         ON a.role = r.id 
-        WHERE r.access = TRUE") or die($connect->error);
+        WHERE r.access = TRUE AND a.username != 'New User'") or die($connect->error);
 
         if($result->num_rows > 0){
     ?>
