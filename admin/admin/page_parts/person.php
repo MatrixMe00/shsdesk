@@ -157,7 +157,7 @@
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="contact">
                     </span>
-                    <input type="tel" name="contact" id="contact" class="text_input" placeholder="Provide your contact" autocomplete="off"
+                    <input type="text" name="contact" id="contact" class="text_input tel" placeholder="Provide your contact" autocomplete="off"
                     value="<?php echo $user_details["contact"] ?>">
                 </label>
                 <label for="username">

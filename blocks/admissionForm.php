@@ -234,15 +234,16 @@
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="phone">
                                             </span>
-                                            <input type="tel" name="ad_phone" ng-model="ad_phone" id="ad_phone" maxlength="16"
-                                            placeholder="Primary Phone Number*" title="Enter the phone number easily accessible to you" required>
+                                            <input type="text" name="ad_phone" ng-model="ad_phone" id="ad_phone" maxlength="16"
+                                            placeholder="Primary Phone Number*" title="Enter the phone number easily accessible to you" 
+                                            class="tel" required>
                                         </label>
                                         <label for="ad_other_phone">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="">
                                             </span>
-                                            <input type="tel" name="ad_other_phone" id="ad_other_phone" ng-model="ad_other_phone" maxlength="16"
-                                            placeholder="Secondary Phone number" title="Enter an alternative phone number">
+                                            <input type="text" name="ad_other_phone" id="ad_other_phone" ng-model="ad_other_phone" maxlength="16"
+                                            placeholder="Secondary Phone number" title="Enter an alternative phone number" class="tel">
                                         </label>
                                     </div>
                                 </fieldset>
@@ -298,8 +299,9 @@
                                         <span class="label_image">
                                             <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="witness phone">
                                         </span>
-                                        <input type="tel" name="ad_witness_phone" id="ad_witness_phone" ng-model="ad_witness_phone" required maxlength = "16" 
-                                        placeholder="Witness' Contact Number*" title="Enter a valid phone number, and it should be only numbers" pattern="[0-9]+">
+                                        <input type="text" name="ad_witness_phone" id="ad_witness_phone" ng-model="ad_witness_phone" required maxlength = "16" 
+                                        placeholder="Witness' Contact Number*" title="Enter a valid phone number, and it should be only numbers" pattern="[0-9]+"
+                                        class="tel">
                                     </label>
                                 </fieldset>
                             </div>                           
@@ -564,7 +566,7 @@
                             </div>
                             <label for="agree" class="checkbox">
                                 <input type="checkbox" name="agree" id="agree" value="agree">
-                                <span>I, <strong>{{ad_lname}} {{ad_fname}} {{ad_oname}}</strong> do accept that my admission to this school opens a new chapter in my life. I therefore pledge to abide by all the rules and regulations of the school</span>
+                                <span>I, <strong id="fullCandidateName"></strong> do accept that my admission to this school opens a new chapter in my life. I therefore pledge to abide by all the rules and regulations of the school</span>
                             </label>
                         </div>
                     </div>

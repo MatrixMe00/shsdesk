@@ -54,7 +54,7 @@ $("input[name=other_category]").blur(function(){
 $("form").unbind("submit");
 
 //dynamically help the user when typing the phone number
-$("input[type=tel]").keyup(function(){
+$("input.tel").keyup(function(){
     val = $(this).val();
 
     //give a default maximum length
@@ -78,7 +78,7 @@ $("input[type=tel]").keyup(function(){
 })
 
 //remove spaces from phone number
-$("input[type=tel]").blur(function(){
+$("input.tel").blur(function(){
     i = 0;
     value = $(this).val();
 

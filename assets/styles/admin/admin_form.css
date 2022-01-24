@@ -181,14 +181,14 @@ label.checkbox input{
 }
 
 label input[type=text], label input[type=password],
-label input[type=email], label input[type=tel], 
+label input[type=email], label input.tel, 
 label select, label input[type=number], label input[type=url]{
     min-height: 5vh;
     background-color: whitesmoke;
 }
 
 label input[type=text]:focus, label input[type=password]:focus,
-label input[type=email]:focus, label input[type=tel]:focus, label textarea:focus, label input[type=url]:focus,
+label input[type=email]:focus, label input.tel:focus, label textarea:focus, label input[type=url]:focus,
 label select:focus, label input[type=number]:focus{
     outline: none;
 }

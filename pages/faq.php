@@ -147,7 +147,7 @@
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="username_logo">
                     </span>
-                    <input type="tel" name="phone" id="phone" class="text_input" placeholder="Your Phone Number" autocomplete="off" maxlength="10">
+                    <input type="text" name="phone" id="phone" class="text_input tel" placeholder="Your Phone Number" autocomplete="off" maxlength="10">
                 </label>
                 <label for="question">
                     <span class="label_image">

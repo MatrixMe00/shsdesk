@@ -154,7 +154,7 @@ $("label[for=agree]").click(function(){
 })
 
 //dynamically help the user when typing the phone number
-$("input[type=tel]").keyup(function(){
+$("input.tel").keyup(function(){
     val = $(this).val();
 
     //give a default maximum length
@@ -178,7 +178,7 @@ $("input[type=tel]").keyup(function(){
 })
 
 //remove spaces from phone number
-$("input[type=tel]").blur(function(){
+$("input.tel").blur(function(){
     i = 0;
     value = $(this).val();
 
@@ -372,6 +372,9 @@ $("button[name=continue]").click(function(){
                 $("#res_ad_gender").html(data["Gender"]);
                 $("#res_ad_jhs").html(data["jhsAttended"]);
                 $("#res_ad_birthdate").html($("#ad_birthdate").val());
+
+                //candidate full name entry into swear box
+                $("#fullCandidateName").html(data["Lastname"] + " " + data["Othernames"]);
                 
 
                 //remove this button and show the submit button

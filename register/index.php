@@ -80,7 +80,7 @@
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="call">
                         </span>
-                        <input type="tel" name="technical_phone" id="technical_phone" class="text_input" placeholder="Technical Person Phone Contact*"
+                        <input type="text" name="technical_phone" id="technical_phone" class="text_input tel" placeholder="Technical Person Phone Contact*"
                         autocomplete="off" title="Personnel's phone contact. This person is probably the school's [IT] administrator" required>
                     </label>
                     <label for="school_email">
