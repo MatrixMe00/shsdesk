@@ -42,7 +42,7 @@
             $ad_mother_name = formatName($connect->real_escape_string($_POST["ad_mother_name"]));
             $ad_mother_occupation = formatName($connect->real_escape_string($_POST["ad_mother_occupation"]));
             $ad_guardian_name = formatName($connect->real_escape_string($_POST["ad_guardian_name"]));
-            $ad_resident = $connect->real_escape_string($_POST["ad_resident"]);
+            $ad_resident = formatName($connect->real_escape_string($_POST["ad_resident"]));
             $ad_postal_address = $connect->real_escape_string($_POST["ad_postal_address"]);
             $ad_phone = $connect->real_escape_string($_POST["ad_phone"]);
             $ad_other_phone = $connect->real_escape_string($_POST["ad_other_phone"]);
@@ -332,12 +332,13 @@
                     $_SESSION["ad_school_name"] = $school["schoolName"];
                     $_SESSION["ad_box_address"] = $school["postalAddress"];
 
-                    if($school["techContact"][0] != "0" && $school["techContact"] != "+"){
+                    if($school["techContact"][0] != "0" && $school["techContact"][0] != "+"){
                         $_SESSION["ad_school_phone"] = "+".$school["techContact"];
                     }else{
                         $_SESSION["ad_school_phone"] = $school["techContact"];
                     }
                     
+                    $_SESSION["ad_school_logo"] = $school["logoPath"];
                     $_SESSION["ad_school_head"] = $school["headName"];
                     $_SESSION["ad_it_admin"] = $school["techName"];
                     $_SESSION["ad_message"] = $school["admissionPath"];

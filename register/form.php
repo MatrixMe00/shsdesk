@@ -16,10 +16,10 @@
         }
 
         //school and technical's details
-        $school_name = $connect->real_escape_string($_POST["school_name"]);
-        $abbreviation = $connect->real_escape_string($_POST["abbreviation"]);
-        $head_name = $connect->real_escape_string($_POST["head_name"]);
-        $technical_name = $connect->real_escape_string($_POST["technical_name"]);
+        $school_name = formatName($connect->real_escape_string($_POST["school_name"]));
+        $abbreviation = strtoupper($connect->real_escape_string($_POST["abbreviation"]));
+        $head_name = formatName($connect->real_escape_string($_POST["head_name"]));
+        $technical_name = formatName($connect->real_escape_string($_POST["technical_name"]));
         $technical_phone = $connect->real_escape_string($_POST["technical_phone"]);
         
         //address

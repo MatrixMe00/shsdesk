@@ -117,25 +117,25 @@
                                         $indexNumber = $cellValue;
                                         break;
                                     case 1:
-                                        $Lastname = $cellValue;
+                                        $Lastname = formatName($cellValue);
                                         break;
                                     case 2:
-                                        $Othernames = $cellValue;
+                                        $Othernames = formatName($cellValue);
                                         break;
                                     case 3:
-                                        $Gender = $cellValue;
+                                        $Gender = formatName($cellValue);
                                         break;
                                     case 4:
-                                        $boardingStatus = $cellValue;
+                                        $boardingStatus = formatName($cellValue);
                                         break;    
                                     case 5:
-                                        $programme = $cellValue;
+                                        $programme = formatName($cellValue);
                                         break;
                                     case 6:
                                         $aggregate = $cellValue;
                                         break;
                                     case 7:
-                                        $jhsAttended = $cellValue;
+                                        $jhsAttended = formatName($cellValue);
                                         break;
                                     case 8:
                                         $val = PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($cellValue);
@@ -182,19 +182,19 @@
                                         $indexNumber = $cellValue;
                                         break;
                                     case 1:
-                                        $studentLname = $cellValue;
+                                        $studentLname = formatName($cellValue);
                                         break;
                                     case 2:
-                                        $studentOname = $cellValue;
+                                        $studentOname = formatName($cellValue);
                                         break;
                                     case 3:
-                                        $houseName = $cellValue;
+                                        $houseName = formatName($cellValue);
                                         break;
                                     case 4:
-                                        $studentGender = $cellValue;
+                                        $studentGender = formatName($cellValue);
                                         break;
                                     case 5:
-                                        $boardingStatus = $cellValue;
+                                        $boardingStatus = formatName($cellValue);
                                         break;    
     
                                     default:

@@ -105,7 +105,7 @@
 
         public function Footer(){
             $this->SetY(-10);
-            $this->SetFont("", "B", 8);
+            $this->SetFont("Times", "B", 8);
             $this->Cell($this->GetCharWidth('Page '.$this->getPage()),10,'Page '.$this->getAliasNumPage().' of '.$this->getAliasNbPages(),"T",false, 'L', 0, '', 0, false, 'T', 'M');
             $this->Cell(0,10,$this->name,'T',false, 'C', 0, '', 0, false, 'T', 'M');
             
@@ -153,10 +153,12 @@
         $residence_status = $_SESSION["ad_stud_residence"];
         $program = $_SESSION["ad_stud_program"];
         $house = $_SESSION["ad_stud_house"];
-        $reopening = "Reopening Date";
+        // $reopening = $_SESSION["ad_reopening"];
+        $reopening = date("jS F, Y");
 
-        // $message = $_SESSION["ad_message"];
-        $message = "
+        $message = $_SESSION["ad_message"];
+        $message .= "<br><span> Yours faithfully, </span>";
+        /*$message = "
             <span class=\"demo_text\">[ -- Start of body text </span><br><p>The message in this square brackets is what you will provide as your admission letter. Please do well to fill out the message so as to automatically generate the admission form for your students</p>
             <p>Demo paragraph begins. Video provides a powerful way to help you prove your point. When you click Online Video, you can paste in the embed code for the video you want to add. You can also type a keyword to search online for the video that best fits your document.</p>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe inventore, iste quibusdam quis recusandae quia sed unde id odit quos, dignissimos consequatur ullam totam accusamus sequi dicta laboriosam maxime molestiae?</p>
@@ -169,13 +171,14 @@
             </ol><span class=\"demo_text\">End of body text -- ]</span><br>
 
             <span>Yours Faithfully, </span>
-        ";
+        ";*/
 
         //school details
         $head_master = $_SESSION["ad_school_head"];
         $it_name = $_SESSION["ad_it_admin"];
         $box_address = $_SESSION["ad_box_address"];
         $school_phone = remakeNumber($_SESSION["ad_school_phone"]);
+        $logo = $_SESSION["ad_school_logo"];
 
         $html = <<<HTML
         <head>
@@ -189,12 +192,10 @@
                 div{
                     line-height: 15px;
                 }
-
                 .demo_text{
                     line-height: 5px;
                     color: red;
                 }
-
                 .school_name{
                     font-weight:bold;
                 }
@@ -202,7 +203,7 @@
         </head>
         <div class="header" style="text-align: center;">
             <div>
-                <br><img src="$url/assets/images/default/thought-catalog-xHaZ5BW9AY0-unsplash.jpg" alt="logo" width="30mm" height="30mm">
+                <br><img src="$url/$logo" alt="logo" width="30mm" height="30mm">
             </div>
             <span class="school_name">$school_name</span><br>
             <span>$box_address</span><br>

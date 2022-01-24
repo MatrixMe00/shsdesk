@@ -14,7 +14,7 @@
             $_SESSION["ad_school_name"] = $school["schoolName"];
             $_SESSION["ad_box_address"] = $school["postalAddress"];
 
-            if($school["techContact"][0] != "0" && $school["techContact"] != "+"){
+            if($school["techContact"][0] != "0" && $school["techContact"][0] != "+"){
                 $_SESSION["ad_school_phone"] = "+".$school["techContact"];
             }else{
                 $_SESSION["ad_school_phone"] = $school["techContact"];
@@ -23,7 +23,7 @@
             $_SESSION["ad_school_head"] = $school["headName"];
             $_SESSION["ad_it_admin"] = $school["techName"];
             $_SESSION["ad_message"] = $school["admissionPath"];
-            $_SESSION["ad_school_prospectus"] = $school["prospectusPath"];
+            $_SESSION["ad_school_logo"] = $school["logoPath"];
             $_SESSION["ad_reopening"] = fetchData("reopeningDate","admissiondetails","schoolID=".$student["schoolID"]);
 
             //student details
@@ -78,7 +78,7 @@
 <body>
     <div id="container">
         <div class="member_div">
-            <a href="<?php echo $_SESSION["ad_school_prospectus"] ?>">
+            <a href="<?php echo $url."/".$school["prospectusPath"] ?>">
                 <button id="btn_pros">Prospectus is ready for download | Download [PDF]</button>
             </a>
         </div>

@@ -84,13 +84,13 @@
             }
         }elseif($submit == "adminAddStudent" || $submit == "adminAddStudent_ajax"){
             $student_index = strip_tags(stripslashes($_REQUEST["student_index"]));
-            $lname = strip_tags(stripslashes($_REQUEST["lname"]));
-            $oname = strip_tags(stripslashes($_REQUEST["oname"]));
-            $gender = strip_tags(stripslashes($_REQUEST["gender"]));
-            $boarding_status = strip_tags(stripslashes($_REQUEST["boarding_status"]));
-            $student_course = strip_tags(stripslashes($_REQUEST["student_course"]));
+            $lname = formatName(strip_tags(stripslashes($_REQUEST["lname"])));
+            $oname = formatName(strip_tags(stripslashes($_REQUEST["oname"])));
+            $gender = formatName(strip_tags(stripslashes($_REQUEST["gender"])));
+            $boarding_status = formatName(strip_tags(stripslashes($_REQUEST["boarding_status"])));
+            $student_course = formatName(strip_tags(stripslashes($_REQUEST["student_course"])));
             $aggregate = strip_tags(stripslashes($_REQUEST["aggregate"]));
-            $jhs = strip_tags(stripslashes($_REQUEST["jhs"]));
+            $jhs = formatName(strip_tags(stripslashes($_REQUEST["jhs"])));
             $dob = strip_tags(stripslashes($_REQUEST["dob"]));
             $track_id = strip_tags(stripslashes($_REQUEST["track_id"]));
             $school_id = $user_school_id;
