@@ -2,7 +2,7 @@
     require_once("includes/session.php");
 
     //call autoload
-    require($rootPath."/PhpSpreadSheet/autoload.php");
+    require($rootPath."/PhpSpreadsheet/autoload.php");
 
     //load IOFactory class
     use PhpOffice\PhpSpreadsheet\IOFactory;

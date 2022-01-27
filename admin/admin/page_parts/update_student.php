@@ -7,7 +7,7 @@
 
 <form action="<?php echo $url?>/admin/admin/submit.php" method="get" class="fixed" name="adminUpdateStudent">
     <div class="head">
-        <h2>Add A New Student</h2>
+        <h2>Update Student Details</h2>
     </div>
     <div class="body">
         <div class="message_box success no_disp">
