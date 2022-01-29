@@ -18,6 +18,7 @@
 </head>
 
 <body>
+<div id="container" class="flex">
     <?php
         //check if this is a new user
         if(checkNewUser($_SESSION["user_login_id"]) == TRUE){
@@ -27,205 +28,163 @@
         }else{
     ?>
     <nav>
-        <div id="nav_holder">
-            <div id="logo">
-                <div id="name">
-                    <span id="first">ONLINE</span>
-                    <span id="last">admission</span>
+    <div id="ham" class="">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div id="lhs">
+            <div id="top" class="flex flex-column flex-center-align flex-center-content">
+                <div class="img">
+                    <img src="<?php echo $url?>/assets/images/icons/person-circle-outline.svg" alt="user logo">
+                </div>
+                <div class="name">
+                    <span><?php echo $user_details["fullname"] ?></span>
                 </div>
             </div>
-            <div id="right_nav">
-                <!--The hamburgar-->
-                <div id="ham">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <div id="user_control">
-                    <div id="user_img">
-                        <img src="<?php echo $url?>/assets/images/icons/person-circle-outline.svg" alt="">
+            <div id="middle">
+                <!--Dashboard-->
+                <div class="menu">
+                    <div class="item active" name="Dashboard" title="Dashboard" data-url="<?php echo $url?>/admin/superadmin/page_parts/dashboard.php">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/speedometer-outline.svg" alt="Dashboard" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Dashboard</span>
+                        </div>
                     </div>
-                    <span id="user_name">
-                        <span id="greeting">
-                            <?php
-                            $time = date("H");
+                    <div class="item relative" name="Notification" title="Notification" data-url="<?php echo $url?>/admin/superadmin/page_parts/notification.php">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/notifications-circle-outline.svg" alt="Dashboard" />
+                        </div>
+                        <div class="menu_name relative">
+                            <span>Notification</span>
+                        </div>
+                        <?php 
+                            //count notifications
+                            $total = 0;
 
-                            if($time < 12){
-                                $greet = "Good Morning";
-                            }elseif($time < 16){
-                                $greet = "Good Afternoon";
-                            }else{
-                                $greet = "Good Evening";
-                            }
+                            //unread notifications
+                            $result = $connect->query("SELECT *
+                                FROM notification
+                                WHERE Read_by NOT LIKE '%$user_username%'
+                                OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')");
+                            $total += $result->num_rows;
 
-                            echo $greet;
-                            ?>
-                        </span>, <?php echo $user_username ?>
-                        <div id="logout">
+                            //new replies
+                            $result = $connect->query("SELECT DISTINCT n.* 
+                                FROM notification n JOIN reply r 
+                                ON n.ID = r.Comment_id 
+                                WHERE r.Read_by NOT LIKE '%$user_username%'
+                                AND n.Read_by LIKE '%$user_username%'
+                                ORDER BY ID DESC");
+                            $total += $result->num_rows;
+
+                            if($total > 0){
+                        ?>
+                        <div class="news_number absolute danger flex flex-center-align flex-center-content">
+                            <span><?php echo $total;?></span>
+                        </div>
+                        <?php }?>
+                    </div>
+                </div>
+    
+                <!--Management-->
+                <div class="menu">
+                    <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/schools.php" name="Schools" title="Schools List">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/city hall.png" alt="Schools" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Schools List</span>
+                        </div>
+                    </div>
+                </div>
+    
+                <!--Page Setups-->
+                <div class="menu">
+                    <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/home.php" name="Index" title="Home Page">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/home.png" alt="Home" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Home Page</span>
+                        </div>
+                    </div>
+                    <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/about.php" name="about" title="About Page">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="about" />
+                        </div>
+                        <div class="menu_name">
+                            <span>About Page</span>
+                        </div>
+                    </div>
+                    <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/faq.php" name="faq" title="Frequently Asked Questions">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/information-circle-outline.svg" alt="faq" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Frequently Asked Questions</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <div class="menu">
+                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/admission.php" name="admission" title="Admission Details">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Admission Details</span>
+                        </div>
+                    </div>
+                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/exeat.php" name="exeat" title="Exeat">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/logout.png" alt="exeat">
+                        </div>
+                        <div class="menu_name">
+                            <span>Exeat</span>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+            <div id="foot">
+                <div class="menu">
+                    <div class="item" name="account" title="Personal Account" data-url="<?php echo $url?>/admin/superadmin/page_parts/person.php">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Personal Account</span>
+                        </div>
+                    </div>
+                    <div class="item" name="password" title="Change Password" data-url="<?php echo $url?>/admin/superadmin/page_parts/change_password.php">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/key-outline.svg" alt="" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Change Password</span>
+                        </div>
+                    </div>
+                    <div class="item" id="logout" title="Logout">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/logout.png" alt="" />
+                        </div>
+                        <div class="menu_name">
                             <span>Logout</span>
                         </div>
-                    </span>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
-    <div class="container">
-        <section id="lhs">
-            <div class="menu">
-                <div class="head active">
-                    <span>Dashboard</span>
-                </div>
-                <div class="item active" name="Dashboard" title="Dashboard" data-url="<?php echo $url?>/admin/superadmin/page_parts/dashboard.php">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/speedometer-outline.svg" alt="Dashboard" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Dashboard</span>
-                    </div>
-                </div>
-                <div class="item relative" name="Notification" title="Notification" data-url="<?php echo $url?>/admin/superadmin/page_parts/notification.php">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/notifications-circle-outline.svg" alt="Dashboard" />
-                    </div>
-                    <div class="menu_name relative">
-                        <span>Notification</span>
-                    </div>
-                    <?php 
-                        //count notifications
-                        $total = 0;
-
-                        //unread notifications
-                        $result = $connect->query("SELECT *
-                            FROM notification
-                            WHERE Read_by NOT LIKE '%$user_username%'
-                            OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')");
-                        $total += $result->num_rows;
-
-                        //new replies
-                        $result = $connect->query("SELECT DISTINCT n.* 
-                            FROM notification n JOIN reply r 
-                            ON n.ID = r.Comment_id 
-                            WHERE r.Read_by NOT LIKE '%$user_username%'
-                            AND n.Read_by LIKE '%$user_username%'
-                            ORDER BY ID DESC");
-                        $total += $result->num_rows;
-
-                        if($total > 0){
-                    ?>
-                    <div class="news_number absolute danger flex flex-center-align flex-center-content">
-                        <span><?php echo $total;?></span>
-                    </div>
-                    <?php }?>
-                </div>
-            </div>
-            <div class="menu">
-                <div class="head">
-                    <span>Manage</span>
-                </div>
-                <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/schools.php" name="Schools" title="Schools List">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/city hall.png" alt="Schools" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Schools List</span>
-                    </div>
-                </div>
-            </div>
-            <div class="menu">
-                <div class="head">
-                    <span>Page Setups</span>
-                </div>
-                <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/home.php" name="Index" title="Home Page">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/home.png" alt="Home" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Home Page</span>
-                    </div>
-                </div>
-                <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/about.php" name="about" title="About Page">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="about" />
-                    </div>
-                    <div class="menu_name">
-                        <span>About Page</span>
-                    </div>
-                </div>
-                <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/faq.php" name="faq" title="Frequently Asked Questions">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/information-circle-outline.svg" alt="faq" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Frequently Asked Questions</span>
-                    </div>
-                </div>
-            </div>
-            <div class="menu">
-                <div class="head">
-                    <span>Documents</span>
-                </div>
-                <div class="item" name="Request" title="Document Requests" data-url="<?php echo $url?>/admin/superadmin/page_parts/request.php">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/hand-right-outline.svg" alt="request" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Document Requests</span>
-                    </div>
-                </div>
-                <div class="item" name="Report" title="Admin System Reports" data-url="<?php echo $url?>/admin/superadmin/page_parts/report.php">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="request" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Admin System Reports</span>
-                    </div>
-                </div>
-            </div>
-            <div class="menu">
-                <div class="head">
-                    <span>Settings</span>
-                </div>
-                <div class="item" name="account" title="Personal Account" data-url="<?php echo $url?>/admin/superadmin/page_parts/person.php">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Personal Account</span>
-                    </div>
-                </div>
-                <div class="item" name="password" title="Change Password" data-url="<?php echo $url?>/admin/superadmin/page_parts/change_password.php">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/key-outline.svg" alt="" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Change Password</span>
-                    </div>
-                </div>
-                <!-- <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/exeat.php" name="exeat" title="Exeat">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons" alt="exeat">
-                    </div>
-                    <div class="menu_name">
-                        <span>Exeat</span>
-                    </div>
-                </div> -->
-            </div>
-        </section>
-        <section id="rhs">
-            <div class="head">
-            <h3 id="title">SHSDesk / <span id="head"></span></h3>
-            </div>
-            <div class="body"></div>
-        </section>
-    </div>
-
-    <div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-        <?php @include_once("<?php echo $url?>/admin/superadmin/page_parts/newStudent.php")?>
-    </div>
-
-    <div id="modal_3" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-        <?php include_once("<?php echo $url?>/admin/superadmin/page_parts/add_house.php")?>
-    </div>
+    <section id="rhs">
+        <div class="head">
+        <h3 id="title">SHSDesk / <span id="head"></span></h3>
+        </div>
+        <div class="body"></div>
+    </section>
+</div>
 
     <div id="gen_del" class="modal_yes_no fixed flex flex-center-content flex-center-align form_modal_box no_disp">
         <div class="yes_no_container">

@@ -60,12 +60,8 @@ $(".item").click(function(){
 })
 
 $("#ham").click(function(){
-    $("#lhs").toggleClass("menu_click");
     $(this).toggleClass("clicked");
-})
-
-$("#user_control").click(function(){
-    $("#logout").slideToggle();
+    $("body").toggleClass("ham_click");
 })
 
 //yes no form submission
@@ -106,6 +102,10 @@ $("#yes_no_form").submit(function(){
 $("#logout").click(function(){
     var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[1];
     //var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[0];
+
+    //tell user he is logging out
+    $("#rhs .body").html("Logging out, please wait...");
+
     location.href = url + "/admin/logout.php";
 })
 

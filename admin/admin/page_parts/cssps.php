@@ -1,7 +1,7 @@
 <?php include_once("../../../includes/session.php");
 
     //set nav_point session
-    $_SESSION["nav_point"] = "Placement";
+    $_SESSION["nav_point"] = "CSSPS";
 ?>
 <section class="section_container">
     <div class="content primary cssps">

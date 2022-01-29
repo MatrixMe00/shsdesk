@@ -18,6 +18,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
 </head>
 
 <body>
+    <div id="container" class="flex">
     <?php
         //check if this is a new user
         if(checkNewUser($_SESSION["user_login_id"]) == TRUE){
@@ -56,25 +57,8 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             }
         }
     ?>
-        <div id="nav_holder">
-            <div id="logo">
-                <div id="name">
-                    <span id="first">ONLINE</span>
-                    <span id="last">admission</span>
-                </div>
-            </div>
-            <div id="right_nav">
-                <!--The hamburgar-->
-                <div id="ham">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <div id="user_control">
-                    <div id="user_img">
-                        <img src="<?php echo $url?>/assets/images/icons/person-circle-outline.svg" alt="">
-                    </div>
-                    <span id="user_name">
+        
+                    <!-- <span id="user_name">
                         <span id="greeting">
                             <?php
                             $time = date("H");
@@ -93,175 +77,171 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                         <div id="logout">
                             <span>Logout</span>
                         </div>
-                    </span>
+                    </span> -->
+                
+    <!-- <nav> -->
+        <div id="ham" class="">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div id="lhs">
+            <div id="top" class="flex flex-column flex-center-align flex-center-content">
+                <div class="img">
+                    <img src="<?php echo $url?>/assets/images/icons/person-circle-outline.svg" alt="user logo">
+                </div>
+                <div class="name">
+                    <span><?php echo $user_details["fullname"] ?></span>
+                </div>
+                <div class="status">
+                    <span><?php echo $status ?></span>
+                </div>
+            </div>
+            <div id="middle">
+                <!--Dashboard-->
+                <div class="menu">
+                    <div class="item active" name="Dashboard" title="Dashboard" data-url="<?php echo $url?>/admin/admin/page_parts/dashboard.php">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/speedometer-outline.svg" alt="Dashboard" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Dashboard</span>
+                        </div>
+                    </div>
+                    <div class="item relative" name="Notification" title="Notification" data-url="<?php echo $url?>/admin/admin/page_parts/notification.php">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/notifications-circle-outline.svg" alt="Dashboard" />
+                        </div>
+                        <div class="menu_name relative">
+                            <span>Notification</span>
+                        </div>
+                        <?php 
+                            //count notifications
+                            $total = 0;
+
+                            //unread notifications
+                            $result = $connect->query("SELECT *
+                                FROM notification
+                                WHERE (Read_by NOT LIKE '%$user_username%' AND Audience='all')
+                                OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')
+                                ORDER BY ID DESC");
+                            $total += $result->num_rows;
+
+                            //new replies
+                            $result = $connect->query("SELECT DISTINCT n.* 
+                                FROM notification n JOIN reply r 
+                                ON n.ID = r.Comment_id 
+                                WHERE r.Read_by NOT LIKE '%$user_username%'
+                                AND n.Read_by LIKE '%$user_username%'
+                                ORDER BY ID DESC");
+                            $total += $result->num_rows;
+
+                            if($total > 0){
+                        ?>
+                        <div class="news_number absolute danger flex flex-center-align flex-center-content">
+                            <span><?php echo $total;?></span>
+                        </div>
+                        <?php }?>
+                    </div>
+                </div>
+                
+                <!--Management of students-->
+                <div class="menu">
+                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/cssps.php" name="CSSPS" title="CSSPS List">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/people-outline.svg" alt="cssps" />
+                        </div>
+                        <div class="menu_name">
+                            <span>CSSPS List</span>
+                        </div>
+                    </div>
+                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/enrol.php" name="Enrol" title="Enrolment Data">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/enter.png" alt="Enrol" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Enrolment Data</span>
+                        </div>
+                    </div>
+                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/houses.php" name="House" title="House and Bed Declarations">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/bed-outline.svg" alt="Placement" />
+                        </div>
+                        <div class="menu_name">
+                            <span>House and Bed Declarations</span>
+                        </div>
+                    </div>
+                </div>
+    
+                <!--House allocation-->
+                <div class="menu">
+                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/allocation.php" name="student" title="House Allocation">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/home-outline.svg" alt="Home" />
+                        </div>
+                        <div class="menu_name">
+                            <span>House Allocation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Admission and Exeat-->
+                <div class="menu">
+                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/admission.php" name="admission" title="Admission Details">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Admission Details</span>
+                        </div>
+                    </div>
+                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/exeat.php" name="exeat" title="Exeat">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/exit-outline.svg" alt="exeat">
+                        </div>
+                        <div class="menu_name">
+                            <span>Exeat</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="foot">
+                <div class="menu">
+                    <div class="item" name="account" title="Account Update" data-url="<?php echo $url?>/admin/admin/page_parts/person.php">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Account Update [Personal]</span>
+                        </div>
+                    </div>
+                    <div class="item" name="password" title="Change Password" data-url="<?php echo $url?>/admin/admin/page_parts/change_password.php">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/key-outline.svg" alt="" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Change Password</span>
+                        </div>
+                    </div>
+                    <div class="item" id="logout" title="Logout">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/logout.png" alt="" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Logout</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
-    <div class="container">
-        <section id="lhs">
-            <div id="nav_status" class="menu">
-                <div class="head" style="font-size: small; background-color:rgba(15,15,15, 0.6)">
-                    <span><?php echo $status ?></span>
-                </div>
-            </div>
-            <div class="menu">
-                <div class="head active">
-                    <span>Dashboard</span>
-                </div>
-                <div class="item active" name="Dashboard" title="Dashboard" data-url="<?php echo $url?>/admin/admin/page_parts/dashboard.php">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/speedometer-outline.svg" alt="Dashboard" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Dashboard</span>
-                    </div>
-                </div>
-                <div class="item relative" name="Notification" title="Notification" data-url="<?php echo $url?>/admin/admin/page_parts/notification.php">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/notifications-circle-outline.svg" alt="Dashboard" />
-                    </div>
-                    <div class="menu_name relative">
-                        <span>Notification</span>
-                    </div>
-                    <?php 
-                        //count notifications
-                        $total = 0;
-
-                        //unread notifications
-                        $result = $connect->query("SELECT *
-                            FROM notification
-                            WHERE (Read_by NOT LIKE '%$user_username%' AND Audience='all')
-                            OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')
-                            ORDER BY ID DESC");
-                        $total += $result->num_rows;
-
-                        //new replies
-                        $result = $connect->query("SELECT DISTINCT n.* 
-                            FROM notification n JOIN reply r 
-                            ON n.ID = r.Comment_id 
-                            WHERE r.Read_by NOT LIKE '%$user_username%'
-                            AND n.Read_by LIKE '%$user_username%'
-                            ORDER BY ID DESC");
-                        $total += $result->num_rows;
-
-                        if($total > 0){
-                    ?>
-                    <div class="news_number absolute danger flex flex-center-align flex-center-content">
-                        <span><?php echo $total;?></span>
-                    </div>
-                    <?php }?>
-                </div>
-            </div>
-            <div class="menu">
-                <div class="head">
-                    <span>Manage</span>
-                </div>
-                <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/placement.php" name="Placement" title="Placement List">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/people-outline.svg" alt="Placement" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Placement List</span>
-                    </div>
-                </div>
-                <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/enrol.php" name="Enrol" title="Enrolled Students">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/enter.png" alt="Enrol" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Enrolled Students</span>
-                    </div>
-                </div>
-                <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/houses.php" name="House" title="Houses/Bed Capacity">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/bed-outline.svg" alt="Placement" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Houses/Bed Capacity</span>
-                    </div>
-                </div>
-            </div>
-            <div class="menu">
-                <div class="head">
-                    <span>House Allocation</span>
-                </div>
-                <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/allocation.php" name="student" title="Student House Allocation">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/home-outline.svg" alt="Home" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Student House Allocation</span>
-                    </div>
-                </div>
-            </div>
-            <!-- <div class="menu">
-                <div class="head active">
-                    <span>Documents</span>
-                </div>
-                <div class="item active" name="Request" title="Request Document" data-url="<?php echo $url?>/admin/admin/page_parts/request.php">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/hand-right-outline.svg" alt="request" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Request Document</span>
-                    </div>
-                </div>
-                <div class="item active" name="Report" title="Make Report" data-url="<?php echo $url?>/admin/admin/page_parts/report.php">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="request" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Make a Report</span>
-                    </div>
-                </div>
-            </div> -->
-            <div class="menu">
-                <div class="head">
-                    <span>Settings</span>
-                </div>
-                <div class="item" name="account" title="Personal Account" data-url="<?php echo $url?>/admin/admin/page_parts/person.php">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Personal Account</span>
-                    </div>
-                </div>
-                <div class="item" name="password" title="Change Password" data-url="<?php echo $url?>/admin/admin/page_parts/change_password.php">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/key-outline.svg" alt="" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Change Password</span>
-                    </div>
-                </div>
-                <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/admission.php" name="admission" title="Admission Details">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="" />
-                    </div>
-                    <div class="menu_name">
-                        <span>Admission Details</span>
-                    </div>
-                </div>
-                <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/exeat.php" name="exeat" title="Exeat">
-                    <div class="icon">
-                        <img src="<?php echo $url?>/assets/images/icons/logout.png" alt="exeat">
-                    </div>
-                    <div class="menu_name">
-                        <span>Exeat</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section id="rhs">
-            <div class="head">
-                <h3 id="title"><?php echo getSchoolDetail($user_school_id)["schoolName"] ?> / <span id="head"></span></h3>
-            </div>
-            <div class="body"></div>
-        </section>
+    <section id="rhs">
+        <div class="head">
+            <h3 id="title"><?php echo getSchoolDetail($user_school_id)["schoolName"] ?> / <span id="head"></span></h3>
+        </div>
+        <div class="body"></div>
+    </section>
     </div>
-
     <div id="gen_del" class="modal_yes_no fixed flex flex-center-content flex-center-align form_modal_box no_disp">
         <div class="yes_no_container">
             <div class="body">

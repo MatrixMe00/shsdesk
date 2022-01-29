@@ -7,166 +7,75 @@
 }
 
 body{
-    background-color: #eee;
-    height: 100vh;
-    overflow: hidden;
+    padding: 0;
+    margin: 0;
 }
-
-div.container{
-    overflow: hidden;
-}
-
-nav, #lhs{
-    background-color: rgba(15,15,15,0.7);
-}
-
-#lhs, #rhs{
-    padding: 1%;
-}
-
-div.container{
-    display: flex;
-}
-
 nav{
-    align-items: center;
+    flex: 2;
+    transition: all 1s;
+    background-color: #111;
+    overflow: hidden;
+}
+#lhs{
     color: whitesmoke;
-    font-weight: bold;
-    font-feature-settings: "curs" "cswh" "jalt";
-    font-family: gabriola, 'Merriweather', serif !important;
+    transition: background-color 1s;
+    overflow: auto;
 }
 
-nav #nav_holder{
-    background-color: rgba(173, 216, 230,0.8);
-    padding: 0 5px 0 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
+nav:hover{
+    background: #101013;
 }
 
-nav#not-active #nav_holder{
+nav#not-active{
     background-color: rgba(230, 50, 50);
 }
 
-nav#not-display #nav_holder{
+nav#not-display{
     background-color:rgba(230, 100, 100, 1)
 }
 
-nav#no-house #nav_holder{
+nav#no-house{
     background-color: rgba(255, 80,80);
 }
 
-#logo{
-    flex: 2;
-    background-color: rgba(79, 140, 160, 0.7);
-    align-self: stretch;
-}
-
-#logo #name{
-    padding: 5px;
-    display: flex;
-    font-size: larger;
-    cursor: pointer;
-}
-
-#name span:first-child{
-    align-self: stretch;
-    font-size: larger;
-}
-
-#name span:last-child{
-    font-size: medium;
-    align-self: flex-start;
-    font-weight: 400;
-    margin-left: 2px;
-    padding-top: 3px;
-}
-
-#right_nav{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+#rhs{
     flex: 5;
 }
 
-#right_nav #user_control{
-    display: flex;
-    align-items: center;
-    font-weight: 100;
-    cursor: pointer;
-    padding: 0;
+img{
+    width: 100%;
 }
 
-#user_control #user_img{
-    width: 7vh;
-    height: 7vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+#lhs #top{
+    text-align: center;
 }
 
-#user_img img{
-    width: 80%;
+#lhs img{
     filter: invert(1);
 }
 
-#user_control #user_name{
-    position: relative;
+#top .img{
+    max-width: 20vw;
 }
 
-#user_name #logout{
-    position: absolute;
-    right: 0;
-    left: 0;
-    background-color:rgba(15,15,15, 0.75);
-    padding: 0.5pc;
-    padding-left: 1pc;
-    cursor: pointer;
-    display: none;
+#top .img img{
+    max-width: inherit;
 }
 
-#user_name #logout:hover{
-    background-color: rgb(15,15,15);
-    padding-left: 0.5pc;
+#middle{
+    margin: 5vh auto;
 }
 
-div.container>section{
-    background-color: white;
+.menu{
+    background-color: #2225;
+    margin: 1vh 1vw;
+    border-radius: 10px;
+    transition: all 1s;
 }
 
-section{
-    padding: 1vh 1vw;
-}
-
-div.container{
-    height: 90vh;
-}
-
-#lhs, #rhs{
-    height: inherit;
-}
-
-#lhs{
-    flex: 2;
-    color: white;
-    font-size: smaller;
-    overflow: auto !important;
-}
-
-#lhs .menu{
-    padding: 1%;
-}
-
-.menu .head{
-    background-color: rgba(15,15,15, 0.3);
-    color: lightgrey;
-    padding: 0.3em;
-    padding-left: 1em;
-}
-
-.menu .head.active, .menu .head:hover, .menu:hover > .head{
-    background-color:rgba(15,15,15, 0.6);
+.menu:hover{
+    border-radius: 5px;
+    background-color: #5553;
 }
 
 .menu .item{
@@ -174,7 +83,7 @@ div.container{
     align-items: center;
     justify-content: center;
     border-left: 2px solid transparent;
-    padding: 5px 1px;
+    padding: 5px 2px;
     cursor: pointer;
 }
 
@@ -184,30 +93,233 @@ div.container{
 }
 
 .menu .item:hover{
-    background-color: rgba(15,15,15, 0.1);
+    background-color: #eee1;
 }
 
-.item .icon{
+.menu .item .icon{
     width: 4.5vh;
     height: 4.5vh;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.item img{
+
+.menu .item img{
     width: 80%;
     filter: invert();
 }
 
-.item .menu_name{
+.menu .item .menu_name{
     flex: 1;
     padding-left: 5px;
 }
 
+@media screen and (min-width: 768px){
+    #top .img img{
+        max-width: 7vw;
+    }
+}
+
+@media screen and (max-width: 698px){
+    #foot{
+        position: initial;
+        width: initial;
+    }
+}
+
+/*#lhs::-webkit-scrollbar{
+    width: 10px;
+}
+
+#lhs::-webkit-scrollbar-track{
+    background-color: #474747;
+}
+
+#lhs::-webkit-scrollbar-thumb{
+    background-color: darkgrey;
+    border-radius: 10px;
+}
+#lhs::-webkit-scrollbar-thumb:hover{
+    background-color: grey;
+}
+#lhs::-webkit-scrollbar-button{
+    background-color: rgb(235, 173, 57);
+    border: 1px solid black;
+}*/
+
+#container{
+    overflow: hidden;
+    max-height: 100vh;
+}
+@media screen and (max-width: 768px){
+    #container{
+        flex-direction: column;
+    }
+    /*hide some materials at this view*/
+    body nav{
+        flex: 1;
+    }
+    body #lhs{
+        display: flex;
+        align-items: center;
+    }
+    body.ham_click #container{
+        flex-direction: row;
+    }
+    body.ham_click #lhs{
+        display: block;
+        width: 100%;
+    }
+
+    body #lhs #top{
+        display: none;
+    }
+    body.ham_click #lhs #top{
+        display: flex;
+    }
+
+    body #lhs #middle{
+        margin: unset;
+        display: flex;
+    }
+    body.ham_click #lhs #middle{
+        margin: 5vh auto;
+        display: block;
+    }
+
+    body{
+        flex-direction: column;
+        transition: all 1s;
+    }
+
+    body .menu{
+        margin: unset;
+        display: flex;
+    }
+    body.ham_click .menu{
+        margin: 1vh 1vw;
+        display: block;
+    }
+
+    body .menu .item{
+        border: 1px solid transparent;
+        padding: 6px;
+    }
+    body.ham_click .menu .item{
+        border: unset;
+        padding: 5px 2px;
+    }
+
+    body .menu .item.active, body .menu .item:hover, body .menu .item.active:hover{
+        border: 1px solid transparent;
+        border-bottom-color: lightblue;
+    }
+
+    body.ham_click .menu .item.active, body.ham_click .menu .item:hover{
+        border-color: transparent;
+        border-left-color: lightblue;
+    }
+
+    body .menu_name{
+        display: none;
+    }
+    body.ham_click .menu_name{
+        display: initial;
+    }
+
+    /*show when ham is clicked*/
+    body.ham_click{
+        flex-direction: row;
+    }
+
+    body.ham_click nav{
+        flex: 7;
+    }
+    body.ham_click #rhs{
+        flex: 4;
+    }
+
+    body.ham_click #ham{
+        position: absolute;
+        top: 2.5vh;
+        left: 40vw;
+    }
+
+    /*hamburgar*/
+    #ham{
+        padding: 0.5em;
+        cursor: pointer;
+        transition: all 1s;
+    }
+
+    #ham.clicked{
+        position: relative;
+    }
+
+    #ham.clicked span{
+        position: inherit;
+        height: 4px;
+    }
+
+    #ham.clicked span:nth-child(2){
+        display: none;
+    }
+
+    #ham.clicked span:first-child{
+        transform: rotate(45deg);
+    }
+    #ham.clicked span:last-child{
+        transform: rotate(-45deg);
+    }
+
+    nav{
+        background-color: #111;
+        padding: 0.5em 0;
+        justify-content: space-between;
+        display: flex;
+        align-items: center;
+    }
+
+    #ham span{
+        display: block;
+        background-color: whitesmoke;
+        width: 25px;
+        height: 5px;
+        margin: 2px;
+        transition: all 1s;
+    }
+
+    .item img{
+        width: 95%;
+    }
+}
+
+@media screen and (max-width:540px){
+    body.ham_click #ham.clicked{
+        right: 35vw;
+        left: unset;
+    }
+}
+
+body{
+    background-color: #eee;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#lhs, #rhs{
+    padding: 1%;
+}
+
+section{
+    padding: 1vh 1vw;
+}
+
 #rhs{
     flex: 5;
-    overflow: auto;
     border-top: 1vh solid lightgrey;
+    overflow: auto;
+    height: 100vh;
 }
 
 #rhs > .head{
@@ -221,10 +333,7 @@ div.container{
 
 
 @media screen and (min-width: 768px){
-    #lhs, #logo{
-        flex: 2;
-    }
-    #rhs, #right_nav{
+    #rhs{
         flex: 6;
     }
 }
@@ -236,91 +345,19 @@ div.container{
 }
 
 @media screen and (max-width: 768px), (orientation: portrait){
-    #nav_holder{
-        flex-direction: column;
-    }
-
-    #nav_holder #logo #name{
-        justify-content: center;
-    }
-
-    #nav_holder #right_nav{
-        justify-content: space-between;
-        width: 100%;
-        padding: 0 0.5em;
-    }
-
-    #ham{
-        cursor: pointer;
-        position: initial;
-    }
-    #ham span{
-        display: block;
-        background-color: white;
-        width: 18px;
-        height: 3px;
-        margin: 2px;
-    }
-
-    #ham.clicked{
-        position: relative;
-    }
-
-    #ham.clicked span{
-        position: absolute;
-    }
-
-    #ham.clicked span:first-child{
-        transform:rotate(45deg);
-        top: -5px;
-    }
-
-    #ham.clicked span:last-child{
-        transform: rotate(-45deg);
-        top: -5px;
-    }
-
-    #ham.clicked span:nth-child(2){
-        display: none;
-    }
-
-    #lhs{
-        flex: 1;
-    }
-
-    #lhs .menu .item .menu_name, #lhs .menu > .head{
-        display: none;
-    }
-
-    #rhs{
-        flex: 11;
-    }
-
-    #lhs.menu_click{
-        flex: 5;
-    }
-
-    #lhs.menu_click ~ #rhs{
+    body.ham_click nav ~ #rhs{
         flex: 2;
     }
-
+    
     @media screen and (min-width: 540px){
-        #lhs.menu_click ~ #rhs{
+        body.ham_click nav ~ #rhs{
             flex: 7;
         }
     }
 
-    #lhs.menu_click .item .menu_name, #lhs.menu_click .head{
-        display: inherit;
-    }
-
-    .item img{
+    .menu .item img{
         width: 95%;
     }
-
-    /* #lhs .item{
-        justify-content: flex-start;
-    } */
 }
 
 .allocation{
