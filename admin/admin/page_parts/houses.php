@@ -96,19 +96,96 @@
                     <td>Rooms</td>
                     <td>Heads Per Room</td>
                     <td>Occupants</td>
-                    <!-- <td>Status</td> -->
+                    <td>Status</td>
                 </tr>
             </thead>
             <tbody>
                 <?php 
                     $count = 0;
-                    while($row=$res->fetch_assoc()){?>
+                    while($row=$res->fetch_assoc()){
+                    
+                    if($row["gender"] == "Both"){
+                ?>
                 <tr data-item-id="<?php echo $row["id"] ?>">
                     <td><?php echo ++$count ?></td>
                     <td><?php echo $row["title"] ?></td>
+                    <td><?php echo "Male" ?></td>
+                    <td><?php echo $row["maleTotalRooms"] ?></td>
+                    <td><?php echo $row["maleHeadPerRoom"] ?></td>
+                    <td>
+                        <?php 
+                            $sql = "SELECT COUNT(indexNumber) AS total
+                                    FROM house_allocation
+                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Boarder' AND studentGender='Male'";
+                            $query = $connect->query($sql);
+                            
+                            $tot = $query->fetch_assoc()["total"];
+                            echo $tot;
+                        ?>
+                    </td>
+                    <td><?php 
+                        if($tot == ($row["maleHeadPerRoom"] * $row["maleTotalRooms"])){
+                            echo "Full";
+                        }else{
+                            echo "Not Full";
+                        }
+                    ?></td>
+                    <td class="flex flex-wrap">
+                        <span class="item-event edit">Edit</span>
+                        <span class="item-event delete">Delete</span>
+                    </td>
+                </tr>
+
+                <tr data-item-id="<?php echo $row["id"] ?>">
+                    <td><?php echo ++$count ?></td>
+                    <td><?php echo $row["title"] ?></td>
+                    <td><?php echo "Female" ?></td>
+                    <td><?php echo $row["femaleTotalRooms"] ?></td>
+                    <td><?php echo $row["femaleHeadPerRoom"] ?></td>
+                    <td>
+                        <?php 
+                            $sql = "SELECT COUNT(indexNumber) AS total
+                                    FROM house_allocation
+                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Boarder' AND studentGender='Female'";
+                            $query = $connect->query($sql);
+                            
+                            $tot = $query->fetch_assoc()["total"];
+                            echo $tot;
+                        ?>
+                    </td>
+                    <td><?php 
+                        if($tot == ($row["femaleHeadPerRoom"] * $row["femaleTotalRooms"])){
+                            echo "Full";
+                        }else{
+                            echo "Not Full";
+                        }
+                    ?></td>
+                    <td class="flex flex-wrap">
+                        <span class="item-event edit">Edit</span>
+                        <span class="item-event delete">Delete</span>
+                    </td>
+                </tr>
+                <?php
+                    }else{
+                ?>
+                <tr data-item-id="<?php echo $row["id"] ?>">
+                    <?php 
+                        $totalRooms = 0;
+                        $headPerRoom = 0;
+
+                        if($row["gender"] == "Male"){
+                            $totalRooms = $row["maleTotalRooms"];
+                            $headPerRoom = $row["maleHeadPerRoom"];
+                        }else{
+                            $totalRooms = $row["femaleTotalRooms"];
+                            $headPerRoom = $row["femaleHeadPerRoom"];
+                        }
+                    ?>
+                    <td><?php echo ++$count ?></td>
+                    <td><?php echo $row["title"] ?></td>
                     <td><?php echo $row["gender"] ?></td>
-                    <td><?php echo $row["totalRooms"] ?></td>
-                    <td><?php echo $row["headPerRoom"] ?></td>
+                    <td><?php echo $totalRooms ?></td>
+                    <td><?php echo $headPerRoom ?></td>
                     <td>
                         <?php 
                             $sql = "SELECT COUNT(indexNumber) AS total
@@ -120,18 +197,19 @@
                             echo $tot;
                         ?>
                     </td>
-                    <!-- <td><?php 
-                        if($tot == ($row["headPerRoom"] * $row["totalRooms"])){
+                    <td><?php 
+                        if($tot == ($headPerRoom * $totalRooms)){
                             echo "Full";
                         }else{
                             echo "Not Full";
                         }
-                    ?></td> -->
+                    ?></td>
                     <td class="flex flex-wrap">
                         <span class="item-event edit">Edit</span>
                         <span class="item-event delete">Delete</span>
                     </td>
                 </tr>
+                <?php } ?>
                 <?php } ?>
             </tbody>
         </table>

@@ -2,6 +2,7 @@ $("form[name=addHouseForm]").submit(function(e){
     e.preventDefault();
 
     response = formSubmit($(this), $("form[name=addHouseForm] button[name=submit]"));
+    time = 5;
 
     if(response == true){
         message = "House has been added";
@@ -20,24 +21,36 @@ $("form[name=addHouseForm]").submit(function(e){
             message = "House name field is empty";
         }else if(response == "no-gender"){
             message = "Please select a gender type";
-        }else if(response == "room-total-empty"){
-            message = "Total rooms field is empty";
-        }else if(response == "room-zero"){
-            message = "Total number of rooms cannot be less than 1";
-        }else if(response == "head-total-empty"){
-            message = "Heads per room field is empty";
-        }else if(response == "head-zero"){
-            message = "Heads per room cannot be less than 1";
+        }else if(response == "male-room-total-empty"){
+            message = "Total rooms for male field is empty";
+        }else if(response == "male-room-zero"){
+            message = "Total number of rooms for males cannot be less than 1";
+        }else if(response == "male-head-total-empty"){
+            message = "Heads per room field for males is empty";
+        }else if(response == "male-head-zero"){
+            message = "Heads per room for males cannot be less than 1";
+        }else if(response == "female-room-total-empty"){
+            message = "Total rooms for female field is empty";
+        }else if(response == "female-room-zero"){
+            message = "Total number of rooms for females cannot be less than 1";
+        }else if(response == "female-head-total-empty"){
+            message = "Heads per room field for females is empty";
+        }else if(response == "female-head-zero"){
+            message = "Heads per room for females cannot be less than 1";
+        }else{
+            message = response;
+            time = 0;
         }
     }
 
-    messageBoxTimeout("addHouseForm",message, type);
+    messageBoxTimeout("addHouseForm",message, type, time);
 })
 
 $("form[name=updateHouseForm]").submit(function(e){
     e.preventDefault();
 
     response = formSubmit($(this), $("form[name=updateHouseForm] button[name=submit]"));
+    time = 5;
 
     if(response == true){
         message = "House has been updated";
@@ -56,23 +69,34 @@ $("form[name=updateHouseForm]").submit(function(e){
             message = "House name field is empty";
         }else if(response == "no-gender"){
             message = "Please select a gender type";
-        }else if(response == "room-total-empty"){
-            message = "Total rooms field is empty";
-        }else if(response == "room-zero"){
-            message = "Total number of rooms cannot be less than 1";
-        }else if(response == "head-total-empty"){
-            message = "Heads per room field is empty";
-        }else if(response == "head-zero"){
-            message = "Heads per room cannot be less than 1";
+        }else if(response == "male-room-total-empty"){
+            message = "Total rooms for male field is empty";
+        }else if(response == "male-room-zero"){
+            message = "Total number of rooms for males cannot be less than 1";
+        }else if(response == "male-head-total-empty"){
+            message = "Heads per room field for males is empty";
+        }else if(response == "male-head-zero"){
+            message = "Heads per room for males cannot be less than 1";
+        }else if(response == "female-room-total-empty"){
+            message = "Total rooms for female field is empty";
+        }else if(response == "female-room-zero"){
+            message = "Total number of rooms for females cannot be less than 1";
+        }else if(response == "female-head-total-empty"){
+            message = "Heads per room field for females is empty";
+        }else if(response == "female-head-zero"){
+            message = "Heads per room for females cannot be less than 1";
+        }else{
+            message = response;
+            time = 0;
         }
     }
 
-    messageBoxTimeout("updateHouseForm",message, type);
+    messageBoxTimeout("updateHouseForm",message, type, time);
 })
 
 //fetch house Details
 $("table tbody tr .edit").click(function(){
-    //grab id
+    /*//grab id
     id = $(this).parents("tr").attr("data-item-id");
     $.ajax({
         url: $("#modal form").attr("action"),
@@ -105,7 +129,8 @@ $("table tbody tr .edit").click(function(){
                 $("form[name=updateHouseForm]").removeClass("no_disp");
             }
         }
-    })
+    })*/
+    alert("Model disabled by development procedures. \nAlert developer for more info");
 })
 
 $("#modal_1 .item-event.cancel").click(function(){
@@ -129,4 +154,30 @@ $("table tbody tr .delete").click(function(){
     $("#gen_del input[name=sid]").val(item_id);
     $("#gen_del input[name=mode]").val("delete");
     $("#gen_del input[name=table]").val("houses");
+})
+
+$("form[name=addHouseForm] button[name=cancel]").click(function(){
+   //hide displays of the number sections
+    $("#female_house").hide();
+    $("#male_house").hide(); 
+})
+    
+
+
+//display gender model to display for number input
+$("input[name=gender]").change(function(){
+    myVal = $(this).val();
+    myVal = myVal.toLowerCase();
+
+    //display required number receiver
+    if(myVal == "male"){
+        $("#male_house").show();
+        $("#female_house").hide();
+    }else if(myVal == "female"){
+        $("#female_house").show();
+        $("#male_house").hide();
+    }else{
+        $("#female_house").show();
+        $("#male_house").show();
+    }
 })

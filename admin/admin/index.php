@@ -33,7 +33,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
         if($data["Active"] == FALSE){
             echo "<nav id='not-active'>
             ";
-            $status = "Status: Not Active";
+            $status = "Status: School Disabled";
             $_SESSION["real_status"] = false;
         }else{
             //check if house and students are set
@@ -90,6 +90,9 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                 <div class="img">
                     <img src="<?php echo $url?>/assets/images/icons/person-circle-outline.svg" alt="user logo">
                 </div>
+                <!-- <div class="img" style="filter: invert(1)">
+                    <img src="<?php echo $url."/".getSchoolDetail($user_school_id, true)["logoPath"]?>" alt="user logo">
+                </div> -->
                 <div class="name">
                     <span><?php echo $user_details["fullname"] ?></span>
                 </div>
@@ -110,7 +113,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                     </div>
                     <div class="item relative" name="Notification" title="Notification" data-url="<?php echo $url?>/admin/admin/page_parts/notification.php">
                         <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/notifications-circle-outline.svg" alt="Dashboard" />
+                            <img src="<?php echo $url?>/assets/images/icons/notifications-circle-outline.svg" alt="notification" />
                         </div>
                         <div class="menu_name relative">
                             <span>Notification</span>

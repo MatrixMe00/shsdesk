@@ -242,9 +242,11 @@
             echo json_encode($result);
         }elseif($submit == "addHouse" || $submit == "addHouse_ajax"){
             $house_name = $_REQUEST["house_name"];
-            $gender = $_REQUEST["gender"];
-            $house_room_total = $_REQUEST["house_room_total"];
-            $head_per_room = $_REQUEST["head_per_room"];
+            $gender = @$_REQUEST["gender"];
+            $male_house_room_total = $_REQUEST["male_house_room_total"];
+            $male_head_per_room = $_REQUEST["male_head_per_room"];
+            $female_house_room_total = $_REQUEST["female_house_room_total"];
+            $female_head_per_room = $_REQUEST["female_head_per_room"];
 
             $message = "";
 
@@ -252,23 +254,47 @@
                 $message = "no-house-name";
             }elseif(empty($gender)){
                 $message = "no-gender";
-            }/*elseif(empty($house_room_total)){
-                $message = "room-total-empty";
-            }elseif(intval($house_room_total) <= 0){
-                $message = "room-zero";
-            }elseif(empty($head_per_room)){
-                $message = "head-total-empty";
-            }elseif(intval($head_per_room) <= 0){
-                $message = "head-zero";
-            }*/else{
-                //query into database
-                // $sql = "INSERT INTO houses (title, schoolID, totalRooms, headPerRoom, gender)
-                //     VALUES (?,?,?,?,?)";
-                $sql = "INSERT INTO houses (title, schoolID, gender)
-                    VALUES (?,?,?)";
+            }elseif(empty($male_house_room_total) && (strtolower($gender) == "both" || strtolower($gender) == "male")){
+                $message = "male-room-total-empty";
+            }elseif(intval($male_house_room_total) <= 0 && (strtolower($gender) == "both" || strtolower($gender) == "male")){
+                $message = "male-room-zero";
+            }elseif(empty($female_house_room_total) && (strtolower($gender) == "both" || strtolower($gender) == "female")){
+                $message = "female-room-total-empty";
+            }elseif(intval($female_house_room_total) <= 0 && (strtolower($gender) == "both" || strtolower($gender) == "female")){
+                $message = "female-room-zero";
+            }elseif(empty($male_head_per_room) && (strtolower($gender) == "both" || strtolower($gender) == "male")){
+                $message = "male-head-total-empty";
+            }elseif(intval($male_head_per_room) <= 0 && (strtolower($gender) == "both" || strtolower($gender) == "male")){
+                $message = "male-head-zero";
+            }elseif(empty($female_head_per_room) && (strtolower($gender) == "both" || strtolower($gender) == "female")){
+                $message = "female-head-total-empty";
+            }elseif(intval($female_head_per_room) <= 0 && (strtolower($gender) == "both" || strtolower($gender) == "female")){
+                $message = "female-head-zero";
+            }else{
+                //query into database by gender
+                if(strtolower($gender) == "male"){
+                    $sql = "INSERT INTO houses (title, schoolID, maleTotalRooms, maleHeadPerRoom, gender) 
+                        VALUES (?,?,?,?,?)";
+                }elseif(strtolower($gender == "female")){
+                    $sql = "INSERT INTO houses (title, schoolID, femaleTotalRooms, femaleHeadPerRoom, gender) 
+                        VALUES (?,?,?,?,?)";
+                }else{
+                    $sql = "INSERT INTO houses (title, schoolID, maleTotalRooms, maleHeadPerRoom, femaleTotalRooms, femaleHeadPerRoom, gender) 
+                        VALUES (?,?,?,?,?,?,?)";
+                }
+
+                //prepare sql statement
                 $stmt = $connect->prepare($sql);
-                // $stmt->bind_param("sisss",$house_name, $user_school_id, $house_room_total, $head_per_room, $gender);
-                $stmt->bind_param("sis", $house_name, $user_school_id, $gender);
+
+                //bind parameters
+                if(strtolower($gender) == "male"){
+                    $stmt->bind_param("siiis",$house_name, $user_school_id, $male_house_room_total, $male_head_per_room, $gender);
+                }elseif(strtolower($gender == "female")){
+                    $stmt->bind_param("siiis",$house_name, $user_school_id, $female_house_room_total, $female_head_per_room, $gender);
+                }else{
+                    $stmt->bind_param("siiiiis",$house_name, $user_school_id, $male_house_room_total, $male_head_per_room, $female_house_room_total, $female_head_per_room, $gender);
+                }
+
                 $stmt->execute();
 
                 $message = "success";
@@ -278,9 +304,11 @@
             
         }elseif($submit == "updateHouse" || $submit == "updateHouse_ajax"){
             $house_name = $_REQUEST["house_name"];
-            $gender = $_REQUEST["gender"];
-            $house_room_total = $_REQUEST["house_room_total"];
-            $head_per_room = $_REQUEST["head_per_room"];
+            $gender = @$_REQUEST["gender"];
+            $male_house_room_total = $_REQUEST["male_house_room_total"];
+            $male_head_per_room = $_REQUEST["male_head_per_room"];
+            $female_house_room_total = $_REQUEST["female_house_room_total"];
+            $female_head_per_room = $_REQUEST["female_head_per_room"];
             $id = $_REQUEST["id"];
 
             $message = "";
@@ -289,15 +317,47 @@
                 $message = "no-house-name";
             }elseif(empty($gender)){
                 $message = "no-gender";
-            }elseif(empty($house_room_total)){
-                $message = "room-total-empty";
-            }elseif(intval($house_room_total) <= 0){
-                $message = "room-zero";
-            }elseif(empty($head_per_room)){
-                $message = "head-total-empty";
-            }elseif(intval($head_per_room) <= 0){
-                $message = "head-zero";
+            }elseif(empty($male_house_room_total) && (strtolower($gender) == "both" || strtolower($gender) == "male")){
+                $message = "male-room-total-empty";
+            }elseif(intval($male_house_room_total) <= 0 && (strtolower($gender) == "both" || strtolower($gender) == "male")){
+                $message = "male-room-zero";
+            }elseif(empty($female_house_room_total) && (strtolower($gender) == "both" || strtolower($gender) == "female")){
+                $message = "female-room-total-empty";
+            }elseif(intval($female_house_room_total) <= 0 && (strtolower($gender) == "both" || strtolower($gender) == "female")){
+                $message = "female-room-zero";
+            }elseif(empty($male_head_per_room) && (strtolower($gender) == "both" || strtolower($gender) == "male")){
+                $message = "male-head-total-empty";
+            }elseif(intval($male_head_per_room) <= 0 && (strtolower($gender) == "both" || strtolower($gender) == "male")){
+                $message = "male-head-zero";
+            }elseif(empty($female_head_per_room) && (strtolower($gender) == "both" || strtolower($gender) == "female")){
+                $message = "female-head-total-empty";
+            }elseif(intval($female_head_per_room) <= 0 && (strtolower($gender) == "both" || strtolower($gender) == "female")){
+                $message = "female-head-zero";
             }else{
+                //query into database by gender
+                if(strtolower($gender) == "male"){
+                    $sql = "UPDATE houses SET title=?, maleTotalRooms=?, maleHeadPerRoom=?, gender=?
+                        WHERE id=?";
+                }elseif(strtolower($gender == "female")){
+                    $sql = "UPDATE houses SET title=?, femaleTotalRooms=?, femaleHeadPerRoom=?, gender=?
+                        WHERE id=?";
+                }else{
+                    $sql = "UPDATE houses SET title=?, maleTotalRooms=?, maleHeadPerRoom=?, femaleTotalRooms=?, femaleHeadPerRoom=?, gender=?
+                        WHERE id=?";
+                }
+
+                //prepare sql statement
+                $stmt = $connect->prepare($sql);
+
+                //bind parameters
+                if(strtolower($gender) == "male"){
+                    $stmt->bind_param("siiisi",$house_name, $user_school_id, $male_house_room_total, $male_head_per_room, $gender, $id);
+                }elseif(strtolower($gender == "female")){
+                    $stmt->bind_param("siiisi",$house_name, $user_school_id, $female_house_room_total, $female_head_per_room, $gender, $id);
+                }else{
+                    $stmt->bind_param("siiiiisi",$house_name, $user_school_id, $male_house_room_total, $male_head_per_room, $female_house_room_total, $female_head_per_room, $gender, $id);
+                }
+
                 //query into database
                 $sql = "UPDATE houses SET title=?, totalRooms=?, headPerRoom=?, gender=?
                 WHERE id=?";
