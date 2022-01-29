@@ -309,7 +309,12 @@
             $male_head_per_room = $_REQUEST["male_head_per_room"];
             $female_house_room_total = $_REQUEST["female_house_room_total"];
             $female_head_per_room = $_REQUEST["female_head_per_room"];
-            $id = $_REQUEST["id"];
+
+            if(isset($_REQUEST["house_id"])){
+                $id = $_REQUEST["house_id"];
+            }else{
+                echo "ID for selected house not found or provided. Process execution was aborted"; exit(1);
+            }
 
             $message = "";
 
@@ -351,18 +356,14 @@
 
                 //bind parameters
                 if(strtolower($gender) == "male"){
-                    $stmt->bind_param("siiisi",$house_name, $user_school_id, $male_house_room_total, $male_head_per_room, $gender, $id);
+                    $stmt->bind_param("siisi",$house_name, $male_house_room_total, $male_head_per_room, $gender, $id);
                 }elseif(strtolower($gender == "female")){
-                    $stmt->bind_param("siiisi",$house_name, $user_school_id, $female_house_room_total, $female_head_per_room, $gender, $id);
+                    $stmt->bind_param("siisi",$house_name, $female_house_room_total, $female_head_per_room, $gender, $id);
                 }else{
-                    $stmt->bind_param("siiiiisi",$house_name, $user_school_id, $male_house_room_total, $male_head_per_room, $female_house_room_total, $female_head_per_room, $gender, $id);
+                    $stmt->bind_param("siiiisi",$house_name, $male_house_room_total, $male_head_per_room, $female_house_room_total, $female_head_per_room, $gender, $id);
                 }
 
-                //query into database
-                $sql = "UPDATE houses SET title=?, totalRooms=?, headPerRoom=?, gender=?
-                WHERE id=?";
-                $stmt = $connect->prepare($sql);
-                $stmt->bind_param("ssssi",$house_name, $house_room_total, $head_per_room, $gender,$id);
+                //execute statement
                 $stmt->execute();
 
                 $message = "success";

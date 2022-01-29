@@ -157,76 +157,89 @@
                     //automatically give user a house of school permits
                     $permit = getSchoolDetail($shs_placed, true)["autoHousePlace"];
                     
-                    /*if($permit){
+                    if($permit){
                         //count number of houses of the school
-                        $sql = "SELECT id, headPerRoom, totalRooms
+                        $sql = "SELECT id, maleHeadPerRoom, maleTotalRooms, femaleHeadPerRoom, femaleTotalRooms
                             FROM houses
-                            WHERE schoolID = $shs_placed AND gender = '$ad_gender'";
+                            WHERE schoolID = $shs_placed AND gender = '$ad_gender' OR gender='Both'";
                         $result = $connect->query($sql);
 
                         //create an array for details
                         $house = array();
 
                         if($result->num_rows > 0){
-                            $total = $result->num_rows;
-                            
-                            while($row = $result->fetch_assoc()){
+                        $total = $result->num_rows;
+
+                        while($row = $result->fetch_assoc()){
+                            if(strtolower($ad_gender) == "male"){
                                 $new = array(
                                     array(
                                         "id" => $row["id"],
-                                        "totalHeads" => intval($row["headPerRoom"]) * intval($row["totalRooms"])
+                                        "totalHeads" => intval($row["maleHeadPerRoom"]) * intval($row["maleTotalRooms"])
                                     )                                    
                                 );
-
-                                //add to house array
-                                $house = array_merge($house, $new);
+                            }else{
+                                $new = array(
+                                    array(
+                                        "id" => $row["id"],
+                                        "totalHeads" => intval($row["femaleHeadPerRoom"]) * intval($row["femaleTotalRooms"])
+                                    )                                    
+                                );
                             }
+                            
+                            //add to house array
+                            $house = array_merge($house, $new);
+                        }
 
-                            //search for last house allocation entry
-                            $sql = "SELECT indexNumber, houseID
-                                FROM house_allocation
-                                WHERE schoolID = $shs_placed
-                                ORDER BY indexNumber DESC
-                                LIMIT 1";
-                            $result = $connect->query($sql);
+                        //search for last house allocation entry for this gender
+                        $sql = "SELECT houseID
+                            FROM house_allocation
+                            WHERE schoolID = $shs_placed AND studentGender='$ad_gender'
+                            ORDER BY indexNumber DESC
+                            LIMIT 1";
+                        $result = $connect->query($sql);
 
-                            $hid = $result->fetch_assoc()["houseID"];
+                        $hid = $result->fetch_assoc()["houseID"];
 
-                            //fetch student details for entry
-                            $student_details = fetchData("*", "cssps", "indexNumber=$ad_index");
+                        //fetch student details for entry from cssps
+                        $student_details = fetchData("*", "cssps", "indexNumber='$ad_index'");
 
-                            if($result->num_rows == 1){
-                                //retrieve house id
-                                $id = $hid;
+                        if($result->num_rows == 1){
+                            //retrieve last house id given out
+                            $id = $hid;
 
-                                //get total number of boarding students in house
-                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$id AND boardingStatus='Boarder'");
-                                
-                                if(is_array($ttl)){
-                                    $ttl = $ttl["total"];
-                                }
+                            //set variable to receive next allocating house
+                            $next_room = 0;
 
-                                $next_room = 0;
+                            for($i = 0; $i < $total; $i++){
+                                //try choosing the next or current house
+                                if($house[$i]["id"] == $id){
+                                    //fetch totals
+                                    if($i+1 < $total){
+                                        $nid = $house[$i+1]["id"];
+                                        $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
+                                    }elseif($i-1 < $total){
+                                        $nid = $house[$i-1]["id"];
+                                        $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
+                                    }elseif($i+1 == $total){
+                                        $nid = $house[$i+1]["id"];
+                                        $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
+                                    }
 
-                                for($i = 0; $i < $total; $i++){
-                                    //try choosing the next house
-                                    if($house[$i]["id"] == $id){
-                                        //check immediate available houses
-                                        if($i+1 < $total && $ttl < $house[$i+1]["totalHeads"]){
-                                            $next_room = $house[$i+1]["id"];
-                                        }elseif($i-1 >= 0 && $ttl < $house[$i-1]["totalHeads"]){                                            
-                                            $next_room = $house[$i-1]["id"];
-                                        }elseif($i+1 == $total && $ttl < $house[0]["totalHeads"]){
-                                            $next_room = $house[0]["id"];
-                                        }
-                                        
-                                        if($next_room > 0){
-                                            break;
-                                        }
+                                    //check immediate available houses
+                                    if($i+1 < $total && $ttl < $house[$i+1]["totalHeads"]){
+                                        $next_room = $house[$i+1]["id"];
+                                    }elseif($i-1 >= 0 && $ttl < $house[$i-1]["totalHeads"]){                                            
+                                        $next_room = $house[$i-1]["id"];
+                                    }elseif($i+1 == $total && $ttl < $house[0]["totalHeads"]){
+                                        $next_room = $house[0]["id"];
+                                    }
+                                    
+                                    if($next_room > 0){
+                                        break;
                                     }
                                 }
-
-                                echo "next room: $next_room";
+                            }
 
                                 //parse entry into allocation table
                                 $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
@@ -245,7 +258,7 @@
                                 $stmt->execute();
                             }
                         }
-                    }*/
+                    }
 
                     if($permit){
                         //count number of houses of the school

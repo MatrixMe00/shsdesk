@@ -53,14 +53,14 @@ $("form[name=updateHouseForm]").submit(function(e){
     time = 5;
 
     if(response == true){
-        message = "House has been updated";
+        message = "House details has been updated";
         type = "success";
 
         //close box and refresh page
         setTimeout(function(){
             $("form[name=updateHouseForm] button[name=cancel]").click();
             location.reload();
-        },6000)
+        },3000)
         
     }else{
         type = "error";
@@ -96,7 +96,7 @@ $("form[name=updateHouseForm]").submit(function(e){
 
 //fetch house Details
 $("table tbody tr .edit").click(function(){
-    /*//grab id
+    //grab id
     id = $(this).parents("tr").attr("data-item-id");
     $.ajax({
         url: $("#modal form").attr("action"),
@@ -120,17 +120,35 @@ $("table tbody tr .edit").click(function(){
                 //select gender
                 $("form[name=updateHouseForm] input[value=" + json["gender"] + "]").attr("checked", true);
 
-                $("form[name=updateHouseForm] input[name=house_room_total]").val(json["totalRooms"]);
-                $("form[name=updateHouseForm] input[name=head_per_room]").val(json["headPerRoom"]);
+                //fill house figures for males
+                if(json["gender"].toLowerCase() == "male" || json["gender"].toLowerCase() == "both"){
+                    $("form[name=updateHouseForm] #male_house").show();
+
+                    $("form[name=updateHouseForm] input[name=male_house_room_total]").val(json["maleTotalRooms"]);
+                    $("form[name=updateHouseForm] input[name=male_head_per_room]").val(json["maleHeadPerRoom"]);
+                }
+
+                //fill house figures for females
+                if(json["gender"].toLowerCase() == "female" || json["gender"].toLowerCase() == "both"){
+                    $("form[name=updateHouseForm] #female_house").show();
+
+                    $("form[name=updateHouseForm] input[name=female_house_room_total]").val(json["femaleTotalRooms"]);
+                    $("form[name=updateHouseForm] input[name=female_head_per_room]").val(json["femaleHeadPerRoom"]);
+                }
+                
+                //work on title
                 $("form[name=updateHouseForm] span#houseName").html(json["title"]);
+
+                //provide id for selected house
+                $("form[name=updateHouseForm] input[name=house_id]").val(json["id"]);
 
                 //display form
                 $("#modal_1 .my_loader").fadeOut();
                 $("form[name=updateHouseForm]").removeClass("no_disp");
             }
         }
-    })*/
-    alert("Model disabled by development procedures. \nAlert developer for more info");
+    })
+    // alert("Model disabled by development procedures. \nAlert developer for more info");
 })
 
 $("#modal_1 .item-event.cancel").click(function(){
@@ -156,10 +174,12 @@ $("table tbody tr .delete").click(function(){
     $("#gen_del input[name=table]").val("houses");
 })
 
-$("form[name=addHouseForm] button[name=cancel]").click(function(){
+$("button[name=cancel]").click(function(){
+    formName = $(this).parents("form").attr("name");
+
    //hide displays of the number sections
-    $("#female_house").hide();
-    $("#male_house").hide(); 
+    $("form[name=" + formName + "] #female_house").hide();
+    $("form[name=" + formName + "] #male_house").hide(); 
 })
     
 
@@ -168,16 +188,17 @@ $("form[name=addHouseForm] button[name=cancel]").click(function(){
 $("input[name=gender]").change(function(){
     myVal = $(this).val();
     myVal = myVal.toLowerCase();
+    formName = $(this).parents("form").attr("name");
 
     //display required number receiver
     if(myVal == "male"){
-        $("#male_house").show();
-        $("#female_house").hide();
+        $("form[name=" + formName + "] #male_house").show();
+        $("form[name=" + formName + "] #female_house").hide();
     }else if(myVal == "female"){
-        $("#female_house").show();
-        $("#male_house").hide();
+        $("form[name=" + formName + "] #female_house").show();
+        $("form[name=" + formName + "] #male_house").hide();
     }else{
-        $("#female_house").show();
-        $("#male_house").show();
+        $("form[name=" + formName + "] #female_house").show();
+        $("form[name=" + formName + "] #male_house").show();
     }
 })

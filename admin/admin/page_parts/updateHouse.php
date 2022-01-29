@@ -14,6 +14,7 @@
             <span class="message">Here is a test message</span>
             <div class="close"><span>&cross;</span></div>
         </div>
+        <input type="hidden" name="house_id">
         <label for="house_name">
             <span class="label_image">
                 <img src="<?php echo $url?>/assets/images/icons/home.png" alt="house name">
@@ -38,19 +39,42 @@
             </div>
         </div>
         
-        <div class="joint">
-            <label for="house_room_total">
-                <span class="label_image">
-                    <img src="<?php echo $url?>/assets/images/icons/push-outline.svg" alt="total rooms">
-                </span>
-                <input type="number" name="house_room_total" id="house_room_total" placeholder="Total Number of Rooms*" min="1" required>
-            </label>
-            <label for="head_per_room">
-                <span class="label_image">
-                    <img src="<?php echo $url?>/assets/images/icons/people-outline.svg" alt="head per room">
-                </span>
-                <input type="number" name="head_per_room" id="head_per_room" placeholder="Number of heads per room*" min="1" required>
-            </label>
+        <div id="male_house" style="display: none">
+            <div class="joint">
+                <label for="male_house_room_total">
+                    <span class="label_image">
+                        <img src="<?php echo $url?>/assets/images/icons/push-outline.svg" alt="total rooms">
+                    </span>
+                    <input type="number" name="male_house_room_total" id="male_house_room_total" placeholder="Total Number of Rooms [male]*" min="1"
+                    title="Enter the total number of rooms in the house for males">
+                </label>
+                <label for="male_head_per_room">
+                    <span class="label_image">
+                        <img src="<?php echo $url?>/assets/images/icons/people-outline.svg" alt="head per room">
+                    </span>
+                    <input type="number" name="male_head_per_room" id="male_head_per_room" placeholder="Number of heads per room [male]*" min="1"
+                    title="Enter the number of male students required to make a room in the house full">
+                </label>
+            </div>
+        </div>
+        
+        <div id="female_house" style="display: none">
+            <div class="joint">
+                <label for="female_house_room_total">
+                    <span class="label_image">
+                        <img src="<?php echo $url?>/assets/images/icons/push-outline.svg" alt="total rooms">
+                    </span>
+                    <input type="number" name="female_house_room_total" id="female_house_room_total" placeholder="Total Number of Rooms [female]*" min="1"
+                    title="Enter the total number of rooms in the house for females">
+                </label>
+                <label for="female_head_per_room">
+                    <span class="label_image">
+                        <img src="<?php echo $url?>/assets/images/icons/people-outline.svg" alt="head per room">
+                    </span>
+                    <input type="number" name="female_head_per_room" id="female_head_per_room" placeholder="Number of heads per room [female]*" min="1"
+                    title="Enter the number of female students required to make a room in the house full">
+                </label>
+            </div>
         </div>
 
         <div class="flex">
