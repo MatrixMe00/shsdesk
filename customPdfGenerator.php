@@ -153,6 +153,11 @@
         $residence_status = $_SESSION["ad_stud_residence"];
         $program = $_SESSION["ad_stud_program"];
         $house = $_SESSION["ad_stud_house"];
+
+        if($house == "e"){
+            $house = "Allocated Later";
+        }
+        
         // $reopening = $_SESSION["ad_reopening"];
         $reopening = date("jS F, Y");
 

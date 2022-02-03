@@ -36,7 +36,7 @@
                     <?php }
                     }else{
                         echo "
-                        <img src=\"$url/assets/images/carousel/thought-catalog-xHaZ5BW9AY0-unsplash.jpg\" alt=\"woman writing\" />";
+                        <img src=\"$url/assets/images/default/thought-catalog-xHaZ5BW9AY0-unsplash.jpg\" alt=\"woman writing\" />";
                     } ?>
                     <div class="shadow"></div>
                 </div>

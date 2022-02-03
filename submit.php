@@ -340,6 +340,7 @@
 
                     //create a session responsible for preparing admission letter
                     $school = getSchoolDetail($shs_placed, true);
+                    $student = fetchData("c.*, e.enrolCode","cssps c JOIN enrol_table e ON c.indexNumber = e.indexNumber", "c.indexNumber='$ad_index'");
 
                     //details for school
                     $_SESSION["ad_school_name"] = $school["schoolName"];
@@ -359,13 +360,13 @@
                     $_SESSION["ad_reopening"] = fetchData("reopeningDate","admissiondetails","schoolID=$shs_placed");
 
                     //student details
-                    $_SESSION["ad_stud_index"] = $ad_index;
-                    $_SESSION["ad_stud_lname"] = $ad_lname;
-                    $_SESSION["ad_stud_oname"] = $ad_oname;
-                    $_SESSION["ad_stud_enrol_code"] = $ad_enrol_code;
-                    $_SESSION["ad_stud_residence"] = $ad_resident;
-                    $_SESSION["ad_stud_program"] = $ad_course;
-                    $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber=".$ad_index)["houseID"])["title"];
+                    $_SESSION["ad_stud_index"] = $student["indexNumber"];
+                    $_SESSION["ad_stud_lname"] = $student["Lastname"];
+                    $_SESSION["ad_stud_oname"] = $student["Othernames"];
+                    $_SESSION["ad_stud_enrol_code"] = $student["enrolCode"];
+                    $_SESSION["ad_stud_residence"] = $student["boardingStatus"];
+                    $_SESSION["ad_stud_program"] = $student["programme"];
+                    $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"])["title"];
                 }else{
                     $message = "error";
                 }
