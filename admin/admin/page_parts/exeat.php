@@ -6,7 +6,7 @@
 <section>
     <form action="<?php echo $url?>/admin/admin/submit.php" method="post" name="exeatForm">
         <div class="head">
-            <h2>Add A Student</h2>
+            <h2>Provide Student Exeat</h2>
         </div>
         <div class="body">
             <div class="message_box success no_disp">
@@ -19,35 +19,37 @@
                         <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="name">
                     </span>
                     <input type="text" name="student_index" id="student_index" placeholder="index number Student*"
-                    required title="Index number of the student should be delivered here" pattern="[0-9]*">
+                    required title="Index number of the student should be delivered here" pattern="[0-9]*" class="text_input">
                 </label>
                 <label for="exeat_town">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/home.png" alt="town">
                     </span>
                     <input type="text" name="exeat_town" id="exeat_town" placeholder="Enter the name of the town*" 
-                    title="Name of destination town by the student should be entered here" required>
+                    title="Name of destination town by the student should be entered here" required
+                    class="text_input">
                 </label>
             </div>
-            <div class="joint">
+            <div class="joint flex-wrap">
                 <label for="exeat_date" class="flex-column flex-align-start flex-content-start date">
                     <span class="label_title">
                         Date for exeat
                     </span>
-                    <input type="date" name="exeat_date" id="exeat_date" title="Date for exeat" required
-                    value="<?php echo date("Y-m-d") ?>">
+                    <input type="date" style="width: 100%" name="exeat_date" id="exeat_date" title="Date for exeat" required
+                    value="<?php echo date("Y-m-d") ?>" class="text_input">
                 </label>
                 <label for="return_date" class="flex-column flex-align-start flex-content-start date">
                     <span class="label_title">
                         Date for Returning
                     </span>
-                    <input type="date" name="return_date" id="return_date" title="Date for exeat" required>
+                    <input type="date" style="width: 100%" name="return_date" id="return_date" title="Date for returning" required
+                    class="text_input">
                 </label>
                 <label for="exeat_type">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/logout.png" alt="type">
                     </span>
-                    <select name="exeat_type" id="exeat_type">
+                    <select name="exeat_type" id="exeat_type" class="text_input">
                         <option value="">Select type of exeat</option>
                         <option value="Internal">Internal Exeat</option>
                         <option value="External">External Exeat</option>
@@ -94,7 +96,7 @@
             </thead>
             <tbody>
                 <?php while($row = $result->fetch_assoc()){ ?>
-                <tr>
+                <tr data-item-id="<?php echo $row["id"] ?>">
                     <td><?php 
                             $column = "Lastname, Othernames";
                             $table = "cssps";
@@ -118,8 +120,11 @@
                     <td><?php echo $row["exeatTown"] ?></td>
                     <td><?php echo date("M j, Y", strtotime($row["exeatDate"])) ?></td>
                     <td><?php echo date("M j, Y", strtotime($row["expectedReturn"])) ?></td>
-                    <td><?php echo date("M j, Y", strtotime($row["returnDate"])) ?></td>
-                    <td><?php
+                    <td class="ret_date"><?php 
+                        if(!is_null($row["returnDate"]))
+                            echo date("M j, Y", strtotime($row["returnDate"])) 
+                    ?></td>
+                    <td class="ret"><?php
                             if($row["returnStatus"] == false){
                                 echo "Not Returned";
                             }else{
@@ -129,7 +134,7 @@
                     </td>
                     <?php if($row["returnStatus"] == false){?>
                     <td class="edit">
-                        <span class="item-event" data-item-id="<?php echo $row["id"]?>">Sign Returned</span>
+                        <span class="item-event sign-return" data-item-id="<?php echo $row["id"]?>">Sign Returned</span>
                     </td>
                     <?php } ?>
                 </tr>
@@ -149,4 +154,75 @@
     <?php } ?>
 </section>
 
-<script src="<?php echo $url?>/admin/admin/assets/scripts/exeat.js"></script>
+<div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <div class="form" name="studentExeatDetails">
+        <div class="head">
+            <h2>Exeat Details</h2>
+        </div>
+        <div class="body">
+            <!--Student details-->
+            <div class="joint">
+                <label class="flex-wrap flex-column" for="indexNumber">
+                    <span class="label_title" style="margin-right: 5px;">Index Number</span>
+                    <input type="text" name="indexNumber" id="indexNumber" disabled>
+                </label>
+                <label class="flex-wrap flex-column" for="fullname">
+                    <span class="label_title" style="margin-right: 5px;">Full Name</span>
+                    <input type="text" name="fullname" id="fullname" disabled>
+                </label>
+                <label class="flex-wrap flex-column" for="house">
+                    <span class="label_title" style="margin-right: 5px;">Student's House</span>
+                    <input type="text" name="house" id="house" disabled>
+                </label>
+            </div>
+            
+            <!--Exeat details-->
+            <div class="joint">
+                <label class="flex-wrap flex-column" for="exeat_town">
+                    <span class="label_title" style="margin-right: 5px;">Town vouched for</span>
+                    <input type="text" name="exeat_town" id="exeat_town" disabled>
+                </label>
+                <label class="flex-wrap flex-column" for="exeat_date">
+                    <span class="label_title" style="margin-right: 5px;">Date exeat was taken</span>
+                    <input type="text" name="exeat_date" id="exeat_date" disabled>
+                </label>
+                <label class="flex-wrap flex-column" for="exp_date">
+                    <span class="label_title" style="margin-right: 5px;">Expected return date</span>
+                    <input type="text" name="exp_date" id="exp_date" disabled>
+                </label>
+                <label class="flex-wrap flex-column" for="ret_date" style="display: none">
+                    <span class="label_title" style="margin-right: 5px;">Date student returned</span>
+                    <input type="text" name="ret_date" id="ret_date" disabled>
+                </label>
+            </div>
+            
+            <!--Other details-->
+            <label class="flex-wrap flex-column" for="exeat_reason">
+                <span class="label_title" style="margin-right: 5px;">Reason for exeat</span>
+                <div name="exeat_reason"style="background-color: #eee; padding: 5px; width: 100%">
+                    <span id="exeat_reason"></span>
+                </div>
+            </label>
+
+            <div class="joint">
+                <label for="issueBy">
+                    <span class="label_title" style="padding-right: 5px;">Issued By</span>
+                    <input type="text" name="issueBy" id="issueBy" disabled>
+                </label>
+                <label for="returnStatus">
+                    <span class="label_title" style="padding-right: 5px;">Return Status</span>
+                    <input type="text" name="returnStatus" id="returnStatus" disabled>
+                </label>
+            </div>
+            
+        </div>
+        <div class="foot">
+            <div class="btn">
+                <button type="reset" name="cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="<?php echo $url?>/admin/admin/assets/scripts/exeat.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>

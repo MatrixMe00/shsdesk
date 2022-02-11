@@ -6,6 +6,8 @@ $("form[name=exeatForm]").submit(function(e){
     if(response == true){
         message = "Exeat provided successfully";
         type = "success";
+
+        location.reload();
     }else{
         type = "error";
 
@@ -34,5 +36,93 @@ $("form[name=exeatForm]").submit(function(e){
         }
     }
 
-    messageBoxTimeout("exeatForm",message, type);
+    messageBoxTimeout("exeatForm",message, type, 0);
+})
+
+//sign return for student
+$(".item-event.sign-return").click(function(){
+    id = $(this).attr("data-item-id");
+    parent = $(this).parents("tr");
+    me = $(this);
+
+    $.ajax({
+        url: $("form[name=exeatForm]").attr("action"),
+        dataType: "json",
+        type: "POST",
+        data: "submit=markReturn&id=" + id,
+        success: function(text){
+            text = JSON.parse(JSON.stringify(text));
+
+            if(text["status"] == "success"){
+                //present current date
+                ret_date = $(parent).children("td.ret_date").html(text["date"]);
+
+                //parse return status
+                $(parent).children("td.ret").html("Returned");
+
+                //remove item from table
+                $(me).remove();
+            }else{
+                alert("Update was unsuccessful");
+            }
+        },
+        error: function(){
+            alert("An error occured");
+        }
+    })
+})
+
+//show modal box
+$("tbody tr").click(function(){
+    id = $(this).attr("data-item-id");
+
+    $.ajax({
+        url: $("form[name=exeatForm]").attr("action"),
+        data: "submit=getExeat&id=" + id,
+        dataType: "json",
+        success: function (data){
+            data = JSON.parse(JSON.stringify(data));
+
+            if(data["status"] == "success"){
+                //student detail section
+                $(".form .body #indexNumber").val(data["indexNumber"]);
+                $(".form .body #fullname").val(data["fullname"]);
+                $(".form .body #house").val(data["house"]);
+
+                //exeat details
+                $(".form .body #exeat_town").val(data["exeat_town"]);
+                $(".form .body #exeat_date").val(data["exeat_date"]);
+                $(".form .body #exp_date").val(data["exp_date"]);
+
+                if(data["returnStatus"]){
+                    $(".form .body #ret_date").show().val(data["ret_date"]);
+                }
+
+                //other details
+                $(".form .body #exeat_reason").html(data["exeat_reason"]);
+                $(".form .body #issueBy").val(data["issueBy"]);
+
+                if(data["returnStatus"]){
+                    $(".form .body #returnStatus").val("Student returned to school");
+                }else{
+                    $(".form .body #returnStatus").val("Student not returned to school");
+                }
+
+                //reveal form
+                $("#modal").removeClass("no_disp");
+            }else{
+                alert(data["status"]);
+            }
+        },
+        error: function (){
+            alert("An error was encountered. Please try again later");
+        }
+    })
+})
+
+//hide modal box
+$("#modal button[name=cancel]").click(function(){
+    $("#modal .form input").val("");
+    $("#modal .form .body #exeat_reason").html("");
+    $("#modal").addClass("no_disp");
 })

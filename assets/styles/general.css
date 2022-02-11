@@ -186,7 +186,7 @@ img{
     width: 100%;
 }
 
-form img{
+form img, .form img{
     width: unset;
 }
 .logo{
@@ -381,13 +381,13 @@ td{
         max-width: unset !important;
     }
 
-    .form_modal_box form{
+    .form_modal_box form, .form_modal_box .form{
         min-width: 70vw;
     }
 }
 
 @media screen and (max-width: 768px){
-    .form_modal_box form{
+    .form_modal_box form, .form_modal_box .form{
         min-width: 95vw;
     }
 }

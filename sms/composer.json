@@ -1,0 +1,5 @@
+{
+    "require-dev": {
+        "urhitech/urhitech-sms-php": "^1.0"
+    }
+}

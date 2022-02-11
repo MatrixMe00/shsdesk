@@ -14,6 +14,9 @@ $(document).ready(function(){
             $(this).siblings(".title_message").html($(this).attr("title"));
         }
     })
+
+    //add .textarea to all texarea labels
+    $("textarea").parents("label").addClass("textarea");
 })
 
 $(".text_input").on({

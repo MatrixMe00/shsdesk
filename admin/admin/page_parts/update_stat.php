@@ -6,24 +6,24 @@
             </div>
             <p style="margin: 10px auto; padding: 5px; border: thin solid #eee; text-align: center;" id="pMessage">You are seeing this form because you are currently registered as a new user</p>
             <div class="body" style="max-height: 50vh; overflow: auto">
-                <label class="flex-wrap flex-column" style="align-items: flex-start;" for="fullname">
+                <label class="flex-wrap flex-column" for="fullname">
                     <span class="label_title" style="margin-right: 5px;">Please provide your full name</span>
-                    <input style="width: 100%" type="text" name="fullname" id="fullname" required title="Enter your full name you used for registration"
+                    <input type="text" name="fullname" id="fullname" required title="Enter your full name you used for registration"
                     placeholder="Registered Full Name">
                 </label>
-                <label class="flex-wrap flex-column" style="justify-content: flex-start; align-items: flex-start;" for="email">
+                <label class="flex-wrap flex-column" for="email">
                     <span class="label_title" style="margin-right: 5px;">Please enter your email</span>
-                    <input style="width: 100%" type="email" name="email" id="email" title="Please enter your email address" required
+                    <input type="email" name="email" id="email" title="Please enter your email address" required
                     placeholder="Email Address">
                 </label>
-                <label class="flex-wrap flex-column" style="align-items: flex-start;" for="new_username">
+                <label class="flex-wrap flex-column" for="new_username">
                     <span class="label_title" style="margin-right: 5px;">Please provide a new username</span>
-                    <input style="width: 100%" type="text" name="new_username" id="new_username" required title="Enter a new username to log in with"
+                    <input type="text" name="new_username" id="new_username" required title="Enter a new username to log in with"
                     placeholder="New Username">
                 </label>
-                <label class="flex-wrap flex-column" style="justify-content: flex-start; align-items: flex-start;" for="new_password">
+                <label class="flex-wrap flex-column" for="new_password">
                     <span class="label_title" style="margin-right: 5px;">Please provide a new password</span>
-                    <input style="width: 100%" type="password" name="new_password" id="new_password" required title="Enter a new password for yourself"
+                    <input type="password" name="new_password" id="new_password" required title="Enter a new password for yourself"
                     placeholder="New Password">
                 </label>
 

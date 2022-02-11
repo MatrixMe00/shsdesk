@@ -180,9 +180,34 @@
             $res->bind_param('sssisis',$technical_name,$school_email, $default_password,$row_id, $technical_phone, $role, $date_now);
 
             if($res->execute()){
+                //providing a value according to a calculated algorithm
+                $this_year = date("Y");
+                $this_month = date("m");
+                $admission_year = $this_year;
+
+                if($this_month < 9){
+                    $admission_year = $this_year - 1;
+                }
+
+                //get the academic year
+                $prev_year = null;
+                $next_year = null;
+                $this_date = date("Y-m-1");
+
+                if($this_date < date("Y-09-01")){
+                    $prev_year = date("Y") - 1;
+                    $next_year = date("Y");
+                }else{
+                    $prev_year = date("Y");
+                    $next_year = date("Y") + 1;
+                }
+
+                $academic_year = "$prev_year / $next_year";
+
+
                 //insert data into admission details table
-                $sql = "INSERT INTO admissiondetails (schoolID, headName) 
-                VALUES (".$row["id"].",'$head_name')";
+                $sql = "INSERT INTO admissiondetails (schoolID, headName, admissionYear, academicYear) 
+                VALUES (".$row["id"].",'$head_name', '$admission_year', '$academic_year')";
                 $connect->query($sql);
 
                 echo "<p>Your data has been recorded successfully!</p>";

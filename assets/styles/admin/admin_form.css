@@ -16,7 +16,7 @@
     z-index: -1;
 }
 
-form, #success_box{
+form, #success_box, .form{
     background-color: rgba(255,255,255,0.92);
     padding: 1rem 1.3rem;
     border-radius: 0.5rem;
@@ -25,35 +25,32 @@ form, #success_box{
     position: relative;
 }
 
-form.fixed{
+form.fixed, .form.fixed{
     width: 80vw;
-}
-
-form > div {
-    margin: 5px auto;
-}
-
-form >  div:first-child{
-    margin-top: 0;
-}
-
-form > div:last-child{
-    margin-bottom: 0;
-}
-
-form.fixed{
     max-height: 80vh;
     overflow: auto;
 }
 
-form h2{
+form > div, .form > div {
+    margin: 5px auto;
+}
+
+form >  div:first-child, .form > div:first-child{
+    margin-top: 0;
+}
+
+form > div:last-child, .form > div:last-child{
+    margin-bottom: 0;
+}
+
+form h2, .form h2{
     width: fit-content;
     padding-bottom: 10px;
     padding-right: 15px;
     border-bottom: 1px dotted black;
 }
 
-form .body{
+form .body, .form .body{
     border: 1px dotted lightgrey;
     padding: 1%;
 }
@@ -155,7 +152,8 @@ label.checkbox span.label_title::selection, label.radio span.label_title::select
 }
 
 form .btn img, form .btn_label img, 
-form label .label_image img{
+form label .label_image img,
+.form .btn img, .form .btn_label img, .form label .label_image img{
     height: 4vh;
 }
 
@@ -182,14 +180,15 @@ label.checkbox input{
 
 label input[type=text], label input[type=password],
 label input[type=email], label input.tel, 
-label select, label input[type=number], label input[type=url]{
+label select, label input[type=number], label input[type=url],
+label input[type=date]{
     min-height: 5vh;
     background-color: whitesmoke;
 }
 
 label input[type=text]:focus, label input[type=password]:focus,
 label input[type=email]:focus, label input.tel:focus, label textarea:focus, label input[type=url]:focus,
-label select:focus, label input[type=number]:focus{
+label select:focus, label input[type=number]:focus, label input[type=date]:focus{
     outline: none;
 }
 
@@ -262,6 +261,14 @@ label select:focus, label input[type=number]:focus{
     display: none;
 }
 
+.body label.flex-column{
+    align-items: flex-start;
+}
+
+.body label.flex-column input, .body label.flex-column select{
+    width: 100%;
+}
+
 .body label[for=pass_forg] p{
     color: rgb(54, 54, 231);
     cursor: pointer;
@@ -286,7 +293,7 @@ label select:focus, label input[type=number]:focus{
     flex: 1;
 }
 
-form .foot{
+form .foot, .form .foot{
     color: rgb(70, 70, 70);
     text-align: center;
     padding: 8px 12px;
@@ -381,11 +388,11 @@ form .form_views{
         width: 90vw;
     }*/
 
-    form .label_image{
+    form .label_image, .form .label_image{
         display: none;
     }
 
-    form h2{
+    form h2, .form h2{
         padding-right: 1%;
     }
 
@@ -400,11 +407,7 @@ form .form_views{
 
 @media screen and (max-width: 768px){
     .body .joint{
-        flex-direction: column;
-    }
-    
-    .body .joint label, .body .joint .label{
-        width: unset;
+        display: block;
     }
 
     label.checkbox{

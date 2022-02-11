@@ -417,10 +417,6 @@
                 $result = $stmt->get_result();
 
                 if($result->num_rows > 0){
-                    //format dates
-                    $exeat_date = date("Y-m-d", strtotime($exeat_date));
-                    $return_date = date("Y-m-d", strtotime($return_date));
-
                     //get house id
                     $column = "houseID";
                     $table = "house_allocation";
@@ -429,10 +425,10 @@
                     $data = fetchData($column, $table, $where);
                     
                     //parse data into database
-                    $sql = "INSERT INTO exeat (indexNumber,houseID,exeatTown,exeatDate,expectedReturn,exeatReason,exeatType,school_id)
-                        VALUES (?,?,?,?,?,?,?)";
+                    $sql = "INSERT INTO exeat (indexNumber,houseID,exeatTown,exeatDate,expectedReturn,exeatReason,exeatType,school_id,givenBy)
+                        VALUES (?,?,?,?,?,?,?,?,?)";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("sisssssi",$student_index, $data["houseID"],$exeat_town,$exeat_date,$return_date,$exeat_reason,$exeat_type, $user_school_id);
+                    $stmt->bind_param("sisssssis",$student_index, $data["houseID"],$exeat_town,$exeat_date,$return_date,$exeat_reason,$exeat_type, $user_school_id, $user_details["fullname"]);
                     $stmt->execute();
 
                     #code to send letter to parents will go here
@@ -580,6 +576,198 @@
             }else{
                 echo "Could not remove student from cssps";
             }
+        }elseif($submit == "admissiondetails" ||  $submit == "admissiondetails_ajax"){
+            $school_email = $_POST["school_email"];
+            $postal_address = $_POST["postal_address"];
+            $head_name = $_POST["head_name"];
+            $head_title = $_POST["head_title"];
+            $sms_id = $_POST["sms_id"];
+            $reopening = $_POST["reopening"];
+            $announcement = $_POST["announcement"];
+            $admission = $_POST["admission"];
+            $autoHousePlace = $_POST["autoHousePlace"];
+            $description = $_POST["description"];
+
+            $message = "";
+
+            if(empty($postal_address)){
+                $message = "No Postal Address provided for school";
+            }elseif(empty($head_name)){
+                $message = "School Head Name field is empty";
+            }elseif(empty($head_title)){
+                $message = "Please provide the title of the school head";
+            }elseif(empty($sms_id)){
+                $message = "SMS ID field cannot be empty";
+            }elseif(empty($reopening)){
+                $message = "No Reopening date provided";
+            }
+
+            //avatar check
+            if(isset($_FILES['avatar']) && !empty($_FILES["avatar"]["tmp_name"])){
+                $image_input_name = "avatar";
+                $local_storage_directory = "$rootPath/admin/admin/assets/images/schools/";
+                $default_image_path = "$rootPath/admin/admin/assets/images/schools/default_user.png";
+    
+                $image_directory = getImageDirectory($image_input_name, $local_storage_directory,$default_image_path);
+
+                $logo_mod = true;
+            }else{
+                $logo_mod = false;
+            }
+
+            //prospectus check
+            if(isset($_FILES["prospectus"]) && $_FILES["prospectus"]["tmp_name"] !== null){
+                //get file extension
+                $ext = strtolower(fileExtension("prospectus"));
+    
+                if($ext =="pdf"){
+                    $file_input_name = "prospectus";
+                    $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+    
+                    $prostectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+                }else{
+                    echo "<p>File provided for prospectus is not a PDF</p>";
+                    echo "<p>Please go back and provide valid document form</p>";
+                }
+    
+                $prostectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                $pros_mod = true;
+            }else{
+                $pros_mod = false;
+            }
+
+            if(@$autoHousePlace == "true" || @$autoHousePlace == "on"){
+                @$autoHousePlace = true;
+            }
+
+            if($message == ""){
+                if($logo_mod && $pros_mod){
+                    $sql = "UPDATE schools SET logoPath=?, prospectusPath=?, admissionPath=?, postalAddress=?, headName=?, email=?,
+                            description=?, autoHousePlace=? WHERE id=?";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("sssssssii",$image_directory,$prostectusDirectory, $admission, $postal_address, $head_name,
+                        $school_email, $description, $autoHousePlace, $user_school_id);
+                }elseif($logo_mod){
+                    $sql = "UPDATE schools SET logoPath=?, admissionPath=?, postalAddress=?, headName=?, email=?,
+                            description=?, autoHousePlace=? WHERE id=?";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("ssssssii",$image_directory, $admission, $postal_address, $head_name,
+                        $school_email, $description, $autoHousePlace, $user_school_id);
+                }elseif($pros_mod){
+                    $sql = "UPDATE schools SET prospectusPath=?, admissionPath=?, postalAddress=?, headName=?, email=?,
+                            description=?, autoHousePlace=? WHERE id=?";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("ssssssii",$prostectusDirectory, $admission, $postal_address, $head_name,
+                        $school_email, $description, $autoHousePlace, $user_school_id);
+                }else{
+                    $sql = "UPDATE schools SET admissionPath=?, postalAddress=?, headName=?, email=?,
+                            description=?, autoHousePlace=? WHERE id=?";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("sssssii", $admission, $postal_address, $head_name,
+                        $school_email, $description, $autoHousePlace, $user_school_id);
+                }
+
+                if($stmt->execute()){
+                    //providing a value according to a calculated algorithm
+                    $this_year = date("Y");
+                    $this_month = date("m");
+                    $admission_year = $this_year;
+
+                    if($this_month < 9){
+                        $admission_year = $this_year - 1;
+                    }
+
+                    //get the academic year
+                    $prev_year = null;
+                    $next_year = null;
+                    $this_date = date("Y-m-1");
+
+                    if($this_date < date("Y-09-01")){
+                        $prev_year = date("Y") - 1;
+                        $next_year = date("Y");
+                    }else{
+                        $prev_year = date("Y");
+                        $next_year = date("Y") + 1;
+                    }
+
+                    $academic_year = "$prev_year / $next_year";
+
+                    //update admission details table
+                    $sql = "UPDATE admissiondetails SET titleOfHead=?, headName=?, smsID=?, admissionYear=?, academicYear=?,
+                    reopeningDate=?, announcement=? WHERE schoolID=?";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("sssssssi", $head_title, $head_name, $sms_id, $admission_year, $academic_year, $reopening, $announcement,
+                        $user_school_id);
+                    
+                    $stmt->execute();
+                    $message = "success";
+                }
+            }
+
+            echo $message;
+        }elseif($submit == "markReturn"){
+            $id = $_REQUEST["id"];
+            $date_now = date("Y-m-d");
+
+            //parse into exeat
+            if($id > 0){
+                $sql = "UPDATE exeat SET returnDate='$date_now', returnStatus=TRUE WHERE id=$id";
+                if($connect->query($sql)){
+                    $data = array(
+                        "status" => "success",
+                        "date" => date("M d, Y")
+                    );
+                }else{
+                    echo "Could not make an update. Please try again";
+                }
+            }else{
+                echo "Cannot specify your exeat results";
+            }
+        }elseif($submit == "getExeat" || $submit == "getExeat_ajax"){
+            $id = $_REQUEST["id"];
+
+            $sql = "SELECT c.Lastname, c.Othernames, e.*, h.title
+                FROM exeat e JOIN cssps c
+                ON e.indexNumber = c.indexNumber
+                JOIN houses h
+                ON e.houseID = h.id
+                WHERE e.id = $id";
+            
+            $res = $connect->query($sql);
+
+            $data = array();
+            if($res->num_rows > 0){
+                $row = $res->fetch_assoc();
+
+                $data = array(
+                    "indexNumber" => $row["indexNumber"],
+                    "fullname" => $row["Lastname"]." ".$row["Othernames"],
+                    "house" => $row["title"],
+                    "exeat_town" => $row["exeatTown"],
+                    "exeat_date" => date("jS F, Y", strtotime($row["exeatDate"])),
+                    "exp_date" => date("jS F, Y", strtotime($row["expectedReturn"])),
+                    "returnStatus" => $row["returnStatus"],
+                    "exeat_reason" => $row["exeatReason"],
+                    "issueBy" => $row["givenBy"]
+                );
+
+                if($row["returnStatus"] == true || $row["returnStatus"] == "true"){
+                    $data += array(
+                        "ret_date" => date("jS F, Y", strtotime($row["returnDate"]))
+                    );
+                }
+
+                $data += array(
+                    "status" => "success"
+                );
+            }else{
+                $data = array(
+                    "status" => "No Details were returned"
+                );
+            }
+
+            echo json_encode($data);
         }
     }else{
         echo "no-submission";
