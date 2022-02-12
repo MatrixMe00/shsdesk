@@ -25,6 +25,14 @@
             padding: 1%;
             overflow: auto;
             max-height: 95vh;
+            border-radius: 10px;
+            box-shadow: 0 0 5px 0 grey, 0 0 10px 1px lightgrey;
+        }
+
+        @media screen and (max-width:748px){
+            #container{
+                flex: 1;
+            }
         }
     </style>
 </head>
@@ -264,7 +272,7 @@
                    Upon registration, you shall be asked for your full name [$technical_name] and email [$school_email]. Please do well to provide the right details
                 </p>";
     
-                echo "<p>Click <a href=\"".$url."/admin/\">here</a> to log into your portal</p>";
+                echo "<p>Click <a href=\"$url/admin/\">here</a> to log into your portal</p>";
             }
         }else{
             echo "<p>An unexpected error occured! Please go back and resubmit the form again</p>";
