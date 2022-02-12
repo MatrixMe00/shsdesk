@@ -121,19 +121,24 @@
                 echo "Invalid contact number presented";
                 exit(1);
             }
+            
+            //for developer, editing another detail
+            if(isset($_REQUEST["user_id"]) && $_REQUEST["user_id"] != null){
+                $current_id = $_REQUEST["user_id"];
+            }else{
+                $current_id = $user_id;
+            }
 
-            if($fullname != $user_details["fullname"] || $email != $user_details["email"] ||
-               $contact != $user_details["contact"] || $username != $user_details["username"] ){
+            $user_data = fetchData("fullname, email, contact, username","admins_table", "user_id=$current_id");
+
+            if($fullname != $user_data["fullname"] || $email != $user_data["email"] ||
+               $contact != $user_data["contact"] || $username != $user_data["username"] ){
                 //check if username already exists
                 $username_exist = fetchData("username", "admins_table", "username='$username'");
 
-                //for developer, editing another detail
-                if(isset($_REQUEST["user_id"]) && $_REQUEST["user_id"] != null){
-                    $user_id = $_REQUEST["user_id"];
-                }
-
-                if($username_exist == "empty"){
-                    $sql = "UPDATE admins_table SET fullname=?, email=?, contact=?, username=? WHERE user_id = $user_id";
+                if($username_exist == "empty" || $fullname != $user_data["fullname"] || $email != $user_data["email"] ||
+                    $contact != $user_data["contact"]){
+                    $sql = "UPDATE admins_table SET fullname=?, email=?, contact=?, username=? WHERE user_id = $current_id";
                     $stmt = $connect->prepare($sql);
                     $stmt->bind_param("ssss", $fullname, $email, $contact, $username);
 
@@ -158,9 +163,11 @@
                     }else{
                         echo "update-error";
                     }
-                }elseif($username_exist["username"] != $user_username){
+                }elseif(is_array($username_exist) && $user_data["username"] != $username_exist["username"]){
                     echo "Selected username already exists. Please enter a new username";
-                }                
+                }else{
+                    echo "no-change";
+                }
             }else{
                 echo "no-change";
             }

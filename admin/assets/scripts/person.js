@@ -8,6 +8,11 @@ $("form[name=user_account_form]").submit(function(e){
 	if(response == true){
 		message = "User data has been updated successfully";
 		type = "success";
+
+        setTimeout(function(){
+            location.reload();
+        }, 3000);
+        
 	}else if(response == "no-change"){
 		message = "No change was detected";
 		type = "load";
@@ -17,7 +22,6 @@ $("form[name=user_account_form]").submit(function(e){
 	}else{
 		message = response;
 		type="error";
-		time=0;
 	}
 
 	messageBoxTimeout("user_account_form", message, type, time);
