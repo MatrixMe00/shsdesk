@@ -23,8 +23,8 @@
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/user.png" alt="fullname_logo">
                     </span>
-                    <input type="text" name="school_name" id="school_name" class="text_input" placeholder="Name of School" pattern="[a-zA-Z\s]{6,}"
-                    autocomplete="off" title="Please provide the name of your school" disabled value="<?php echo $schoolDetail["schoolName"]?>">
+                    <input type="text" name="school_name" id="school_name" class="text_input" placeholder="Name of School" pattern="[a-zA-Z\s]{6,}[\.\-\']{0,}"
+                    autocomplete="off" title="Update the name of your school" value="<?php echo $schoolDetail["schoolName"]?>">
                     
                 </label>
                 <label for="school_email">
@@ -32,14 +32,14 @@
                         <img src="<?php echo $url?>/assets/images/icons/mail-outline.svg" alt="email_icon">
                     </span>
                     <input type="email" name="school_email" id="school_email" class="text_input" placeholder="School's email address"
-                    autocomplete="off" title="Please provide your school email" value="<?php echo $schoolDetail["email"]?>">
+                    autocomplete="off" title="Update your school email" value="<?php echo $schoolDetail["email"]?>">
                 </label>
                 <label for="postal_address">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/Sign Post.png" alt="postal">
                     </span>
                     <input type="text" name="postal_address" id="postal_address" class="text_input" placeholder="Postal Address*"
-                    autocomplete="off" title="Please provide your postal address. It will be useful in details of the admission form"
+                    autocomplete="off" title="Update your postal address. It will be useful in details of the admission form"
                     value="<?php echo $schoolDetail["postalAddress"]?>">
                 </label>
             </div>
@@ -56,7 +56,7 @@
                         <img src="<?php echo $url?>/assets/images/icons/bag-handle-outline.svg" alt="head title">
                     </span>
                     <input type="text" name="head_title" id="head_title" class="text_input" placeholder="Title of Head*" autocomplete="off" 
-                    title="Enter the title of the head provided above" value="<?php echo $row["titleOfHead"] ?>">
+                    title="Enter the title of the head provided above. Eg. Head Master or Head Mistress" value="<?php echo $row["titleOfHead"] ?>">
                 </label>
                 <label for="sms_id">
                     <span class="label_image">
@@ -106,7 +106,7 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="announce">
                 </span>
-                <textarea name="admission" id="admission" placeholder="Please provide a body for your admission letter. Refer to the demo document to know what is expected of you" 
+                <textarea name="admission" id="admission" placeholder="Update the body for your admission letter" 
                 class="tinymce" title="Body of admission letter ">
                 <?php echo $schoolDetail["admissionPath"] ?>
                 </textarea>

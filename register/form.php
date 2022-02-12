@@ -1,3 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body{
+            height: 100vh;
+            border: 0;
+            padding: 0;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #container{
+            background-color: #fff;
+            border: 1px solid grey;
+            flex: 0.5 1 80vw;
+            text-align: center;
+            padding: 1%;
+            overflow: auto;
+            max-height: 95vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
 <?php
     include_once("../includes/session.php");
 
@@ -93,6 +125,13 @@
             echo "<p>Please provide a body for your admission letter</p>";
 
             echo "<p>Please go back and complete the form</p>";
+            exit(1);
+        }
+
+        //check if email already exists
+        $exist_email = fetchData("email", "schools","email='$school_email'");
+        if(is_array($exist_email)){
+            echo "<p>Email already exists. Please review your email and try again</p>";
             exit(1);
         }
 
@@ -234,3 +273,6 @@
         echo "<p>Unidentified submission made! Please go back and make a submission";
     }
 ?>
+    </div>
+</body>
+</html>

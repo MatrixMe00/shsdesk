@@ -357,7 +357,7 @@
                     $_SESSION["ad_it_admin"] = $school["techName"];
                     $_SESSION["ad_message"] = $school["admissionPath"];
                     $_SESSION["ad_school_prospectus"] = $school["prospectusPath"];
-                    $_SESSION["ad_reopening"] = fetchData("reopeningDate","admissiondetails","schoolID=$shs_placed");
+                    $_SESSION["ad_reopening"] = fetchData("reopeningDate","admissiondetails","schoolID=$shs_placed")["reopeningDate"];
 
                     //student details
                     $_SESSION["ad_stud_index"] = $student["indexNumber"];
@@ -366,6 +366,7 @@
                     $_SESSION["ad_stud_enrol_code"] = $student["enrolCode"];
                     $_SESSION["ad_stud_residence"] = $student["boardingStatus"];
                     $_SESSION["ad_stud_program"] = $student["programme"];
+                    $_SESSION["ad_stud_gender"] = $student["Gender"];
                     $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"])["title"];
                 }else{
                     $message = "error";

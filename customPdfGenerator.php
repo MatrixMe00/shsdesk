@@ -153,16 +153,22 @@
         $residence_status = $_SESSION["ad_stud_residence"];
         $program = $_SESSION["ad_stud_program"];
         $house = $_SESSION["ad_stud_house"];
+        $gender = $_SESSION["ad_stud_gender"];
+
+        if($gender == "Male"){
+            $gender = "Sir";
+        }else{
+            $gender = "Madam";
+        }
 
         if($house == "e"){
             $house = "Allocated Later";
         }
         
-        // $reopening = $_SESSION["ad_reopening"];
-        $reopening = date("jS F, Y");
+        $reopening = date("jS F, Y", strtotime($_SESSION["ad_reopening"]));
 
         $message = $_SESSION["ad_message"];
-        $message .= "<br><span> Yours faithfully, </span>";
+        $message .= "<br><span>Yours faithfully, </span>";
         /*$message = "
             <span class=\"demo_text\">[ -- Start of body text </span><br><p>The message in this square brackets is what you will provide as your admission letter. Please do well to fill out the message so as to automatically generate the admission form for your students</p>
             <p>Demo paragraph begins. Video provides a powerful way to help you prove your point. When you click Online Video, you can paste in the embed code for the video you want to add. You can also type a keyword to search online for the video that best fits your document.</p>
@@ -184,6 +190,7 @@
         $box_address = $_SESSION["ad_box_address"];
         $school_phone = remakeNumber($_SESSION["ad_school_phone"]);
         $logo = $_SESSION["ad_school_logo"];
+        $logo = "<img src=\"$url/$logo\" alt=\"logo\" width=\"30mm\" height=\"30mm\">";
 
         $html = <<<HTML
         <head>
@@ -208,7 +215,7 @@
         </head>
         <div class="header" style="text-align: center;">
             <div>
-                <br><img src="$url/$logo" alt="logo" width="30mm" height="30mm">
+                <br>$logo
             </div>
             <span class="school_name">$school_name</span><br>
             <span>$box_address</span><br>
@@ -219,7 +226,7 @@
                 <span>Printed: $date_now</span>
             </div>
             <div class="body">
-                <br><span>Dear Sir / Madam</span>
+                <br><span>Dear $gender</span>
                 <div class="letter">
                     <h3 class="letter_title" style="text-align: center;"><u>Offer Of Admission</u></h3>
                     <div class="candidate_info" style="text-align: start;">

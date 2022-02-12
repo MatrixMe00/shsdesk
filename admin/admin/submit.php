@@ -577,6 +577,7 @@
                 echo "Could not remove student from cssps";
             }
         }elseif($submit == "admissiondetails" ||  $submit == "admissiondetails_ajax"){
+            $school_name = formatName($_REQUEST["school_name"]);
             $school_email = $_POST["school_email"];
             $postal_address = $_POST["postal_address"];
             $head_name = $_POST["head_name"];
@@ -590,7 +591,9 @@
 
             $message = "";
 
-            if(empty($postal_address)){
+            if(empty($school_name)){
+                $message = "No school name was provided";
+            }elseif(empty($postal_address)){
                 $message = "No Postal Address provided for school";
             }elseif(empty($head_name)){
                 $message = "School Head Name field is empty";
@@ -609,6 +612,10 @@
                 $default_image_path = "$rootPath/admin/admin/assets/images/schools/default_user.png";
     
                 $image_directory = getImageDirectory($image_input_name, $local_storage_directory,$default_image_path);
+
+                //remove the root path
+                $image_directory = explode("$rootPath/",$image_directory);
+                $image_directory = $image_directory[1];
 
                 $logo_mod = true;
             }else{
@@ -643,28 +650,28 @@
 
             if($message == ""){
                 if($logo_mod && $pros_mod){
-                    $sql = "UPDATE schools SET logoPath=?, prospectusPath=?, admissionPath=?, postalAddress=?, headName=?, email=?,
+                    $sql = "UPDATE schools SET logoPath=?, prospectusPath=?, admissionPath=?, schoolName=?, postalAddress=?, headName=?, email=?,
                             description=?, autoHousePlace=? WHERE id=?";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("sssssssii",$image_directory,$prostectusDirectory, $admission, $postal_address, $head_name,
+                    $stmt->bind_param("ssssssssii",$image_directory,$prostectusDirectory, $admission, $school_name, $postal_address, $head_name,
                         $school_email, $description, $autoHousePlace, $user_school_id);
                 }elseif($logo_mod){
-                    $sql = "UPDATE schools SET logoPath=?, admissionPath=?, postalAddress=?, headName=?, email=?,
+                    $sql = "UPDATE schools SET logoPath=?, admissionPath=?, schoolName=?, postalAddress=?, headName=?, email=?,
                             description=?, autoHousePlace=? WHERE id=?";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("ssssssii",$image_directory, $admission, $postal_address, $head_name,
+                    $stmt->bind_param("sssssssii",$image_directory, $admission, $school_name, $postal_address, $head_name,
                         $school_email, $description, $autoHousePlace, $user_school_id);
                 }elseif($pros_mod){
-                    $sql = "UPDATE schools SET prospectusPath=?, admissionPath=?, postalAddress=?, headName=?, email=?,
+                    $sql = "UPDATE schools SET prospectusPath=?, admissionPath=?, schoolName=?, postalAddress=?, headName=?, email=?,
                             description=?, autoHousePlace=? WHERE id=?";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("ssssssii",$prostectusDirectory, $admission, $postal_address, $head_name,
+                    $stmt->bind_param("sssssssii",$prostectusDirectory, $admission, $school_name, $postal_address, $head_name,
                         $school_email, $description, $autoHousePlace, $user_school_id);
                 }else{
-                    $sql = "UPDATE schools SET admissionPath=?, postalAddress=?, headName=?, email=?,
+                    $sql = "UPDATE schools SET admissionPath=?, schoolName=?, postalAddress=?, headName=?, email=?,
                             description=?, autoHousePlace=? WHERE id=?";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("sssssii", $admission, $postal_address, $head_name,
+                    $stmt->bind_param("ssssssii", $admission, $school_name, $postal_address, $head_name,
                         $school_email, $description, $autoHousePlace, $user_school_id);
                 }
 

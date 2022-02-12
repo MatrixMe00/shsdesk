@@ -38,7 +38,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
         }else{
             //check if house and students are set
             $house_check = fetchData("COUNT(DISTINCT(title)) AS total", "houses", "schoolID=$user_school_id")["total"];
-            if($house_check > 1){
+            if($house_check >= 1){
                 //check if there is at least one student uploaded on the system
                 $students = fetchData("COUNT(indexNumber) AS total", "cssps", "schoolID=$user_school_id")["total"];
                 if($students == 0){
@@ -190,12 +190,12 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
 
                 <!--Admission and Exeat-->
                 <div class="menu">
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/admission.php" name="admission" title="Admission Details">
+                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/admission.php" name="admission" title="School Details">
                         <div class="icon">
                             <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="" />
                         </div>
                         <div class="menu_name">
-                            <span>Admission Details</span>
+                            <span>School Details</span>
                         </div>
                     </div>
                     <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/exeat.php" name="exeat" title="Exeat">

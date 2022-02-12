@@ -1,8 +1,8 @@
 <nav>
         <div id="logo">
             <div id="name">
-                <span id="first">ONLINE</span>
-                <span id="last">admission</span>
+                <span id="first">SHS</span>
+                <span id="last">Desk</span>
             </div>
         </div>
         <div id="buttons">

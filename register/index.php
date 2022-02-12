@@ -51,8 +51,8 @@
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/user.png" alt="fullname_logo">
                         </span>
-                        <input type="text" name="school_name" id="school_name" class="text_input" placeholder="Name of School" pattern="[a-zA-Z\s]{6,}"
-                        autocomplete="off" title="Please provide the name of your school" required>
+                        <input type="text" name="school_name" id="school_name" class="text_input" placeholder="Name of School" pattern="[a-zA-Z\s]{6,}[\.\-\']{0,}"
+                        autocomplete="off" title="Please provide the name of your school. It can include dot, hyphen or apostrophe. Numbers would be rejected" required>
                         
                     </label>
                     <label for="abbreviation">

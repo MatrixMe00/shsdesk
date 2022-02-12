@@ -158,7 +158,7 @@
                     }else{
                         echo "update-error";
                     }
-                }else{
+                }elseif($username_exist["username"] != $user_username){
                     echo "Selected username already exists. Please enter a new username";
                 }                
             }else{
