@@ -8,7 +8,11 @@
     <title>SHSDESK</title>
 
     <!--Meta data-->
-    <meta name="description" content="">
+    <meta name="description" content="Your number one platform for online admission for Senior High Schools.
+    No more long queing, no more hustle in traveling from far for admission. This system makes the process easier
+    working your admissions right in your comfort zone">
+    <meta name="keywords" content="shs, desk, shsdesk, school, online registration, online, registration, registration in ghana, senior high school,
+    senior, high, technical school, technical, secondary, secondary school, student admission, student, admission">
 
     <!--Stylesheets-->
     <link rel="stylesheet" href="assets/styles/index_page.css?v=<?php echo time()?>">
@@ -162,7 +166,7 @@
                                     while($row = $res->fetch_assoc()){
                                         //check if school has at least two houses in the system
                                         $house_check = fetchData("COUNT(DISTINCT(title)) AS total", "houses", "schoolID=".$row["id"])["total"];
-                                        if($house_check > 1){
+                                        if($house_check >= 1){
                                             //check if there is at least one student uploaded on the system
                                             $students = fetchData("COUNT(indexNumber) AS total", "cssps", "schoolID=".$row["id"])["total"];
                                             if($students > 0){
@@ -178,7 +182,7 @@
                         <button name="payment_button" id="payment_button" type="button">Make My Payment</button>
                     </label>
                 </div>
-                <div class="case" data-box="results" id="results_case">
+                <!-- <div class="case" data-box="results" id="results_case">
                     <h3>End of Semester Results</h3>
                     <label for="school_select2">
                         <select name="school_select2" id="school_select2">
@@ -216,7 +220,7 @@
                     <label for="search" class="btn hide_label no_disp">
                         <button name="search" id="res_search">Search</button>
                     </label>
-                </div>
+                </div> -->
             </div>
             <label for="student_cancel_operation" class="btn" style="display:block; text-align: center; width: 100%;">
                     <button name="student_cancel_operation">Reset</button>
@@ -230,7 +234,7 @@
                 <?php include_once($rootPath.'/blocks/admissionForm.php')?>
             </div>
 
-            <div id="results" class="body hide_label no_disp">
+            <!-- <div id="results" class="body hide_label no_disp">
                 <table>
                     <thead>
                         <td>ID</td>
@@ -291,6 +295,66 @@
                         </tr>
                     </tbody>
                 </table>
+            </div> -->
+        </section>
+
+        <section id="usage">
+            <div class="head">
+                <h2>How to register</h2>
+            </div>
+            <div class="body">
+                <p>This is your admission registration made easy. Please follow the steps below to register into your placed school</p>
+                <ol class="flex">
+                    <div class="flex flex-column">
+                        <li>
+                            <div class="step_name">Step 1</div>
+                            Select your placed school from the list of schools below
+                        </li>
+                        <li class="arrow">&RightArrowBar;</li>
+                        <li>
+                            <div class="step_name">Step 2</div>
+                            Click on payment and make your payment. Enter your fullname, phone number and email if you have one
+                        </li>
+                        <li class="arrow">&RightArrowBar;</li>
+                        <li>
+                            <div class="step_name">Step 3</div>
+                            In the case where you have already paid, but due to technical difficulties were unable to complete your 
+                            registration, just provide your transaction reference to continue. Transaction reference is in the format
+                            MPxxxxxx.xxxx.Dxxxxx, where x are numbers.
+                        </li>
+                        <li class="arrow">&RightArrowBar;</li>
+                        <li>
+                            <div class="step_name">Step 4</div>
+                            Once payment is done, enter your JHS index number to continue.
+                        </li>
+                        <li class="arrow">&RightArrowBar;</li>
+                    </div>
+                    
+                    <div class="flex flex-column">
+                        <li>
+                            <div class="step_name">Step 5</div>
+                            A valid index number would allow you to continue, an invalid index number or a wrong index number for a selected
+                            school will alert you. When this happens, start from point 1, but use point 3 for payment
+                        </li>
+                        <li class="arrow">&RightArrowBar;</li>
+                        <li>
+                            <div class="step_name">Step 6</div>
+                            Fill in your details and check if every detail is correct in the step three tab.
+                        </li>
+                        <li class="arrow">&RightArrowBar;</li>
+                        <li>
+                            <div class="step_name">Step 7</div>
+                            When all desired details are entered, click on submit and wait as you are directed to the prospectus and admission
+                            document page. On that page, do well to click on the buttons to download the desired documents
+                        </li>
+                        <li class="arrow">&RightArrowBar;</li>
+                        <li>
+                            <div class="step_name">Step 8</div>
+                            If you were unable to download your admission letter, head to the <a href="<?php echo $url?>/student/" style="color: blue">students</a>
+                            panel to re-download them. Make sure you are fully registered before using this url.
+                        </li>
+                    </div>                    
+                </ol>
             </div>
         </section>
     </main>

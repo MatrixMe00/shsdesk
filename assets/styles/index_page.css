@@ -182,6 +182,80 @@
     font-size: large;
 }
 
+#usage{
+    padding: 3vh 2vw;
+    background-color: #eee3;
+    line-height: 1.3;
+    border-top: 5px solid lightgrey;
+    border-radius: 10px 10px 0 0;
+}
+
+#usage .head{
+    text-align: center;
+}
+
+#usage ol{
+    list-style-type: none;
+}
+
+#usage ol li{
+    margin: 1px 10px;
+    border: 1px solid lightgrey;
+    flex: 1;
+    height: max-content;
+    padding: 1.5%;
+}
+
+#usage ol li .step_name{
+    background-color: #223;
+    border-radius: 5px;
+    padding: 5px;
+    width: fit-content;
+    padding-right: 3vw;
+    color: white;
+}
+
+#usage ol li.arrow{
+    flex: 1 1 20px;
+    border-color: transparent;
+    font-size: xx-large;
+    align-self: center;
+    transform: rotate(90deg);
+    margin: 2px auto;
+}
+
+#usage ol .flex:first-child li.arrow:last-child{
+    transform: rotate(0);
+    align-self: flex-end;
+}
+
+#usage ol .flex:last-child{
+    flex-direction: column-reverse;
+}
+
+#usage ol .flex:last-child li.arrow{
+    transform: rotate(270deg);
+}
+
+@media screen and (max-width:767px){
+    #usage ol{
+        flex-direction: column;
+    }
+
+    #usage ol li{
+        flex: 1;
+    }
+
+    #usage ol li.arrow{
+        align-self: center !important;
+        transform: rotate(90deg) !important;
+    }
+
+    #usage ol .flex:last-child{
+        flex-direction: column;
+    }
+}
+
 @media screen and (orientation:portrait){
     .img_container img, #carousel{
         height: 70vh;

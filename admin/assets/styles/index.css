@@ -106,10 +106,6 @@
     margin-bottom: 1vh;
 }
 
-#rhs .image{
-    filter: invert(1);
-}
-
 #rhs .image img{
     width: 100%;
     padding: 0.1rem 0.2rem 0.1rem 0.1rem;

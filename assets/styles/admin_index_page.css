@@ -107,7 +107,7 @@ img{
 
 .menu .item img{
     width: 80%;
-    filter: invert();
+    filter: invert(1);
 }
 
 .menu .item .menu_name{

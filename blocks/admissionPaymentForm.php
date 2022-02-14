@@ -1,6 +1,7 @@
 <form action="<?php echo $url?>/submit.php" method="post" class="fixed" name="paymentForm">
                     <div class="head">
-                        <h2>Payment Method</h2>
+                        <h2>Make Payment to <span id="school_choice"></span></h2>
+                        
                     </div>
                     <div class="body">
                         <div class="message_box success no_disp">

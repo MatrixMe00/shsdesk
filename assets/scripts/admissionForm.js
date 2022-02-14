@@ -262,6 +262,9 @@ $("#payment_button, .enrol_button").click(function(){
     // $("form[name=admissionForm] fieldset").addClass("no_disp");
     $("form[name=admissionForm] #enrol_field").removeClass("no_disp");
 
+    //pass selected school name to form
+    $("form[name=paymentForm] #school_choice").html($("#school_admission_case #school_select option:selected").html());
+
     //on client side, do not display the other tabs when the user has not given the index number
     // $(".tabs span.tab_button").addClass("no_disp");
     $(".tabs span.tab_button.active").removeClass("no_disp");
