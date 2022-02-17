@@ -17,7 +17,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>SHSDesk - Admin Login Portal</title>
+
+    <meta name="description" content="Manage your student records and details here. Log in into your portal to manage students, houses and admission details.">
+    <meta name="keyboard" content="manage, student, record, detail, portal, house, admission, detail, admin, shs, desk, shsdesk, login">
 
     <!--Scripts-->
     <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>

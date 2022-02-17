@@ -5,12 +5,11 @@
     <?php @include_once($rootPath.'/blocks/generalHead.php')?>
 
     <!--Document title-->
-    <title>SHSDESK</title>
+    <title>SHSDESK - Home Page</title>
 
     <!--Meta data-->
-    <meta name="description" content="Your number one platform for online admission for Senior High Schools.
-    No more long queing, no more hustle in traveling from far for admission. This system makes the process easier
-    working your admissions right in your comfort zone">
+    <meta name="description" content="Your number one platform for online admission in Ghana. 
+    This system makes the process easier working your admissions right in your comfort zone">
     <meta name="keywords" content="shs, desk, shsdesk, school, online registration, online, registration, registration in ghana, senior high school,
     senior, high, technical school, technical, secondary, secondary school, student admission, student, admission">
 

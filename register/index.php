@@ -6,8 +6,9 @@
     <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/tinymce.css?v=<?php echo time()?>">
 
     <!--Document title-->
-    <title>Register</title>
-
+    <title>SHSDesk - Register Your School</title>
+    <meta name="description" content="Subscribe to our service for free. Register with SHSDesk to put you in the plan to be able to manage student admission and to easily receive record details">
+    <meta name="keywords" content="subscribe, register, shs, desk, shsdesk, free, service, student, admission, admission, application, school, category">
     <style>
         @media screen and (min-width: 768px){
             form{
