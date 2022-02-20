@@ -590,5 +590,5 @@
                             <button type="reset" name="modal_cancel" value="cancel">Cancel</button>
                         </label>
                     </div>
-                    <a href="<?php echo $url?>/pdf_handle.php" style="display:none !important" id="handle_pdf" target="_blank"></a>
+                    <a href="<?php echo $url?>/pdf_handle.php" style="display:none !important" id="handle_pdf" target="_blank" rel="nofollow"></a>
                 </form>

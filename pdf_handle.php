@@ -40,7 +40,7 @@
 <head>
     <title>Download Documents</title>
     <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
-    <meta name="nofollow" content="nofollow">
+    <meta name="robots" content="noindex, nofollow">
     <style>
         #container{
             width: 100vw;
@@ -79,15 +79,12 @@
 <body>
     <div id="container">
         <div class="member_div">
-            <a href="<?php echo $url."/".$school["prospectusPath"] ?>">
+            <a href="<?php echo $url."/".$school["prospectusPath"] ?>" rel="nofollow">
                 <button id="btn_pros">Prospectus is ready for download | Download [PDF]</button>
             </a>
         </div>
         <div class="member_div">
-            <!-- <a href="<?php echo $url?>/admin/admin/assets/files/default files/Admission_Form__Demo.pdf">
-                <button id="btn_ad">Admission letter is ready for download | Download [PDF]</button>
-            </a> -->
-            <a href="<?php echo $url?>/customPdfGenerator.php">
+            <a href="<?php echo $url?>/customPdfGenerator.php" rel="nofollow">
                 <button id="btn_ad">Admission letter is ready for download | Download [PDF]</button>
             </a>
         </div>

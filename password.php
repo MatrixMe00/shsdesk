@@ -6,13 +6,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="robot" content="nofollow">
+    <title>SHSDesk - Forgot Your Password</title>
 
     <!--Scripts-->
-    <script src="assets/scripts/jquery/uncompressed_jquery.js"></script>
-    <script src="assets/scripts/angular/angular.js"></script>
-    <script src="assets/scripts/index.js"></script>
-    <script src="assets/scripts/functions.js"></script>
+    <script src="assets/scripts/jquery/uncompressed_jquery.js?v=<?php echo time()?>"></script>
+    <script src="assets/scripts/index.js?v=<?php echo time()?>"></script>
+    <script src="assets/scripts/functions.js?v=<?php echo time()?>"></script>
 
     <!--Styles-->
     <link rel="stylesheet" href="assets/styles/general.css">

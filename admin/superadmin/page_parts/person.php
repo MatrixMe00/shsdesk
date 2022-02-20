@@ -183,7 +183,7 @@
                     <button type="submit" name="submit" value="user_detail_update">Update</button>
                 </label>
                 <label for="cancel" class="btn">
-                    <button name="cancel" onclick="$('#editAccount').addClass('no_disp')">Cancel</button>
+                    <button type="reset" name="cancel" onclick="$('#editAccount').addClass('no_disp')">Cancel</button>
                 </label>
             </div>
         </div>

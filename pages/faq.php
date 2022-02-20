@@ -5,7 +5,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHSDESK | FAQ</title>
+    <title>SHSDESK - Frequently Asked Questions</title>
+
+    <!--Page Meta data-->
+    <meta name="description" content="Join the community of users who are asking questions about the system. This
+    will help you have a clearer view of the operations of the system">
+    <meta name="keywords" content="desk, shs, shsdesk, online, admission,">
 
     <!--Script-->
     <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
@@ -17,36 +22,7 @@
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/general.css?v=<?php echo time()?>">
 </head>
 <body>
-    <nav>
-        <div id="logo">
-            <div id="name">
-                <span id="first">ONLINE</span>
-                <span id="last">admission</span>
-            </div>
-        </div>
-        <div id="buttons">
-            <a href="<?php echo $url?>/index.php" class="button">
-                <span>Home</span>
-            </a>
-            <a href="<?php echo $url?>/pages/about.php" class="button">
-                <span>About</span>
-            </a>
-            <a href="<?php echo $url?>/pages/school.php" class="button">
-                <span>Schools</span>
-            </a>
-            <a href="<?php echo $url?>/pages/faq.php" class="button">
-                <span>FAQ</span>
-            </a>
-            <a href="<?php echo $url?>/pages/contact.php" class="button">
-                <span>Contact Us</span>
-            </a>
-        </div>
-        <div id="ham_button">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    </nav>
+    <?php @include_once($rootPath.'/blocks/nav.php')?>
 
     <main>
         <div id="intro_image" class="flex flex-center-content flex-center-align">
@@ -171,9 +147,7 @@
         </form>
     </main>
         
-    <footer>
-        <span>&copy; Copyright 2021</span>
-    </footer>
+    <?php @include_once($rootPath.'/blocks/footer.php')?>
 
     <script src="<?php echo $url?>/assets/scripts/head_foot.js"></script>
     <script src="<?php echo $url?>/assets/scripts/form/general.js"></script>

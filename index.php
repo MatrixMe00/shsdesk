@@ -7,7 +7,7 @@
     <!--Document title-->
     <title>SHSDESK - Home Page</title>
 
-    <!--Meta data-->
+    <!--Page Meta data-->
     <meta name="description" content="Your number one platform for online admission in Ghana. 
     This system makes the process easier working your admissions right in your comfort zone">
     <meta name="keywords" content="shs, desk, shsdesk, school, online registration, online, registration, registration in ghana, senior high school,
@@ -20,6 +20,16 @@
     <!--Payment script-->
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <script src="assets/scripts/form/paystack.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-W7MF3JTHJ1');
+    </script>
 </head>
 <body ng-app="index_application" id="index_main">
     <?php @include_once($rootPath.'/blocks/nav.php')?>
@@ -181,7 +191,9 @@
                         <button name="payment_button" id="payment_button" type="button">Make My Payment</button>
                     </label>
                 </div>
-                <!-- <div class="case" data-box="results" id="results_case">
+                <?php 
+                    if($show){
+                ?><div class="case" data-box="results" id="results_case">
                     <h3>End of Semester Results</h3>
                     <label for="school_select2">
                         <select name="school_select2" id="school_select2">
@@ -219,7 +231,7 @@
                     <label for="search" class="btn hide_label no_disp">
                         <button name="search" id="res_search">Search</button>
                     </label>
-                </div> -->
+                </div><?php } ?>
             </div>
             <label for="student_cancel_operation" class="btn" style="display:block; text-align: center; width: 100%;">
                     <button name="student_cancel_operation">Reset</button>
@@ -233,7 +245,7 @@
                 <?php include_once($rootPath.'/blocks/admissionForm.php')?>
             </div>
 
-            <!-- <div id="results" class="body hide_label no_disp">
+            <?php if($show){ ?><div id="results" class="body hide_label no_disp">
                 <table>
                     <thead>
                         <td>ID</td>
@@ -294,7 +306,7 @@
                         </tr>
                     </tbody>
                 </table>
-            </div> -->
+            </div><?php }?>
         </section>
 
         <section id="usage">
@@ -357,8 +369,6 @@
             </div>
         </section>
     </main>
-
-    <!--<iframe src="https://calendar.google.com/calendar/embed?src=ird1d5tafplcn4ccght0ihc9ng%40group.calendar.google.com&ctz=Africa%2FAccra" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>-->
 
     <?php @include_once($rootPath.'/blocks/footer.php')?>    
 

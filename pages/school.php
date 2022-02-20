@@ -5,11 +5,26 @@
     <?php @include_once($rootPath.'/blocks/generalHead.php')?>
 
     <!--Document title-->
-    <title>Schools</title>
+    <title>SHSDesk - Our Schools</title>
+
+    <!--Page Meta data-->
+    <meta name="description" content="Get in touch with our registered schools. Search your placed school and register with ease.
+    SHSDesk makes it possible to attain admission resources at a go">
+    <meta name="keywords" content="school, shs, shsdesk, placed, register, admission, prospectus, code">
 
     <!--Stylesheets-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/school/school.css?v=<?php echo time()?>">
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admissionForm.css?v=<?php echo time()?>">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-W7MF3JTHJ1');
+    </script>
 </head>
 <body>
     <?php @include_once($rootPath.'/blocks/nav.php')?>
@@ -21,7 +36,7 @@
             if($result->num_rows > 0){
                 while($row = $result->fetch_assoc()){
         ?>
-        <div class="school flex flex-center-content flex-center-align flex-column">
+        <div class="school flex flex-center-content flex-center-align">
             <div class="head">
                 <div class="image_div">
                     <img src="<?php echo $url?>/<?php echo $row["logoPath"]?>" alt="School Name">
@@ -36,16 +51,45 @@
             </div>
             <div class="body flex flex-column">
                 <div class="desc">
-                    <p><?php echo html_entity_decode($row["description"])?></p>
-                </div>
-                <!-- <div class="button flex flex-content-end">
-                    <div class="btn">
-                        <button class="enrol_button">Enrol</button>
+                    <div class="content">
+                        <p><?php 
+                            $sub = substr($row["description"], 0, 300);
+                            $sub = strip_tags($sub);
+
+                            //remove visible escape characters
+                            $sub = str_replace("\\r", "", $sub);
+                            $sub = str_replace("\\n", "", $sub);
+                            $sub = str_replace("\\", "", $sub);
+
+                            echo $sub;
+                            if(intval(strlen($row["description"])) > 300){
+                                echo "...";
+                            }
+                        ?></p>
+                    </div>        
+                    <div class="no_disp full-content">
+                        <?php 
+                            $content = html_entity_decode($row["description"]);
+
+                            //remove visible escape characters
+                            $content = str_replace("\\r", "", $content);
+                            $content = str_replace("\\n", "", $content);
+                            $content = str_replace("\\", "", $content);
+
+                            echo $content;
+                        ?>
                     </div>
+                </div>
+                <div class="button flex flex-content-end">
+                    <?php if($show){?><div class="btn">
+                        <button class="enrol_button">Enrol</button>
+                    </div><?php }
+                    if(intval(strlen($row["description"])) > 300){
+                    ?>
                     <div class="btn">
-                        <button>Read More</button>
-                    </div>                 
-                </div> -->
+                        <button name="read_more">Read More</button>
+                    </div><?php } ?>
+                </div>
             </div>
         </div>
         <?php
@@ -66,12 +110,31 @@
 
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
+    <?php if($show){?>
     <div id="payment_form" class="form_modal_box no_disp">
         <?php include_once($rootPath."/blocks/admissionPaymentForm.php");?>
     </div>
 
     <div id="admission" class="form_modal_box flex no_disp">
         <?php include_once($rootPath.'/blocks/admissionForm.php')?>
+    </div>
+    <?php } ?>
+
+    <div class="fixed flex flex-center-content flex-center-align form_modal_box no_disp" id="more_detail">
+        <form class="form">
+            <div class="head">
+                <h2>School Name</h2>
+            </div>
+            <div class="body">
+                <div id="detail">
+                </div>
+            </div>
+            <div class="foot">
+                <div class="btn">
+                    <button name="cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!--Document scripts-->
@@ -89,6 +152,34 @@
     <script>
         nav_height = $("nav").height();
         $("main").css("margin-top", nav_height);
+
+        //display details of school
+        $("button[name=read_more]").click(function(){
+            //insert school name
+            s_name = $(this).parents(".body").siblings(".head").children(".name").children("h3").html();
+            $("#more_detail .head h2").html(s_name);
+
+            //grab full detail
+            detail = $(this).parents(".button").siblings(".desc").children(".full-content").html();
+
+            //parse data
+            $("#more_detail #detail").html(detail);
+
+            //show modal
+            $("#more_detail").removeClass("no_disp");
+        })
+
+        //close modal
+        $("#more_detail button[name=cancel]").click(function(){
+            //hide modal
+            $("#more_detail").addClass("no_disp");
+
+            //remove data
+            $("#more_detail #detail").html("");
+            
+            //reset header
+            $("#more_detail .head h2").html("School Name");
+        })
     </script>
 </body>
 </html>

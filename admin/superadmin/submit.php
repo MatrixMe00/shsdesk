@@ -132,7 +132,7 @@
         }elseif($submit == "make_announcement" || $submit == "make_announcement_ajax"){
             //retrieve needed data
             $title = $connect->real_escape_string($_REQUEST["title"]);
-            $message = htmlentities($_REQUEST["message"], ENT_QUOTES);
+            $message = $connect->real_escape_string(htmlentities($_REQUEST["message"], ENT_QUOTES));
             $audience = $connect->real_escape_string($_REQUEST["audience"]);
             $notification_type = $connect->real_escape_string($_REQUEST["notification_type"]);
 

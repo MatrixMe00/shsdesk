@@ -8,7 +8,17 @@
     <!--Document title-->
     <title>SHSDesk - Register Your School</title>
     <meta name="description" content="Subscribe to our service for free. Register with SHSDesk to put you in the plan to be able to manage student admission and to easily receive record details">
-    <meta name="keywords" content="subscribe, register, shs, desk, shsdesk, free, service, student, admission, admission, application, school, category">
+    <meta name="keywords" content="subscribe, register, shs, desk, shsdesk, free, service, student, admission, application, school, category">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-W7MF3JTHJ1');
+    </script>
     <style>
         @media screen and (min-width: 768px){
             form{

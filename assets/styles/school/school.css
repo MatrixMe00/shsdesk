@@ -62,3 +62,28 @@ main .school.no_data{
         text-align: center;
     }
 }
+
+/*more detail modal*/
+#more_detail .form{
+    max-width: 80vw;
+}
+
+#more_detail .form p{
+    margin-bottom: 1%;
+}
+
+#more_detail .form p:last-child{
+    margin-bottom: 0.7%;
+}
+
+#more_detail .form .body #detail{
+    max-height: 60vh; 
+    border: 1px solid #ccc; 
+    padding: 1%; 
+    background-color: white;
+    overflow: auto;
+}
+
+#more_detail .form .body #detail ol, #more_detail .form .body #detail ul{
+    margin-left: 1em;
+}

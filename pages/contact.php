@@ -5,7 +5,14 @@
     <?php @include_once($rootPath.'/blocks/generalHead.php')?>
 
     <!--Document title-->
-    <title>Contact Us</title>
+    <title>SHSDesk - Contact Us</title>
+
+    <!--Page Meta data-->
+    <meta name="description" content="Get in touch with us via your email. We are available 24/7 and provide responses in about
+    two hours of message send.">
+    <meta name="keywords" content="contact, shs, shsdesk, desk, touch, fullname, contact us, available, email">
+
+
     <!--Stylesheets-->
     <link rel="stylesheet" href="../assets/styles/contact.css?v=<?php echo time()?>">
 </head>

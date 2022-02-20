@@ -11,7 +11,7 @@
             $email = strip_tags(stripslashes($_REQUEST["email"]));
 
             //search for email
-            $sql = "SELECT user_id, username, password, email FROM admins_table WHERE email=? AND fullname=?";
+            $sql = "SELECT user_id email FROM admins_table WHERE email=? AND fullname=?";
             $res = $connect->prepare($sql);
             $res->bind_param("ss", $email,$fullname);
             
@@ -23,13 +23,13 @@
 
             if($res->num_rows > 0){
                 $row = $res->fetch_assoc();
-                $old_username = $row["username"];
-                $old_password = $row["password"];
 
-                if($new_username == $old_username){
+                if(strtolower($new_username) == "new user"){
                     echo "same-username";
-                }elseif($new_password == $old_password){
+                }elseif(strtolower($new_password) == "password@1"){
                     echo "same-password";
+                }elseif(intval(strlen($new_password)) < 8){
+                    echo "short-password";
                 }else{
                     //check if the username already exists in database
                     $user_exist = fetchData("username","admins_table","username='$new_username'");
@@ -76,7 +76,7 @@
                             echo "update-error";
                         }
                     }else{
-                        echo "Username already exist. Please select a new username";
+                        echo "username-exist";
                     }
                 }
             }else{
@@ -579,15 +579,15 @@
         }elseif($submit == "admissiondetails" ||  $submit == "admissiondetails_ajax"){
             $school_name = formatName($_REQUEST["school_name"]);
             $school_email = $_POST["school_email"];
-            $postal_address = $_POST["postal_address"];
+            $postal_address = formatName($_POST["postal_address"]);
             $head_name = $_POST["head_name"];
             $head_title = $_POST["head_title"];
             $sms_id = $_POST["sms_id"];
             $reopening = $_POST["reopening"];
-            $announcement = $_POST["announcement"];
-            $admission = $_POST["admission"];
+            $announcement = $connect->real_escape_string($_POST["announcement"]);
+            $admission = $connect->real_escape_string(htmlentities($_POST["admission"]));
             $autoHousePlace = $_POST["autoHousePlace"];
-            $description = $_POST["description"];
+            $description = $connect->real_escape_string($_POST["description"]);
 
             $message = "";
 

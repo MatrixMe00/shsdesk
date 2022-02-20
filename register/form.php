@@ -64,10 +64,10 @@
         
         //address
         $school_email = $connect->real_escape_string($_POST["school_email"]);
-        $postal_address = $connect->real_escape_string($_POST["postal_address"]);
+        $postal_address = formatName($connect->real_escape_string($_POST["postal_address"]));
         
         //school's description
-        $description = htmlentities($_POST["description"], ENT_QUOTES);
+        $description = $connect->real_escape_string(htmlentities($_POST["description"], ENT_QUOTES));
 
         //other details of school
         $category = $connect->real_escape_string($_POST["category"]);

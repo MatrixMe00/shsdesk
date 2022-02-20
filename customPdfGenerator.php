@@ -190,7 +190,7 @@
         $box_address = $_SESSION["ad_box_address"];
         $school_phone = remakeNumber($_SESSION["ad_school_phone"]);
         $logo = $_SESSION["ad_school_logo"];
-        $logo = "<img src=\"$url/$logo\" alt=\"logo\" width=\"30mm\" height=\"30mm\">";
+        $logo = html_entity_decode("<img src=\"$url/$logo\" alt=\"logo\" width=\"30mm\" height=\"30mm\">", ENT_QUOTES);
 
         $html = <<<HTML
         <head>

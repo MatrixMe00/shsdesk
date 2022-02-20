@@ -28,6 +28,10 @@ $("form").submit(function(e){
             message = "Your data could not be updated. Please try again later or contact the admin";
         }else if(result == "cannot login"){
             message = "Update was unsuccessful. Contact Admin for help";
+        }else if(result == "short-password"){
+            message = "Password is too short. Please enter at least an 8 character long password";
+        }else if(result == "username-exist"){
+            message = "Username already exist. Please select a new username";
         }else{
             message = result;
         }
