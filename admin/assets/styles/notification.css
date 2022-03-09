@@ -30,6 +30,18 @@
     padding: 0.2rem;
 }
 
+.notif_box > .middle p{
+    margin-bottom: 1%;
+}
+
+.notif_box > .middle p:last-child{
+    margin-bottom: 0.7%;
+}
+
+.notif_box > .middle ol, .notif_box > .middle ul{
+    margin-left: 1em;
+}
+
 .notif_box .foot{
     padding-left: unset;
 }

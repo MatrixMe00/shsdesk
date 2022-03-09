@@ -161,7 +161,7 @@
                         //count number of houses of the school
                         $sql = "SELECT id, maleHeadPerRoom, maleTotalRooms, femaleHeadPerRoom, femaleTotalRooms
                             FROM houses
-                            WHERE schoolID = $shs_placed AND gender = '$ad_gender' OR gender='Both'";
+                            WHERE schoolID = $shs_placed AND (gender = '$ad_gender' OR gender='Both')";
                         $result = $connect->query($sql);
 
                         //create an array for details
@@ -194,7 +194,7 @@
                         //search for last house allocation entry for this gender
                         $sql = "SELECT houseID
                             FROM house_allocation
-                            WHERE schoolID = $shs_placed AND studentGender='$ad_gender'
+                            WHERE schoolID = $shs_placed AND (studentGender='$ad_gender' OR studentGender='Both')
                             ORDER BY indexNumber DESC
                             LIMIT 1";
                         $result = $connect->query($sql);
@@ -260,7 +260,7 @@
                         }
                     }
 
-                    if($permit){
+                    /*if($permit){
                         //count number of houses of the school
                         $sql = "SELECT id
                             FROM houses
@@ -334,7 +334,7 @@
                                 $message = "error";
                             }
                         }
-                    }
+                    }*/
 
                     $message = "success";
 
@@ -413,15 +413,15 @@
                 $mail->isSMTP();                                      // Set mailer to use SMTP
                 $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
                 $mail->SMTPAuth = true;                               // Enable SMTP authentication
-                $mail->Username = '';                 // SMTP username
-                $mail->Password = '';                           // SMTP password
+                $mail->Username = 'safosah00@gmail.com';                 // SMTP username
+                $mail->Password = 'Afos@h2000';                           // SMTP password
                 $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
                 $mail->Port = 587;                                    // TCP port to connect to
 
                 $mail->AddReplyTo($email);
-                $mail->From = $email2;
+                $mail->From = $email;
                 $mail->FromName = $fname;
-                $mail->addAddress('', 'Admin');     // Add a recipient
+                $mail->addAddress('successinnovativehub@gmail.com', 'Admin');     // Add a recipient
 
                 $mail->isHTML(true);                                  // Set email format to HTML
 

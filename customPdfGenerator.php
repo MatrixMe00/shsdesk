@@ -166,8 +166,16 @@
         }
         
         $reopening = date("jS F, Y", strtotime($_SESSION["ad_reopening"]));
+        echo $reopening;
+        echo $_SESSION["ad_reopening"];
 
         $message = $_SESSION["ad_message"];
+        
+        //remove visible escape characters
+        $message = str_replace("\\r", "", $message);
+        $message = str_replace("\\n", "", $message);
+        $message = str_replace("\\", "", $message);
+        
         $message .= "<br><span>Yours faithfully, </span>";
         /*$message = "
             <span class=\"demo_text\">[ -- Start of body text </span><br><p>The message in this square brackets is what you will provide as your admission letter. Please do well to fill out the message so as to automatically generate the admission form for your students</p>
@@ -274,6 +282,16 @@
                 )
             ),
             'ol' => array(
+                0 => array(
+                    'n' => 0,
+                    'h' => ''
+                ),
+                1 => array(
+                    'n' => 1,
+                    'h' => ''
+                )
+            ),
+            'ul' => array(
                 0 => array(
                     'n' => 0,
                     'h' => ''

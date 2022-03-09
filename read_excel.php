@@ -164,12 +164,14 @@
                                     if($row == $max_row){
                                         echo "success";
                                     }
-                                }
-                                
+                                }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
+                                    echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
+                                }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
+                                    echo "Detail for $indexNumber not written. Gender must either be Male or Female";
+                                }                                
                             }else{
                                 echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
-                            }
-                            
+                            }                            
                         }
                     }else{
                         for($row=2; $row <= $max_row; $row++){
@@ -228,8 +230,11 @@
                                     if($row == $max_row){
                                         echo "success";
                                     }
-                                }
-                                
+                                }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
+                                    echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder";
+                                }elseif(strtolower($studentGender) != "male" || strtolower($studentGender) != "female"){
+                                    echo "Detail for $indexNumber not written. Gender should either be Male or Female";
+                                }                    
                             }else{
                                 echo "user-exist".$index["indexNumber"];
                                 exit(1);
@@ -237,15 +242,6 @@
                             
                         }
                     }
-
-                    
-                    /*//variable to write data from file
-                    $writer = IOFactory::createWriter($spreadsheet, "Html");
-
-                    //parse result into html
-                    $result = $writer->save("php://output");
-
-                    echo $result;*/
                 }else{
                     $message = "extension-error";
                 }

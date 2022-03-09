@@ -34,7 +34,18 @@
                 <span class="date"><?php echo date("jS F, Y",strtotime($row["Date"]))?></span>
             </div>
             <div class="middle">
-                <p><?php echo html_entity_decode($row["Description"])?></p>
+                <p>
+                    <?php
+                        $content = html_entity_decode($row["Description"]);
+
+                        //remove visible escape characters
+                        $content = str_replace("\\r", "", $content);
+                        $content = str_replace("\\n", "", $content);
+                        $content = str_replace("\\", "", $content);
+
+                        echo $content;
+                    ?>
+                </p>
             </div>
             <div class="foot">
                 <span class="item-event flex-center-align replies">
@@ -140,7 +151,18 @@
                 <span class="date"><?php echo date("jS F, Y",strtotime($row["Date"]))?></span>
             </div>
             <div class="middle">
-                <p><?php echo html_entity_decode($row["Description"])?></p>
+                <p>
+                    <?php
+                        $content = html_entity_decode($row["Description"]);
+
+                        //remove visible escape characters
+                        $content = str_replace("\\r", "", $content);
+                        $content = str_replace("\\n", "", $content);
+                        $content = str_replace("\\", "", $content);
+
+                        echo $content;
+                    ?>
+                </p>
             </div>
             <div class="foot">
                 <span class="item-event flex-center-align replies" data-sender-id="<?php echo $row["Sender_id"]?>">
@@ -244,7 +266,18 @@
                 <span class="date"><?php echo date("jS F, Y",strtotime($row["Date"]))?></span>
             </div>
             <div class="middle">
-                <p><?php echo html_entity_decode($row["Description"])?></p>
+                <p>
+                    <?php
+                        $content = html_entity_decode($row["Description"]);
+
+                        //remove visible escape characters
+                        $content = str_replace("\\r", "", $content);
+                        $content = str_replace("\\n", "", $content);
+                        $content = str_replace("\\", "", $content);
+
+                        echo $content;
+                    ?>
+                </p>
             </div>
             <div class="foot">
                 <span class="item-event flex-center-align replies" data-sender-id="<?php echo $row["Sender_id"]?>">

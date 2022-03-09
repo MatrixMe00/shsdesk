@@ -13,6 +13,7 @@
             //details for school
             $_SESSION["ad_school_name"] = $school["schoolName"];
             $_SESSION["ad_box_address"] = $school["postalAddress"];
+            $_SESSION["ad_school_prospectus"] = $school["prospectusPath"];
 
             if($school["techContact"][0] != "0" && $school["techContact"][0] != "+"){
                 $_SESSION["ad_school_phone"] = "+".$school["techContact"];
@@ -79,7 +80,7 @@
 <body>
     <div id="container">
         <div class="member_div">
-            <a href="<?php echo $url."/".$school["prospectusPath"] ?>" rel="nofollow">
+            <a href="<?php echo $url."/".$_SESSION["ad_school_prospectus"] ?>" rel="nofollow">
                 <button id="btn_pros">Prospectus is ready for download | Download [PDF]</button>
             </a>
         </div>

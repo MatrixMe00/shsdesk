@@ -9,7 +9,8 @@ function payWithPaystack(){
     }
 
     var handler = PaystackPop.setup({
-        key: 'pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca',
+        key: 'pk_live_056157b8c9152eb97c1f04b2ed60e7484cd0d955',
+        //key: 'pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca',
         email: cust_email,
         amount: cust_amount,
         currency: "GHS",
@@ -32,7 +33,7 @@ function payWithPaystack(){
             ]
         },
         callback: function(response){
-            alert('Payment was successful. Your transaction reference is ' + response.reference);
+            alert('Payment was successful. Your transaction reference is ' + response.reference + ". Save this value at a safe place");
 
             //parse data into database
             passPaymentToDatabase(response.reference);

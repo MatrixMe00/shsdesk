@@ -227,5 +227,35 @@
             <span>Made This Week</span>
         </div>
     </div>
+    
+    <?php if($user_details["role"] <= 3){?>
+    <div class="content dark">
+        <div class="head">
+            <h2>GHC
+                <?php
+                    $temp_price = 10;
+                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction 
+                        FROM transaction 
+                        WHERE schoolBought=$user_school_id
+                        AND Transaction_Expired=TRUE");
+                    
+                    $amount = 0;
+                    while($row = $res->fetch_array()){
+                        if(date("Y",strtotime($row["Transaction_Date"])) == date("Y")){
+                            $amount += $temp_price;
+                        }else{
+                            continue;
+                        }
+                    }
+                    $amount = number_format(round($amount,2), 2);
+                    echo $amount;
+                ?>
+            </h2>
+        </div>
+        <div class="body">
+            <span>Made By School This Year</span>
+        </div>
+    </div>
+    <?php } ?>
 </section>
 <?php } ?>

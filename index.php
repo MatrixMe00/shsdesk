@@ -331,7 +331,8 @@
                             <div class="step_name">Step 3</div>
                             In the case where you have already paid, but due to technical difficulties were unable to complete your 
                             registration, just provide your transaction reference to continue. Transaction reference is in the format
-                            MPxxxxxx.xxxx.Dxxxxx, where x are numbers.
+                            Txxxxxxxxxxxxxxx, where x are numbers. Do well to save or write it down when you make initial payment. This
+                            is to help you retake an admission form in the case where you could not upload your details.
                         </li>
                         <li class="arrow">&RightArrowBar;</li>
                         <li>

@@ -4,9 +4,10 @@
      * 
      * @param int $id This variable will take the user id for extraction
      * 
-     * @return array|string The function returns an array of results
+     * @return array The function returns an array of results
+     * @return string The function returns an error in a string format
      */
-    function getUserDetails($id):array|string{
+    function getUserDetails($id){
         global $connect;
 
         $sql = "SELECT * FROM admins_table WHERE user_id=$id";
@@ -279,7 +280,7 @@
     /**
      * This function is responsible for retrieving data about schools in the system
      * 
-     * @param string|int $key This parameter can either be a string with the name of the school
+     * @param mixed $key This parameter can either be a string with the name of the school
      * or an integer holding the school's id
      * @param bool $all This parameter is a  boolean responsible for revealing if an
      * array should return or not. It is false by default
@@ -288,7 +289,7 @@
      * @return int An integer is return when the key is a string
      * @return array An array is returned when the all parameter is set to true
      */
-    function getSchoolDetail(int|string $key, bool $all = false):string|int|array{
+    function getSchoolDetail($key, bool $all = false){
         global $connect;
 
         if(intval($key) > 0 && !$all){
@@ -434,9 +435,10 @@
      * @param string $where Receives a where clause command
      * @param int $limit Number of rows to deliver. Default is 1. Use 0 to fetch everything
      * 
-     * @return string|array
+     * @return string returns a string of data or error
+     * @return array returns an array of data
      */
-    function fetchData(string $columns, string $table, string $where, int $limit = 1):array|string{
+    function fetchData(string $columns, string $table, string $where, int $limit = 1){
         global $connect;
 
         $sql = "SELECT $columns
