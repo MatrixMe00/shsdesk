@@ -186,6 +186,25 @@
                 echo "error making announcement";
             }
         }
+        elseif($submit == "fetchEdit"){
+            $school_id = $_REQUEST["school_id"];
+            $content_box = $_REQUEST["content_box"];
+
+            //determine display to provide
+            if($school_id <= 0 || empty($school_id)){
+                echo "School selection failed. Please check and try again";
+            }elseif(empty($content_box)){
+                echo "Content menu not described. Please describe the content to display to continue";
+            }elseif($content_box == "details"){
+                require($url."/admin/admin/page_parts/admission.php?school_id=".$school_id."&user_id=".$user_id);
+            }elseif($content_box == "add_student"){
+                require($url."/admin/admin/page_parts/cssps.php?school_id=".$school_id."&user_id=".$user_id);
+            }elseif($content_box == "houses"){
+                require($url."/admin/admin/page_parts/houses.php?school_id=".$school_id."&user_id=".$user_id);
+            }elseif($content_box == "alloc"){
+                require($url."/admin/admin/page_parts/allocation.php?school_id=".$school_id."&user_id=".$user_id);
+            }
+        }
     }else{
         echo "no-submission";
     }

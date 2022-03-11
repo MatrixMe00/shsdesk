@@ -10,6 +10,7 @@
             <div class="close"><span>&cross;</span></div>
         </div>
         <div class="joint">
+            <input type="hidden" name="school_id" value="<?php echo $user_school_id?>">
             <label for="student_index">
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/index.png" alt="index">

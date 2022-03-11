@@ -319,6 +319,80 @@ button.selected{
     top: 1em;
 }
 
+/*tab for superadmin*/
+#edit_modal #wrapper{
+    max-width: 95vw;
+    max-height: 95vh;
+    transition: height 1s;
+}
+
+#edit_modal form, #edit_modal .form{
+    border-radius: 0;
+    position: initial !important;
+}
+
+.tabs{
+    background-color: whitesmoke;
+    padding: 0.5rem 0.2rem;
+    min-width: 80vw;
+}
+
+.tabs .tab_btn{
+    padding: 0.5rem;
+    background-color: white;
+    min-width: 4em;
+    transition: background-color 1s, border-radius 0.5s;
+    cursor: pointer;
+}
+
+.tabs .tab_btn.active{
+    background-color: #ddd;
+    border-radius: 5px;
+}
+
+.tabs .tab_btn.active:hover{
+    background-color: #ddd;
+    border-radius: unset;
+}
+
+.tabs .tab_btn:hover{
+    background-color: #eee;
+}
+
+#edit_modal .edit_detail{
+    background-color: white;
+    padding: 2rem 1em;
+    min-width: 80vw;
+    text-align: center;
+}
+
+#edit_modal > #wrapper > .foot{
+    border-radius: 0 0 10px 10px;
+    padding: 0.3rem 0.5rem 0.7rem;
+    background-color: transparent;
+    border: 1px solid whitesmoke;
+    min-width: 80vw;
+    justify-content: flex-end;
+}
+
+#edit_modal > #wrapper > .content{
+    background-color: whitesmoke !important;
+    min-height: 10vh;
+    min-width: 80vw;
+    max-height: 65vh;
+    overflow: auto;
+}
+
+#edit_modal > #wrapper > .content .content_box{
+    min-height: inherit;
+    max-height: 65vh;
+}
+
+@media screen and (max-width:767px){
+    #edit_modal .edit_detail, #edit_modal > #wrapper > div{
+        min-width: 95vw;
+    }
+}
 @media screen and (min-width: 768px){
     .news_number{
         top: 1em;

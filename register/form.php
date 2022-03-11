@@ -74,7 +74,7 @@
         $residence_status = $connect->real_escape_string($_POST["residence_status"]);
         $sector = $connect->real_escape_string($_POST["sector"]);
         @$autoHousePlace = $connect->real_escape_string($_POST["autoHousePlace"]);
-        $admission_letter = $connect->real_escape_string($_POST["admission_letter"]);
+        $admission_letter = $connect->real_escape_string(htmlentities($_POST["admission_letter"]));
 
         if(@$autoHousePlace == "true" || @$autoHousePlace == "on"){
             @$autoHousePlace = true;
@@ -171,8 +171,6 @@
                 echo "<p>File provided for prospectus is not a PDF</p>";
                 echo "<p>Please go back and provide valid document form</p>";
             }
-
-            $prostectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
         }else{
             echo "<p>Please provide your prospectus</p>";
             

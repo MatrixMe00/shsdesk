@@ -1,7 +1,12 @@
 <?php include_once("../../../includes/session.php");
 
-    //set nav_point session
-    $_SESSION["nav_point"] = "exeat";
+    if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
+        $user_school_id = $_REQUEST["school_id"];
+        $user_details = getUserDetails($_REQUEST["user_id"]);
+    }else{
+        //set nav_point session
+        $_SESSION["nav_point"] = "exeat";
+    }
 ?>
 <section>
     <form action="<?php echo $url?>/admin/admin/submit.php" method="post" name="exeatForm">
@@ -14,6 +19,7 @@
                 <div class="close"><span>&cross;</span></div>
             </div>
             <div class="joint">
+                <input type="hidden" name="school_id" value="<?php echo $user_school_id?>">
                 <label for="student_index">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="name">

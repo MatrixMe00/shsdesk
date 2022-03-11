@@ -255,7 +255,16 @@ $(".reply_tab label[for=submit] button[name=submit]").click(function(){
 $("span.item-event").click(function(){
     item_id = $(this).attr("data-item-id");
     item_event = $(this).attr("data-item-event");
-    table = "reply";
+
+    //check if delete clicked is a notification or reply
+    if($(this).parents(".reply_container")){
+        table = "reply";
+    }else if($(this).parents(".notif_box")){
+        table = "notification";
+    }
+
+    alert(table); return;
+    
 
     if(item_event == "edit"){
 

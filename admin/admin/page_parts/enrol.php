@@ -1,7 +1,12 @@
 <?php include_once("../../../includes/session.php");
 
-    //set nav_point session
-    $_SESSION["nav_point"] = "Enrol";
+    if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
+        $user_school_id = $_REQUEST["school_id"];
+        $user_details = getUserDetails($_REQUEST["user_id"]);
+    }else{
+        //set nav_point session
+        $_SESSION["nav_point"] = "Enrol";
+    }
 ?>
 <section class="section_container">
     <div class="content primary reg_comp">
@@ -129,6 +134,7 @@
 
         <form action="<?php echo $url?>/admin/admin/submit.php" class="no_disp" name="table_yes_no_form" id="table_yes_no_form">
             <input type="hidden" name="indexNumber">
+            <input type="hidden" name="school_id" value="<?php echo $user_school_id?>">
             <input type="hidden" name="submit" value="table_yes_no_submit">
         </form>
 

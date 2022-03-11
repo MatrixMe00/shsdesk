@@ -1,7 +1,12 @@
 <?php include_once("../../../includes/session.php");
 
-    //set nav_point session
-    $_SESSION["nav_point"] = "House";
+    if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
+        $user_school_id = $_REQUEST["school_id"];
+        $user_details = getUserDetails($_REQUEST["user_id"]);
+    }else{
+        //set nav_point session
+        $_SESSION["nav_point"] = "House";
+    }
 ?>
 
 <section class="section_container">
@@ -70,7 +75,7 @@
     <div class="btn">
         <button onclick="$('#modal').removeClass('no_disp')" class="secondary">Add New House</button>
     </div>
-    <?php if($_SESSION["real_status"]){?>
+    <?php if(isset($_SESSION["real_status"]) && $_SESSION["real_status"]){?>
     <div class="btn">
         <button name="submit" value="houses" class="request_btn cyan">Generate Report</button>
     </div>

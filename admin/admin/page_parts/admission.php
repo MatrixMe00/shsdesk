@@ -1,8 +1,13 @@
-    <?php include_once("../../../includes/session.php");
-    
+<?php include_once("../../../includes/session.php");
+
+    if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
+        $user_school_id = $_REQUEST["school_id"];
+        $user_details = getUserDetails($_REQUEST["user_id"]);
+    }else{
         //set nav_point session
         $_SESSION["nav_point"] = "admission";
-    ?>
+    }
+?>
 
     <form action="<?php echo $url?>/admin/admin/submit.php" method="post" name="admissiondetailsForm">
         <div class="body">
@@ -19,6 +24,7 @@
             ?>
 
             <div class="joint">
+                <input type="hidden" name="school_id" value="<?php echo $user_school_id?>">
                 <label for="school_name">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/user.png" alt="fullname_logo">

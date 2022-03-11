@@ -9,6 +9,7 @@
             <span class="message">Here is a test message</span>
             <div class="close"><span>&cross;</span></div>
         </div>
+        <input type="hidden" name="school_id" value="<?php echo $user_school_id?>">
         <label for="house_name">
             <span class="label_image">
                 <img src="<?php echo $url?>/assets/images/icons/home.png" alt="house name">

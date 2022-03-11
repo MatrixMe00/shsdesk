@@ -156,7 +156,6 @@
             $dob = strip_tags(stripslashes($_REQUEST["dob"]));
             $track_id = strip_tags(stripslashes($_REQUEST["track_id"]));
             $house = strip_tags(stripslashes($_REQUEST["house"]));
-            $school_id = $user_school_id;
 
             //variable to hold messages
             $message = "";
@@ -191,11 +190,11 @@
 
                 //update data in CSSPS table
                 $sql = "UPDATE cssps SET Lastname=?, Othernames=?, Gender=?, boardingStatus=?,
-                        programme=?, aggregate=?, jhsAttended=?, dob=?, trackID=?, schoolID=? 
+                        programme=?, aggregate=?, jhsAttended=?, dob=?, trackID=? 
                         WHERE indexNumber=?";
                 $stmt = $connect->prepare($sql);
-                $stmt->bind_param("sssssisssis",$lname,$oname,$gender,$boarding_status,$student_course,
-                    $aggregate,$jhs,$dob,$track_id,$school_id, $student_index);
+                $stmt->bind_param("sssssissss",$lname,$oname,$gender,$boarding_status,$student_course,
+                    $aggregate,$jhs,$dob,$track_id, $student_index);
                 if($stmt->execute()){
                     //make update to house allocation
                     $sql = "UPDATE house_allocation SET studentLname=?, studentOname=?, houseID=?, studentGender=?, boardingStatus=? 
@@ -247,6 +246,7 @@
             $male_head_per_room = $_REQUEST["male_head_per_room"];
             $female_house_room_total = $_REQUEST["female_house_room_total"];
             $female_head_per_room = $_REQUEST["female_head_per_room"];
+            $school_id = $_REQUEST["school_id"];
 
             $message = "";
 
@@ -270,6 +270,8 @@
                 $message = "female-head-total-empty";
             }elseif(intval($female_head_per_room) <= 0 && (strtolower($gender) == "both" || strtolower($gender) == "female")){
                 $message = "female-head-zero";
+            }elseif(empty($school_id) || !intval($school_id)){
+                $message = "No School provided or school selection was unsuccessful. Please try again later";
             }else{
                 //query into database by gender
                 if(strtolower($gender) == "male"){
@@ -288,11 +290,11 @@
 
                 //bind parameters
                 if(strtolower($gender) == "male"){
-                    $stmt->bind_param("siiis",$house_name, $user_school_id, $male_house_room_total, $male_head_per_room, $gender);
+                    $stmt->bind_param("siiis",$house_name, $school_id, $male_house_room_total, $male_head_per_room, $gender);
                 }elseif(strtolower($gender == "female")){
-                    $stmt->bind_param("siiis",$house_name, $user_school_id, $female_house_room_total, $female_head_per_room, $gender);
+                    $stmt->bind_param("siiis",$house_name, $school_id, $female_house_room_total, $female_head_per_room, $gender);
                 }else{
-                    $stmt->bind_param("siiiiis",$house_name, $user_school_id, $male_house_room_total, $male_head_per_room, $female_house_room_total, $female_head_per_room, $gender);
+                    $stmt->bind_param("siiiiis",$house_name, $school_id, $male_house_room_total, $male_head_per_room, $female_house_room_total, $female_head_per_room, $gender);
                 }
 
                 $stmt->execute();
@@ -309,6 +311,7 @@
             $male_head_per_room = $_REQUEST["male_head_per_room"];
             $female_house_room_total = $_REQUEST["female_house_room_total"];
             $female_head_per_room = $_REQUEST["female_head_per_room"];
+            $school_id = $_REQUEST["school_id"];
 
             if(isset($_REQUEST["house_id"])){
                 $id = $_REQUEST["house_id"];
@@ -388,6 +391,7 @@
             $return_date = $_REQUEST["return_date"];
             $exeat_type = $_REQUEST["exeat_type"];
             $exeat_reason = $_REQUEST["exeat_reason"];
+            $school_id = $_REQUEST["school_id"];
 
             $message = "";
 
@@ -407,6 +411,8 @@
                 $message = "no-reason";
             }elseif(strlen($exeat_reason) < 3 || strlen($exeat_reason) > 80){
                 $message = "range-error";
+            }elseif(empty($school_id) || !intval($school_id)){
+                $message = "No School provided or school selection was unsuccessful. Please try again later";
             }else{
                 //validate index number
                 $sql = "SELECT houseID FROM house_allocation WHERE indexNumber=?";
@@ -428,7 +434,7 @@
                     $sql = "INSERT INTO exeat (indexNumber,houseID,exeatTown,exeatDate,expectedReturn,exeatReason,exeatType,school_id,givenBy)
                         VALUES (?,?,?,?,?,?,?,?,?)";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("sisssssis",$student_index, $data["houseID"],$exeat_town,$exeat_date,$return_date,$exeat_reason,$exeat_type, $user_school_id, $user_details["fullname"]);
+                    $stmt->bind_param("sisssssis",$student_index, $data["houseID"],$exeat_town,$exeat_date,$return_date,$exeat_reason,$exeat_type, $school_id, $user_details["fullname"]);
                     $stmt->execute();
 
                     #code to send letter to parents will go here
@@ -546,22 +552,23 @@
             echo json_encode($data);
         }elseif($submit == "table_yes_no_submit"){
             $indexNumber = $_REQUEST["indexNumber"];
+            $school_id = $_REQUEST["school_id"];
 
             //delete record
             if($indexNumber == "all"){
-                $sql = "DELETE FROM cssps WHERE schoolID=$user_school_id";
+                $sql = "DELETE FROM cssps WHERE schoolID=$school_id";
             }else{
                 $sql = "DELETE FROM cssps WHERE indexNumber='$indexNumber'";
             }
             if($connect->query($sql)){
                 if($indexNumber == "all"){
-                    $sql = "DELETE FROM enrol_table WHERE shsID=$user_school_id";
+                    $sql = "DELETE FROM enrol_table WHERE shsID=$school_id";
                 }else{
                     $sql = "DELETE FROM enrol_table WHERE indexNumber='$indexNumber'";
                 }
                 if($connect->query($sql)){
                     if($indexNumber == "all"){
-                        $sql = "DELETE FROM house_allocation WHERE schoolID=$user_school_id";
+                        $sql = "DELETE FROM house_allocation WHERE schoolID=$school_id";
                     }else{
                         $sql = "DELETE FROM house_allocation WHERE indexNumber='$indexNumber'";
                     }
@@ -588,6 +595,7 @@
             $admission = $connect->real_escape_string(htmlentities($_POST["admission"]));
             $autoHousePlace = $_POST["autoHousePlace"];
             $description = $connect->real_escape_string($_POST["description"]);
+            $school_id = $_REQUEST["school_id"];
 
             $message = "";
 
@@ -603,6 +611,8 @@
                 $message = "SMS ID field cannot be empty";
             }elseif(empty($reopening)){
                 $message = "No Reopening date provided";
+            }elseif(empty($school_id) || !intval($school_id)){
+                $message = "No School provided or school selection was unsuccessful. Please try again later";
             }
 
             //avatar check
@@ -632,12 +642,14 @@
                     $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
     
                     $prostectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                    //remove rootPath
+                    $prostectusDirectory = explode("$rootPath/", $prostectusDirectory);
+                    $prostectusDirectory = $prostectusDirectory[1];
                 }else{
                     echo "<p>File provided for prospectus is not a PDF</p>";
                     echo "<p>Please go back and provide valid document form</p>";
                 }
-    
-                $prostectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
 
                 $pros_mod = true;
             }else{
@@ -654,25 +666,25 @@
                             description=?, autoHousePlace=? WHERE id=?";
                     $stmt = $connect->prepare($sql);
                     $stmt->bind_param("ssssssssii",$image_directory,$prostectusDirectory, $admission, $school_name, $postal_address, $head_name,
-                        $school_email, $description, $autoHousePlace, $user_school_id);
+                        $school_email, $description, $autoHousePlace, $school_id);
                 }elseif($logo_mod){
                     $sql = "UPDATE schools SET logoPath=?, admissionPath=?, schoolName=?, postalAddress=?, headName=?, email=?,
                             description=?, autoHousePlace=? WHERE id=?";
                     $stmt = $connect->prepare($sql);
                     $stmt->bind_param("sssssssii",$image_directory, $admission, $school_name, $postal_address, $head_name,
-                        $school_email, $description, $autoHousePlace, $user_school_id);
+                        $school_email, $description, $autoHousePlace, $school_id);
                 }elseif($pros_mod){
                     $sql = "UPDATE schools SET prospectusPath=?, admissionPath=?, schoolName=?, postalAddress=?, headName=?, email=?,
                             description=?, autoHousePlace=? WHERE id=?";
                     $stmt = $connect->prepare($sql);
                     $stmt->bind_param("sssssssii",$prostectusDirectory, $admission, $school_name, $postal_address, $head_name,
-                        $school_email, $description, $autoHousePlace, $user_school_id);
+                        $school_email, $description, $autoHousePlace, $school_id);
                 }else{
                     $sql = "UPDATE schools SET admissionPath=?, schoolName=?, postalAddress=?, headName=?, email=?,
                             description=?, autoHousePlace=? WHERE id=?";
                     $stmt = $connect->prepare($sql);
                     $stmt->bind_param("ssssssii", $admission, $school_name, $postal_address, $head_name,
-                        $school_email, $description, $autoHousePlace, $user_school_id);
+                        $school_email, $description, $autoHousePlace, $school_id);
                 }
 
                 if($stmt->execute()){
@@ -705,7 +717,7 @@
                     reopeningDate=?, announcement=? WHERE schoolID=?";
                     $stmt = $connect->prepare($sql);
                     $stmt->bind_param("sssssssi", $head_title, $head_name, $sms_id, $admission_year, $academic_year, $reopening, $announcement,
-                        $user_school_id);
+                        $school_id);
                     
                     $stmt->execute();
                     $message = "success";

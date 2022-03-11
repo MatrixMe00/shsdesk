@@ -1,7 +1,12 @@
-<?php include_once("../../../includes/session.php");
+<?php require_once("../../../includes/session.php");
 
-    //set nav_point session
-    $_SESSION["nav_point"] = "CSSPS";
+    if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
+        $user_school_id = $_REQUEST["school_id"];
+        $user_details = getUserDetails($_REQUEST["user_id"]);
+    }else{
+        //set nav_point session
+        $_SESSION["nav_point"] = "CSSPS";
+    }
 ?>
 <section class="section_container">
     <div class="content primary cssps">
@@ -56,7 +61,14 @@
     </div>
 </section>
 
-<section id="placement_search">
+<section>
+    <div class="display light">
+        <p style="text-align: center; padding: 1em">This section holds data on students who have been placed into your school. You can manually 
+        add a student using the "Add New Student" button or import a list of placed students using the "Import From Excel" button</p>
+    </div>
+</section>
+
+<section>
     <div id="action">
         <div class="head">
             <h2>Placement Actions</h2>
@@ -65,9 +77,11 @@
             <div class="btn">
                 <button onclick="$('#modal').removeClass('no_disp')" class="cyan">Add New Student</button>
             </div>
+            <?php if($user_details["role"] != 2 && $user_details["role"] <= 5){?>
             <div class="btn">
                 <button onclick="location.reload()" class="secondary">Refresh</button>
             </div>
+            <?php } ?>
             <div class="btn">
                 <button type="button" onclick="$('#modal_2').removeClass('no_disp')" class="teal">Import From Excel</button>
             </div>
@@ -75,19 +89,18 @@
                 $res = $connect->query("SELECT COUNT(indexNumber) AS total FROM cssps WHERE schoolID = $user_school_id")->fetch_assoc()["total"];
                 if(intval($res) > 0){
             ?>
+            <?php if($user_details["role"] != 2 && $user_details["role"] <= 5){ ?>
             <div class="btn">
                 <button id="del_all" title="This deletes all saved data from your records. Data would need to be reuploaded again"
                 class="red">Delete All Records</button>
             </div>
             <?php } ?>
+            <?php } ?>
         </div>
     </div>
+</section>
 
-    <div class="display light">
-        <p style="text-align: center; padding: 1em">This section holds data on students who have been placed into your school. You can manually 
-        add a student using the "Add New Student" button or import a list of placed students using the "Import From Excel" button</p>
-    </div>
-    
+<section id="placement_search">   
     <div class="display">
         <div class="title_bar flex flex-space-content flex-center-align teal">
             <div id="title">Registered Students</div>
@@ -277,6 +290,7 @@
 
         <form action="<?php echo $url?>/admin/admin/submit.php" class="no_disp" name="table_yes_no_form" id="table_yes_no_form">
             <input type="hidden" name="indexNumber">
+            <input type="hidden" name="school_id" value="<?php echo $user_school_id?>">
             <input type="hidden" name="submit" value="table_yes_no_submit">
         </form>
 

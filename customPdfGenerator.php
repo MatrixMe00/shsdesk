@@ -166,15 +166,14 @@
         }
         
         $reopening = date("jS F, Y", strtotime($_SESSION["ad_reopening"]));
-        echo $reopening;
-        echo $_SESSION["ad_reopening"];
 
-        $message = $_SESSION["ad_message"];
+        $message = html_entity_decode($_SESSION["ad_message"]);
         
         //remove visible escape characters
         $message = str_replace("\\r", "", $message);
         $message = str_replace("\\n", "", $message);
         $message = str_replace("\\", "", $message);
+        $message = str_replace("<p></p>","", $message);
         
         $message .= "<br><span>Yours faithfully, </span>";
         /*$message = "

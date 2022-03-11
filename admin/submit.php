@@ -432,10 +432,31 @@
                 $sql = "UPDATE $table 
                     SET Active = $activate
                     WHERE id=$sid" or die($connect->error);
+            }elseif($mode == "clear_school"){
+                $tables = array("cssps", "enrol_table", "houses","house_allocation", "exeat");
+
+                $sql = "";
+
+                for($i = 0; $i < count($tables); $i++){
+                    $tb = $tables[$i];
+
+                    $sql .= "DELETE FROM $tb WHERE ";
+
+                    //make certain on the school id column name
+                    if($tb == "enrol_table"){
+                        $sql .= "shsID=$sid; ";
+                    }elseif($tb == "exeat"){
+                        $sql .= "school_id=$sid; ";
+                    }else{
+                        $sql .= "schoolID=$sid; ";
+                    }
+                }
             }
+
+            echo $sql; exit(1);
             
             //responses
-            if($connect->query($sql)){
+            if($connect->multi_query($sql) || $connect->query($sql)){
                 if($submit == "yes_no_submit"){
                     //redirect to previous page
                     $location = $_SERVER["HTTP_REFERER"];
