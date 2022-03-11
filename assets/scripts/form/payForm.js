@@ -55,7 +55,7 @@ function passPaymentToDatabase(reference){
     amount = $("#pay_amount").val().split(" ");
     amount = amount[1];
 
-    deduction = parseFloat(((1.95/100) * parseInt(amount)).toFixed(2));
+    deduction = parseFloat((((1.95/100) + Number.EPSILON) * parseInt(amount)).toFixed(2));
     
     //get the selected school name and id
     school_name = $("#school_admission_case #school_select option:selected").html();
