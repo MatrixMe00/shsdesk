@@ -114,10 +114,6 @@
                 $message = "no-aggregate-set";
             }elseif(intval($aggregate) < 6 || intval($aggregate) > 81){
                 $message = "aggregate-wrong";
-            }elseif(empty($jhs)){
-                $message = "no-jhs-set";
-            }elseif(empty($dob)){
-                $message = "no-dob";
             }elseif(empty($track_id)){
                 $message = "no-track-id";
             }else{
@@ -155,7 +151,8 @@
             $jhs = strip_tags(stripslashes($_REQUEST["jhs"]));
             $dob = strip_tags(stripslashes($_REQUEST["dob"]));
             $track_id = strip_tags(stripslashes($_REQUEST["track_id"]));
-            $house = strip_tags(stripslashes($_REQUEST["house"]));
+            if(isset($_REQUEST["house"]))
+                $house = strip_tags(stripslashes($_REQUEST["house"]));
 
             //variable to hold messages
             $message = "";
@@ -176,13 +173,9 @@
                 $message = "no-aggregate-set";
             }elseif(intval($aggregate) < 6 || intval($aggregate) > 81){
                 $message = "aggregate-wrong";
-            }elseif(empty($jhs)){
-                $message = "no-jhs-set";
-            }elseif(empty($dob)){
-                $message = "no-dob";
             }elseif(empty($track_id)){
                 $message = "no-track-id";
-            }elseif(empty($house)){
+            }elseif(isset($_REQUEST['house']) && empty($house)){
                 $message = "no-house";
             }else{
                 //format date

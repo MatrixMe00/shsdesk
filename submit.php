@@ -142,9 +142,9 @@
                 $message = "witness-phone-short";
             }else{
                 if($result->execute()){
-                    // update the cssps table that the student has enroled
+                    // update the cssps table that the student has enroled and also jhs attended and dob
                     $sql = "UPDATE cssps 
-                        SET enroled = 1 
+                        SET jhsAttended = '$ad_jhs', dob='$ad_birthdate' enroled = 1 
                         WHERE indexNumber = '$ad_index'";
                     $result = $connect->query($sql);
 
@@ -535,10 +535,7 @@
                     if($row["schoolID"] == $school_id){
                         $array = $row;
                         $array += array(
-                            "status" => "success",
-                            "day" => date("j",strtotime($row["dob"])),
-                            "month" => date("n",strtotime($row["dob"])),
-                            "year" => date("Y",strtotime($row["dob"])),
+                            "status" => "success"
                         );
                     }else{
                         $array = array(

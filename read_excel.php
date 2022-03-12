@@ -37,7 +37,7 @@
 
                     //check if enrolment or house is exact file
                     //enrolment end at J, house end at F
-                    if($max_column != "J" && $max_column != "F"){
+                    if($max_column != "J" && $max_column != "F" && $max_column != "H"){
                         echo "Invalid file detected. Please send the correct file to continue";
                         exit(1);
                     }elseif($max_column == "J" || $max_column == "F"){
@@ -47,6 +47,15 @@
 
                         if(strtolower($cellValue) != "index number"){
                             echo "Desired file was not received";
+                            exit(1);
+                        }
+                    }elseif($max_column == "H"){
+                        //grab the detail in the first cell
+                        $cell = $sheet->getCell("A2");
+                        $cellValue = $cell->getValue();
+
+                        if(strtolower($cellValue) != "index"){
+                            echo "The file you sent cannot be defined. Please send a valid file format";
                             exit(1);
                         }
                     }
@@ -169,6 +178,89 @@
                                 }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
                                     echo "Detail for $indexNumber not written. Gender must either be Male or Female";
                                 }                                
+                            }else{
+                                echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
+                            }                            
+                        }
+                    }elseif($max_column == "H"){
+                        for($row=3; $row <= $max_row; $row++){
+                            //grab columns [reject last column, column H]
+                            for($col = 0; $col < $headerCounter; $col++){
+                                $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
+                                
+                                switch ($col) {
+                                    case 0:
+                                        $indexNumber = $cellValue;
+                                        break;
+                                    case 1:
+                                        //extract lastname and othernames
+                                        $name = explode(' ', formatName($cellValue));
+
+                                        $Lastname = $name[0];
+                                        $Othernames = "";
+                                        for($i = 1; $i < count($name); $i++) {
+                                            if($Othernames != ""){
+                                                $Othernames .= " ".$name[$i];
+                                            }else{
+                                                $Othernames = $name[$i];
+                                            }
+                                        }
+                                        break;
+                                    case 2:
+                                        $Gender = formatName($cellValue);
+                                        break;
+                                    case 3:
+                                        $aggregate = $cellValue;
+                                        break;
+                                    case 4:
+                                        $programme = formatName($cellValue);
+                                        break;    
+                                    case 5:
+                                        $trackID = formatName($cellValue);
+                                        break;
+                                    case 6:
+                                        $boardingStatus = formatName($cellValue);
+
+                                        //convert to enum value
+                                        if(strtolower($boardingStatus) == "boarding"){
+                                            $boardingStatus = 'Boarder';
+                                        }
+                                        break;
+    
+                                    default:
+                                        "Buffer count is beyond expected input count";
+                                        exit(1);
+                                }
+                            }
+    
+                            //check if index number exists and insert data into database
+                            $index = fetchData("indexNumber","cssps","indexNumber='$indexNumber'");
+    
+                            if($index == "empty"){
+                                $sql = "INSERT INTO cssps(indexNumber,Lastname,Othernames,Gender,boardingStatus,programme,aggregate,trackID,schoolID)
+                                    VALUES (?,?,?,?,?,?,?,?,?)
+                                ";
+                                $stmt = $connect->prepare($sql);
+                                $stmt->bind_param("ssssssisi",$indexNumber,$Lastname,$Othernames,$Gender,$boardingStatus,$programme,$aggregate,$trackID,$user_school_id);
+                                if($stmt->execute()){
+                                    if($row == $max_row){
+                                        echo "success";
+                                    }
+                                }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
+                                    echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
+                                }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
+                                    echo "Detail for $indexNumber not written. Gender must either be Male or Female";
+                                }
+                                echo "
+                                Index Number: $indexNumber<br>
+                                Lastname: $Lastname<br>
+                                Othernames: $Othernames<br>
+                                Gender: $Gender<br>
+                                Aggregate: $aggregate<br>
+                                Program: $programme<br>
+                                Track ID: $trackID<br>
+                                Boarding Status: $boardingStatus<br><br>
+                                ";                        
                             }else{
                                 echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
                             }                            

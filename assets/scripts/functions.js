@@ -208,13 +208,20 @@ function checkForm(i){
 
     if(parseInt(i) == 1){
         if(ad_enrol_code != "" && ad_index != "" && ad_aggregate != "" && ad_course != "" &&
-        ad_oname != "" && ad_lname != "" && ad_gender != "" && ad_jhs != "" && ad_jhs_town != "" &&
-        ad_jhs_district != "" && ad_year != "" && ad_month != "" && ad_day != "" && ad_birth_place != ""){
-            $(".tab_button.active").removeClass("incomplete");
-            return_value = false;
+        ad_oname != "" && ad_lname != "" && ad_gender != "" && ad_year != "" && ad_month != "" 
+        && ad_day != "" && ad_birth_place != ""){
+            if(ad_jhs != "" && ad_jhs_district != "" && ad_jhs_town != ""){
+                $(".tab_button.active").removeClass("incomplete");
+                return_value = false;
 
-            //prepare to be agreed
-            accept1 = true;
+                //prepare to be agreed
+                accept1 = true;
+            }else{
+                return_value = true;
+
+                //disagree with document
+                accept1 = false;
+            }
         }else{
             $(".tab_button.active").addClass("incomplete");
             return_value = true;

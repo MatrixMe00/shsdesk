@@ -226,6 +226,46 @@ form img, .form img{
     display: none;
 }
 
+.item-event{
+    font-size: small;
+    padding: 0.4em;
+    cursor: default;
+}
+
+.item-event{
+    color: blue;
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+.item-event:hover{
+    text-decoration: underline;
+}
+
+.item-event.info{
+    color: grey;
+    background-color: transparent;
+    cursor: default;
+}
+
+.item-event.info:hover{
+    text-decoration: none;
+}
+
+form .label.flex-column{
+    border: unset;
+    width: 100%;
+}
+
+form .label.no_disp{
+    display: none;
+}
+
+form .label.flex-column label{
+    width: inherit;
+    margin: unset;
+}
+
 .fadeOut{
     animation: fadeOut ease 0.7s;
     animation-iteration-count: 1;

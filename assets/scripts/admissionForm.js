@@ -5,17 +5,6 @@ var admission_button_tab_index = 1;     //This will be used to track the tab ind
 var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[1];
 
 $(document).ready(function(){
-    //fill the years select box
-    $("select[name=ad_year]").html(function(){
-        i = 1990;
-
-        for(i; i <= 2015; i++){
-            new_option = "<option value='" + i + "'>" + i + "</option>";
-
-            $(this).append(new_option);
-        }
-    })
-
     //select the first tab of the form by default
     $("span.tab_button:nth-child(1)").click();
 
@@ -61,26 +50,42 @@ $("select[name=ad_month]").change(function(){
     html1 = "<option value=''>Select Your Day of Birth</option>";
     $("select[name=ad_day]").html(html1);
 
-    //now determine which month was picked
-    days = 31;
-    this_month = parseInt($(this).val());
+    if($("select[name=ad_year]").val() != "") {
+        //now determine which month was picked
+        days = 31;
+        this_month = parseInt($(this).val());
 
-    //calculate a leap year for the sake of february
-    lunar_year = parseInt($("select[name=ad_year]").val() % 4);
-    
-    if(this_month == 4 || this_month == 6 || this_month == 9 || this_month == 11){
-        days = 30;
-    }else if(this_month == 2 && lunar_year == 0){
-        days = 29;
-    }else if(this_month == 2 && lunar_year != 0){
-        days = 28;
+        //calculate a leap year for the sake of february
+        lunar_year = parseInt($("select[name=ad_year]").val() % 4);
+
+        if(lunar_year == 0){
+            lunar_year = parseInt($("select[name=ad_year]").val() % 400);
+        }
+        
+        if(this_month == 4 || this_month == 6 || this_month == 9 || this_month == 11){
+            days = 30;
+        }else if(this_month == 2 && lunar_year == 0){
+            days = 29;
+        }else if(this_month == 2 && lunar_year != 0){
+            days = 28;
+        }
+
+        //generate the days for the month selected
+        for(var i = 1; i <= days; i++){
+            new_option = "<option value='" + i + "'>" + i + "</option>";
+
+            $("select[name=ad_day]").append(new_option);
+        }
     }
+})
 
-    //generate the days for the month selected
-    for(var i = 1; i <= days; i++){
-        new_option = "<option value='" + i + "'>" + i + "</option>";
-
-        $("select[name=ad_day]").append(new_option);
+$("select[name=ad_year]").change(function(){
+    if($("select[name=ad_month]").val() != ""){
+        $("select[name=ad_month]").change();
+    }else{
+        //set the first key to be select
+        html1 = "<option value=''>Select Your Day of Birth</option>";
+        $("select[name=ad_day]").html(html1);
     }
 })
 
@@ -358,14 +363,6 @@ $("button[name=continue]").click(function(){
                 $("form[name=admissionForm] #ad_oname").val(data["Othernames"]);
                 $("form[name=admissionForm] #ad_gender").val(data["Gender"]);
                 $("form[name=admissionForm] #ad_jhs").val(data["jhsAttended"]);
-                $("form[name=admissionForm] #ad_year").val(data["year"]);
-                $("form[name=admissionForm] #ad_month").val(data["month"]);
-
-                //prepare day to be entered
-                $("select#ad_month").change();
-                $("form[name=admissionForm] #ad_day").val(data["day"]);
-
-                $("form[name=admissionForm] #ad_birthdate").val(data["year"] + " " + $("#ad_month option:selected").html() + ", " + data["day"]);
 
                 //fill results with values
                 $("#res_ad_aggregate").html(data["aggregate"]);
@@ -388,7 +385,8 @@ $("button[name=continue]").click(function(){
                 $("form[name=admissionForm] fieldset").removeClass("no_disp");
 
                 //show all the elements in the enrol field
-                $("form[name=admissionForm] #enrol_field label").removeClass("no_disp");
+                $("form[name=admissionForm] #enrol_field .label").removeClass("no_disp");
+                $("form[name=admissionForm] #enrol_field .label label").removeClass("no_disp");
 
                 //when the user has entered the index number
                 //provide the school's name
@@ -460,10 +458,10 @@ $("form[name=admissionForm] button[name=modal_cancel]").click(function(){
     $("form[name=admissionForm] fieldset#enrol_field").removeClass("no_disp");
 
     //hide all the elements in the enrol field
-    $("form[name=admissionForm] #enrol_field label").addClass("no_disp");
+    $("form[name=admissionForm] #enrol_field .label").addClass("no_disp");
 
     //show only index number field
-    $("form[name=admissionForm] #enrol_field label[for=ad_index]").removeClass("no_disp");
+    $("form[name=admissionForm] #enrol_field .label[for=ad_index]").removeClass("no_disp");
 
     //enable the index input field
     $("#ad_index").prop("disabled", false);

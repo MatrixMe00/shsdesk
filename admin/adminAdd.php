@@ -77,7 +77,7 @@
             <span class="label_title" style="margin-right: 5px;">Please assign a custom role</span>
             <input style="width: 100%" type="text" name="other_role" id="other_role" title="Provide a custom role to user"
             placeholder="Custom Role">
-            <span class="item-event date" style="text-align: center">
+            <span class="item-event info">
                 What you should know about custom roles is that they will not receive any monetery benefits from the system. 
                 They will have access to information like the admin and school head
             </span>

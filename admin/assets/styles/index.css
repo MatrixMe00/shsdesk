@@ -154,22 +154,6 @@
     padding: 0.4em 0 0.2em;
 }
 
-.item-event{
-    font-size: small;
-    padding: 0.4em;
-    cursor: default;
-}
-
-.item-event{
-    color: blue;
-    cursor: pointer;
-    padding: 0 2px;
-}
-
-.item-event:hover{
-    text-decoration: underline;
-}
-
 button.selected{
     background-color: darkorange;
     color: white;

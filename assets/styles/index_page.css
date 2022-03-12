@@ -237,6 +237,13 @@
     transform: rotate(270deg);
 }
 
+.item-event.info{
+    text-align: center;
+}
+#admission .item-event.info{
+    text-align: right;
+}
+
 @media screen and (max-width:767px){
     #usage ol{
         flex-direction: column;
@@ -253,6 +260,10 @@
 
     #usage ol .flex:last-child{
         flex-direction: column;
+    }
+
+    #admission .item-event.info{
+        text-align: right;
     }
 }
 

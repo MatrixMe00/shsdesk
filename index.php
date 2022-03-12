@@ -19,7 +19,6 @@
 
     <!--Payment script-->
     <script src="https://js.paystack.co/v1/inline.js"></script>
-    <script src="assets/scripts/form/paystack.js"></script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>
