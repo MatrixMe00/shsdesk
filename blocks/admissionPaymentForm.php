@@ -11,60 +11,37 @@
                         <section id="new_payment">
                             <p>Make your payment</p>
                             <div class="joint">
-                                <div class="label flex-column">
-                                    <label for="pay_fullname">
-                                        <span class="label_image">
-                                            <img src="<?php echo $url?>/assets/images/icons/user.png" alt="fullname_logo">
-                                        </span>
-                                        <input type="text" name="pay_fullname" id="pay_fullname" class="text_input" placeholder="Your Fullname" 
-                                        title="Please provide your full name" autocomplete="off" pattern="[a-zA-Z\s]{6,}">
-                                    </label>
-                                    <span class="item-event info" style="text-align: center">
-                                        Provide your full name here
+                                <label for="pay_fullname">
+                                    <span class="label_image">
+                                        <img src="<?php echo $url?>/assets/images/icons/user.png" alt="fullname_logo">
                                     </span>
-                                </div>
-                                
-                                <div class="label flex-column">
-                                    <label for="pay_email">
-                                        <span class="label_image">
-                                            <img src="<?php echo $url?>/assets/images/icons/mail-outline.svg" alt="email">
-                                        </span>
-                                        <input type="email" name="pay_email" id="pay_email" class="text_input" placeholder="Your Email [optional]"
-                                        title="Provide an email so that secured information about your transaction can be passed there" autocomplete="off">
-                                    </label>
-                                    <span class="item-event info" style="text-align: center">
-                                        Provide a valid email here to send you a receipt of your transaction [optional]
+                                    <input type="text" name="pay_fullname" id="pay_fullname" class="text_input" placeholder="Your Fullname" 
+                                    title="Please provide your full name" autocomplete="off" pattern="[a-zA-Z\s]{6,}">
+                                </label>
+                                <label for="pay_email">
+                                    <span class="label_image">
+                                        <img src="<?php echo $url?>/assets/images/icons/mail-outline.svg" alt="email">
                                     </span>
-                                </div>
-                                
+                                    <input type="email" name="pay_email" id="pay_email" class="text_input" placeholder="Your Email [optional]"
+                                    title="Provide an email so that secured information about your transaction can be passed there" autocomplete="off">
+                                </label>
                             </div>
                             
                             <div class="joint">
-                                <div class="label flex-column">
-                                    <label for="pay_phone">
-                                        <span class="label_image">
-                                            <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="username_logo">
-                                        </span>
-                                        <input type="text" name="pay_phone" id="pay_phone" class="text_input tel" placeholder="Your Phone Number" 
-                                        title="Please provide your mobile money number" autocomplete="off" maxlength="10">
-                                    </label>
-                                    <span class="item-event info" style="text-align: center">
-                                        Provide a valid phone number here.
+                                <label for="pay_phone">
+                                    <span class="label_image">
+                                        <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="username_logo">
                                     </span>
-                                </div>
-                                
-                                <div class="label flex-column">
-                                    <label for="pay_amount">
-                                        <span class="label_image">
-                                            <img src="<?php echo $url?>/assets/images/icons/cash-outline.svg" alt="money">
-                                        </span>
-                                        <input type="text" name="pay_amount" id="pay_amount" 
-                                        title="This is the amount you will be charged from your mobile money wallet" value="GHC 30" disabled>
-                                    </label>
-                                    <span class="item-event info" style="text-align: center">
-                                        This is the amount you will be charged from your mobile money wallet
+                                    <input type="text" name="pay_phone" id="pay_phone" class="text_input tel" placeholder="Your Phone Number" 
+                                    title="Please provide your mobile money number" autocomplete="off" maxlength="10">
+                                </label>
+                                <label for="pay_amount">
+                                    <span class="label_image">
+                                        <img src="<?php echo $url?>/assets/images/icons/cash-outline.svg" alt="money">
                                     </span>
-                                </div>                                
+                                    <input type="text" name="pay_amount" id="pay_amount" 
+                                    title="This is the amount you will be charged from your mobile money wallet" value="GHC 30" disabled>
+                                </label>
                             </div>
                             <!--<label for="form_type">
                                 <span class="label_image">
@@ -78,18 +55,12 @@
                         <br>
                         <section id="trans">
                             <p>Already Paid? Then enter your transaction id</p>
-                            <div class="label flex-column">
-                                <label for="pay_reference">
-                                    <span class="label_image">
-                                        <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="">
-                                    </span>
-                                    <input type="text" name="pay_reference" id="pay_reference" class="text_input" placeholder="Enter your Reference ID" autocomplete="off">
-                                </label>
-                                <span class="item-event info">
-                                    Enter your reference ID [its in the format Txxxxxxxxxxxxxxx; where x are numbers]
+                            <label for="pay_reference">
+                                <span class="label_image">
+                                    <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="">
                                 </span>
-                            </div>
-                            
+                                <input type="text" name="pay_reference" id="pay_reference" class="text_input" placeholder="Enter your Reference ID" autocomplete="off">
+                            </label>
                         </section>
                         
                     </div>

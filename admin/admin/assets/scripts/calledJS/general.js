@@ -1,5 +1,4 @@
 $(".tabs .tab_btn").click(function(){
-    alert("l");
     //make this button active
     $(".tab_btn.active").removeClass("active");
     $(this).addClass("active");

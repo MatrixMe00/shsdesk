@@ -166,6 +166,16 @@
                             <span>Change Password</span>
                         </div>
                     </div>
+                    <?php if($user_details["role"] == 1){?>
+                    <div class="item" name="database" title="Query Database" data-url="<?php echo $url?>/admin/superadmin/page_parts/database.php">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/server-outline.svg" alt="" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Database Queries</span>
+                        </div>
+                    </div>
+                    <?php }?>
                     <div class="item" id="logout" title="Logout">
                         <div class="icon">
                             <img src="<?php echo $url?>/assets/images/icons/logout.png" alt="" />

@@ -5,7 +5,7 @@
     if((isset($_SESSION["ad_stud_index"]) && !empty($_SESSION["ad_stud_index"])) || isset($_GET["indexNumber"])){
 
         //if user enters via url or already enroled
-        if($_GET["indexNumber"]){
+        if(isset($_GET["indexNumber"]) && !empty($_GET["indexNumber"])){
             //create required session objects
             $student = fetchData("c.*, e.enrolCode","cssps c JOIN enrol_table e ON c.indexNumber = e.indexNumber", "c.indexNumber='".$_GET["indexNumber"]."'");
             $school = getSchoolDetail($student["schoolID"], true);

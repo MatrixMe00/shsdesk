@@ -385,8 +385,7 @@ $("button[name=continue]").click(function(){
                 $("form[name=admissionForm] fieldset").removeClass("no_disp");
 
                 //show all the elements in the enrol field
-                $("form[name=admissionForm] #enrol_field .label").removeClass("no_disp");
-                $("form[name=admissionForm] #enrol_field .label label").removeClass("no_disp");
+                $("form[name=admissionForm] #enrol_field label").removeClass("no_disp");
 
                 //when the user has entered the index number
                 //provide the school's name
@@ -458,10 +457,10 @@ $("form[name=admissionForm] button[name=modal_cancel]").click(function(){
     $("form[name=admissionForm] fieldset#enrol_field").removeClass("no_disp");
 
     //hide all the elements in the enrol field
-    $("form[name=admissionForm] #enrol_field .label").addClass("no_disp");
+    $("form[name=admissionForm] #enrol_field label").addClass("no_disp");
 
     //show only index number field
-    $("form[name=admissionForm] #enrol_field .label[for=ad_index]").removeClass("no_disp");
+    $("form[name=admissionForm] #enrol_field label[for=ad_index]").removeClass("no_disp");
 
     //enable the index input field
     $("#ad_index").prop("disabled", false);

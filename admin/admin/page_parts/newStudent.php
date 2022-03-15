@@ -2,7 +2,7 @@
 
 <form action="<?php echo $url?>/admin/admin/submit.php" method="get" class="fixed" name="adminAddStudent">
     <div class="head">
-        <h2>Update Student Details</h2>
+        <h2>Add A Student</h2>
     </div>
     <div class="body">
         <div class="message_box success no_disp">
@@ -79,14 +79,14 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/city hall.png" alt="jhs">
                 </span>
-                <input type="text" name="jhs" id="jhs" required title="Enter the name of the student's jhs school"
-                autocomplete="off" placeholder="JHS School Attended*">
+                <input type="text" name="jhs" id="jhs" title="Enter the name of the student's jhs school"
+                autocomplete="off" placeholder="JHS School Attended">
             </label>
             <label for="dob">
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/calendar-number-outline.svg" alt="dob">
                 </span>
-                <input type="date" name="dob" id="dob" required title="Enter the birthdate of the student"
+                <input type="date" name="dob" id="dob" title="Enter the birthdate of the student"
                 autocomplete="off" placeholder="Student's Birthday (mm-dd-yyyy)*">
             </label>
             <label for="track_id">

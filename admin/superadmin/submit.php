@@ -206,6 +206,62 @@
             }elseif($content_box == "alloc"){
                 require($rootPath."/admin/admin/page_parts/allocation.php");
             }
+        }elseif($submit == "getHeaders"){
+            $table_name = $_REQUEST["table_name"];
+            $query = $connect->query("SELECT * FROM $table_name LIMIT 1");
+            
+            if($query->num_rows >= 0){
+                echo "<tr>";
+
+                //extract the keys
+                $fields = array_keys($query->fetch_assoc());
+
+                //display the keys
+                foreach($fields as $field){
+                    echo "<td>$field</td>";
+                }
+
+                echo "</tr>";
+            }else{
+                echo "Table was not found. Please check the name of the table and try again";
+            }
+        }elseif($submit == "databaseQuery"){
+            $query = $_REQUEST["query"];
+
+            if(!strpbrk(strtolower($query), "select") || !strpbrk(strtolower($query), "retrieve") || !strpbrk(strtolower($query), "delete") ||
+                !strpbrk(strtolower($query), "update")){
+                echo "Please provide an operation name. This could be SELECT, RETRIEVE, DELETE, UPDATE or CREATE";
+                exit();
+            }elseif(strpbrk(strtolower($query), "from")){
+                echo "Please provide the FROM clause.";
+            }elseif($result = multi_query($query) || $result = $connect->query($query)){
+                if(strpbrk(strtolower($query), "update") || !strpbrk(strtolower($query), "delete")){
+                    echo "success";
+                }else{
+                    echo "<table>";
+
+                    //generate the headers
+                    $headers = array_keys($result);
+                    echo "<tr>";
+                    foreach($headers as $key){
+                        echo "<td>$key</td>";
+                    }
+                    echo "</tr>";
+
+                    //results
+                    foreach($result as $key=>$value){
+                        if($key == $headers[0] || $key == 0){
+                            echo "<tr>";
+                        }
+                        echo "<td>$value</td>";
+                        if($key == end($headers) || $key == count($headers) - 1){
+                            echo "</tr>";
+                        }
+                    }
+
+                    echo "</table>";
+                }
+            }
         }
     }else{
         echo "no-submission";

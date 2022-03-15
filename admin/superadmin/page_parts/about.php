@@ -55,12 +55,10 @@
         <h3>Team Members</h3>
     </div>
     <?php 
-        $result = $connect->query("SELECT a.fullname, a.username, a.role, a.adYear, s.schoolName, r.title AS roleTitle 
-        FROM admins_table a JOIN schools s
-        ON a.school_id = s.id
-        JOIN roles r
+        $result = $connect->query("SELECT a.*, r.title AS roleTitle 
+        FROM admins_table a JOIN roles r
         ON a.role = r.id 
-        WHERE a.role = 1 AND r.access = TRUE") or die($connect->error);
+        WHERE a.role <= 2 AND r.access = TRUE") or die($connect->error);
 
         if($result->num_rows > 0){
     ?>
@@ -71,13 +69,13 @@
                 <h4><?php echo $row["fullname"] ?> (<span class="username"><?php echo $row["username"] ?></span>)</h4>
             </div>
             <div class="desc flex flex-wrap">
-                <?php if($row["schoolName"] != null){ ?>
+                <?php if($row["school_id"] > 0){ ?>
                 <div class="school_name">
-                    <span><?php echo $row["schoolName"] ?></span>
+                    <span><?php echo getSchoolDetail($row["school_id"]) ?></span>
                 </div>
                 <?php } ?>
                 <div class="role">
-                    <span><?php echo $row["roleTitle"]?></span>
+                    <span><?php echo formatName($row["roleTitle"]) ?></span>
                 </div>
                 <div class="member_since">
                     <span>Since <?php echo date("dS F, Y", strtotime($row["adYear"]))?></span>
