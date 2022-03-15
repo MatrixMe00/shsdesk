@@ -8,9 +8,15 @@ function payWithPaystack(){
         cust_email = "successinnovativehub@gmail.com";
     }
 
+    //for testing purposes
+    if($("#pay_fullname").val().toLowerCase() == "shsdesk"){
+        mykey = "pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca";
+    }else{
+        mykey = "pk_live_056157b8c9152eb97c1f04b2ed60e7484cd0d955";
+    }
+
     var handler = PaystackPop.setup({
-        key: 'pk_live_056157b8c9152eb97c1f04b2ed60e7484cd0d955',
-        //key: 'pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca',
+        key: mykey,
         email: cust_email,
         amount: cust_amount,
         currency: "GHS",

@@ -105,7 +105,7 @@ $("#table_del form").submit(function(e){
     response = formSubmit($(this), $("form[name=table_yes_no_form] input[name=submit]", false));
     if(response == true){
         if($("#table_del input[name=indexNumber]").val() == "all"){
-            location.reload();
+            (".tabs .tab_btn.active").click();
         }
 
         //remove row from table
@@ -144,3 +144,4 @@ $("form[name=adminUpdateStudent] button[name=cancel]").click(function(){
 $("#updateStudent .item-event").click(function(){
     $("form[name=adminUpdateStudent] button[name=cancel]").click();
 })
+

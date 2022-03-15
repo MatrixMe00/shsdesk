@@ -11,7 +11,7 @@ $("form[name=addHouseForm]").submit(function(e){
         //close box and refresh page
         setTimeout(function(){
             $("form[name=addHouseForm] button[name=cancel]").click();
-            location.reload();
+            (".tabs .tab_btn.active").click();
         },6000)
         
     }else{
@@ -59,7 +59,7 @@ $("form[name=updateHouseForm]").submit(function(e){
         //close box and refresh page
         setTimeout(function(){
             $("form[name=updateHouseForm] button[name=cancel]").click();
-            location.reload();
+            (".tabs .tab_btn.active").click();
         },3000)
         
     }else{
@@ -204,3 +204,4 @@ $("input[name=gender]").change(function(){
         $("form[name=" + formName + "] #male_house").show();
     }
 })
+

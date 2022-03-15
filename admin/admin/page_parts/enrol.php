@@ -1,9 +1,12 @@
-<?php include_once("../../../includes/session.php");
-
+<?php 
     if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         $user_school_id = $_REQUEST["school_id"];
         $user_details = getUserDetails($_REQUEST["user_id"]);
+        
+        include_once("../../includes/session.php");
     }else{
+        include_once("../../../includes/session.php");
+
         //set nav_point session
         $_SESSION["nav_point"] = "Enrol";
     }
@@ -90,8 +93,9 @@
                     <td>Index Number</td>
                     <td>Lastname</td>
                     <td>Othernames</td>
-                    <td>Enrolement Code</td>
+                    <td>Enrolment Code</td>
                     <td>Programme</td>
+                    <td>Aggregate</td>
                     <td>Residence Status</td>
                     <td>Date Registered</td>
                 </tr>
@@ -104,6 +108,7 @@
                     <td><?php echo $row["Othernames"] ?></td>
                     <td><?php echo $row["enrolCode"] ?></td>
                     <td><?php echo $row["programme"] ?></td>
+                    <td><?php echo $row["aggregate"] ?></td>
                     <td><?php echo $row["boardingStatus"] ?></td>
                     <td><?php echo $row["enrolDate"] ?></td>
                     <td class="flex flex-wrap">

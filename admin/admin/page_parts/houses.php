@@ -236,5 +236,10 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     <?php include_once($rootPath."/admin/admin/page_parts/updateHouse.php")?>
 </div>
 
+<?php if(isset($_REQUEST["school_id"])){?>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/addHouse.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/general.js?v=<?php echo time()?>"></script>
+<?php }else{?>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/addHouse.js?v=<?php echo time()?>"></script>
+<?php } ?>
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>

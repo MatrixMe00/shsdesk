@@ -83,7 +83,11 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
             </div>
             <?php if($user_details["role"] != 2 && $user_details["role"] <= 5){?>
             <div class="btn">
+                <?php if(isset($_REQUEST["school_id"])){?>
+                <button onclick="('.tabs .tab_btn.active').click()" class="secondary">Refresh</button>
+                <?php }else{?>
                 <button onclick="location.reload()" class="secondary">Refresh</button>
+                <?php } ?>
             </div>
             <?php } ?>
             <div class="btn">
@@ -107,7 +111,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 <section id="placement_search">   
     <div class="display">
         <div class="title_bar flex flex-space-content flex-center-align teal">
-            <div id="title">Registered Students</div>
+            <div id="title">Registered Students [Last 20 Registration]</div>
             <div id="close">
                 <span></span>
                 <span></span>
@@ -118,7 +122,8 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                 $sql = "SELECT c.*, e.enrolCode 
                     FROM cssps c JOIN enrol_table e
                     ON c.indexNumber = e.indexNumber
-                    WHERE c.enroled=TRUE AND c.schoolID = $user_school_id";
+                    WHERE c.enroled=TRUE AND c.schoolID = $user_school_id
+                    ORDER BY e.enrolDate DESC LIMIT 20";
                 $res = $connect->query($sql);
 
                 if($res->num_rows > 0){
@@ -128,7 +133,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <label for="search" style="width: 80%">
                         <input type="search" name="search"
                          title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
-                         autocomplete="off">
+                         autocomplete="off" style="border: 1px solid lightgrey;">
                     </label>
                     
                     <div class="btn">
@@ -145,6 +150,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                             <td>Fullname</td>
                             <td>Boarding Status</td>
                             <td>Program</td>
+                            <td>Aggregate</td>
                             <td>Gender</td>
                             <td>Track Id</td>
                         </tr>
@@ -157,6 +163,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                             <td><?php echo $row["Lastname"]." ".$row["Othernames"] ?></td>
                             <td><?php echo $row["boardingStatus"] ?></td>
                             <td><?php echo $row["programme"] ?></td>
+                            <td><?php echo $row["aggregate"]?></td>
                             <td><?php echo $row["Gender"] ?></td>
                             <td><?php echo $row["trackID"] ?></td>
                             <td class="flex flex-wrap">
@@ -200,7 +207,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <label for="search" style="width: 80%">
                         <input type="search" name="search"
                          title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
-                         autocomplete="off">
+                         autocomplete="off" style="border: 1px solid lightgrey;">
                     </label>
                     
                     <div class="btn">
@@ -216,6 +223,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                             <td>Fullname</td>
                             <td>Boarding Status</td>
                             <td>Program</td>
+                            <td>Aggregate</td>
                             <td>Gender</td>
                             <td>Track Id</td>
                         </tr>
@@ -227,6 +235,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                             <td><?php echo $row["Lastname"]." ".$row["Othernames"] ?></td>
                             <td><?php echo $row["boardingStatus"] ?></td>
                             <td><?php echo $row["programme"] ?></td>
+                            <td><?php echo $row["aggregate"]?></td>
                             <td><?php echo $row["Gender"] ?></td>
                             <td><?php echo $row["trackID"] ?></td>
                             <td class="flex flex-wrap">
@@ -313,7 +322,16 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     <?php @include_once($rootPath."/admin/admin/page_parts/update_student.php")?>
 </div>
 
+<?php 
+    //choose the details to show when a student clicks
+    if(isset($_REQUEST["school_id"])){
+?>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/placement.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/newstudent.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/general.js?v=<?php echo time()?>"></script>
+<?php }else{ ?>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>"></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js?v=<?php echo time()?>"></script>
+<?php } ?>
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/table.js?v=<?php echo time()?>"></script>
