@@ -139,9 +139,9 @@ $("button[name=submit_admission]").click(function() {
 
     $(".tabs span.tab_button:nth-child(" + admission_button_tab_index + ")").click();
 
-    if($(this).prop("type") == "submit"){
+    /*if($(this).prop("type") == "submit"){
         $("form[name=admissionForm]").submit();
-    }
+    }*/
 })
 
 //marking the button enabled when user agrees that data is correct
@@ -370,8 +370,6 @@ $("button[name=continue]").click(function(){
                 $("#res_ad_lname").html(data["Lastname"]);
                 $("#res_ad_oname").html(data["Othernames"]);
                 $("#res_ad_gender").html(data["Gender"]);
-                $("#res_ad_jhs").html(data["jhsAttended"]);
-                $("#res_ad_birthdate").html($("#ad_birthdate").val());
 
                 //candidate full name entry into swear box
                 $("#fullCandidateName").html(data["Lastname"] + " " + data["Othernames"]);
@@ -432,6 +430,24 @@ $("button[name=continue]").click(function(){
                 setTimeout(function(){
                     $("#view1 .para_message").html("Parts with * means they are required fields");
                 },5000);
+            }else if(data["status"] == "already-registered"){
+                //display an error message
+                $("#view1 .para_message").html("You are identified as having enrolled already. Please go to shsdesk.com/student to access your documents");
+
+                //disable these controls for the time being so that user can take a look at the error
+                $("form[name=admissionForm] button[name=continue]").prop('disabled', true);
+                $('#ad_enrol').prop('disabled', true);
+                $('button[name=modal_cancel]').prop('disabled', true);
+
+                setTimeout(function(){
+                    $("form[name=admissionForm] button[name=continue]").prop('disabled', false);
+                    $('#ad_enrol').prop('disabled', false);
+                    $('button[name=modal_cancel]').prop('disabled', false);
+                },3000);
+
+                setTimeout(function(){
+                    $("#view1 .para_message").html("Parts with * means they are required fields");
+                },7000);
             }
         },
         error: function(r){

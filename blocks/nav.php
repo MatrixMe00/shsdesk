@@ -26,6 +26,9 @@
             <a href="<?php echo $url?>/pages/contact.php" class="button">
                 <span>Contact Us</span>
             </a>
+            <a href="<?php echo $url?>/student/" class="button">
+                <span>Student Menu</span>
+            </a>
         </div>
         <div id="ham_button">
             <span></span>

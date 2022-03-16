@@ -260,82 +260,6 @@
                         }
                     }
 
-                    /*if($permit){
-                        //count number of houses of the school
-                        $sql = "SELECT id
-                            FROM houses
-                            WHERE schoolID = $shs_placed AND gender = '$ad_gender' OR gender='Both'";
-                        $result = $connect->query($sql);
-
-                        //create an array for details
-                        $house = array();
-
-                        if($result->num_rows > 0){
-                            $total = $result->num_rows;
-                            $count = 0;
-                            
-                            //fill array
-                            while($row = $result->fetch_assoc()){
-                                $house[$count] = $row["id"];
-                                $count++;
-                            }
-
-                            //search for last house allocation entry
-                            $sql = "SELECT indexNumber, houseID
-                                FROM house_allocation
-                                WHERE schoolID = $shs_placed
-                                ORDER BY indexNumber DESC
-                                LIMIT 1";
-                            $result = $connect->query($sql);
-
-                            //fetch student details for entry
-                            $student_details = fetchData("*", "cssps", "indexNumber=$ad_index");
-
-                            if($result->num_rows == 1){
-                                //retrieve house id
-                                $id = $result->fetch_assoc()["houseID"];
-
-                                $next_room = 0;
-
-                                for($i = 0; $i < $total; $i++){
-                                    //try choosing the next house
-                                    if($house[$i] == $id){
-                                        //check immediate available houses
-                                        if($i+1 < $total){
-                                            $next_room = $house[$i+1];
-                                        }elseif($i-1 >= 0){                                            
-                                            $next_room = $house[$i-1];
-                                        }elseif($i+1 == $total){
-                                            $next_room = $house[0];
-                                        }
-                                        
-                                        if($next_room > 0){
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                //parse entry into allocation table
-                                $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
-                                    VALUES(?,?,?,?,?,?,?)";
-                                $stmt = $connect->prepare($sql);
-                                $stmt->bind_param("sississ", $student_details["indexNumber"], $student_details["schoolID"], $student_details["Lastname"], $student_details["Othernames"],
-                                    $next_room, $student_details["Gender"], $student_details["boardingStatus"]);
-                                $stmt->execute();
-                            }elseif($result->num_rows == 0){
-                                //this is the first entry, place student into house
-                                $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
-                                    VALUES(?,?,?,?,?,?,?)";
-                                $stmt = $connect->prepare($sql);
-                                $stmt->bind_param("sississ", $student_details["indexNumber"], $student_details["schoolID"], $student_details["Lastname"], $student_details["Othernames"],
-                                    $house[0], $student_details["Gender"], $student_details["boardingStatus"]);
-                                $stmt->execute();
-                            }else{
-                                $message = "error";
-                            }
-                        }
-                    }*/
-
                     $message = "success";
 
                     //create a session responsible for preparing admission letter
@@ -369,7 +293,7 @@
                     $_SESSION["ad_stud_gender"] = $student["Gender"];
                     $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"])["title"];
                 }else{
-                    $message = "error";
+                    $message = "Your data could not be saved. Error is ". $result->error;
                 }
             }
 
@@ -457,20 +381,31 @@
             //check for successful execution
             if($result->execute()){
                 echo "success";
+
+                //add admin number
+                echo "-".getSchoolDetail($school, true)["techContact"];
             }else{
                 echo "database_send_error";
             }
         }else if($submit == "checkReference" || $submit == "checkReference_ajax"){
             $reference = $_POST["reference_id"];
+            $school = $_POST["school_id"];
 
-            $res = $connect->query("SELECT transactionID, Transaction_Expired FROM transaction WHERE transactionID = '$reference'");
+            $res = $connect->query("SELECT transactionID, Transaction_Expired, schoolBought FROM transaction WHERE transactionID = '$reference'");
 
             if($res->num_rows == 1){
                 $row = $res->fetch_array();
 
                 //check if transaction is expired
                 if($row["Transaction_Expired"] == FALSE){
-                    echo "success";
+                    if($row["schoolBought"] == $school){
+                        echo "success";
+
+                        //add admin number
+                        echo "-".getSchoolDetail($school, true)["techContact"];
+                    }else{
+                        echo "This transaction id does not match the selected school";
+                    }                    
                 }else{
                     echo "ref_expired";
                 }

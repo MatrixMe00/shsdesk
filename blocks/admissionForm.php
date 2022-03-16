@@ -1,4 +1,4 @@
-<form action="<?php echo $url?>/submit.php" class="fixed" method="post" ng-controller="AdmissionController" name="admissionForm">
+<form action="<?php echo $url?>/submit.php" class="fixed" method="post" ng-controller="AdmissionController" name="admissionForm" style="max-height: 95vh">
                     <div class="tabs">
                         <span class="tab_button" data-views="view1">
                             Step 1
@@ -97,7 +97,7 @@
                                             </span>
                                             <input type="text" name="ad_jhs" id="ad_jhs" 
                                             placeholder="Name of JHS School*" ng-model="ad_jhs" 
-                                            title="Enter the name of your JHS school" required disabled>
+                                            title="Enter the name of your JHS school" required>
                                         </label>
                                         <label for="ad_jhs_town">
                                             <span class="label_image">
@@ -397,7 +397,7 @@
                                                 <span>JHS Attended</span>
                                             </div>
                                             <div class="value">
-                                                <span id="res_ad_jhs"></span>
+                                                <span id="res_ad_jhs">{{ad_jhs}}</span>
                                             </div>
                                         </div>
                                         <div class="label">
@@ -421,7 +421,7 @@
                                                 <span>Birthdate</span>
                                             </div>
                                             <div class="value">
-                                                <span id="res_ad_birthdate"></span>
+                                                <span id="res_ad_birthdate">{{ad_birthdate}}</span>
                                             </div>
                                         </div>
                                         <div class="label">
@@ -596,6 +596,8 @@
                         <label for="modal_cancel" class="btn dbl_btn_label">
                             <button type="reset" name="modal_cancel" value="cancel">Cancel</button>
                         </label>
+                    </div>
+                    <div id="form_footer">
                     </div>
                     <a href="<?php echo $url?>/pdf_handle.php" style="display:none !important" id="handle_pdf" target="_blank" rel="nofollow"></a>
                 </form>

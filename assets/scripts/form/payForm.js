@@ -74,14 +74,21 @@ function passPaymentToDatabase(reference){
         $.ajax({
             url: $("form[name=paymentForm]").attr("action"),
             type: "POST",
-            dataType: "html",
+            dataType: "text",
             data: dataString,
             cache: false,
             async: false,
             success: function(response){
-                if(response == "success"){
+                if(response.includes("success")){
                     //pass transaction id to admission form
                     $("#ad_transaction_id").val(reference);
+
+                    //pass admin number into admission form
+                    cont = response.split("-")[1];
+                    html = "<p style='text-align: center; font-size: small; color: #666'>" + 
+                            "Finding trouble? Contact the admin via <a href='tel:" + cont + 
+                            "' style='color: blue'>" + cont + "</a></p>";
+                    $("#admission #form_footer").html(html);
 
                     //display admission form
                     $('#admission').removeClass(`no_disp`);
@@ -138,8 +145,9 @@ $("form[name=paymentForm]").submit(function(){
         //disable other input elements
         $("#pay_fullname, #pay_email, #pay_phone").prop("disabled", true).val("");
 
+        school_id = $("#student #school_admission_case label #school_select").val();
         ref = $("section#trans #pay_reference").val();
-        dataString = "reference_id=" + ref + "&submit=checkReference";
+        dataString = "reference_id=" + ref + "&submit=checkReference&school_id=" + school_id;
 
         $.ajax({
             url: $("form[name=paymentForm]").attr("action"),
@@ -155,9 +163,16 @@ $("form[name=paymentForm]").submit(function(){
                 messageBoxTimeout(form_name, message, messageType, time);
             },
             success: function(response){
-                if(response == "success"){
+                if(response.includes("success")){
                     //pass transaction id to admission form
                     $("form[name=admissionForm] #ad_transaction_id").val(ref);
+
+                    //pass admin number into admission form
+                    cont = response.split("-")[1];
+                    html = "<p style='text-align: center; font-size: small; color: #666'>" + 
+                            "Finding trouble? Contact the admin via <a href='tel:" + cont + 
+                            "' style='color: blue'>" + cont + "</a></p>";
+                    $("#admission #form_footer").html(html);
 
                     //display admission form
                     $('#admission').removeClass(`no_disp`);
@@ -174,6 +189,10 @@ $("form[name=paymentForm]").submit(function(){
                         message = "Reference ID entered is incorrect. Please enter a valid id to continue";
                         messageType = "error";
                         time = 5;
+                    }else{
+                        message = response;
+                        messageType = "error";
+                        time = 0;
                     }
                 }
                 messageBoxTimeout(form_name, message, messageType, time);

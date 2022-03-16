@@ -5,7 +5,7 @@
     <?php @include_once($rootPath.'/blocks/generalHead.php')?>
 
     <!--Document title-->
-    <title>SHSDESK - Home Page</title>
+    <title>SHSDesk - Home Page</title>
 
     <!--Page Meta data-->
     <meta name="description" content="Your number one platform for online admission in Ghana. 
@@ -111,7 +111,7 @@
                 </div>
                 <div class="desc">
                     <div class="figure">
-                        <span>250</span>
+                    <span><?php echo fetchData("COUNT(DISTINCT programme) as total","cssps","TRUE=TRUE")["total"] ?></span>
                     </div>
                     <div class="text">
                         <span>Courses</span>
@@ -124,36 +124,38 @@
                 </div>
                 <div class="desc">
                     <div class="figure">
-                        <span>11,254</span>
+                        <span><?php echo fetchData("COUNT(indexNumber) as total","cssps","enroled=TRUE")["total"] ?></span>
                     </div>
                     <div class="text">
                         <span>Students Admitted</span>
                     </div>
                 </div>
             </div>
+            <?php if(!$show){?>
             <div class="control">
                 <div class="head">
                     <img src="<?php echo $url?>/assets/images/icons/teacher.svg" alt="teacher">
                 </div>
                 <div class="desc">
                     <div class="figure">
-                        <span>360</span>
+                    <span><?php echo fetchData("COUNT(indexNumber) as total","cssps","TRUE=TRUE")["total"] ?></span>
                     </div>
                     <div class="text">
-                        <span>Teachers</span>
+                        <span>Students on System</span>
                     </div>
                 </div>
             </div>
+            <?php } ?>
             <div class="control">
                 <div class="head">
                     <img src="<?php echo $url?>/assets/images/icons/region.svg" alt="region">
                 </div>
                 <div class="desc">
                     <div class="figure">
-                        <span>16</span>
+                    <span><?php echo fetchData("COUNT(id) as total","schools","TRUE=TRUE")["total"] ?></span>
                     </div>
                     <div class="text">
-                        <span>Regions</span>
+                        <span>Registered Schools</span>
                     </div>
                 </div>
             </div>
@@ -308,6 +310,7 @@
             </div><?php }?>
         </section>
 
+        <?php if($show){ ?>
         <section id="usage">
             <div class="head">
                 <h2>How to register</h2>
@@ -368,6 +371,7 @@
                 </ol>
             </div>
         </section>
+        <?php }?>
     </main>
 
     <?php @include_once($rootPath.'/blocks/footer.php')?>    

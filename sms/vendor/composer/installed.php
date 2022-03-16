@@ -26,7 +26,7 @@
             'install_path' => __DIR__ . '/../urhitech/urhitech-sms-php',
             'aliases' => array(),
             'reference' => '6926c0d2e8d5fa8e031ce0045c19d8e5dc5682c7',
-            'dev_requirement' => true,
+            'dev_requirement' => false,
         ),
     ),
 );

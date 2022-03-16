@@ -35,12 +35,16 @@
                                     <input type="text" name="pay_phone" id="pay_phone" class="text_input tel" placeholder="Your Phone Number" 
                                     title="Please provide your mobile money number" autocomplete="off" maxlength="10">
                                 </label>
+                                <div class="label flex-column">
                                 <label for="pay_amount">
                                     <span class="label_image">
                                         <img src="<?php echo $url?>/assets/images/icons/cash-outline.svg" alt="money">
                                     </span>
                                     <input type="text" name="pay_amount" id="pay_amount" 
                                     title="This is the amount you will be charged from your mobile money wallet" value="GHC 30" disabled>
+                                </label>
+                                    <span class="item-event info" style="color:red">NB: This is only complementing the manual admission procedure
+                                    (you will be charged GHC 30.00 as processing fee)</span>
                                 </label>
                             </div>
                             <!--<label for="form_type">
