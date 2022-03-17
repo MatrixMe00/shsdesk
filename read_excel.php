@@ -49,7 +49,7 @@
                             echo "Desired file was not received";
                             exit(1);
                         }
-                    }elseif($max_column == "H"){
+                    }elseif($max_column == "H" || $max_column == "G"){
                         //grab the detail in the first cell
                         $cell = $sheet->getCell("A2");
                         $cellValue = $cell->getValue();
@@ -144,11 +144,19 @@
                                         $aggregate = $cellValue;
                                         break;
                                     case 7:
-                                        $jhsAttended = formatName($cellValue);
+                                        if(!empty($cellValue)){
+                                            $jhsAttended = formatName($cellValue);
+                                        }else{
+                                            $jhsAttended = null;
+                                        }                                        
                                         break;
                                     case 8:
-                                        $val = PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($cellValue);
-                                        $dob = date("Y-m-d", $val);
+                                        if(!empty($cellValue)){
+                                            $val = PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($cellValue);
+                                            $dob = date("Y-m-d", $val);
+                                        }else{
+                                            $dob = null;
+                                        }                                        
                                         break;
                                     case 9:
                                         $trackID = $cellValue;
@@ -182,10 +190,13 @@
                                 echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
                             }                            
                         }
-                    }elseif($max_column == "H"){
+                    }elseif($max_column == "H" || $max_column == "G"){
+                        //make it end at G
+                        $headerCounter = 7;
+                        
                         for($row=3; $row <= $max_row; $row++){
                             //grab columns [reject last column, column H]
-                            for($col = 0; $col < $headerCounter; $col++){
+                            for($col = 0; $col <= $headerCounter; $col++){
                                 $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
                                 
                                 switch ($col) {
@@ -249,18 +260,8 @@
                                 }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
                                     echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
                                 }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
-                                    echo "Detail for $indexNumber not written. Gender must either be Male or Female";
-                                }
-                                echo "
-                                Index Number: $indexNumber<br>
-                                Lastname: $Lastname<br>
-                                Othernames: $Othernames<br>
-                                Gender: $Gender<br>
-                                Aggregate: $aggregate<br>
-                                Program: $programme<br>
-                                Track ID: $trackID<br>
-                                Boarding Status: $boardingStatus<br><br>
-                                ";                        
+                                    echo "Detail for <b>$indexNumber</b> not written. Gender must either be Male or Female";
+                                }           
                             }else{
                                 echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
                             }                            

@@ -73,7 +73,12 @@ function messageBoxTimeout(form_name, message, message_type, time=5){
     }
 }
 
+//generate reports
 $("button.request_btn").click(function(){
-    this_url = url + "/create_excel.php";
-    location.href = this_url + "?submit=" + $(this).val();
+    var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[1];
+    //var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[0];
+    
+    url += "/create_excel.php" + "?submit=" + $(this).val();
+    
+    location.href = url ;
 })

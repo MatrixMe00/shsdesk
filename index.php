@@ -85,7 +85,7 @@
                         <h1 style=\"font-size: xx-large;\">WELCOME TO SHSDESK</h1>
                         <div class=\"body\" style=\"margin-top: 3vh\">
                             <span class=\"text\" style=\"font-size: larger; padding: 2vh 0;\">
-                                This is your number one web application to make your admission easy and safe
+                                This is your number one web application to make your Senior High School admission easy and safe
                             </span>
                         </div>
                         ";
@@ -374,7 +374,7 @@
         <?php }?>
     </main>
 
-    <?php @include_once($rootPath.'/blocks/footer.php')?>    
+    <?php @include_once($rootPath.'/blocks/footer.php')?>
 
     <!--Document scripts-->
     <script src="assets/scripts/form/general.js?v=<?php echo time()?>"></script>
