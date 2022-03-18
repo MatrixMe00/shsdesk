@@ -100,7 +100,7 @@
         </div>
     </form>
 
-    <script src="<?php echo $url?>/assets/scripts/form/general.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>"></script>
     <script src="assets/scripts/init.js?v=<?php echo time()?>"></script>
 </body>
