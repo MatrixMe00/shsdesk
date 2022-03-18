@@ -38,27 +38,29 @@
                                                 <img src="<?php echo $url?>/assets/images/icons/reader-outline.svg" alt="enrol code">
                                             </span>
                                             <input type="text" name="ad_enrol_code" id="ad_enrol_code" ng-model="ad_enrol_code" placeholder="Your Enrolment Code*" 
-                                            title="Enter your enrolment code which you received from the CSSPS">
+                                            title="Enter your enrolment code which you received from the CSSPS" required>
                                         </label>
                                         <label for="ad_index">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/index.png" alt="index number">
                                             </span>
-                                            <input type="text" name="ad_index" id="ad_index" ng-model="ad_index" placeholder="Enter Your JHS Index Number*" pattern="[0-9]+" title="Enter your index number in this field. It should be only numbers" required>
+                                            <input type="text" name="ad_index" id="ad_index" ng-model="ad_index" placeholder="Enter Your JHS Index Number*" 
+                                            pattern="[0-9]+" title="Enter your index number in this field. It should be only numbers" required>
                                         </label>
                                         <label for="ad_aggregate" class="no_disp">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/hashtag.png" alt="aggregate">
                                             </span>
                                             <input type="text" name="ad_aggregate" id="ad_aggregate" maxlength="2"
-                                            placeholder="Enter your aggregate here" required title="Enter your aggregate here" pattern="[0-9]+" 
+                                            placeholder="Enter your aggregate here" title="Enter your aggregate here" pattern="[0-9]+" 
                                             ng-model="ad_aggregate" disabled>
                                         </label>
                                         <label for="ad_course" class="no_disp">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/book-outline.svg" alt="course">
                                             </span>
-                                            <input type="text" name="ad_course" id="ad_course" title="Enter your course here" placeholder="Enter your course here*" pattern="[a-zA-Z\s]{5,}" required ng-model="ad_course" disabled>
+                                            <input type="text" name="ad_course" id="ad_course" title="Enter your course here" placeholder="Enter your course here*" pattern="[a-zA-Z\s]{5,}" 
+                                            ng-model="ad_course" disabled>
                                         </label>
                                     </div>
                                 </fieldset>
@@ -71,13 +73,15 @@
                                                 <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="lastname">
                                             </span>
                                             <input type="text" name="ad_lname" id="ad_lname" class="text_input" 
-                                            placeholder="Your Lastname*" autocomplete="off" ng-model="ad_lname" pattern="[a-zA-Z]{3,}" title="Enter your lastname only, do not add any space" required>
+                                            placeholder="Your Lastname*" autocomplete="off" ng-model="ad_lname" pattern="[a-zA-Z]{3,}" 
+                                            title="Enter your lastname only, do not add any space" required>
                                         </label>
                                         <label for="ad_oname">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="othername">
                                             </span>
-                                            <input type="text" name="ad_oname" id="ad_oname" class="text_input" placeholder="Other name(s)" autocomplete="off" ng-model="ad_oname" title="Enter any other name(s) you have" required>
+                                            <input type="text" name="ad_oname" id="ad_oname" class="text_input" placeholder="Other name(s)" 
+                                            autocomplete="off" ng-model="ad_oname" title="Enter any other name(s) you have" required>
                                         </label>
                                     </div>
                                     <div class="joint">
@@ -103,7 +107,8 @@
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/bismarck.png" alt="town">
                                             </span>
-                                            <input type="text" name="ad_jhs_town" id="ad_jhs_town" placeholder="Town where JHS is found*" title="Enter the name of the city where your JHS is found" required ng-model="ad_jhs_town">
+                                            <input type="text" name="ad_jhs_town" id="ad_jhs_town" placeholder="Town where JHS is found*" 
+                                            title="Enter the name of the city where your JHS is found" required ng-model="ad_jhs_town">
                                         </label>
                                         <label for="ad_jhs_district">
                                             <span class="label_image">
@@ -170,7 +175,8 @@
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/home.png" alt="birth_place">
                                             </span>
-                                            <input type="text" name="ad_birth_place" id="ad_birth_place" placeholder="Place of Birth*" pattern="[a-zA-Z]+" required ng-model="ad_birth_place">
+                                            <input type="text" name="ad_birth_place" id="ad_birth_place" placeholder="Place of Birth*" 
+                                            pattern="[a-zA-Z]+" required ng-model="ad_birth_place">
                                         </label>
                                     </div>
                                 </fieldset>
@@ -184,13 +190,14 @@
                             <div class="body">
                                 <fieldset>
                                     <legend>Particulars of Parents/Guardians</legend>
+                                    <p><strong>Provide at least one parent or guardian's detail</strong></p>
                                     <div class="joint">
                                         <label for="ad_father_name">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/man-outline.svg" alt="father">
                                             </span>
                                             <input type="text" name="ad_father_name" id="ad_father_name" pattern="[a-zA-Z\s]{5,}" autocomplete="off" 
-                                            placeholder="Name of Father" ng-model="ad_father_name" 
+                                            placeholder="Name of Father" ng-model="ad_father_name" class="required"
                                             title="Enter the full name of your father">
                                         </label>
                                         <label for="ad_father_occupation" ng-show="ad_father_name">
@@ -198,14 +205,15 @@
                                                 <img src="<?php echo $url?>/assets/images/icons/bag-handle-outline.svg" alt="occupation">
                                             </span>
                                             <input type="text" name="ad_father_occupation" id="ad_father_occupation" pattern="[a-zA-Z\s]{5,}" ng-model="ad_father_occupation" 
-                                            title="Enter the occupation of your father" 
+                                            title="Enter the occupation of your father" class="required"
                                             placeholder="Father's Occupation*">
                                         </label>
                                         <label for="ad_mother_name">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/woman-outline.svg" alt="mother">
                                             </span>
-                                            <input type="text" name="ad_mother_name" id="ad_mother_name" pattern="[a-zA-Z\s]{5,}" autocomplete="off" placeholder="Name of Mother" ng-model="ad_mother_name"
+                                            <input type="text" name="ad_mother_name" id="ad_mother_name" pattern="[a-zA-Z\s]{5,}" autocomplete="off" 
+                                            placeholder="Name of Mother" ng-model="ad_mother_name" class="required"
                                             title="Enter the full name of your mother">
                                         </label>
                                         <label for="ad_mother_occupation" ng-show="ad_mother_name">
@@ -213,7 +221,7 @@
                                                 <img src="<?php echo $url?>/assets/images/icons/bag-handle-outline.svg" alt="occupation">
                                             </span>
                                             <input type="text" name="ad_mother_occupation" id="ad_mother_occupation" pattern="[a-zA-Z\s]{5,}" ng-model="ad_mother_occupation" 
-                                            title="Enter the occupation of your mother" 
+                                            title="Enter the occupation of your mother" class="required"
                                             placeholder="Mother's Occupation*">
                                         </label>
                                         <label for="ad_guardian_name">
@@ -221,7 +229,7 @@
                                                 <img src="<?php echo $url?>/assets/images/icons/man_woman.png" alt="">
                                             </span>
                                             <input type="text" name="ad_guardian_name" id="ad_guardian_name" pattern="[a-zA-Z\s]{5,}" autocomplete="off" 
-                                            placeholder="Name of Guardian" ng-model="ad_guardian_name" 
+                                            placeholder="Name of Guardian" ng-model="ad_guardian_name" class="required"
                                             title="Enter the full name of your guardian">
                                         </label>
                                         <label for="ad_postal_address">

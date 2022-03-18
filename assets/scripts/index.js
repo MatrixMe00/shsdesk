@@ -1,4 +1,10 @@
 $(document).ready(function(){
+    //mark all required fields as red
+    $("#admission input[required], #admission input.required, " + 
+    "#admission select[required], #admission select.required").each(function(){
+        $(this).css("border","1px solid red");
+    })
+
     //set the number of slider tabs
     $(".slider_counter").html(function(){
         number_of_details = $(".img_container img").length;
@@ -136,6 +142,15 @@ $("button[name=student_cancel_operation]").click(function(){
     $(".hide_label #student_name").val("");
     $(".case").removeClass("no_disp");
     $(".case select").val("NULL");
+})
+
+//alert users when they have to fill a required form
+$("#admission input").blur(function() {
+    formRequiredCheck($(this));
+})
+
+$("#admission select").change(function() {
+    formRequiredCheck($(this));
 })
 
 /*$("input").blur(function(){

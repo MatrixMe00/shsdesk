@@ -118,7 +118,16 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                 </span>
                 <textarea name="admission" id="admission" placeholder="Update the body for your admission letter" 
                 class="tinymce" title="Body of admission letter ">
-                <?php echo $schoolDetail["admissionPath"] ?>
+                <?php 
+                //remove visible escape characters
+                $message = str_replace("\\r", "", $schoolDetail["admissionPath"]);
+                $message = str_replace("\\n", "", $message);
+                $message = str_replace("\\", "", $message);
+                $message = str_replace("<p></p>","", $message);
+                
+                echo  $message;
+                
+                ?>
                 </textarea>
             </label>
             <label for="description">

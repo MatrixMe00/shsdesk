@@ -105,6 +105,46 @@
 }
 
 /**
+ * This function here would be used to alert the user on required forms field in the admission form
+ * 
+ * @param {any} element The current selected element
+ * @return {void} The function returns nothing
+ */
+function formRequiredCheck(element) {
+    //check if element has required field
+    required = $(element).prop("required");
+
+    if(!required){
+        //check if it has the required class
+        if($(element).hasClass("required")){
+            required = true;
+        }
+    }
+
+    //pick input element type
+    type = element.attr("type");
+
+    //grab content
+    content = $(element).val();
+
+    //check if element has max length
+    maxlength = $(element).prop("maxlength");
+
+    if(maxlength <= 0){
+        maxlength = 0;
+    }
+
+    //if element is required, paint as red else as green
+    if(required && maxlength > 0 && content.length < maxlength){
+        $(element).css("border", "1px solid red");
+    }else if(required && content.length < 1){
+        $(element).css("border", "1px solid red");
+    }else{
+        $(element).css("border", "1px solid green");
+    }
+}
+
+/**
  * This function will be used to regulate fade outs in the project
  * 
  * @param {number} time This takes the length of time for the effect. Its defaulted at 0.7s

@@ -125,6 +125,9 @@ $("button[name=modal_cancel]").click(function(){
         $("form[name=admissionForm]")[0].reset();
 
         $("#interest").val('');
+
+        $("#admission input[required], #admission input.required").blur();
+        $("#admission select[required], #admission select.required").change();
     }
 })
 
@@ -363,6 +366,11 @@ $("button[name=continue]").click(function(){
                 $("form[name=admissionForm] #ad_oname").val(data["Othernames"]);
                 $("form[name=admissionForm] #ad_gender").val(data["Gender"]);
                 $("form[name=admissionForm] #ad_jhs").val(data["jhsAttended"]);
+
+                //mark provided fields as entered in
+                $("form[name=admissionForm] #ad_lname, form[name=admissionForm] #ad_oname, " + 
+                "form[name=admissionForm] #ad_jhs").blur();
+                $("form[name=admissionForm] #ad_gender").change();
 
                 //fill results with values
                 $("#res_ad_aggregate").html(data["aggregate"]);

@@ -89,6 +89,11 @@
                 <button id="btn_ad">Admission letter is ready for download | Download [PDF]</button>
             </a>
         </div>
+        <?php if(!isset($_GET["indexNumber"])){ ?>
+        <div class="member_div">
+            <span>You can visit <a href="<?php echo "$url/student"?>">www.shsdesk.com/student</a> to download your documents at a later time.</span>
+        </div>
+        <?php } ?>
     </div>
 
     <script>

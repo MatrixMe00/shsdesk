@@ -79,10 +79,12 @@
 </section>
 
 <?php 
-    $result = $connect->query("SELECT a.*, r.title AS roleTitle 
-        FROM admins_table a JOIN roles r
+    $result = $connect->query("SELECT a.*, s.schoolName, r.title AS roleTitle 
+        FROM admins_table a JOIN schools s
+        ON a.school_id = s.id
+        JOIN roles r
         ON a.role = r.id 
-        WHERE r.access = TRUE AND a.username = 'New User'") or die($connect->error);
+        WHERE r.access = TRUE AND a.username='New User'") or die($connect->error);
 
     if($result->num_rows > 0){
 ?>
@@ -110,13 +112,9 @@
                 </div>
             </div>
             <div class="foot">
-                <?php if($user_details["role"] == 1 || $row["user_id"] == $user_id){?>
-                <span class="item-event edit<?php
-                    if($user_details["role"] == 1){
-                        echo " dev";
-                    }
-                ?>" data-user-id="<?php echo $row["user_id"]?>">Edit</span>
-                <?php }?>
+                <?php if($user_id == $row["user_id"]){ ?>
+                <span class="item-event edit">Edit</span>
+                <?php } ?>
                 <span class="item-event status" data-user-id="<?php echo $row["user_id"]?>">
                 <?php 
                     if($row["Active"] == true && $user_id != $row["user_id"]){

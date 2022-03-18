@@ -58,7 +58,7 @@
             $ad_witness = formatName($connect->real_escape_string($_POST["ad_witness"]));
             $ad_witness_phone = $connect->real_escape_string($_POST["ad_witness_phone"]);
 
-            $current_date = date("Y-m-d");
+            $current_date = date("Y-m-d H:i:s");
 
             //bind the statement
             $sql = "INSERT INTO enrol_table (indexNumber, enrolCode, shsID, aggregateScore, program, 

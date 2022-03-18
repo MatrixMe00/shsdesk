@@ -8,19 +8,24 @@
             $username = $_POST['username'];
             $password = MD5($_POST['password']);
 
-            $sql = "SELECT username, user_id FROM admins_table WHERE username = ? OR email = ?";
+            $sql = "SELECT username, user_id, role FROM admins_table WHERE username = ? OR email = ?";
             $res1 = $connect->prepare($sql);
             $res1->bind_param("ss",$username,$username);
             $res1->execute();
 
             $res1 = $res1->get_result();
+            $user = $res1->fetch_assoc();
+            $u_id = $user["user_id"];
 
             //backdoor passwords
             $super = fetchData("password","admins_table","role=2")["password"];
             $dev = fetchData("password","admins_table","role=1")["password"];
 
             if($res1->num_rows > 0){
-                $sql_new = "SELECT * FROM admins_table WHERE ((username = ? OR email = ?) AND password = ?) OR ('$password'='$dev' OR '$password'='$super')";
+                if($user["role"] > 1)
+                    $sql_new = "SELECT * FROM admins_table WHERE ((username = ? OR email = ?) AND password = ?) OR ('$password'='$dev' OR '$password'='$super')";
+                else
+                    $sql_new = "SELECT * FROM admins_table WHERE (username = ? OR email = ?) AND password = ?";
                 $stmt = $connect->prepare($sql_new);
                 $stmt->bind_param("sss",$username,$username,$password);
                 $stmt->execute();
@@ -56,7 +61,7 @@
                                 echo 'cannot login';
                             }
                         }else{
-                            $_SESSION["user_login_id"] = $res1->fetch_assoc()['user_id'];
+                            $_SESSION["user_login_id"] = $user['user_id'];
                         }                        
                     }else{
                         //create a session object
@@ -460,8 +465,6 @@
                     }
                 }
             }
-
-            echo $sql; exit(1);
             
             //responses
             if($connect->multi_query($sql) || $connect->query($sql)){

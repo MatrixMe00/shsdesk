@@ -39,7 +39,7 @@ $("form").submit(function(e){
             cache: false,
             dataType: "html",
             type: "POST",
-            async: false,
+            async: true,
             beforeSend: function(){
                 message = loadDisplay();
                 message_type = "load";
