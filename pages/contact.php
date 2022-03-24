@@ -64,9 +64,9 @@
 
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
-    <script src="<?php echo $url?>/assets/scripts/form/general.js"></script>
-    <script src="<?php echo $url?>/assets/scripts/head_foot.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/head_foot.js?v=<?php echo time()?>" async></script>
 </body>
 
-<script src="<?php echo $url?>/assets/scripts/contact.js"></script>
+<script src="<?php echo $url?>/assets/scripts/contact.js?v=<?php echo time()?>" async></script>
 </html>

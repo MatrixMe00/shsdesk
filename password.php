@@ -10,9 +10,9 @@
     <title>SHSDesk - Forgot Your Password</title>
 
     <!--Scripts-->
-    <script src="assets/scripts/jquery/uncompressed_jquery.js?v=<?php echo time()?>"></script>
-    <script src="assets/scripts/index.js?v=<?php echo time()?>"></script>
-    <script src="assets/scripts/functions.js?v=<?php echo time()?>"></script>
+    <script src="assets/scripts/jquery/uncompressed_jquery.js?v=<?php echo time()?>" async></script>
+    <script src="assets/scripts/index.js?v=<?php echo time()?>" async></script>
+    <script src="assets/scripts/functions.js?v=<?php echo time()?>" async></script>
 
     <!--Styles-->
     <link rel="stylesheet" href="assets/styles/general.css">
@@ -138,8 +138,8 @@
             <p>Click <a href="<?php echo $url?>/admin/">here</a> to login with your new details</p>
         </div>
     </div>
-<script src="assets/scripts/form/general.js"></script>
-<script src="<?php echo $url?>/assets/scripts/password.js"></script>
+<script src="assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/assets/scripts/password.js?v=<?php echo time()?>" async></script>
 </body>
 </html>
 

@@ -217,12 +217,12 @@
     <?php @include_once($rootPath.'/blocks/footer.php')?>
     
     <!--Document Scripts-->
-    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
-    <script src="<?php echo $url?>/assets/scripts/form/register.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/form/register.js" async></script>
 
     <!--TinyMCE scripts-->
-    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
-    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
-    <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js" async></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js" async></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>" async></script>
 </body>
 </html>

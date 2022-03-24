@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="assets/styles/admissionForm.css?v=<?php echo time()?>">
 
     <!--Payment script-->
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js" async></script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>
@@ -105,43 +105,55 @@
         </section>
 
         <section id="about">
+            <?php $course = fetchData("COUNT(DISTINCT programme) as total","cssps","TRUE=TRUE")["total"];
+                if($course > 5){
+            ?>
             <div class="control">
                 <div class="head">
                     <img src="<?php echo $url?>/assets/images/icons/course.svg" alt="courses">
                 </div>
                 <div class="desc">
                     <div class="figure">
-                    <span><?php echo fetchData("COUNT(DISTINCT programme) as total","cssps","TRUE=TRUE")["total"] ?></span>
+                    <span><?php echo $course ?></span>
                     </div>
                     <div class="text">
                         <span>Courses</span>
                     </div>
                 </div>
             </div>
+            <?php } 
+                $cssps = fetchData("COUNT(indexNumber) as total","cssps","enroled=TRUE")["total"];
+                
+                if($cssps >= 30){
+            ?>
             <div class="control">
                 <div class="head">
                     <img src="<?php echo $url?>/assets/images/icons/student.svg" alt="student">
                 </div>
                 <div class="desc">
                     <div class="figure">
-                        <span><?php echo fetchData("COUNT(indexNumber) as total","cssps","enroled=TRUE")["total"] ?></span>
+                        <span><?php echo $cssps ?></span>
                     </div>
                     <div class="text">
                         <span>Students Admitted</span>
                     </div>
                 </div>
             </div>
-            <?php if(!$show){?>
+            <?php } 
+                $system = fetchData("COUNT(indexNumber) as total","cssps","TRUE=TRUE")["total"];
+                
+                if($system >= 50){
+            ?>
             <div class="control">
                 <div class="head">
                     <img src="<?php echo $url?>/assets/images/icons/teacher.svg" alt="teacher">
                 </div>
                 <div class="desc">
                     <div class="figure">
-                    <span><?php echo fetchData("COUNT(indexNumber) as total","cssps","TRUE=TRUE")["total"] ?></span>
+                    <span><?php echo $system ?></span>
                     </div>
                     <div class="text">
-                        <span>Students on System</span>
+                        <span>Students Placed</span>
                     </div>
                 </div>
             </div>
@@ -377,15 +389,15 @@
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
     <!--Document scripts-->
-    <script src="assets/scripts/form/general.js?v=<?php echo time()?>"></script>
-    <script src="assets/scripts/index.js?v=<?php echo time()?>"></script>
-    <script src="assets/scripts/head_foot.js?v=<?php echo time()?>"></script>
-    <script src="assets/scripts/admissionForm.js?v=<?php echo time(); ?>"></script>
+    <script src="assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
+    <script src="assets/scripts/index.js?v=<?php echo time()?>" async></script>
+    <script src="assets/scripts/head_foot.js?v=<?php echo time()?>" async></script>
+    <script src="assets/scripts/admissionForm.js?v=<?php echo time(); ?>" async></script>
 
     <!--Angular scripts-->
-    <script src="assets/scripts/angular_index.js?v=<?php echo time()?>"></script>
+    <script src="assets/scripts/angular_index.js?v=<?php echo time()?>" async></script>
 
     <!--Payment scripts-->
-    <script src="assets/scripts/form/payForm.js?v=<?php echo time();?>"></script>
+    <script src="assets/scripts/form/payForm.js?v=<?php echo time();?>" async></script>
 </body>
 </html>

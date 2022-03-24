@@ -3,10 +3,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!--Scripts-->
-    <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
-    <script src="<?php echo $url?>/assets/scripts/angular/angular.js?v=<?php echo time()?>"></script>
-    <!-- <script src="<?php echo $url?>/admin/assets/scripts/index.js?v=<?php echo time()?>"></script> -->
-    <script src="<?php echo $url?>/assets/scripts/functions.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js" async></script>
+    <script src="<?php echo $url?>/assets/scripts/angular/angular.js?v=<?php echo time()?>" async></script>
+    <!-- <script src="<?php echo $url?>/admin/assets/scripts/index.js?v=<?php echo time()?>" async></script> -->
+    <script src="<?php echo $url?>/assets/scripts/functions.js?v=<?php echo time()?>" async></script>
 
     <!--Other Styles-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">

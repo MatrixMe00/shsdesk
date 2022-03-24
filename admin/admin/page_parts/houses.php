@@ -237,9 +237,9 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 </div>
 
 <?php if(isset($_REQUEST["school_id"])){?>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/addHouse.js?v=<?php echo time()?>"></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/general.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/addHouse.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/general.js?v=<?php echo time()?>" async></script>
 <?php }else{?>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/addHouse.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/addHouse.js?v=<?php echo time()?>" async></script>
 <?php } ?>
-<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>

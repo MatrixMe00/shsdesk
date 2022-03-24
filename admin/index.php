@@ -23,8 +23,8 @@
     <meta name="keyboard" content="manage, student, record, detail, portal, house, admission, detail, admin, shs, desk, shsdesk, login">
 
     <!--Scripts-->
-    <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
-    <script src="<?php echo $url?>/assets/scripts/functions.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js" async></script>
+    <script src="<?php echo $url?>/assets/scripts/functions.js?v=<?php echo time()?>" async></script>
 
     <!--Styles-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">
@@ -100,9 +100,9 @@
         </div>
     </form>
 
-    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
-    <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>"></script>
-    <script src="assets/scripts/init.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>" async></script>
+    <script src="assets/scripts/init.js?v=<?php echo time()?>" async></script>
 </body>
 </html>
 <?php 

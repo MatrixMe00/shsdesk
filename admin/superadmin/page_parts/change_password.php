@@ -42,5 +42,5 @@
     </div>
 </form>
 
-<script src="<?php echo $url?>/assets/scripts/form/general.js"></script>
-<script src="<?php echo $url?>/admin/assets/scripts/password.js"></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.js" async></script>
+<script src="<?php echo $url?>/admin/assets/scripts/password.js" async></script>

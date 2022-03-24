@@ -230,5 +230,5 @@
     </div>
 </div>
 
-<script src="<?php echo $url?>/admin/admin/assets/scripts/exeat.js?v=<?php echo time()?>"></script>
-<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/exeat.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>

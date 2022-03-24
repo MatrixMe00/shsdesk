@@ -179,9 +179,9 @@
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
     <!--Document scripts-->
-    <script src="<?php echo $url?>/assets/scripts/head_foot.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/head_foot.js?v=<?php echo time()?>" async></script>
 
     <!--Angular scripts-->
-    <script src="<?php echo $url?>/assets/scripts/angular_index.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/angular_index.js" async></script>
 </body>
 </html>

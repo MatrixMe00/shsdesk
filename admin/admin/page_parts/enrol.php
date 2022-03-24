@@ -150,7 +150,7 @@
     </div>
 </div>
 
-<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>"></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js"></script>
-<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/table.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js" async></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/table.js?v=<?php echo time()?>" async></script>

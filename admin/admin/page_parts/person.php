@@ -191,5 +191,5 @@
     </div>
     <?php } ?>
 
-    <script type="text/javascript" src="<?php echo $url?>/admin/assets/scripts/person.js?v=<?php echo time()?>"></script>
-    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+    <script type="text/javascript" src="<?php echo $url?>/admin/assets/scripts/person.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>

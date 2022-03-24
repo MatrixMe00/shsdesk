@@ -611,7 +611,7 @@
 </section>
 
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>">
-</script><script src="<?php echo $url?>/admin/assets/scripts/notification.js?v=<?php echo time()?>"></script>
-<script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
-<script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
-<script src="<?php echo $url?>/admin/assets/scripts/tinymce.js"></script>
+</script><script src="<?php echo $url?>/admin/assets/scripts/notification.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js" async></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js" async></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce.js" async></script>
