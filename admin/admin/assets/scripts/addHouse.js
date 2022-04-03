@@ -59,7 +59,8 @@ $("form[name=updateHouseForm]").submit(function(e){
         //close box and refresh page
         setTimeout(function(){
             $("form[name=updateHouseForm] button[name=cancel]").click();
-            location.reload();
+            // location.reload();
+            $("#lhs .item.active").click();
         },3000)
         
     }else{

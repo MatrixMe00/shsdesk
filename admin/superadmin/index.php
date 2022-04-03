@@ -99,6 +99,14 @@
                             <span>Schools List</span>
                         </div>
                     </div>
+                    <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/transaction.php" name="Transactions" title="Track Transactions">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="transaction" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Track Transactions</span>
+                        </div>
+                    </div>
                 </div>
     
                 <!--Page Setups-->

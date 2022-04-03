@@ -45,7 +45,7 @@
             </div>
             <div class="middle">
                 <div class="desc" contenteditable="false">
-                    <p><?php echo $row["item_desc"]?></p>
+                    <p><?php echo html_entity_decode($row["item_desc"])?></p>
                 </div>
                 <?php if($row["item_button"] == "1" || $row["item_button"] == 1){?>
                 <div class="content_button btn">
@@ -107,7 +107,7 @@
             </div>
             <div class="middle">
                 <div class="desc" contenteditable="false">
-                    <p><?php echo $row["item_desc"]?></p>
+                    <p><?php echo html_entity_decode($row["item_desc"])?></p>
                 </div>
                 <?php if($row["item_button"] == "1" || $row["item_button"] == 1){?>
                 <div class="content_button btn">
@@ -173,7 +173,7 @@
                     <input type="text" name="item_head" id="item_head" placeholder="Provide a title for this block*" required>
                 </label>
                 <label for="item_desc" class="flex">
-                    <textarea type="text" name="item_desc" id="item_desc" placeholder="Provide a  brief description about the carousel*" class="admin_tinymce" required></textarea>
+                    <textarea type="text" name="item_desc" id="item_desc" placeholder="Provide a  brief description about the carousel*" class="admin_tinymce"></textarea></textarea>
                 </label>
                 <div class="flex flex-center-align flex-wrap">
                     <label for="item_button" class="checkbox">

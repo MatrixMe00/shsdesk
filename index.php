@@ -29,6 +29,18 @@
     
       gtag('config', 'G-W7MF3JTHJ1');
     </script>
+
+    <style>
+        #message_us{
+            padding: 1em; position: fixed; bottom: 5vh; left: 3vw; 
+            border-radius: 10px; font-size: large; font-weight: bold;
+        }#video{text-align: center;}
+        #video .head{padding-top: 10px;padding-bottom: 10px;}
+        #video .body{padding-bottom: 10px;}
+        #video video{max-width: 640px;}
+        @media screen and (max-width: 480px){#message_us{font-size: small;}}
+        select#school_select{border: none; border-image: none;}
+    </style>
 </head>
 <body ng-app="index_application" id="index_main">
     <?php @include_once($rootPath.'/blocks/nav.php')?>
@@ -70,7 +82,7 @@
                         </div>
                         <div class="body">
                             <span class="text">
-                                <?php echo $row['item_desc']?>
+                                <?php echo html_entity_decode($row['item_desc'])?>
                             </span>
                             <?php if($row['item_button'] == "1"){?>
                             <div class="btn">
@@ -179,22 +191,23 @@
                 <div class="case" data-box="payment_form" id="school_admission_case">
                     <h3>Online SHS Admission</h3>
                     <label for="school_select">
-                        <select name="school_select" id="school_select">
+                        <select name="school_select" id="school_select" class="primary">
                             <option value="NULL">Please select your school</option>
                             <?php
                                 $res = $connect->query("SELECT id, schoolName FROM schools WHERE Active = TRUE");
-
+        
                                 if($res->num_rows > 0){
                                     while($row = $res->fetch_assoc()){
+                                        echo "<option value=\"".$row["id"]."\" class=\"secondary\">".$row["schoolName"]."</option>";
                                         //check if school has at least two houses in the system
-                                        $house_check = fetchData("COUNT(DISTINCT(title)) AS total", "houses", "schoolID=".$row["id"])["total"];
+                                        /*$house_check = fetchData("COUNT(DISTINCT(title)) AS total", "houses", "schoolID=".$row["id"])["total"];
                                         if($house_check >= 1){
                                             //check if there is at least one student uploaded on the system
                                             $students = fetchData("COUNT(indexNumber) AS total", "cssps", "schoolID=".$row["id"])["total"];
                                             if($students > 0){
                                                 echo "<option value=\"".$row["id"]."\">".$row["schoolName"]."</option>";
                                             }
-                                        }
+                                        }*/
                                     }
                                 }
                             ?>
@@ -204,7 +217,7 @@
                         <button name="payment_button" id="payment_button" type="button">Make My Payment</button>
                     </label>
                 </div>
-                <?php 
+                <?php
                     if($show){
                 ?><div class="case" data-box="results" id="results_case">
                     <h3>End of Semester Results</h3>
@@ -384,20 +397,41 @@
             </div>
         </section>
         <?php }?>
+
+        <section id="video">
+            <div class="head">
+                <h3>How to Register your details</h3>
+            </div>
+            <div class="body">
+                <p>Please take a look at the video below to be guided on how to register yourself for admission</p>
+            </div>
+            <div>
+                <video controls width="80%" cite="https://www.bensound.com">
+                    <source src="<?php echo $url?>/assets/file/How-To-Register.mp4" type="video/mp4">
+                    Video not supported by browser
+                </video>
+            </div>
+        </section>
     </main>
+
+    <a href="https://wa.me/233247552852">
+        <span id="message_us" class="primary">
+            Message Us
+        </span>
+    </a>
 
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
     <!--Document scripts-->
-    <script src="assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
-    <script src="assets/scripts/index.js?v=<?php echo time()?>" async></script>
-    <script src="assets/scripts/head_foot.js?v=<?php echo time()?>" async></script>
-    <script src="assets/scripts/admissionForm.js?v=<?php echo time(); ?>" async></script>
+    <script src="assets/scripts/form/general.js?v=<?php echo time()?>" defer></script>
+    <script src="assets/scripts/index.js?v=<?php echo time()?>" defer></script>
+    <script src="assets/scripts/head_foot.js?v=<?php echo time()?>" defer></script>
+    <script src="assets/scripts/admissionForm.js?v=<?php echo time(); ?>"></script>
 
     <!--Angular scripts-->
-    <script src="assets/scripts/angular_index.js?v=<?php echo time()?>" async></script>
+    <script src="assets/scripts/angular_index.js?v=<?php echo time()?>" defer></script>
 
     <!--Payment scripts-->
-    <script src="assets/scripts/form/payForm.js?v=<?php echo time();?>" async></script>
+    <script src="assets/scripts/form/payForm.js?v=<?php echo time();?>"></script>
 </body>
 </html>

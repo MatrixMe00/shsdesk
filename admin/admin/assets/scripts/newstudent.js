@@ -10,7 +10,8 @@ $("form[name=adminAddStudent] button[name=cancel]").click(function(){
 
     //refresh page if there was some data sent to database
     if(data_entry){
-        location.reload();
+        // location.reload();
+        $("#lhs .item.active").click();
     }
 })
 
@@ -114,7 +115,8 @@ $("form[name=adminUpdateStudent]").submit(function(event){
         //enable buttons and reset the form
         setTimeout(function(){
             $("form[name=adminUpdateStudent] .foot button").prop("disable", false);
-            location.reload();
+            // location.reload();
+            // $("#lhs .item.active").click();
         }, 3000);
         
     }else{

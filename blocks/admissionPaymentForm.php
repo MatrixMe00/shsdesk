@@ -66,7 +66,6 @@
                                 <input type="text" name="pay_reference" id="pay_reference" class="text_input" placeholder="Enter your Reference ID" autocomplete="off">
                             </label>
                         </section>
-                        
                     </div>
                     <div class="flex">
                         <label for="submit" class="btn">

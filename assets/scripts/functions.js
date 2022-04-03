@@ -306,6 +306,9 @@ function checkForm(i){
     }else{
         $("label[for=agree] input[name=agree]").prop("disabled", true);
     }
+    
+    //update interest
+    $("#res_ad_interest").html($("input#interest").val());
 
     return return_value;
 }

@@ -262,6 +262,141 @@
                     echo "</table>";
                 }
             }
+        }elseif($submit == "new_transaction"){
+            $trans_id = $_REQUEST["trans_id"];
+            $cont_number = $_REQUEST["cont_number"];
+            $cont_email = $_REQUEST["cont_email"];
+            $school = $_REQUEST["school"];
+            $amount = $_REQUEST["amount"];
+            $deduction = $_REQUEST["deduction"];
+            $cont_name = $_REQUEST["cont_name"];
+            $trans_date = date("Y-m-d H:i:s");
+
+            //input validation
+            if($trans_id === ""){
+                $message = "Please enter a transaction ID";
+            }elseif(strlen($trans_id) < 14){
+                $message = "Transaction id provides is invalid. Check the length";
+            }elseif($trans_id[0] != "T"){
+                $message = "Valid transaction IDs begin with T.";
+            }elseif($cont_name === ""){
+                $message = "Please provide the contact's mumber";
+            }elseif($cont_number === ""){
+                $message = "Please provide the contact's number";
+            }elseif(strlen($cont_number) < 10){
+                $message = "Please provide a valid phone number";
+            }elseif($school === ""){
+                $message = "Please select the school which was bought";
+            }else{
+                //check if transaction is already in system
+                $sql = "SELECT transactionID FROM transaction WHERE transactionID = '$trans_id'";
+                $result = $connect->query($sql);
+
+                if($result->num_rows > 0){
+                    $message = "Transaction ID already exists in system";
+                }else{
+                    $sql = "INSERT INTO transaction (transactionID, contactNumber, schoolBought, amountPaid, contactName, contactEmail, Deduction, Transaction_Date) 
+                    VALUES(?,?,?,?,?,?,?,?)";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("ssidssds", $trans_id, $cont_number, $school, $amount, $cont_name, $cont_email, $deduction, $trans_date);
+                    if($stmt->execute()) {
+                        $message = "success";
+                    }else{
+                        $message = "Error occured while writing data into database. Try again later";
+                    }
+                }
+            }
+
+            echo $message;
+        }elseif($submit == "search_transaction"){
+            $search = $_REQUEST['txt_search'];
+            $sql = "SELECT transactionID, contactName, contactNumber, contactEmail, schoolBought, Transaction_Date, Transaction_Expired
+                FROM transaction WHERE transactionID LIKE '%$search%'";
+            $result = $connect->query($sql);
+
+            if($result->num_rows > 0){
+                while($row = $result->fetch_assoc()){
+?>
+        <form action="<?php echo $url?>/admin/superadmin/submit.php" method="post" name="showTransaction">
+            <div class="head">
+                <h3>Transaction for <?php echo $row["transactionID"]?></h3>
+            </div>
+            <div class="body">
+                <div class="message_box <?php
+                    if($row["Transaction_Expired"] == TRUE){
+                        echo "error";
+                        $mess_display = "Transaction ID has been used";
+                    }else{
+                        echo "success";
+                        $mess_display = "Transaction ID available for use";
+                    }
+                ?>">
+                    <span class="message"><?php echo $mess_display; ?></span>
+                </div>
+                <div class="joint">
+                    <label for="trans_id">
+                        <input type="text" class="text_input" id="trans_id" name="trans_id" placeholder="Transaction ID"
+                        title="Enter the received transaction ID" disabled value="<?php echo $row["transactionID"] ?>" />
+                    </label>
+                    <label for="cont_name">
+                        <input type="text" class="text_input tel" id="cont_name" name="cont_name" disabled
+                        title="Enter the contact's name [name of the person who bought it]" placeholder="Contact Name"
+                        value="<?php echo $row["contactName"] ?>" />
+                    </label>
+                    <label for="cont_number">
+                        <input type="text" class="text_input tel" id="cont_number" name="cont_number" disabled
+                        title="Enter the contact's number [number of the person who bought it]" placeholder="Contact number"
+                        value="<?php echo $row["contactNumber"] ?>" />
+                    </label>
+                    <label for="cont_email">
+                        <input type="text" class="text_input" id="cont_email" name="cont_email" placeholder="Contact's email"
+                        title="Contact's email address. You can leave it blank if none was provided during transaction" 
+                        disabled value="<?php echo $row["contactEmail"] ?>"/>
+                    </label>
+                </div>
+                <label for="school">
+                    <select name="school" id="school" disabled>
+                        <option value="<?php echo $row["schoolBought"]?>"><?php echo getSchoolDetail(intval($row["schoolBought"]))["schoolName"]?></option>
+                    </select>
+                </label>
+                <input type="hidden" name="amount" value="30">
+                <input type="hidden" name="deduction" value="0.59">
+            </div>
+        </form>
+<?php
+                }
+            }else{
+                echo "not-found";
+            }
+        }elseif($submit == "currentTransactionCount"){
+            $response = array();
+            $sql = "SELECT COUNT(transactionID) as total FROM transaction";
+            $result = $connect->query($sql);
+            
+            //total transaction count
+            $response = array(
+                "trans_received" => $result->fetch_assoc()["total"]
+            );
+
+            $sql = "SELECT COUNT(transactionID) as total FROM transaction
+                WHERE Transaction_Expired=TRUE";
+            $result = $connect->query($sql);
+            
+            //total transaction expired
+            $response += array(
+                "trans_expired" => $result->fetch_assoc()["total"]
+            );
+
+            $sql = "SELECT COUNT(transactionID) as total FROM transaction
+                WHERE Transaction_Expired=FALSE";
+            $result = $connect->query($sql);
+            
+            //total transaction not expired
+            $response += array(
+                "trans_left" => $result->fetch_assoc()["total"]
+            );
+
+            echo json_encode($response);
         }
     }else{
         echo "no-submission";

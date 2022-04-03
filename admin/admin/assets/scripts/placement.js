@@ -82,7 +82,7 @@ $("form[name=importForm] button[name=close]").click(function(){
 
     //reload page
     if(importSuccess){
-        location.reload();
+        $("#lhs .item.active").click();
     }
 })
 

@@ -527,4 +527,46 @@
 
         return $temp_name;
     }
+
+    /**
+     * This function is used to add a suffix to numbers
+     * @param $value This receives the value to be changed
+     * 
+     * @return string It returns a string representation of the value
+     */
+    function numberShortner($value){
+        $value = intval($value);
+        $divisor = array(
+            0 => array(
+                "div" => 1000000,
+                "val" => "M"
+            ),
+            1 => array(
+                "div" => 1000,
+                "val" => "K"
+            ),
+            2 => array(
+                "div" => 10,
+                "val" => ""
+            )
+        );
+    
+        $final = "";
+    
+        for($i=0; $i < count($divisor);$i++){
+            $divide = $value / $divisor[$i]["div"];
+    
+            if($value >= 1000)
+                $divide = round($divide,1);
+            else
+                $divide = intval($divide) * $divisor[$i]["div"];
+    
+            if($divide >= 1){
+                $final = $divide.$divisor[$i]["val"];
+                break;
+            }
+        }
+    
+        return $final;
+    }
 ?>

@@ -37,7 +37,7 @@
 
                     //check if enrolment or house is exact file
                     //enrolment end at J, house end at F
-                    if($max_column != "J" && $max_column != "F" && $max_column != "H"){
+                    if($max_column != "J" && $max_column != "F" && $max_column != "H" && $max_column != "G"){
                         echo "Invalid file detected. Please send the correct file to continue";
                         exit(1);
                     }elseif($max_column == "J" || $max_column == "F"){
@@ -192,7 +192,7 @@
                         }
                     }elseif($max_column == "H" || $max_column == "G"){
                         //make it end at G
-                        $headerCounter = 7;
+                        $headerCounter = 6;
                         
                         for($row=3; $row <= $max_row; $row++){
                             //grab columns [reject last column, column H]

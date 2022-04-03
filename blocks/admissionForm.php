@@ -73,7 +73,7 @@
                                                 <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="lastname">
                                             </span>
                                             <input type="text" name="ad_lname" id="ad_lname" class="text_input" 
-                                            placeholder="Your Lastname*" autocomplete="off" ng-model="ad_lname" pattern="[a-zA-Z]{3,}" 
+                                            placeholder="Your Lastname*" autocomplete="off" ng-model="ad_lname" pattern="[a-zA-Z\s]{6,}[\.\-\']{0,}" 
                                             title="Enter your lastname only, do not add any space" required>
                                         </label>
                                         <label for="ad_oname">
@@ -176,7 +176,7 @@
                                                 <img src="<?php echo $url?>/assets/images/icons/home.png" alt="birth_place">
                                             </span>
                                             <input type="text" name="ad_birth_place" id="ad_birth_place" placeholder="Place of Birth*" 
-                                            pattern="[a-zA-Z]+" required ng-model="ad_birth_place">
+                                            pattern="[a-zA-Z\s]{6,}[\.\-\']{0,}" required ng-model="ad_birth_place">
                                         </label>
                                     </div>
                                 </fieldset>
@@ -196,7 +196,7 @@
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/man-outline.svg" alt="father">
                                             </span>
-                                            <input type="text" name="ad_father_name" id="ad_father_name" pattern="[a-zA-Z\s]{5,}" autocomplete="off" 
+                                            <input type="text" name="ad_father_name" id="ad_father_name" minlength="6" autocomplete="off" 
                                             placeholder="Name of Father" ng-model="ad_father_name" class="required"
                                             title="Enter the full name of your father">
                                         </label>
@@ -204,7 +204,7 @@
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/bag-handle-outline.svg" alt="occupation">
                                             </span>
-                                            <input type="text" name="ad_father_occupation" id="ad_father_occupation" pattern="[a-zA-Z\s]{5,}" ng-model="ad_father_occupation" 
+                                            <input type="text" name="ad_father_occupation" id="ad_father_occupation" minlength="6" ng-model="ad_father_occupation" 
                                             title="Enter the occupation of your father" class="required"
                                             placeholder="Father's Occupation*">
                                         </label>
@@ -212,7 +212,7 @@
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/woman-outline.svg" alt="mother">
                                             </span>
-                                            <input type="text" name="ad_mother_name" id="ad_mother_name" pattern="[a-zA-Z\s]{5,}" autocomplete="off" 
+                                            <input type="text" name="ad_mother_name" id="ad_mother_name" minlength="6" autocomplete="off" 
                                             placeholder="Name of Mother" ng-model="ad_mother_name" class="required"
                                             title="Enter the full name of your mother">
                                         </label>
@@ -220,7 +220,7 @@
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/bag-handle-outline.svg" alt="occupation">
                                             </span>
-                                            <input type="text" name="ad_mother_occupation" id="ad_mother_occupation" pattern="[a-zA-Z\s]{5,}" ng-model="ad_mother_occupation" 
+                                            <input type="text" name="ad_mother_occupation" id="ad_mother_occupation" minlength="5" ng-model="ad_mother_occupation" 
                                             title="Enter the occupation of your mother" class="required"
                                             placeholder="Mother's Occupation*">
                                         </label>
@@ -228,7 +228,7 @@
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/man_woman.png" alt="">
                                             </span>
-                                            <input type="text" name="ad_guardian_name" id="ad_guardian_name" pattern="[a-zA-Z\s]{5,}" autocomplete="off" 
+                                            <input type="text" name="ad_guardian_name" id="ad_guardian_name" minlength="5" autocomplete="off" 
                                             placeholder="Name of Guardian" ng-model="ad_guardian_name" class="required"
                                             title="Enter the full name of your guardian">
                                         </label>
@@ -529,7 +529,7 @@
                                                 <span>Interests</span>
                                             </div>
                                             <div class="value" id="interest_value">
-                                                <span>{{interest}}</span>
+                                                <span id="res_ad_interest"></span>
                                             </div>
                                         </div>
                                     </div>

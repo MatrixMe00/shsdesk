@@ -8,6 +8,8 @@ function payWithPaystack(){
         cust_email = "successinnovativehub@gmail.com";
     }
 
+    ref = "";
+
     //for testing purposes
     if($("#pay_fullname").val().toLowerCase() == "shsdesk"){
         mykey = "pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca";
@@ -39,7 +41,8 @@ function payWithPaystack(){
             ]
         },
         callback: function(response){
-            alert('Payment was successful. Your transaction reference is ' + response.reference + ". Save this value at a safe place");
+            //send an sms
+            sendSMS(ref);
 
             //parse data into database
             passPaymentToDatabase(response.reference);
@@ -50,6 +53,33 @@ function payWithPaystack(){
         }
     });
     handler.openIframe();
+}
+
+function sendSMS(reference){
+    //send transaction id as an sms
+    phone = $("#pay_phone").val().replace("+","");
+    message = "Your payment was successful. Your transaction reference is " + reference + ". You can use this if you experience a " + 
+    "problem while filling your form and would want to try again";
+
+    dataString = "submit=sendTransaction&phone=" + phone + "&message=" + message;
+
+    $.ajax({
+        url: "sms/smsNew.php",
+        data: dataString,
+        type: "POST",
+        dataType: "json",
+        success: function(response){
+            response1 = JSON.parse(JSON.stringify(response));
+            if(response1["status"] == "success"){
+                alert("SMS sent successfully");
+            }else{
+                alert('An sms could not be sent, but payment was successful. Your transaction reference is ' + reference + ". Save this value at a safe place");
+            }
+        },
+        error: function(){
+            alert('An error occured while sending sms, but payment was successful. Your transaction reference is ' + reference + ". Save this value at a safe place");
+        }
+    })
 }
 
 //function to pass data into database

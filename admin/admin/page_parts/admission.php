@@ -120,10 +120,11 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                 class="tinymce" title="Body of admission letter ">
                 <?php 
                 //remove visible escape characters
-                $message = str_replace("\\r", "", $schoolDetail["admissionPath"]);
+                $message = $schoolDetail["admissionPath"];
+                /*$message = str_replace("\\r", "", $schoolDetail["admissionPath"]);
                 $message = str_replace("\\n", "", $message);
                 $message = str_replace("\\", "", $message);
-                $message = str_replace("<p></p>","", $message);
+                $message = str_replace("<p></p>","", $message);*/
                 
                 echo  $message;
                 

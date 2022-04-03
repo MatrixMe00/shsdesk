@@ -35,7 +35,41 @@
             $_SESSION["ad_stud_residence"] = $student["boardingStatus"];
             $_SESSION["ad_stud_program"] = $student["programme"];
             $_SESSION["ad_stud_gender"] = $student["Gender"];
-            $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"])["title"];
+            
+            $houses = fetchData("COUNT(title) as total","houses", "schoolID=".$student["schoolID"], false)["total"];
+            
+            if(intval($houses) > 0){
+                //check if student is allocated a house
+                $allocated = fetchData("indexNumber","house_allocation","indexNumber='".$_GET["indexNumber"]."'");
+                
+                if(!is_array($allocated)){
+                    //insert data into database
+                    $sql = "INSERT INTO `house_allocation` (`indexNumber`, `schoolID`, `studentLname`, `studentOname`, `houseID`, `studentYearLevel`, `studentGender`, `boardingStatus`) VALUES (?, ?, ?, ?, NULL, 1, ?, ?)";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("sissss",$_GET["indexNumber"], $student["schoolID"], $student["Lastname"], $student["Othernames"], $student["Gender"], $student["boardingStatus"]);
+                    $stmt->execute();
+                    
+                    $houses = 0;
+                }else{
+                    $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"])["title"];
+                }
+                
+            }else{
+                //check if student is allocated a house
+                $allocated = fetchData("indexNumber","house_allocation","indexNumber='".$_GET["indexNumber"]."'");
+                
+                if(!is_array($allocated)){
+                    //insert data into database
+                    $sql = "INSERT INTO `house_allocation` (`indexNumber`, `schoolID`, `studentLname`, `studentOname`, `houseID`, `studentYearLevel`, `studentGender`, `boardingStatus`) VALUES (?, ?, ?, ?, NULL, 1, ?, ?)";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("sissss",$_GET["indexNumber"], $student["schoolID"], $student["Lastname"], $student["Othernames"], $student["Gender"], $student["boardingStatus"]);
+                    $stmt->execute();
+                }
+            }
+        }else{
+            if(!isset($_SESSION["ad_stud_house"])){
+                $houses = 0;
+            }
         }
 ?>
 <head>
@@ -84,11 +118,19 @@
                 <button id="btn_pros">Prospectus is ready for download | Download [PDF]</button>
             </a>
         </div>
+        <?php if($houses > 0){?>
         <div class="member_div">
             <a href="<?php echo $url?>/customPdfGenerator.php" rel="nofollow">
                 <button id="btn_ad">Admission letter is ready for download | Download [PDF]</button>
             </a>
         </div>
+        <?php }else{ ?>
+        <div class="member_div">
+            <span>
+                <button>Sorry, admission letter not ready, please try again at a later time</button>
+            </span>
+        </div>
+        <?php } ?>
         <?php if(!isset($_GET["indexNumber"])){ ?>
         <div class="member_div">
             <span>You can visit <a href="<?php echo "$url/student"?>">www.shsdesk.com/student</a> to download your documents at a later time.</span>

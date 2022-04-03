@@ -191,72 +191,86 @@
                             $house = array_merge($house, $new);
                         }
 
-                        //search for last house allocation entry for this gender
-                        $sql = "SELECT houseID
-                            FROM house_allocation
-                            WHERE schoolID = $shs_placed AND (studentGender='$ad_gender' OR studentGender='Both')
-                            ORDER BY indexNumber DESC
-                            LIMIT 1";
-                        $result = $connect->query($sql);
+                        // //search for last house allocation entry for this gender
+                        // $sql = "SELECT houseID
+                        //     FROM house_allocation
+                        //     WHERE schoolID = $shs_placed AND (studentGender='$ad_gender' OR studentGender='Both')
+                        //     ORDER BY indexNumber DESC
+                        //     LIMIT 1";
+                        // $result = $connect->query($sql);
 
-                        $hid = $result->fetch_assoc()["houseID"];
+                        // $hid = $result->fetch_assoc()["houseID"];
 
                         //fetch student details for entry from cssps
                         $student_details = fetchData("*", "cssps", "indexNumber='$ad_index'");
 
-                        if($result->num_rows == 1){
-                            //retrieve last house id given out
-                            $id = $hid;
+                        //get last index number to successfully register
+                        $last_student = fetchData("indexNumber","enrol_table","shsID=$shs_placed AND gender= '$ad_gender'",true);
+                        
+                        if(is_array($last_student)){
+                            $last_student = $last_student["indexNumber"];
+                        
+                            //search for last house allocation entry for this gender
+                            $sql = "SELECT houseID
+                                FROM house_allocation
+                                WHERE indexNumber='$last_student'";
+                            $result = $connect->query($sql);
+                        
+                            $hid = $result->fetch_assoc()["houseID"];
 
-                            //set variable to receive next allocating house
-                            $next_room = 0;
-
-                            for($i = 0; $i < $total; $i++){
-                                //try choosing the next or current house
-                                if($house[$i]["id"] == $id){
-                                    //fetch totals
-                                    if($i+1 < $total){
-                                        $nid = $house[$i+1]["id"];
-                                        $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
-                                    }elseif($i-1 < $total){
-                                        $nid = $house[$i-1]["id"];
-                                        $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
-                                    }elseif($i+1 == $total){
-                                        $nid = $house[$i+1]["id"];
-                                        $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
-                                    }
-
-                                    //check immediate available houses
-                                    if($i+1 < $total && $ttl < $house[$i+1]["totalHeads"]){
-                                        $next_room = $house[$i+1]["id"];
-                                    }elseif($i-1 >= 0 && $ttl < $house[$i-1]["totalHeads"]){                                            
-                                        $next_room = $house[$i-1]["id"];
-                                    }elseif($i+1 == $total && $ttl < $house[0]["totalHeads"]){
-                                        $next_room = $house[0]["id"];
-                                    }
-                                    
-                                    if($next_room > 0){
-                                        break;
+                            if($result->num_rows == 1){
+                                //retrieve last house id given out
+                                $id = $hid;
+    
+                                //set variable to receive next allocating house
+                                $next_room = 0;
+    
+                                for($i = 0; $i < $total; $i++){
+                                    //try choosing the next or current house
+                                    if($house[$i]["id"] == $id){
+                                        //fetch totals
+                                        if($i+1 < $total){
+                                            $nid = $house[$i+1]["id"];
+                                            $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
+                                        }elseif($i-1 < $total){
+                                            $nid = $house[$i-1]["id"];
+                                            $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
+                                        }elseif($i+1 == $total){
+                                            $nid = $house[$i+1]["id"];
+                                            $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
+                                        }
+    
+                                        //check immediate available houses
+                                        if($i+1 < $total && $ttl < $house[$i+1]["totalHeads"]){
+                                            $next_room = $house[$i+1]["id"];
+                                        }elseif($i-1 >= 0 && $ttl < $house[$i-1]["totalHeads"]){                                            
+                                            $next_room = $house[$i-1]["id"];
+                                        }elseif($i+1 == $total && $ttl < $house[0]["totalHeads"]){
+                                            $next_room = $house[0]["id"];
+                                        }
+                                        
+                                        if($next_room > 0){
+                                            break;
+                                        }
                                     }
                                 }
-                            }
-
+    
                                 //parse entry into allocation table
                                 $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
                                     VALUES(?,?,?,?,?,?,?)";
                                 $stmt = $connect->prepare($sql);
                                 $stmt->bind_param("sississ", $student_details["indexNumber"], $student_details["schoolID"], $student_details["Lastname"], $student_details["Othernames"],
-                                    $next_room, $student_details["Gender"], $student_details["boardingStatus"]);
-                                $stmt->execute();
-                            }elseif($result->num_rows == 0){
-                                //this is the first entry, place student into house
-                                $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
-                                    VALUES(?,?,?,?,?,?,?)";
-                                $stmt = $connect->prepare($sql);
-                                $stmt->bind_param("sississ", $student_details["indexNumber"], $student_details["schoolID"], $student_details["Lastname"], $student_details["Othernames"],
-                                    $house[0]["id"], $student_details["Gender"], $student_details["boardingStatus"]);
+                                $next_room, $student_details["Gender"], $student_details["boardingStatus"]);
                                 $stmt->execute();
                             }
+                        }elseif($result->num_rows == 0){
+                            //this is the first entry, place student into house
+                            $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
+                                VALUES(?,?,?,?,?,?,?)";
+                            $stmt = $connect->prepare($sql);
+                            $stmt->bind_param("sississ", $student_details["indexNumber"], $student_details["schoolID"], $student_details["Lastname"], $student_details["Othernames"],
+                                $house[0]["id"], $student_details["Gender"], $student_details["boardingStatus"]);
+                            $stmt->execute();
                         }
                     }
 
@@ -296,7 +310,7 @@
                     $message = "Your data could not be saved. Error is ". $result->error;
                 }
             }
-
+        }
             echo $message;
         }elseif($submit == "send_contact" || $submit == "send_contact_ajax"){
             $fullname = mysqli_real_escape_string($connect, $_POST['fullname']);
@@ -430,7 +444,31 @@
             }else{
                 echo "error";
             }
+        }elseif($submit == "trackTransaction"){
+            //receive data from data string
+            $transaction_id = $_POST["transaction_id"];
+            $contact_number = $_POST["contact_number"];
+            $school = $_POST["school"];
+            $amount = $_POST["amount"];
+            $deduction = $_POST["deduction"];
+            $contact_email = $_POST["contact_email"];
+            $contact_name = $_POST["contact_name"];
+            $trans_time = date("Y-m-d H:i:s");
 
+            //prepare and bind parameters
+            $query = "INSERT INTO transaction (transactionID, contactNumber, schoolBought, amountPaid, contactName, contactEmail, Deduction, Transaction_Date) VALUES (?,?,?,?,?,?,?,?)";
+            $result = $connect->prepare($query);
+            $result->bind_param("ssidssds", $transaction_id, $contact_number, $school, $amount, $contact_name, $contact_email, $deduction, $trans_time);
+
+            //check for successful execution
+            if($result->execute()){
+                echo "success";
+
+                //add admin number
+                echo "-".getSchoolDetail($school, true)["techContact"];
+            }else{
+                echo "database_send_error";
+            }
         }
     }elseif(isset($_GET['submit'])){
         $submit = $_GET["submit"];
