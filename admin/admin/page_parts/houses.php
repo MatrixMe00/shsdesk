@@ -10,6 +10,14 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     //set nav_point session
     $_SESSION["nav_point"] = "House";
     }
+
+    //check if current school is a day school
+    $isDay = getSchoolDetail($user_school_id, true)["residence_status"];
+    if($isDay == "day"){
+        $isDay = true;
+    }else{
+        $isDay = false;
+    }
 ?>
 
 <section class="section_container">
@@ -32,7 +40,11 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Male' AND boardingStatus = 'Boarder'");
+                    if($isDay){
+                        $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Male' AND boardingStatus = 'Day'");
+                    }else{
+                        $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Male' AND boardingStatus = 'Boarder'");
+                    }                    
                     
                     echo $res->num_rows;
                 ?>
@@ -47,7 +59,11 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Female' AND boardingStatus = 'Boarder'");
+                    if($isDay){
+                        $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Female' AND boardingStatus = 'Day'");
+                    }else{
+                        $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Female' AND boardingStatus = 'Boarder'");
+                    }                    
                     
                     echo $res->num_rows;
                 ?>
@@ -57,8 +73,8 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
             <span>Females Allocated Houses</span>
         </div>
     </div>
-
-    <div class="content" style="background-color: #dc3545">
+    
+    <?php if(!$isDay){?><div class="content" style="background-color: #dc3545">
         <div class="head">
             <h2>
                 <?php
@@ -71,7 +87,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         <div class="body">
             <span>Day Students</span>
         </div>
-    </div>
+    </div><?php } ?>
 </section>
 
 <section class="flex flex-wrap flex-center-align">
@@ -121,10 +137,17 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <td><?php echo $row["maleTotalRooms"] ?></td>
                     <td><?php echo $row["maleHeadPerRoom"] ?></td>
                     <td>
-                        <?php 
-                            $sql = "SELECT COUNT(indexNumber) AS total
+                        <?php
+                            if($isDay){
+                                $sql = "SELECT COUNT(indexNumber) AS total
+                                    FROM house_allocation
+                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Day' AND studentGender='Male'";
+                            }else{
+                                $sql = "SELECT COUNT(indexNumber) AS total
                                     FROM house_allocation
                                     WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Boarder' AND studentGender='Male'";
+                            }
+                            
                             $query = $connect->query($sql);
                             
                             $tot = $query->fetch_assoc()["total"];
@@ -152,9 +175,16 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <td><?php echo $row["femaleHeadPerRoom"] ?></td>
                     <td>
                         <?php 
-                            $sql = "SELECT COUNT(indexNumber) AS total
+                            if($isDay){
+                                $sql = "SELECT COUNT(indexNumber) AS total
                                     FROM house_allocation
                                     WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Boarder' AND studentGender='Female'";
+                            }else{
+                                $sql = "SELECT COUNT(indexNumber) AS total
+                                    FROM house_allocation
+                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Boarder' AND studentGender='Female'";
+                            }
+                            
                             $query = $connect->query($sql);
                             
                             $tot = $query->fetch_assoc()["total"];
@@ -196,9 +226,16 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <td><?php echo $headPerRoom ?></td>
                     <td>
                         <?php 
-                            $sql = "SELECT COUNT(indexNumber) AS total
+                            if($isDay){
+                                $sql = "SELECT COUNT(indexNumber) AS total
+                                    FROM house_allocation
+                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Day'";
+                            }else{
+                                $sql = "SELECT COUNT(indexNumber) AS total
                                     FROM house_allocation
                                     WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Boarder'";
+                            }
+                            
                             $query = $connect->query($sql);
                             
                             $tot = $query->fetch_assoc()["total"];

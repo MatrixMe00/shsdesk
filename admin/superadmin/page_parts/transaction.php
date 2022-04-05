@@ -164,6 +164,10 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <button type="submit" name="submit" value="search_transaction">Search</button>
                 </label>
             </div>
+            <label for="contact" class="checkbox">
+                <input type="checkbox" name="contact" id="contact">
+                <span class="span_title">Search By Contact Number</span>
+            </label>
         </div>
     </form>
 </section>
@@ -174,7 +178,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     </div>
     <div class="body empty flex-column">
         <p>Desired transaction id seems not to exist in the system</p>
-        <span>Click <span style="color: blue" id="new_trans">Here</span> to create a new transation</span>
+        <span>Click <span style="color: blue; cursor:pointer" id="new_trans">Here</span> to create a new transation</span>
     </div>
     <div class="body" id="response">
     </div>
@@ -240,6 +244,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 
     $("section#search .search button[name=submit]").click(function(){
         search = $("section#search .search input[name=txt_search]").val();
+        contactSearch = $("section#search .body label[for=contact] input").prop("checked");
 
         $("section#results").show();
         if(search === ""){
@@ -251,7 +256,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         }else{
             $.ajax({
                 url: "superadmin/submit.php",
-                data: "submit=search_transaction&txt_search=" + search,
+                data: "submit=search_transaction&txt_search=" + search + "&searchByContact=" + contactSearch,
                 dataType: "html",
                 beforeSend: function(){
                     $("#results .empty").hide();
@@ -267,11 +272,11 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     }
                 }
             })
-        }        
+        }
     })
 
     //function to autorefresh transaction box
-    function ajaxCall(){
+    function ajaxCall(name, data){
         $.ajax({
                 url: "superadmin/submit.php",
                 data: "submit=currentTransactionCount",
@@ -284,8 +289,9 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     $("#trans_left h2").html(data["trans_left"]);
                 },
                 error: function(e){
-                    console.log(JSON.stringify(e));
-                    clearInterval();
+                    e = JSON.parse(JSON.stringify(e));
+                    console.log(e["statusText"]);
+                    clearInterval(this);
                 }
             })
     }
@@ -298,7 +304,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     autoRefresh();
 
     //display or hide search or new transaction sections
-    $("button#transaction_new_btn").click(function(){
+    $("button#transaction_new_btn, span#new_trans").click(function(){
         $("section#new_transaction").show();
         $("section#search, section#results").hide();
         $("button#btn_close").show();

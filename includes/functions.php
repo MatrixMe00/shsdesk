@@ -472,7 +472,7 @@
      * @param string $name The name of the person to be formated
      * @return string formated name
      */
-    function formatName(string $name){
+    function formatName($name){
         //separate them by spaces
         $new_name = explode(" ",$name);
 
@@ -527,7 +527,7 @@
 
         return $temp_name;
     }
-
+    
     /**
      * This function is used to add a suffix to numbers
      * @param $value This receives the value to be changed
@@ -568,5 +568,85 @@
         }
     
         return $final;
+    }
+    
+    /**
+     * Function to automatically set houses for students
+     * 
+     * @param string $ad_gender This receives the gender of the student
+     * @param integer $shs_placed This receives the id of the school placed
+     * @param string $ad_index This receives the index number of the student
+     * @param array $house Receives an array of houses
+     * 
+     * @return integer $next_room Returns the integer value for next room to be allocated to student
+    */
+    function setHouse($ad_gender, $shs_placed, $ad_index, $house){
+        global $connect;
+        $next_room = 0;
+    
+        $total = count($house);
+    
+        //get last index number to successfully register
+        $last_student = fetchData("indexNumber","enrol_table","shsID=$shs_placed AND gender='$ad_gender' AND indexNumber != '$ad_index' ORDER BY enrolDate DESC");
+    
+        if(is_array($last_student)){
+            $last_student = $last_student["indexNumber"];
+    
+            //search for last house allocation entry for this gender
+            $sql = "SELECT houseID
+                FROM house_allocation
+                WHERE indexNumber='$last_student'";
+            $result = $connect->query($sql);
+    
+            $hid = $result->fetch_assoc()["houseID"];
+    
+            if($result->num_rows == 1){
+                //retrieve last house id given out
+                $id = $hid;
+                $next_room = 0;
+        
+                for($i = 0; $i < $total; $i++){
+                    //try choosing the next, previous or current house
+                    if($house[$i]["id"] == $id){
+                        while(!$next_room){
+                            if($i+1 == $total){
+                                $nid = $house[$i]["id"];
+                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
+                            }elseif($i+1 < $total){
+                                $nid = $house[$i+1]["id"];
+                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
+                            }elseif($i-1 < $total){
+                                $nid = $house[$i-1]["id"];
+                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
+                            }
+    
+                            //check immediate available houses
+                            if($i+1 < $total && $ttl < $house[$i+1]["totalHeads"]){
+                                $next_room = $house[$i+1]["id"];
+                            }elseif($i-1 < 0 && $ttl < $house[$total-1]["totalHeads"]){
+                                $next_room = $house[$total-1]["id"];
+                            }elseif($i-1 >= 0 && $ttl < $house[$i-1]["totalHeads"]){                                            
+                                $next_room = $house[$i-1]["id"];
+                            }elseif($i+1 == $total && $ttl < $house[0]["totalHeads"]){
+                                $next_room = $house[0]["id"];
+                            }
+    
+                            $i++;
+    
+                            //start from 0 if end is reached but no house
+                            if($i+1 == $total-1 && !$next_room){
+                                $i = 0;
+                            }
+                        }
+                    }
+    
+                    if($next_room > 0){
+                        break;
+                    }
+                }
+            }
+        }
+    
+        return $next_room;
     }
 ?>

@@ -1,3 +1,11 @@
+//reference id tracker
+reference_parsed = false;
+payment_received = false;
+transaction_reference = "";
+
+//variable to be used for tracking
+trackKeeper = null;
+
 function payWithPaystack(){
     //0551234987
     cust_amount = $("#pay_amount").val().split(" ");
@@ -7,8 +15,6 @@ function payWithPaystack(){
     if(cust_email == ""){
         cust_email = "successinnovativehub@gmail.com";
     }
-
-    ref = "";
 
     //for testing purposes
     if($("#pay_fullname").val().toLowerCase() == "shsdesk"){
@@ -41,18 +47,101 @@ function payWithPaystack(){
             ]
         },
         callback: function(response){
-            //send an sms
-            sendSMS(ref);
+            //mark that payment has been received
+            payment_received = true;
 
             //parse data into database
             passPaymentToDatabase(response.reference);
             // $('#admission').removeClass(`no_disp`);
+
+            //store reference into memory
+            transaction_reference = response.reference;
         },
         onClose: function(){
             alert('Transaction has been canceled by user');
         }
     });
     handler.openIframe();
+}
+
+function trackTransactions(reference = ""){
+    if(!reference_parsed){
+        fullname = $("#pay_fullname").val();
+        email = $("#pay_email").val();
+        phone = $("#pay_phone").val();
+
+        amount = $("#pay_amount").val().split(" ");
+        amount = amount[1];
+
+        deduction = parseFloat((((1.95/100) + Number.EPSILON) * parseInt(amount)).toFixed(2));
+        
+        //get the selected school name and id
+        school_name = $("#school_admission_case #school_select option:selected").html();
+        school_id = $("#student #school_admission_case label #school_select").val();
+
+        if(school_id > 0){
+            dataString = "transaction_id=" + reference + "&contact_number=" + phone + "&school=" + school_id + "&amount=" + amount + "&deduction=" + 
+                        deduction + "&contact_email=" + email + "&contact_name=" + fullname + "&submit=trackTransaction";
+
+            $.ajax({
+                url: $("form[name=paymentForm]").attr("action"),
+                type: "POST",
+                dataType: "text",
+                data: dataString,
+                cache: false,
+                async: false,
+                success: function(response){
+                    if(response.includes("success")){
+                        //pass transaction id to admission form
+                        $("#ad_transaction_id").val(reference);
+
+                        //signal that reference has been parsed
+                        reference_parsed = true;
+
+                        message = "Form could not open automatically. Please enter your transaction reference to open it.";
+                        messageBoxTimeout("paymentForm", message, "load", 0);
+                    }else if(response.includes("already-exist")){
+                        //signal that reference is already parsed
+                        reference_parsed = true;
+                    }
+                },
+                error: function(e){
+                    e = JSON.parse(JSON.stringify(e));
+                    message = e["statusText"];
+
+                    //enable only the transaction_id section
+                    $("#pay_fullname, #pay_email, #pay_phone").prop("disabled", true);
+
+                    $("#pay_reference").prop("disabled", false);
+
+                    messageBoxTimeout("paymentForm",message, "error");
+
+                    exit(1);
+                }
+            })
+        }
+    }
+
+    return reference_parsed;
+}
+
+function reCheck(){
+    if(transaction_reference != ""){
+        reference_parsed = trackTransactions(transaction_reference);
+    }
+
+    if(reference_parsed){
+        //send an info to console
+        console.log(transaction_reference + " successfully captured");
+        
+        //reset references
+        reference_parsed = false;
+        payment_received = false;
+        transaction_reference = "";        
+
+        //stop interval check
+        clearInterval(trackKeeper);
+    }
 }
 
 function sendSMS(reference){
@@ -112,6 +201,9 @@ function passPaymentToDatabase(reference){
                 if(response.includes("success")){
                     //pass transaction id to admission form
                     $("#ad_transaction_id").val(reference);
+                    
+                    //send an sms
+                    // sendSMS(reference);
 
                     //pass admin number into admission form
                     cont = response.split("-")[1];
@@ -119,6 +211,9 @@ function passPaymentToDatabase(reference){
                             "Finding trouble? Contact the admin via <a href='tel:" + cont + 
                             "' style='color: blue'>" + cont + "</a></p>";
                     $("#admission #form_footer").html(html);
+
+                    //check if transaction id is present
+                    trackKeeper = setInterval(reCheck, 3000);
 
                     //display admission form
                     $('#admission').removeClass(`no_disp`);

@@ -310,8 +310,18 @@
             echo $message;
         }elseif($submit == "search_transaction"){
             $search = $_REQUEST['txt_search'];
-            $sql = "SELECT transactionID, contactName, contactNumber, contactEmail, schoolBought, Transaction_Date, Transaction_Expired
+            $contactSearch = $_REQUEST["searchByContact"];
+
+            if($contactSearch){
+                $sql = "SELECT transactionID, contactName, contactNumber, contactEmail, schoolBought, Transaction_Date, Transaction_Expired, Transaction_Date
+                    FROM transaction WHERE contactNumber LIKE '%$search%'";
+            }else{
+                $sql = "SELECT transactionID, contactName, contactNumber, contactEmail, schoolBought, Transaction_Date, Transaction_Expired, Transaction_Date
                 FROM transaction WHERE transactionID LIKE '%$search%'";
+            }
+
+            $sql .= " ORDER BY Transaction_Expired ASC";
+            
             $result = $connect->query($sql);
 
             if($result->num_rows > 0){
@@ -354,11 +364,18 @@
                         disabled value="<?php echo $row["contactEmail"] ?>"/>
                     </label>
                 </div>
-                <label for="school">
-                    <select name="school" id="school" disabled>
-                        <option value="<?php echo $row["schoolBought"]?>"><?php echo getSchoolDetail(intval($row["schoolBought"]))["schoolName"]?></option>
-                    </select>
-                </label>
+                <div class="joint">
+                    <label for="school">
+                        <select name="school" id="school" disabled>
+                            <option value="<?php echo $row["schoolBought"]?>"><?php echo getSchoolDetail(intval($row["schoolBought"]))["schoolName"]?></option>
+                        </select>
+                    </label>
+                    <label for="bought">
+                        <input type="text" name="bought" id="bought" value="Paid on <?php echo date("jS M, Y \a\\t H:i:s", strtotime($row["Transaction_Date"]))?>"
+                        disabled>
+                    </label>
+                </div>
+                
                 <input type="hidden" name="amount" value="30">
                 <input type="hidden" name="deduction" value="0.59">
             </div>

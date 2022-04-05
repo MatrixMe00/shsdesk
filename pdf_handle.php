@@ -36,24 +36,10 @@
             $_SESSION["ad_stud_program"] = $student["programme"];
             $_SESSION["ad_stud_gender"] = $student["Gender"];
             
-            $houses = fetchData("COUNT(title) as total","houses", "schoolID=".$student["schoolID"], false)["total"];
-            
-            if(intval($houses) > 0){
-                //check if student is allocated a house
-                $allocated = fetchData("indexNumber","house_allocation","indexNumber='".$_GET["indexNumber"]."'");
+            if(is_array(fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'"))){
+                $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"])["title"];
                 
-                if(!is_array($allocated)){
-                    //insert data into database
-                    $sql = "INSERT INTO `house_allocation` (`indexNumber`, `schoolID`, `studentLname`, `studentOname`, `houseID`, `studentYearLevel`, `studentGender`, `boardingStatus`) VALUES (?, ?, ?, ?, NULL, 1, ?, ?)";
-                    $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("sissss",$_GET["indexNumber"], $student["schoolID"], $student["Lastname"], $student["Othernames"], $student["Gender"], $student["boardingStatus"]);
-                    $stmt->execute();
-                    
-                    $houses = 0;
-                }else{
-                    $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"])["title"];
-                }
-                
+                $houses = 1;
             }else{
                 //check if student is allocated a house
                 $allocated = fetchData("indexNumber","house_allocation","indexNumber='".$_GET["indexNumber"]."'");
@@ -65,9 +51,29 @@
                     $stmt->bind_param("sissss",$_GET["indexNumber"], $student["schoolID"], $student["Lastname"], $student["Othernames"], $student["Gender"], $student["boardingStatus"]);
                     $stmt->execute();
                 }
+                
+                //set houses to 0
+                $houses = 0;
             }
         }else{
-            if(!isset($_SESSION["ad_stud_house"])){
+            if(is_array(fetchData("houseID","house_allocation","indexNumber='".$_SESSION["ad_stud_index"]."'"))){
+                $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$_SESSION["ad_stud_index"]."'")["houseID"])["title"];
+                
+                $houses = 1;
+            }else{
+                //check if student is allocated a house
+                $allocated = fetchData("indexNumber","house_allocation","indexNumber='".$_SESSION["ad_stud_index"]."'");
+                $student = fetchData("c.*, e.enrolCode","cssps c JOIN enrol_table e ON c.indexNumber = e.indexNumber", "c.indexNumber='".$_SESSION["ad_stud_index"]."'");
+                
+                if(!is_array($allocated)){
+                    //insert data into database
+                    $sql = "INSERT INTO `house_allocation` (`indexNumber`, `schoolID`, `studentLname`, `studentOname`, `houseID`, `studentYearLevel`, `studentGender`, `boardingStatus`) VALUES (?, ?, ?, ?, NULL, 1, ?, ?)";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("sissss",$_GET["indexNumber"], $student["schoolID"], $student["Lastname"], $student["Othernames"], $student["Gender"], $student["boardingStatus"]);
+                    $stmt->execute();
+                }
+                
+                //set houses to 0
                 $houses = 0;
             }
         }
