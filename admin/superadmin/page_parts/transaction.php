@@ -281,7 +281,6 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                 url: "superadmin/submit.php",
                 data: "submit=currentTransactionCount",
                 dataType: "json",
-                async: false,
                 success: function(data){
                     data = JSON.parse(JSON.stringify(data));
                     $("#trans_received h2").html(data["trans_received"]);
