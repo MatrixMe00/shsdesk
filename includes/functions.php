@@ -154,12 +154,12 @@
      * 
      * @param string $source This is the name of the image file to be compressed.
      * @param string $destination This is the name of the storage directory for the image file
-     * @param string $quality This is the quality of the image
+     * @param integer $quality This is the quality of the image
      * 
      * @return string The return value is the destination of the compressed image
      */
     function compress($source, $destination, $quality):string {
-
+        $image = null;
         $info = getimagesize($source);
     
         if ($info['mime'] == 'image/jpeg') 
@@ -257,9 +257,9 @@
      * This function will be used to check if the specified person is a new user or not
      * 
      * @param int $user_id This parameter receives the index of the user
-     * @return bool The return value is either a true (for new user) or a false (for not new user)
+     * @return bool|string The return value is either a true (for new user) or a false (for not new user)
      */
-    function checkNewUser($user_id):bool {
+    function checkNewUser($user_id) {
         global $connect;
         
         $sql = "SELECT new_login 
@@ -331,7 +331,7 @@
      *
      *  @return int returns total number of notifications requested
      */
-    function notificationCounter($audience = "all", $type = "all", $read = 0):int{
+    function notificationCounter($audience = "all", $type = "all", $read = false):int{
         global $connect;
 
         //variables that will be returned
@@ -588,10 +588,10 @@
     
         //get last index number to successfully register
         $last_student = fetchData("indexNumber","enrol_table","shsID=$shs_placed AND gender='$ad_gender' AND indexNumber != '$ad_index' ORDER BY enrolDate DESC");
-    
+        
         if(is_array($last_student)){
             $last_student = $last_student["indexNumber"];
-    
+            
             //search for last house allocation entry for this gender
             $sql = "SELECT houseID
                 FROM house_allocation
@@ -599,51 +599,78 @@
             $result = $connect->query($sql);
     
             $hid = $result->fetch_assoc()["houseID"];
+            
+            if(is_null($hid)){
+                //look for the last correctly placed student
+                $sql = "SELECT houseID FROM house_allocation WHERE schoolID=$shs_placed AND studentGender='$ad_gender' AND houseID IS NOT NULL ORDER BY indexNumber DESC LIMIT 1";
+                $result = $connect->query($sql);
+                
+                $hid = $result->fetch_assoc()["houseID"];
+            }
     
-            if($result->num_rows == 1){
+            if(!is_null($hid)){
                 //retrieve last house id given out
                 $id = $hid;
                 $next_room = 0;
         
                 for($i = 0; $i < $total; $i++){
+                    //checker variables
+                    $init_i = $i;
+                    $j = -1;
+                    
                     //try choosing the next, previous or current house
                     if($house[$i]["id"] == $id){
-                        while(!$next_room){
+                        $ttl = null;
+                        while($next_room < 1){
                             if($i+1 == $total){
-                                $nid = $house[$i]["id"];
-                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
+                                $nid = $house[0]["id"];
+                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND studentGender='$ad_gender' AND boardingStatus='Boarder'")["total"];
+                                $cur_ttl = $house[0]["totalHeads"];
                             }elseif($i+1 < $total){
                                 $nid = $house[$i+1]["id"];
-                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
+                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND studentGender='$ad_gender' AND boardingStatus='Boarder'")["total"];
+                                $cur_ttl = $house[$i+1]["totalHeads"];
                             }elseif($i-1 < $total){
                                 $nid = $house[$i-1]["id"];
-                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND boardingStatus='Boarder'")["total"];
+                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND studentGender='$ad_gender' AND boardingStatus='Boarder'")["total"];
+                                $cur_ttl = $house[$i-1]["totalHeads"];
+                            }elseif($i-1 < 0){
+                                $nid = $house[$total-1]["id"];
+                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND studentGender='$ad_gender' AND boardingStatus='Boarder'")["total"];
+                                $cur_ttl = $house[$total-1]["totalHeads"];
                             }
-    
+                            
                             //check immediate available houses
-                            if($i+1 < $total && $ttl < $house[$i+1]["totalHeads"]){
+                            if($i+1 == $total && $ttl < $cur_ttl){
+                                $next_room = $house[$i]["id"];
+                            }elseif($i+1 < $total && $ttl < $cur_ttl){
                                 $next_room = $house[$i+1]["id"];
-                            }elseif($i-1 < 0 && $ttl < $house[$total-1]["totalHeads"]){
-                                $next_room = $house[$total-1]["id"];
-                            }elseif($i-1 >= 0 && $ttl < $house[$i-1]["totalHeads"]){                                            
+                            }elseif(($i-1 >= 0 && $i-1 < $total) && $ttl < $cur_ttl){
                                 $next_room = $house[$i-1]["id"];
-                            }elseif($i+1 == $total && $ttl < $house[0]["totalHeads"]){
-                                $next_room = $house[0]["id"];
+                            }elseif($i-1 < 0 && $ttl < $cur_ttl){
+                                $next_room = $house[$total-1]["id"];
+                            }elseif($j == $init_i){
+                                //add student to first house
+                                $next_room = $house[$i]["id"];
                             }
     
                             $i++;
     
                             //start from 0 if end is reached but no house
-                            if($i+1 == $total-1 && !$next_room){
+                            if($i+1 == $total && $next_room < 1){
                                 $i = 0;
                             }
+                            
+                            $j = $i;
                         }
                     }
-    
+                    
                     if($next_room > 0){
                         break;
                     }
                 }
+            }else{
+                $next_room = $house[0]["id"];
             }
         }
     

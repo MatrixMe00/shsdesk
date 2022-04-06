@@ -267,8 +267,8 @@
             $cont_number = $_REQUEST["cont_number"];
             $cont_email = $_REQUEST["cont_email"];
             $school = $_REQUEST["school"];
-            $amount = $_REQUEST["amount"];
-            $deduction = $_REQUEST["deduction"];
+            $amount = 30.00;
+            $deduction = 0.59;
             $cont_name = $_REQUEST["cont_name"];
             $trans_date = date("Y-m-d H:i:s");
 
@@ -308,11 +308,40 @@
             }
 
             echo $message;
+        }elseif($submit == "currentTransactionCount"){
+            $response = array();
+            $sql = "SELECT COUNT(transactionID) as total FROM transaction";
+            $result = $connect->query($sql);
+            
+            //total transaction count
+            $response = array(
+                "trans_received" => $result->fetch_assoc()["total"]
+            );
+
+            $sql = "SELECT COUNT(transactionID) as total FROM transaction
+                WHERE Transaction_Expired=TRUE";
+            $result = $connect->query($sql);
+            
+            //total transaction expired
+            $response += array(
+                "trans_expired" => $result->fetch_assoc()["total"]
+            );
+
+            $sql = "SELECT COUNT(transactionID) as total FROM transaction
+                WHERE Transaction_Expired=FALSE";
+            $result = $connect->query($sql);
+            
+            //total transaction not expired
+            $response += array(
+                "trans_left" => $result->fetch_assoc()["total"]
+            );
+
+            echo json_encode($response);
         }elseif($submit == "search_transaction"){
             $search = $_REQUEST['txt_search'];
             $contactSearch = $_REQUEST["searchByContact"];
 
-            if($contactSearch){
+            if($contactSearch == "true"){
                 $sql = "SELECT transactionID, contactName, contactNumber, contactEmail, schoolBought, Transaction_Date, Transaction_Expired, Transaction_Date
                     FROM transaction WHERE contactNumber LIKE '%$search%'";
             }else{
@@ -385,35 +414,6 @@
             }else{
                 echo "not-found";
             }
-        }elseif($submit == "currentTransactionCount"){
-            $response = array();
-            $sql = "SELECT COUNT(transactionID) as total FROM transaction";
-            $result = $connect->query($sql);
-            
-            //total transaction count
-            $response = array(
-                "trans_received" => $result->fetch_assoc()["total"]
-            );
-
-            $sql = "SELECT COUNT(transactionID) as total FROM transaction
-                WHERE Transaction_Expired=TRUE";
-            $result = $connect->query($sql);
-            
-            //total transaction expired
-            $response += array(
-                "trans_expired" => $result->fetch_assoc()["total"]
-            );
-
-            $sql = "SELECT COUNT(transactionID) as total FROM transaction
-                WHERE Transaction_Expired=FALSE";
-            $result = $connect->query($sql);
-            
-            //total transaction not expired
-            $response += array(
-                "trans_left" => $result->fetch_assoc()["total"]
-            );
-
-            echo json_encode($response);
         }
     }else{
         echo "no-submission";
