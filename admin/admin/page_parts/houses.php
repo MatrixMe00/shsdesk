@@ -157,6 +157,8 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <td><?php 
                         if($tot == ($row["maleHeadPerRoom"] * $row["maleTotalRooms"])){
                             echo "Full";
+                        }elseif($tot > ($row["maleHeadPerRoom"] * $row["maleTotalRooms"])){
+                            echo "Overboard";
                         }else{
                             echo "Not Full";
                         }
@@ -194,6 +196,8 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <td><?php 
                         if($tot == ($row["femaleHeadPerRoom"] * $row["femaleTotalRooms"])){
                             echo "Full";
+                        }elseif($tot > ($row["femaleHeadPerRoom"] * $row["femaleTotalRooms"])){
+                            echo "Overboard";
                         }else{
                             echo "Not Full";
                         }
@@ -245,6 +249,8 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <td><?php 
                         if($tot == ($headPerRoom * $totalRooms)){
                             echo "Full";
+                        }elseif($tot > ($headPerRoom * $totalRooms)){
+                            echo "Overboard";
                         }else{
                             echo "Not Full";
                         }
