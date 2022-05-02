@@ -210,6 +210,14 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             </div>
             <div id="foot">
                 <div class="menu">
+                    <div class="item" data-url="<?php echo $url?>/admin/trans.php" name="Payments" title="Payments">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/cash-outline.svg" alt="payment" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Payments</span>
+                        </div>
+                    </div>
                     <div class="item" name="account" title="Account Update" data-url="<?php echo $url?>/admin/admin/page_parts/person.php">
                         <div class="icon">
                             <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="" />

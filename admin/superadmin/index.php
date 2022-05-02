@@ -107,6 +107,14 @@
                             <span>Track Transactions</span>
                         </div>
                     </div>
+                    <div class="item" data-url="<?php echo $url?>/admin/trans.php" name="Payments" title="Payments">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/cash-outline.svg" alt="payment" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Payments</span>
+                        </div>
+                    </div>
                 </div>
     
                 <!--Page Setups-->

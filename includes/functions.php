@@ -676,4 +676,20 @@
     
         return $next_room;
     }
+
+    /**
+     * The purpose of this function is to get the total amount of money made by a school
+     * 
+     * @param integer $user_role This takes the role of the user or admin
+     * @param integer $schoolID This is the ID of the school of the user
+     * 
+     * @return float returns the total amount of money made by the user
+     */
+    function getTotalMoney($user_role,$schoolID):float{
+        global $connect;
+
+        $sql = "SELECT SUM(amount) as amountSum FROM payment WHERE user_role = $user_role AND school_id = $schoolID AND status = 'Sent'";
+
+        return $connect->query($sql)->fetch_assoc()["amountSum"] != null ? $connect->fetch_assoc()["amountSum"] : 0.00;
+    }
 ?>

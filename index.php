@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="assets/styles/admissionForm.css?v=<?php echo time()?>">
 
     <!--Payment script-->
-    <script src="https://js.paystack.co/v1/inline.js" async></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>
@@ -29,7 +29,7 @@
     
       gtag('config', 'G-W7MF3JTHJ1');
     </script>
-
+    
     <style>
         #message_us{
             padding: 1em; position: fixed; bottom: 5vh; left: 3vw; 
@@ -38,8 +38,10 @@
         #video .head{padding-top: 10px;padding-bottom: 10px;}
         #video .body{padding-bottom: 10px;}
         #video video{max-width: 640px;}
+        #video_download{padding: 0.7em 1em; cursor: pointer;}
+        #video_download:hover{background-color: lightgrey;}
+        #download_register{display: inline-block;}
         @media screen and (max-width: 480px){#message_us{font-size: small;}}
-        select#school_select{border: none; border-image: none;}
     </style>
 </head>
 <body ng-app="index_application" id="index_main">
@@ -144,7 +146,7 @@
                 </div>
                 <div class="desc">
                     <div class="figure">
-                        <span><?php echo $cssps ?></span>
+                        <span><?php echo numberShortner($cssps)."<b>+</b>" ?></span>
                     </div>
                     <div class="text">
                         <span>Students Admitted</span>
@@ -162,7 +164,7 @@
                 </div>
                 <div class="desc">
                     <div class="figure">
-                    <span><?php echo $system ?></span>
+                    <span><?php echo numberShortner($system)."<b>+</b>" ?></span>
                     </div>
                     <div class="text">
                         <span>Students Placed</span>
@@ -397,8 +399,8 @@
             </div>
         </section>
         <?php }?>
-
-        <section id="video">
+        
+        <section id="video" class="light">
             <div class="head">
                 <h3>How to Register your details</h3>
             </div>
@@ -410,11 +412,18 @@
                     <source src="<?php echo $url?>/assets/file/How-To-Register.mp4" type="video/mp4">
                     Video not supported by browser
                 </video>
+                
             </div>
+            <div id="download_register">
+                <a href="<?php echo $url?>/assets/file/How-To-Register.mp4" download>
+                    <span id="video_download" class="light">Download Video</span>
+                </a>
+            </div>
+            
         </section>
     </main>
-
-    <a href="https://wa.me/233247552852">
+    
+    <a href="https://wa.me/233200449223">
         <span id="message_us" class="primary">
             Message Us
         </span>

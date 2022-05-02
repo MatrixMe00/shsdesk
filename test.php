@@ -121,7 +121,7 @@ if($result->num_rows == 1){
                         // }
 
 //count number of houses of the school
-$sql = "SELECT id, maleHeadPerRoom, maleTotalRooms, femaleHeadPerRoom, femaleTotalRooms
+/*$sql = "SELECT id, maleHeadPerRoom, maleTotalRooms, femaleHeadPerRoom, femaleTotalRooms
 FROM houses
 WHERE schoolID = $shs_placed AND (gender = '$ad_gender' OR gender='Both')";
 $result = $connect->query($sql);
@@ -246,5 +246,7 @@ if($room > 0){
     echo "A room was provided";
 }else{
     echo "A new room has to be provided";
-}
+}*/
+
+echo getTotalMoney(3,1);
 ?>
