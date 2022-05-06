@@ -38,8 +38,7 @@
         $res = $connect->query($sql);
 
         if($res->num_rows > 0){
-            $row = $res->fetch_array();
-            $row = $row['title'];
+            $row = $res->fetch_array()["title"];
         }else{
             $row = "error";
         }
@@ -687,9 +686,19 @@
      */
     function getTotalMoney($user_role,$schoolID):float{
         global $connect;
+        $amount = 0;
 
         $sql = "SELECT SUM(amount) as amountSum FROM payment WHERE user_role = $user_role AND school_id = $schoolID AND status = 'Sent'";
+        $res = $connect->query($sql);
 
-        return $connect->query($sql)->fetch_assoc()["amountSum"] != null ? $connect->fetch_assoc()["amountSum"] : 0.00;
+        if($res->num_rows > 0){
+            $amount = $res->fetch_assoc()["amountSum"];
+        }
+
+        if(is_null($amount)){
+            $amount = 0;
+        }
+
+        return $amount;
     }
 ?>

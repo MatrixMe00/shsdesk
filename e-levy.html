@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="assets/scripts/jquery/compressed_jquery.js"></script>
+    <link rel="stylesheet" href="assets/styles/admin/admin_form.css">
+    <link rel="stylesheet" href="assets/styles/general.css">
+    <title>Document</title>
+    <style>
+        body{
+            padding: 0 2vw;
+        }
+        @media screen and (max-width: 768px){
+            .form .joint{
+                border: 1px solid lightgrey;
+                margin-bottom: 10px;
+            }
+            .form .joint:last-child{
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-column flex-center-content">
+    <h1 style="text-align: center">Access Bank Transaction E-Levy Calculator</h1>
+    <div class="value">
+        <div class="form">
+            <div class="body">
+                <label class="label flex-column">
+                    <span class="label_title">Enter Full amount to transfer</span>
+                    <input type="number" name="amount" id="amount">
+                </label>
+                <div class="flex">
+                    <div class="btn">
+                        <button id="check_levy">Check Payments</button>
+                    </div>
+                    <div id="reset" class="btn no_disp">
+                        <button>Reset</button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="response">
+        <div class="head">
+            <h2>Results</h2>
+        </div>
+        <div class="body"></div>
+        <div id="empty" style="padding: 1em 1.5em; text-align: center; border: 1px solid lightgrey; margin-top: 10px">
+            <p>No Result to display</p>
+        </div>
+    </div>
+
+    <script>
+        $("#check_levy").click(function(){
+            if($("#amount").val().length == 0){return;}
+            $("#empty").addClass("no_disp");
+            $("#reset").removeClass("no_disp");
+
+            html = "<div class=\"form\">\n" + 
+                   "    <div class=\"body\">";
+            amount = parseFloat($("#amount").val());
+            bank_charge = 0;
+            money = 0;
+            deduction = 0;
+            total_deduction = 0;
+            total_money = 0;
+            e_levy = 0;
+
+            if(amount >= 500){
+                bank_charge = 5;
+            }
+
+            while(amount >= 1009.85){
+                e_levy = 990 * 0.015;
+                deduction = bank_charge + e_levy;
+                money = 990 + deduction;
+
+                amount -= money;
+
+                total_money += 990;
+                total_deduction += deduction;
+
+                html += "       <div class='joint'>\n" +
+                        "           <label class='flex-column'>\n" +
+                        "               <span class='label_title'>Transfer Amount</span>\n" +
+                        "               <input type='text' value='GHC 990.00' disabled>\n" +
+                        "           </label>\n" +
+                        "           <label class='flex-column'>\n" +
+                        "               <span class='label_title'>Total Deducted</span>\n" +
+                        "               <input type='text' value='GHC " + money.toFixed(2) + "' disabled>\n" +
+                        "           </label>\n" +
+                        "           <label class='flex-column'>\n" +
+                        "               <span class='label_title'>Bank Charge</span>\n" +
+                        "               <input type='text' value='GHC " + bank_charge.toFixed(2) + "' disabled>\n" +
+                        "           </label>\n" +
+                        "           <label class='flex-column'>\n" +
+                        "               <span class='label_title'>E-Levy Charge</span>\n" +
+                        "               <input type='text' value='GHC " + e_levy.toFixed(2) + "' disabled>\n" +
+                        "           </label>\n" +
+                        "       </div>\n";
+                
+                e_levy = 0;
+                deduction = 0;
+                money = 0;
+            }
+
+            if(amount > 0){
+                if(amount >= 500){
+                    bank_charge = 5;
+                }else{
+                    bank_charge = parseFloat((amount * 0.01).toFixed(2));
+                }            
+
+                if(amount > 100){
+                    e_levy = amount*0.015;
+                    deduction = bank_charge + e_levy;
+                }else{
+                    deduction = bank_charge;
+                }
+
+                amount -= deduction;
+                
+                money = amount + deduction;
+
+                total_money += amount;
+                total_deduction += deduction;
+
+                html += "       <div class='joint'>\n" +
+                        "           <label class='flex-column'>\n" +
+                        "               <span class='label_title'>Transfer Amount</span>\n" +
+                        "               <input type='text' value='GHC " + amount.toFixed(2) + "' disabled>\n" +
+                        "           </label>\n" +
+                        "           <label class='flex-column'>\n" +
+                        "               <span class='label_title'>Total Deducted</span>\n" +
+                        "               <input type='text' value='GHC " + money.toFixed(2) + "' disabled>\n" +
+                        "           </label>\n" +
+                        "           <label class='flex-column'>\n" +
+                        "               <span class='label_title'>Bank Charge</span>\n" +
+                        "               <input type='text' value='GHC " + bank_charge.toFixed(2) + "' disabled>\n" +
+                        "           </label>\n" +
+                        "           <label class='flex-column'>\n" +
+                        "               <span class='label_title'>E-Levy Charge</span>\n" +
+                        "               <input type='text' value='GHC " + e_levy.toFixed(2) + "' disabled>\n" +
+                        "           </label>\n" +
+                        "       </div>\n";
+
+                html += "    </div>\n" + 
+                    "</div>";
+                
+                
+            }
+            html += "</div>\n<div class='foot'>\n" + 
+                    "   <div class='flex'>\n" +
+                    "       <label class='flex-column'>\n" +
+                    "           <span class='label_title'>Total Amount Delivered</span>\n" +
+                    "           <input type='text' value='GHC " + total_money.toFixed(2) + "' disabled>\n" + 
+                    "       </label>\n" +
+                    "       <label class='flex-column'>\n" +
+                    "           <span class='label_title'>Total Charge Paid</span>\n" +
+                    "           <input type='text' value='GHC " + total_deduction.toFixed(2) + "' disabled>\n" + 
+                    "       </label>\n" +
+                    "   </div>\n";
+            
+
+            $(".response .body").html(html);
+        })
+    </script>
+</body>
+</html>

@@ -81,6 +81,16 @@
                 padding-left: 15vw;
             }
         }
+
+        @media screen and(max-height: 480px){
+            #tables{
+                align-items: stretch;
+                justify-content: stretch;
+            }
+            #table_view{
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -126,6 +136,7 @@
                     <td>Transaction Reference</td>
                     <td>Sent To</td>
                     <td>Contact Number</td>
+                    <td>User Role</td>
                     <td>Students Cleared</td>
                     <td>Channel</td>
                     <td>Amount</td>
@@ -162,6 +173,7 @@
                             echo $row["contactNumber"];
                         }
                     ?></td>
+                    <td class="td_role"><?php echo formatName(getRole($row["user_role"])); ?></td>
                     <td class="td_student"><?php echo number_format($row["studentNumber"])?></td>
                     <td class="td_channel"><?php
                         if(empty($row["method"])){
@@ -176,7 +188,7 @@
                         if(empty($row["date"])){
                             echo "Not set";
                         }else{
-                            echo $row["date"];
+                            echo date("M d, Y",strtotime($row["date"]));
                         }
                     ?></td>
                     <td><?php echo $row["status"]?></td>
@@ -221,6 +233,9 @@
                     <td>Transaction Reference</td>
                     <td>Sent To</td>
                     <td>Contact Number</td>
+                    <?php if($user_details["role"] <= 2){ ?>
+                    <td>School</td>
+                    <?php }?>
                     <td>Students Cleared</td>
                     <td>Channel</td>
                     <td>Amount</td>
@@ -257,6 +272,9 @@
                             echo $row["contactNumber"];
                         }
                     ?></td>
+                    <?php if($user_details["role"] <= 2) {?>
+                    <td title="<?php echo getSchoolDetail($row["school_id"])["schoolName"] ?>" class="td_school"><?php echo getSchoolDetail($row["school_id"], true)["abbr"]?></td>
+                    <?php }?>
                     <td class="td_student"><?php echo $row["studentNumber"]?></td>
                     <td class="td_channel"><?php
                         if(empty($row["method"])){
@@ -271,7 +289,7 @@
                         if(empty($row["date"])){
                             echo "Not set";
                         }else{
-                            echo $row["date"];
+                            echo date("M d, Y",strtotime($row["date"]));
                         }
                     ?></td>
                     <td><?php echo $row["status"]?></td>
@@ -315,6 +333,9 @@
                     <td>Transaction Reference</td>
                     <td>Sent To</td>
                     <td>Contact Number</td>
+                    <?php if($user_details["role"] <= 2){ ?>
+                    <td>School</td>
+                    <?php }?>
                     <td>Students Cleared</td>
                     <td>Channel</td>
                     <td>Amount</td>
@@ -351,6 +372,9 @@
                             echo $row["contactNumber"];
                         }
                     ?></td>
+                    <?php if($user_details["role"] <= 2) {?>
+                    <td title="<?php echo getSchoolDetail($row["school_id"])["schoolName"] ?>" class="td_school"><?php echo getSchoolDetail($row["school_id"], true)["abbr"]?></td>
+                    <?php }?>
                     <td class="td_student"><?php echo $row["studentNumber"]?></td>
                     <td class="td_channel"><?php
                         if(empty($row["method"])){
@@ -365,7 +389,7 @@
                         if(empty($row["date"])){
                             echo "Not set";
                         }else{
-                            echo $row["date"];
+                            echo date("M d, Y",strtotime($row["date"]));
                         }
                     ?></td>
                     <td><?php echo $row["status"]?></td>
@@ -401,6 +425,21 @@
             </div>
             <div class="body">
                 <div class="joint">
+                    <?php if($user_details["role"] == 1){?>
+                    <label for="send_name" class="flex-wrap flex-column">
+                        <span class="label_title">Send Name</span>
+                        <input type="text" name="send_name" id="send_name">
+                    </label>
+                    <label for="send_phone" class="flex-wrap flex-column">
+                        <span class="label_title">Transaction Phone Number</span>
+                        <input type="text" name="send_phone" id="send_phone">
+                    </label>
+                    <label for="student_count" class="flex-wrap flex-column">
+                        <span class="label_title">Students Cleared</span>
+                        <input type="text" name="student_count" id="student_count">
+                    </label><?php } ?>
+                </div>
+                <div class="joint">
                     <label for="trans_ref" class="flex-wrap flex-column">
                         <span class="label_title">Transaction Reference</span>
                         <input type="text" name="trans_ref" id="trans_ref" style="width:100%" <?php 
@@ -433,6 +472,7 @@
                                 echo "disabled";
                             }
                         ?>>
+                        <span class="item-event date">Amount above is the full amount sent, this is without the deduction</span>
                     </label>
                     <label for="deduction" class="flex-wrap flex-column">
                         <span class="label_title">Deduction for Transaction</span>
@@ -456,10 +496,12 @@
                         <span class="item-event info" id="change_date">Update Date</span>
                         <?php } ?>
                     </label>
+                    <?php if($user_details["role"] == 1){?>
                     <label for="update_date" class="flex-wrap flex-column no_disp">
                         <span class="label_title">Update Date</span>
                         <input type="date" name="update_date" id="update_date" style="width: 100%">
                     </label>
+                    <?php } ?>
                     <label for="status" class="flex-wrap flex-column">
                         <span class="label_title">Status</span>
                         <input type="text" name="status" id="status" style="width:100%" disabled>
@@ -469,18 +511,23 @@
                             }
                         ?>
                     </label>
+                    <?php if($user_details["role"] == 1){?>
                     <label for="update_status" class="flex-wrap flex-column no_disp">
                         <span class="label_title">Update Status</span>
-                        <select type="text" name="update_status" id="update_status" style="width:100%">
+                        <select name="update_status" id="update_status" style="width:100%">
                             <option value="">Select Status</option>
                             <option value="Sent">Sent</option>
                             <option value="Pending">Pending</option>
                         </select>
                     </label>
+                    <?php } ?>
                 </div>
                 <?php if($user_details["role"] == 1){ ?>
                 <label for="submit" class="btn">
                     <button type="submit" name="submit" id="submit">Update</button>
+                </label>
+                <label for="form_load">
+                    <span></span>
                 </label>
                 <?php } ?>
             </div>
@@ -489,7 +536,6 @@
             <button class="red" type="reset">Close</button>
         </div>
     </div>
-
     <script>
         $("table tbody").click(function(){
             parent = $(this).parent();
@@ -560,6 +606,10 @@
             $("#data_details input[name=amount]").val($(this).children("td.td_amount").html());
             $("#data_details input[name=date]").val($(this).children("td.td_date").html());
             $("#data_details input[name=deduction]").val($(this).children("td.td_deduction").html());
+            $("#data_details input[name=send_name]").val($(this).children("td.td_name").html());
+            $("#data_details input[name=send_phone]").val($(this).children("td.td_number").html());
+            $("#data_details input[name=student_count]").val("Money below is a collective for " + $(this).children("td.td_student").html() + " enroled students");
+
             
             if($(this).children("td:last-child").html().toLocaleLowerCase() == "sent"){
                 $("#data_details input[name=status]").val("Transaction was successful");
@@ -654,6 +704,47 @@
                 },
                 error: function(jqXHR, textStatus, errorThrown){
                     alert(textStatus);
+                }
+            })
+        })
+    </script>
+
+    <script>
+        $("#data_details button[name=submit]").click(function(){
+            trans_ref = $("#data_details input[name=trans_ref]").val();
+            update_channel = $("#data_details select[name=update_channel]").val();
+            amount = $("#data_details input[name=amount]").val();
+            deduction = $("#data_details input[name=deduction]").val();
+            update_date = $("#data_details input[name=update_date]").val();
+            update_status = $("#data_details select[name=update_status]").val();
+            row_id = $("table tbody tr.highlight").attr("data-row-id");
+            send_name = $("#data_details input[name=send_name]").val();
+            send_phone = $("#data_details input[name=send_phone]").val();
+            date = $("#data_details input[name=date]").val();
+        
+            dataString = "trans_ref=" + trans_ref + "&update_date=" + update_date + "&update_channel=" + update_channel +
+             "&amount=" + amount + "&deduction=" + deduction + "&update_status=" + update_status + "&row_id=" + row_id + "&submit=updateSelectedPayment" + 
+             "&send_name=" + send_name + "&send_phone=" + send_phone + "&date=" + date;
+
+            $.ajax({
+                url: "submit.php",
+                data: dataString,
+                beforeSend: function(){
+                    $("label[for=form_load] span").html("Loading...");
+                },
+                success: function(data){
+                    if(data == "success"){
+                        $("label[for=form_load] span").html("Update successful. Redirecting!");
+
+                        setTimeout(function(){
+                            $("#lhs .item.active").click();
+                        }, 3000);
+                    }else{
+                        $("label[for=form_load] span").html(data);
+                    }
+                },
+                error: function(){
+                    alert("An error occured");
                 }
             })
         })

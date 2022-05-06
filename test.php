@@ -248,5 +248,5 @@ if($room > 0){
     echo "A new room has to be provided";
 }*/
 
-echo getTotalMoney(3,1);
+echo getTotalMoney(3,3);
 ?>

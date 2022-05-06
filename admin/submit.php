@@ -511,6 +511,9 @@
             echo json_encode($data);
         }elseif($submit == "updatePayment"){
             $sql = "SELECT id FROM schools WHERE Active = TRUE";
+            if($user_details["role"] >= 3){
+                $sql = "SELECT id FROM schools WHERE id=$user_school_id AND Active = TRUE";
+            }
             $result = $connect->query($sql);
 
             $price_superadmin = $connect->query("SELECT price FROM roles WHERE id=2")->fetch_assoc()["price"];
@@ -523,7 +526,6 @@
             if($result->num_rows > 0){
                 while($row = $result->fetch_assoc()){
                     //work on admin
-                    // if($row['id'] == 2)
                     $price_admin = $connect->query("SELECT price FROM roles WHERE id=3")->fetch_assoc()["price"];
                     $price_school = $connect->query("SELECT price FROM roles WHERE id=4")->fetch_assoc()["price"];
                     $amount_admin = 0;
@@ -543,25 +545,38 @@
 
                         //superadmin calculations
                         $system_students += $total_students;
-
-                        $student = $amount_admin / $price_admin;
                     }else{
                         continue;
                     }
 
                     if($amount_admin > 0){
-                        $pay_sql = "SELECT * FROM payment WHERE school_id=".$row["id"]." AND status = 'Pending'";
+                        $student = $amount_admin / $price_admin;
+                        
+                        $pay_sql = "SELECT * FROM payment WHERE school_id=".$row["id"]." AND user_role=3 AND status = 'Pending'";
                         $pay_result = $connect->query($pay_sql);
                         
                         if($pay_result->num_rows > 0){
                             $new_sql = "UPDATE payment SET amount=$amount_admin, studentNumber=$student WHERE school_id=".$row["id"]." AND user_role=3 AND status='Pending'";
-                            $connect->multi_query($new_sql);
-
-                            $new_sql = "UPDATE payment SET amount=$amount_school, studentNumber=$student WHERE school_id=".$row["id"]." AND user_role=4 AND status='Pending';";
-                            $connect->multi_query($new_sql);
+                            $connect->query($new_sql);
                         }else{
                             $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
-                                VALUES (3, ".$row["id"].", $amount_admin, $student, 'Pending'), (4, ".$row["id"].", $amount_school, $student, 'Pending')";
+                                VALUES (3, ".$row["id"].", $amount_admin, $student, 'Pending')";
+                            $connect->query($new_sql);
+                        }
+                    }
+                    
+                    if($amount_school > 0){
+                        $student = $amount_school / $price_school;
+                        
+                        $pay_sql = "SELECT * FROM payment WHERE school_id=".$row["id"]." AND user_role=4 AND status = 'Pending'";
+                        $pay_result = $connect->query($pay_sql);
+                        
+                        if($pay_result->num_rows > 0){
+                            $new_sql = "UPDATE payment SET amount=$amount_school, studentNumber=$student WHERE school_id=".$row["id"]." AND user_role=4 AND status='Pending';";
+                            $connect->query($new_sql);
+                        }else{
+                            $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
+                                VALUES (4, ".$row["id"].", $amount_school, $student, 'Pending')";
                             $connect->query($new_sql);
                         }
                     }
@@ -569,29 +584,96 @@
                 }
 
                 //calculate for admin
-                $amount_developer = ($system_students * $price_developer) - getTotalMoney(1, 0);
-                $amount_superadmin = ($system_students * $price_superadmin) - getTotalMoney(2, 0);
-
-                if($amount_developer > 0){
-                    $pay_sql = "SELECT * FROM payment WHERE school_id=0 AND status = 'Pending'";
-                    $pay_result = $connect->query($pay_sql);
-
-                    $student = $amount_superadmin / $price_superadmin;
-                    
-                    if($pay_result->num_rows > 0){
-                        $new_sql = "UPDATE payment SET amount=$amount_developer, studentNumber=$student WHERE school_id=0 AND user_role=1 AND status='Pending'";
-                        $connect->multi_query($new_sql);
-
-                        $new_sql = "UPDATE payment SET amount=$amount_superadmin, studentNumber=$student WHERE school_id=0 AND user_role=2 AND status='Pending'";
-                        $connect->multi_query($new_sql);
-                    }else{
-                        $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
-                            VALUES (2, 0, $amount_superadmin, $student, 'Pending'), (1, 0, $amount_developer, $student, 'Pending')";
-                        $connect->query($new_sql);
+                if($user_details["role"] <= 2){
+                    $amount_developer = ($system_students * $price_developer) - getTotalMoney(1, 0);
+                    $amount_superadmin = ($system_students * $price_superadmin) - getTotalMoney(2, 0);
+    
+                    if($amount_developer > 0){
+                        $pay_sql = "SELECT * FROM payment WHERE user_role=1 AND status = 'Pending'";
+                        $pay_result = $connect->query($pay_sql);
+                        
+                        if($pay_result->num_rows > 0){
+                            $student = $amount_developer / $price_developer;
+                            $new_sql = "UPDATE payment SET amount=$amount_developer, studentNumber=$student WHERE school_id=0 AND user_role=1 AND status='Pending'";
+                            $connect->query($new_sql);
+                        }else{
+                            $student = $amount_developer / $price_developer;
+                            $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
+                                VALUES (1, 0, $amount_developer, $student, 'Pending')";
+                            $connect->query($new_sql);
+                        }
                     }
+    
+                    if($amount_superadmin > 0){
+                        $pay_sql = "SELECT * FROM payment WHERE user_role=2 AND status = 'Pending'";
+                        $pay_result = $connect->query($pay_sql);
+                        
+                        if($pay_result->num_rows > 0){
+                            $student = $amount_superadmin / $price_superadmin;
+                            $new_sql = "UPDATE payment SET amount=$amount_superadmin, studentNumber=$student WHERE school_id=0 AND user_role=2 AND status='Pending'";
+                            $connect->query($new_sql);
+                        }else{
+                            $student = $amount_superadmin / $price_superadmin;
+                            $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
+                                VALUES (2, 0, $amount_superadmin, $student, 'Pending')";
+                            $connect->query($new_sql);
+                        }
+                    }    
                 }
 
                 echo "success";
+            }
+        }elseif($submit == "updateSelectedPayment"){
+            $trans_ref = $_REQUEST["trans_ref"];
+            $update_channel = $_REQUEST["update_channel"];
+            $amount = explode(",",$_REQUEST["amount"]);
+
+            if(is_array($amount)){
+                $n_amount = "";
+                foreach($amount as $key=>$val){
+                    $n_amount .= $val;
+                }
+                $amount = floatval($n_amount);
+            }else{
+                $amount = floatval($amount);
+            }
+            
+            $deduction = floatval($_REQUEST["deduction"]);
+            
+            if(!empty($_REQUEST["update_date"]))
+                $update_date = date("d-m-Y",strtotime($_REQUEST["update_date"]));
+            elseif(strtolower($_REQUEST["date"]) == "not set")
+                $update_date = null;
+            else
+                $update_date = $update_date = date("d-m-Y",strtotime($_REQUEST["date"]));
+            $update_status = $_REQUEST["update_status"];
+            $row_id = $_REQUEST["row_id"];
+            $send_name = $_REQUEST["send_name"];
+            $send_phone = $_REQUEST["send_phone"];
+
+            $price = fetchData("user_role","payment","id=$row_id")["user_role"];
+            $price = fetchData("price","roles","id=$price")["price"];
+            
+            if(empty($update_channel) || $update_channel === ""){
+                $update_channel = fetchData("method","payment","id=$row_id")["method"];
+            }
+            
+            $number = round($amount / $price);
+
+            if(!empty($update_status)){
+                $sql = "UPDATE payment SET transactionReference=?, contactName=?, contactNumber=?, method=?, amount=?, deduction=?, studentNumber=?, date=?, status=? WHERE id=?";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("ssssddissi", $trans_ref, $send_name, $send_phone, $update_channel, $amount, $deduction, $number, $update_date, $update_status, $row_id);
+                if($stmt->execute()){
+                    echo "success";
+                }
+            }else{
+                $sql = "UPDATE payment SET transactionReference=?, contactName=?, contactNumber=?, method=?, amount=?, deduction=?, studentNumber=?, date=? WHERE id=?";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("ssssddisi", $trans_ref, $send_name, $send_phone, $update_channel, $amount, $deduction, $number, $update_date, $row_id);
+                if($stmt->execute()){
+                    echo "success";
+                }
             }
         }
     }else{
