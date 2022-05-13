@@ -182,7 +182,7 @@
                                 echo $row["method"];
                             }
                     ?></td>
-                    <td class="td_amount"><?php echo number_format($row["amount"],2)?></td>
+                    <td class="td_amount"><?php echo number_format(($row["amount"] - $row["deduction"]),2)?></td>
                     <td class="td_deduction no_disp"><?php echo $row["deduction"]?></td>
                     <td class="td_date"><?php
                         if(empty($row["date"])){
@@ -283,7 +283,7 @@
                             echo $row["method"];
                         }
                     ?></td>
-                    <td class="td_amount"><?php echo number_format($row["amount"],2)?></td>
+                    <td class="td_amount"><?php echo number_format(($row["amount"] - $row["deduction"]),2)?></td>
                     <td class="td_deduction no_disp"><?php echo $row["deduction"]?></td>
                     <td class="td_date"><?php
                         if(empty($row["date"])){
@@ -383,7 +383,7 @@
                             echo $row["method"];
                         }
                     ?></td>
-                    <td class="td_amount"><?php echo number_format($row["amount"],2)?></td>
+                    <td class="td_amount"><?php echo number_format(($row["amount"] - $row["deduction"]),2)?></td>
                     <td class="td_deduction no_disp"><?php echo $row["deduction"]?></td>
                     <td class="td_date"><?php
                         if(empty($row["date"])){
@@ -740,11 +740,11 @@
                             $("#lhs .item.active").click();
                         }, 3000);
                     }else{
-                        $("label[for=form_load] span").html(data);
+                        $("label[for=form_load] span").html("Error with database communication. Error date: " + data);
                     }
                 },
-                error: function(){
-                    alert("An error occured");
+                error: function(response){
+                    $("label[for=form_load] span").html("An error occured. Error status: " + response.statusText);
                 }
             })
         })

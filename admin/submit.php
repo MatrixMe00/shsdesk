@@ -659,6 +659,7 @@
             }
             
             $number = round($amount / $price);
+            $amount += $deduction;
 
             if(!empty($update_status)){
                 $sql = "UPDATE payment SET transactionReference=?, contactName=?, contactNumber=?, method=?, amount=?, deduction=?, studentNumber=?, date=?, status=? WHERE id=?";
