@@ -153,7 +153,7 @@ function sendSMS(reference){
     dataString = "submit=sendTransaction&phone=" + phone + "&message=" + message;
 
     $.ajax({
-        url: "sms/smsNew.php",
+        url: "sms/sms.php",
         data: dataString,
         type: "POST",
         dataType: "json",

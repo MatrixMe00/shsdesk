@@ -118,7 +118,7 @@
     </div>
 </section>
 
-<?php if($user_details["role"] <= 2){?>
+<?php if(isset($_SESSION["user_login_id"]) && $user_details["role"] <= 2){?>
 <section>
     <div class="head">
         <h3>Super Admins</h3>
@@ -212,6 +212,7 @@
 </section>
 <?php }?>
 
+<?php if(isset($_SESSION["user_login_id"]) && $user_details["role"] != 4 || $user_details["role"] <= 5){?>
 <section>
     <div class="head">
         <h3>Admin<?php if($user_details["role"] <= 2){echo "s"; }?></h3>
@@ -311,6 +312,7 @@
     </div>
     <?php } ?>
 </section>
+<?php } ?>
 
 <section>
     <div class="head">
@@ -740,11 +742,16 @@
                             $("#lhs .item.active").click();
                         }, 3000);
                     }else{
-                        $("label[for=form_load] span").html("Error with database communication. Error date: " + data);
+                        $("label[for=form_load] span").html("Update could not be made. Please try again!");
                     }
                 },
-                error: function(response){
-                    $("label[for=form_load] span").html("An error occured. Error status: " + response.statusText);
+                error: function(request, status, errorText){
+                    if(request.readyState == 4){
+                        $("label[for=form_load] span").html(request.statusText);
+                    }else{
+                        $("label[for=form_load] span").html(request.statusText);
+                    }
+                    
                 }
             })
         })

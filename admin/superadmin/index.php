@@ -39,7 +39,21 @@
                     <img src="<?php echo $url?>/assets/images/icons/person-circle-outline.svg" alt="user logo">
                 </div>
                 <div class="name">
-                    <span><?php echo $user_details["fullname"] ?></span>
+                    <span id="greeting">
+                    <?php
+                        $time = date("H");
+
+                        if($time < 12){
+                            $greet = "Good Morning";
+                        }elseif($time < 16){
+                            $greet = "Good Afternoon";
+                        }else{
+                            $greet = "Good Evening";
+                        }
+
+                        echo "$greet <strong>".strtoupper($user_details["fullname"])."</strong>";
+                    ?>
+                    </span>
                 </div>
             </div>
             <div id="middle">
@@ -144,25 +158,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- <div class="menu">
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/admission.php" name="admission" title="Admission Details">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="" />
-                        </div>
-                        <div class="menu_name">
-                            <span>Admission Details</span>
-                        </div>
-                    </div>
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/exeat.php" name="exeat" title="Exeat">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/logout.png" alt="exeat">
-                        </div>
-                        <div class="menu_name">
-                            <span>Exeat</span>
-                        </div>
-                    </div>
-                </div> -->
             </div>
             <div id="foot">
                 <div class="menu">
@@ -250,6 +245,20 @@
                 }
                 ?>";
             $("div[name=" + nav_point + "]").click();
+
+            <?php 
+                if($time < 6){
+                    $nav_light = "dark";
+                }elseif($time < 18){
+                    $nav_light = "light";
+                }else{
+                    $nav_light = "dark";
+                }
+            ?>
+            $("nav").addClass("<?php echo $nav_light?>");
+            <?php if($nav_light == "dark"){?>
+            $("nav *").css("color","white");
+            <?php } ?>
         })
     </script>
     <?php }

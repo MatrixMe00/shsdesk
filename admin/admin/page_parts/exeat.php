@@ -71,7 +71,7 @@
             </label>
 
             <label for="submit" class="btn">
-                <button type="submit" name="submit" value="exeat_request">Give Exeat</button>
+                <button type="submit" name="submit" value="exeat_request" class="primary">Give Exeat</button>
             </label>
         </div>
     </form>
@@ -150,7 +150,7 @@
     </div>
     <div class="foot">
         <div class="btn">
-            <button title="Generates a report for the term on exeats made">Generate Report</button>
+            <button title="Generates a report for the term on exeats made" class="teal request_btn" value="exeat">Generate Report</button>
         </div>
     </div>
     <?php }else{ ?>

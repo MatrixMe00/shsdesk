@@ -9,9 +9,9 @@
             <a href="<?php echo $url?>/index.php" class="button">
                 <span>Home</span>
             </a>
-            <!-- <a href="<?php echo $url?>/pages/about.php" class="button">
+            <a href="<?php echo $url?>/pages/about.php" class="button">
                 <span>About</span>
-            </a> -->
+            </a>
             <a href="<?php echo $url?>/pages/school.php" class="button">
                 <span>Schools</span>
             </a>

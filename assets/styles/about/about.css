@@ -55,7 +55,7 @@ main a:hover, section a:hover{
     border-bottom-color: inherit;
 }
 
-@media screen and (max-width: 540px){
+@media screen and (max-width: 800px){
     #intro{
         height: 75vh;
     }
@@ -63,6 +63,14 @@ main a:hover, section a:hover{
     main{
         margin: initial;
         padding: 10px;
+    }
+
+    #lhs > section{
+        margin-right: unset !important;
+    }
+
+    #lhs{
+        margin-bottom: 10px;
     }
 }
 
@@ -105,7 +113,8 @@ main a:hover, section a:hover{
 }
 
 .person .body .role{
-    color: #222;
+    color: #555;
+    font-size: small;
 }
 
 .person .image img{
@@ -116,6 +125,10 @@ main a:hover, section a:hover{
 
 .person .image{
     text-align: center;
+}
+
+.person .image img{
+    width: 200px;
 }
 
 .desc .person{
@@ -136,6 +149,23 @@ main #rhs{
     flex: 1 1 240px;
 }
 
+#lhs > section, #rhs > section{
+    box-shadow: 0 0 4px 0 lightgrey, 0 0 1px 0 black;
+}
+
+#lhs > section{
+    margin-bottom: 7px;
+    margin-right: 7px;
+}
+
+#lhs > section:last-child{
+    margin-bottom: unset;
+}
+
 #ceo{
     padding: 2.5em 1rem;
+}
+
+#team .desc .person{
+    flex: 1 1 150px;
 }

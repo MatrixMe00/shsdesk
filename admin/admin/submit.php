@@ -431,6 +431,7 @@
                     $stmt->execute();
 
                     #code to send letter to parents will go here
+                    include_once($rootPath."/sms/sms.php");
 
                     $message = "success";
                 }else{

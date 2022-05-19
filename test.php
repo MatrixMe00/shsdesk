@@ -248,5 +248,11 @@ if($room > 0){
     echo "A new room has to be provided";
 }*/
 
-echo getTotalMoney(3,3);
+// echo getTotalMoney(3,3);
+$_REQUEST['submit'] = "exeat_request";
+$student_index = "0012345621";
+$exeat_town = "Nungua";
+$exeat_type = "external";
+
+// include_once($rootPath."/sms/sms.php");
 ?>

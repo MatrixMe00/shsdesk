@@ -39,10 +39,11 @@
             ON e.indexNumber = ho.indexNumber
             JOIN houses h
             ON h.id = ho.houseID
-            WHERE e.shsID=$user_school_id";
+            WHERE e.shsID=$user_school_id
+            ORDER BY e.aggregateScore ASC";
 
             //exception headers, end it with an empty field
-            $exception_headers = array("shsID","");
+            $exception_headers = array("shsID","transactionID","schoolName","");
 
             //title
             $filename = "Enrolment Details | ";
@@ -50,11 +51,24 @@
         $sql = "SELECT h.indexNumber, h.studentLname AS lastname, h.studentOname as `othername(s)`, h.studentYearLevel, h.studentGender, h.boardingStatus, h1.title AS `house name`
         FROM house_allocation h JOIN houses h1
         ON h.houseID=h1.id
-        WHERE h.schoolID=$user_school_id";
+        WHERE h.schoolID=$user_school_id
+        ORDER BY h.boardingStatus DESC, h.houseID ASC, h.studentGender ASC";
 
         $exception_headers = array("");
 
         $filename = "House Allocation | ";
+    }elseif($submit == "exeat"){
+        $sql = "SELECT c.Lastname, c.Othernames, e.*,  h.title AS house 
+        FROM exeat e JOIN cssps c
+        ON e.indexNumber = c.indexNumber
+        JOIN houses h
+        on e.houseID = h.id
+        WHERE e.school_id= $user_school_id
+        ORDER BY e.houseID ASC";
+
+        $exception_headers = array("id","houseID","school_id","");
+
+        $filename = "Exeat Report | ";
     }
 
     //complete file name
@@ -107,7 +121,13 @@
     }
 
     //Provide a title
-    $title = strtoupper("List of Enroled Students");
+    if($submit == "enrolment"){
+        $title = strtoupper("List of Enroled Students");
+    }elseif($submit == "houses"){
+        $title = strtoupper("House List of Enroled Students");
+    }elseif($submit == "exeat"){
+        $title = strtoupper("Exeat records in this year");
+    }
 
     //merge cells to take school name
     $merged_cells = $current_col_names[0]."1:".end($current_col_names)."1";
@@ -122,6 +142,9 @@
     //*******************************************
     //set title
     $sheet->setCellValue("A1", $title);
+    $sheet->getStyle("A1")->getFont()->setBold("true");
+    $sheet->getStyle("A1")->getAlignment()->setHorizontal('center');
+    $sheet->getStyle("A1")->getAlignment()->setVertical('center');
 
     //enter headers
     foreach ($field_names as $row => $value){
@@ -145,7 +168,74 @@
 
     //send value into selected cells
     $query = $connect->query($sql);
+    
+    //variable to check a house break
+    $house_break = "";
     while($result=$query->fetch_assoc()){
+        if($submit == "houses"){
+            //check the former house name and provide space where the need be
+            if($house_break != "" && $house_break != $result["house name"]){
+                ++$rowCounter;
+                
+                //merge cells to take house title
+                $merged_cells = $current_col_names[0].$rowCounter.":".end($current_col_names).$rowCounter;
+                $sheet->mergeCells($merged_cells);
+                
+                //give a title
+                $title = strtoupper("Members in ".$result["house name"]." [". $result["boardingStatus"]."]");
+                $sheet->setCellValue("A".$rowCounter, $title);
+                
+                //format to center
+                $sheet->getStyle("A".$rowCounter)->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("A".$rowCounter)->getAlignment()->setVertical('center');
+                
+                //next line
+                ++$rowCounter;
+            }elseif($house_break == ""){
+                ++$rowCounter;
+                //merge cells to take house title
+                $merged_cells = $current_col_names[0]."4:".end($current_col_names)."4";
+                $sheet->mergeCells($merged_cells);
+                
+                //give a title
+                $title = strtoupper("Members in ".$result["house name"]." [". $result["boardingStatus"]."]");
+                $sheet->setCellValue("A4", $title);
+                
+                //format to center
+                $sheet->getStyle("A4")->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("A4")->getAlignment()->setVertical('center');
+                
+                //next row
+                ++$rowCounter;
+            }
+            
+            //take house of current student
+            $house_break = $result["house name"];
+        }elseif($submit == "exeat" && $query->num_rows > 1){
+            //check former house
+            if($house_break != "" && $house_break != $result["house"]){
+                ++$rowCounter;
+                
+                //merge cells to take create a space
+                $merged_cells = $current_col_names[0].$rowCounter.":".end($current_col_names).$rowCounter;
+                $sheet->mergeCells($merged_cells);
+                
+                //next line
+                ++$rowCounter;
+
+                $house_break = $result["house"];
+            }
+        }
+
+        //specify if student has returned or not in exeat table
+        if($submit == "exeat"){
+            if($result["returnStatus"]){
+                $result["returnStatus"] = "Returned";
+            }else{
+                $result["returnStatus"] = "Not Returned";
+            }
+        }
+        
         foreach ($field_names as $row => $value){
             if($value != $exception_headers[$exceptionCounter]){
                 $cellName = $current_col_names[$headerCounter].$rowCounter;

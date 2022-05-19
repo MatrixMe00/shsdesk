@@ -55,7 +55,13 @@
                 <option value="">Select A Role</option>
                 <?php 
                     if($user_school_id != null){
-                        $sql = "SELECT id, title FROM roles WHERE id > 2 AND (school_id = 0 OR school_id = $user_school_id) AND title != 'system'";
+                        //check if there is a headmaster account
+                        $has_head = fetchData("COUNT(user_id) AS total","admins_table","role=4 AND school_id=$user_school_id")["total"];
+                        if($has_head == 0){
+                            $sql = "SELECT id, title FROM roles WHERE id > 2 AND (school_id = 0 OR school_id = $user_school_id) AND title != 'system'";
+                        }else{
+                            $sql = "SELECT id, title FROM roles WHERE id > 2 AND (school_id = 0 OR school_id = $user_school_id) AND title != 'system' AND title != 'school head'";
+                        }
                     }else{
                         $sql = "SELECT id, title FROM roles WHERE id > 2 AND school_id = 0 AND title != 'system'";
                     }
@@ -90,10 +96,10 @@
     </div>
     <div class="foot flex">
         <label for="submit" class="btn">
-            <button type="submit" name="submit" value="addAdmin">Submit</button>
+            <button type="submit" name="submit" class="primary" value="addAdmin">Submit</button>
         </label>
         <label for="cancel" class="btn">
-            <button type="button" name="cancel" value="cancel" onclick="$('#adminAdd').addClass('no_disp')">Cancel</button>
+            <button type="button" name="cancel" value="cancel" class="red" onclick="$('#adminAdd').addClass('no_disp')">Cancel</button>
        </label>
     </div>
 </form>

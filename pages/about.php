@@ -95,10 +95,10 @@
                     </div>
                     <div class="body">
                         <div class="caption">
-                            <h3>This is an item</h3>
+                            <h3>Computerized Education</h3>
                         </div>
                         <div class="message">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum rem asperiores, beatae fugiat temporibus fugit, a veniam dolorem non placeat debitis repudiandae quaerat alias aspernatur eligendi iste, amet error dolorum? Odio cumque fuga culpa laborum?</p>
+                            <p>Many school activities are being delivered unto the internet, and students are now able to perform classroom activities right in their homes</p>
                         </div>
                     </div>
                 </div>
@@ -108,10 +108,10 @@
                     </div>
                     <div class="body">
                         <div class="caption">
-                            <h3>This is an item</h3>
+                            <h3>SHS Schooling</h3>
                         </div>
                         <div class="message">
-                            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repudiandae itaque inventore necessitatibus perspiciatis fuga ratione corporis quaerat reprehenderit facere exercitationem?</p>
+                            <p>The aim of the GES is to give every child of school going age the privilege to education</p>
                         </div>
                     </div>
                 </div>
@@ -121,10 +121,10 @@
                     </div>
                     <div class="body">
                         <div class="caption">
-                            <h3>This is an item</h3>
+                            <h3>Secondary Education</h3>
                         </div>
                         <div class="message">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque beatae inventore magni, mollitia modi illo eum debitis atque eius id, dolores reiciendis? A facilis, alias eveniet quae at laboriosam nisi magnam quod dolorum mollitia laudantium reprehenderit odit ex officia harum!</p>
+                            <p>Secondary education is required for every student who would want to know what his skills are. Ghana has more than 300 second cycle institutions.</p>
                         </div>
                     </div>
                 </div>
@@ -134,10 +134,10 @@
                     </div>
                     <div class="body">
                         <div class="caption">
-                            <h3>This is an item</h3>
+                            <h3>Girl Child Education</h3>
                         </div>
                         <div class="message">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure ex molestias nam odio in. A molestiae facere aut est! Cupiditate illo voluptate nam natus?</p>
+                            <p>Over the years, education was not so common a thing for females, but with the improved systems of learning, female education is prioritzed.</p>
                         </div>
                     </div>
                 </div>
@@ -156,9 +156,11 @@
                             <img src="<?php echo $url?>/assets/images/default/library.jfif" alt="">
                         </div>
                         <div class="body">
-                            <span class="name">John Doe</span>
+                            <span class="name">Success Yeboah</span>
                             <span class="role">CEO</span>
-                            <span class="more">Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum quisquam, amet provident animi nemo laboriosam?</span>
+                            <span class="more">
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum quisquam, amet provident animi nemo laboriosam?
+                            </span>
                         </div>
                     </div>
                     <div class="person">
@@ -166,9 +168,13 @@
                             <img src="<?php echo $url?>/assets/images/default/library.jfif" alt="">
                         </div>
                         <div class="body">
-                            <span class="name">Abraham Lincoln</span>
-                            <span class="role">CEO</span>
-                            <span class="more">Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum quisquam, amet provident animi nemo laboriosam?</span>
+                            <span class="name">Seth Afosah</span>
+                            <span class="role">Developer</span>
+                            <span class="more">
+                                He is a developer and he specializes in web development, mobile development and windows applications.
+                                You can <a href="tel:+233279284896">contact</a> him privately and will provide needed help. You can also follow him on 
+                                facebook, instagram and twitter.
+                            </span>
                         </div>
                     </div>
                 </div>

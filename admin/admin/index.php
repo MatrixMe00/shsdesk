@@ -57,29 +57,6 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             }
         }
     ?>
-        
-                    <!-- <span id="user_name">
-                        <span id="greeting">
-                            <?php
-                            $time = date("H");
-
-                            if($time < 12){
-                                $greet = "Good Morning";
-                            }elseif($time < 16){
-                                $greet = "Good Afternoon";
-                            }else{
-                                $greet = "Good Evening";
-                            }
-
-                            echo $greet;
-                            ?>
-                        </span>, <?php echo $user_username ?>
-                        <div id="logout">
-                            <span>Logout</span>
-                        </div>
-                    </span> -->
-                
-    <!-- <nav> -->
         <div id="ham" class="">
             <span></span>
             <span></span>
@@ -90,11 +67,22 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                 <div class="img">
                     <img src="<?php echo $url?>/assets/images/icons/person-circle-outline.svg" alt="user logo">
                 </div>
-                <!-- <div class="img" style="filter: invert(1)">
-                    <img src="<?php echo $url."/".getSchoolDetail($user_school_id, true)["logoPath"]?>" alt="user logo">
-                </div> -->
                 <div class="name">
-                    <span><?php echo $user_details["fullname"] ?></span>
+                    <span id="greeting">
+                    <?php
+                        $time = date("H");
+
+                        if($time < 12){
+                            $greet = "Good Morning";
+                        }elseif($time < 16){
+                            $greet = "Good Afternoon";
+                        }else{
+                            $greet = "Good Evening";
+                        }
+
+                        echo "$greet <strong>".strtoupper($user_details["fullname"])."</strong>";
+                    ?>
+                    </span>
                 </div>
                 <div class="status">
                     <span><?php echo $status ?></span>
@@ -103,7 +91,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             <div id="middle">
                 <!--Dashboard-->
                 <div class="menu">
-                    <div class="item active" name="Dashboard" title="Dashboard" data-url="<?php echo $url?>/admin/admin/page_parts/dashboard.php">
+                    <div class="item active" name="Dashboard" title="Dashboard" data-url="<?php echo $url?>/admin/admin/page_parts/dashboard1.php">
                         <div class="icon">
                             <img src="<?php echo $url?>/assets/images/icons/speedometer-outline.svg" alt="Dashboard" />
                         </div>
@@ -291,6 +279,20 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                 }
                 ?>";
             $("div[name=" + nav_point + "]").click();
+
+            <?php 
+                if($time < 6){
+                    $nav_light = "dark";
+                }elseif($time < 18){
+                    $nav_light = "light";
+                }else{
+                    $nav_light = "dark";
+                }
+            ?>
+            $("nav").addClass("<?php echo $nav_light?>");
+            <?php if($nav_light == "dark"){?>
+            $("nav *").css("color","white");
+            <?php } ?>
         })
     </script>
     <?php }

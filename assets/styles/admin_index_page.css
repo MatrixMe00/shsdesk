@@ -15,28 +15,47 @@ nav{
     transition: all 1s;
     background-color: #111;
     overflow: hidden;
+    color: white;
 }
+
+
 #lhs{
-    color: whitesmoke;
     transition: background-color 1s;
     overflow: auto;
     max-height: 100vh;
 }
 
-nav:hover{
-    background: #101013;
+nav.dark:hover{
+    background: #303033;
+}
+
+nav.light:hover{
+    background: #e0e0e3;
+}
+
+nav.light:hover .menu{
+    background-color: #fff;
 }
 
 nav#not-active{
     background-color: rgba(230, 50, 50);
+    color: whitesmoke !important;
 }
 
 nav#not-display{
-    background-color:rgba(230, 100, 100, 1)
+    background-color:rgba(230, 100, 100, 1);
+    color: whitesmoke !important;
 }
 
 nav#no-house{
     background-color: rgba(255, 80,80);
+    color: whitesmoke !important;
+}
+
+nav#not-active.light .menu,
+nav#not-display.light .menu,
+nav#no-house.light .menu{
+    color: black;
 }
 
 #rhs{
@@ -51,7 +70,7 @@ img{
     text-align: center;
 }
 
-#lhs img{
+nav.dark #lhs img{
     filter: invert(1);
 }
 
@@ -68,15 +87,29 @@ img{
 }
 
 .menu{
-    background-color: #2225;
     margin: 1vh 1vw;
     border-radius: 10px;
     transition: all 1s;
 }
 
+nav.dark .menu{
+    background-color: #2225;
+}
+
+nav.light .menu{
+    background-color: #e0e0e3;
+}
+
 .menu:hover{
     border-radius: 5px;
+}
+
+nav.dark .menu:hover{
     background-color: #5553;
+}
+
+nav.light .menu:hover{
+    background-color: #fffa;
 }
 
 .menu .item{
@@ -88,13 +121,46 @@ img{
     cursor: pointer;
 }
 
+.menu .item:first-child:hover{
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.menu .item:last-child:hover{
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
 .menu .item.active, .menu .item.active:hover{
-    border-left-color: lightblue;
     background-color: transparent;
 }
 
-.menu .item:hover{
+nav.dark .menu .item.active, nav.dark .menu .item.active:hover{
+    border-left-color: lightblue;
+}
+
+nav.light .menu .item.active, nav.light .menu .item.active:hover{
+    border-left-color: darkblue;
+}
+
+nav.dark .menu .item.active:first-child, nav.light .menu .item.active:first-child,
+nav.dark .menu .item.active:first-child:hover,
+nav.light .menu .item.active:first-child:hover{
+    border-top-left-radius: 10px;
+}
+
+nav.dark .menu .item.active:last-child, nav.light .menu .item.active:last-child,
+nav.dark .menu .item.active:last-child:hover,
+nav.light .menu .item.active:last-child:hover{
+    border-bottom-left-radius: 10px;
+}
+
+nav.dark .menu .item:hover{
     background-color: #eee1;
+}
+
+nav.light .menu .item:hover{
+    background-color: #cccb;
 }
 
 .menu .item .icon{
@@ -107,7 +173,6 @@ img{
 
 .menu .item img{
     width: 80%;
-    filter: invert(1);
 }
 
 .menu .item .menu_name{
