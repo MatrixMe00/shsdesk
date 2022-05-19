@@ -269,7 +269,8 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
             <li>Spreadsheet files with .xls or .xlsx as extensions are acceptable</li>
             <li>Your data should have headings for easy entry into the database</li>
             <li>Make sure you have uploaded all your houses and their required details</li>
-            <li>If you do not have the default spreadsheet file for upload, please click <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">here</a> to download</li>
+            <li>If you do not have the default spreadsheet file for upload, please click on <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">
+            document1</a> or <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">document2</a> to download</li>
         </ol>
         <br>
         <div class="message_box no_disp">

@@ -91,7 +91,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             <div id="middle">
                 <!--Dashboard-->
                 <div class="menu">
-                    <div class="item active" name="Dashboard" title="Dashboard" data-url="<?php echo $url?>/admin/admin/page_parts/dashboard1.php">
+                    <div class="item active" name="Dashboard" title="Dashboard" data-url="<?php echo $url?>/admin/admin/page_parts/dashboard.php">
                         <div class="icon">
                             <img src="<?php echo $url?>/assets/images/icons/speedometer-outline.svg" alt="Dashboard" />
                         </div>

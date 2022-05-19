@@ -262,8 +262,6 @@ $("span.item-event").click(function(){
     }else if($(this).parents(".notif_box")){
         table = "notification";
     }
-
-    alert(table); return;
     
 
     if(item_event == "edit"){
