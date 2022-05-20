@@ -49,10 +49,15 @@
 
     <div class="content" style="background-color: #ffc107">
         <div class="head">
-            <h2>0</h2>
+            <h2>
+                <?php 
+                    $res = $connect->query("SELECT count(indexNumber) AS total FROM enrol_table WHERE enrolDate LIKE '".date('Y-m-d')."%'");
+                    echo $res->fetch_assoc()["total"];
+                ?>
+            </h2>
         </div>
         <div class="body">
-            <span>Vistors today</span>
+            <span>Applications today</span>
         </div>
     </div>
 
@@ -82,13 +87,11 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction 
-                        FROM transaction
-                        WHERE Transaction_Expired=TRUE");
+                    $res = $connect->query("SELECT enrolDate FROM enrol_table");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){
-                        if(date("Y",strtotime($row["Transaction_Date"])) == date("Y")){
+                        if(date("Y",strtotime($row["enrolDate"])) == date("Y")){
                             $amount += $price;
                         }else{
                             continue;
@@ -107,14 +110,12 @@
     <div class="content pink">
         <div class="head">
             <h2>GHC
-            <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction 
-                        FROM transaction
-                        WHERE Transaction_Expired=TRUE");
+                <?php
+                    $res = $connect->query("SELECT enrolDate FROM enrol_table");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){
-                        if(date("W",strtotime($row["Transaction_Date"]) - 1) == date("W") - 1){
+                        if(date("W",strtotime($row["enrolDate"]) - 1) == date("W") - 1){
                             $amount += $price;
                         }else{
                             continue;
@@ -134,13 +135,11 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction 
-                        FROM transaction
-                        WHERE Transaction_Expired=TRUE");
+                    $res = $connect->query("SELECT enrolDate FROM enrol_table");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){
-                        if(date("W",strtotime($row["Transaction_Date"])) == date("W")){
+                        if(date("W",strtotime($row["enrolDate"])) == date("W")){
                             $amount += $price;
                         }else{
                             continue;
@@ -160,7 +159,7 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction 
+                    $res = $connect->query("SELECT Transaction_Date, Deduction 
                         FROM transaction
                         WHERE Transaction_Expired=TRUE");
                     

@@ -151,14 +151,11 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction 
-                        FROM transaction 
-                        WHERE schoolBought=$user_school_id
-                        AND Transaction_Expired=TRUE");
+                    $res = $connect->query("SELECT enrolDate FROM enrol_table WHERE shsID=$user_school_id");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){
-                        if(date("Y",strtotime($row["Transaction_Date"])) == date("Y")){
+                        if(date("Y",strtotime($row["enrolDate"])) == date("Y")){
                             $amount += $price;
                         }else{
                             continue;
@@ -178,14 +175,11 @@
         <div class="head">
             <h2>GHC
             <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction 
-                        FROM transaction 
-                        WHERE schoolBought=$user_school_id
-                        AND Transaction_Expired=TRUE");
+                    $res = $connect->query("SELECT enrolDate FROM enrol_table WHERE shsID=$user_school_id");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){
-                        if(date("W",strtotime($row["Transaction_Date"]) - 1) == date("W") - 1){
+                        if(date("W",strtotime($row["enrolDate"]) - 1) == date("W") - 1){
                             $amount += $price;
                         }else{
                             continue;
@@ -205,14 +199,11 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction 
-                        FROM transaction 
-                        WHERE schoolBought=$user_school_id
-                        AND Transaction_Expired=TRUE");
+                    $res = $connect->query("SELECT enrolDate FROM enrol_table WHERE shsID=$user_school_id");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){
-                        if(date("W",strtotime($row["Transaction_Date"])) == date("W")){
+                        if(date("W",strtotime($row["enrolDate"])) == date("W")){
                             $amount += $price;
                         }else{
                             continue;
@@ -233,15 +224,12 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $temp_price = 10;
-                    $res = $connect->query("SELECT transactionID, Transaction_Date, amountPaid, Deduction 
-                        FROM transaction 
-                        WHERE schoolBought=$user_school_id
-                        AND Transaction_Expired=TRUE");
+                    $temp_price = fetchData("price","roles","id=4")["price"];
+                    $res = $connect->query("SELECT enrolDate FROM enrol_table WHERE shsID=$user_school_id");
                     
                     $amount = 0;
                     while($row = $res->fetch_array()){
-                        if(date("Y",strtotime($row["Transaction_Date"])) == date("Y")){
+                        if(date("Y",strtotime($row["enrolDate"])) == date("Y")){
                             $amount += $temp_price;
                         }else{
                             continue;

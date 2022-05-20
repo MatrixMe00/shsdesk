@@ -245,15 +245,14 @@
 
 <section class="page_setup">
     <div class="head">
-        <h2>Your Notifications</h2>
+        <h2>All Notifications</h2>
     </div>
     <?php
-        $result = $connect->query("SELECT DISTINCT n.* 
-            FROM notification n JOIN reply r 
-            ON n.ID = r.Comment_id 
-            WHERE r.Read_by LIKE '%$user_username%'
-            AND n.Read_by LIKE '%$user_username%'
+        $result = $connect->query("SELECT * 
+            FROM notification
+            WHERE Read_by LIKE '%$user_username%'
             ORDER BY ID DESC");
+
         if($result->num_rows > 0){
             
     ?>
