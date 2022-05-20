@@ -651,15 +651,15 @@
             $send_name = $_REQUEST["send_name"];
             $send_phone = $_REQUEST["send_phone"];
 
-            $price = fetchData("user_role","payment","id=$row_id")["user_role"];
-            $price = fetchData("price","roles","id=$price")["price"];
+            $role = fetchData("user_role","payment","id=$row_id")["user_role"];
+            $price = fetchData("price","roles","id=$role")["price"];
             
             if(empty($update_channel) || $update_channel === ""){
                 $update_channel = fetchData("method","payment","id=$row_id")["method"];
             }
             
-            $number = round($amount / $price);
             $amount += $deduction;
+            $number = round($amount / $price);
 
             if(!empty($update_status)){
                 $sql = "UPDATE payment SET transactionReference=?, contactName=?, contactNumber=?, method=?, amount=?, deduction=?, studentNumber=?, date=?, status=? WHERE id=?";
