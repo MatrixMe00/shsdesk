@@ -58,20 +58,20 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         </div>
     </div>
 
-    <!-- <div class="content" style="background-color: #dc3545">
+    <div class="content" style="background-color: #dc3545">
         <div class="head">
             <h2>
                 <?php
-                    // $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND boardingStatus = 'Day'");
+                    $res = $connect->query("SELECT transactionID FROM transaction WHERE LOWER(contactName)='shsdesk'");
                     
-                    // echo $res->num_rows;
+                    echo $res->num_rows;
                 ?>
             </h2>
         </div>
         <div class="body">
-            <span>Day Students</span>
+            <span>SHSDesk Transactions</span>
         </div>
-    </div> -->
+    </div>
 </section>
 
 <section style="text-align: center;">
