@@ -134,6 +134,14 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                         </div>
                         <?php }?>
                     </div>
+                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/all_students.php" name="students" title="Students List">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/people-outline.svg" alt="students" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Students List</span>
+                        </div>
+                    </div>
                 </div>
                 
                 <!--Management of students-->

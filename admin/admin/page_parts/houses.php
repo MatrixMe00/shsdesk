@@ -111,7 +111,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 
             if($res->num_rows){
         ?>
-        <table>
+        <table class="full">
             <thead>
                 <tr>
                     <td>No.</td>

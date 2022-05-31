@@ -1,3 +1,6 @@
+<head>
+    <title>Test Area</title>
+</head>
 <?php 
 include_once("includes/session.php");
 $ad_gender = "Female";
@@ -255,4 +258,5 @@ $exeat_town = "Nungua";
 $exeat_type = "external";
 
 // include_once($rootPath."/sms/sms.php");
+echo remakeNumber("027 928 4896", true);
 ?>

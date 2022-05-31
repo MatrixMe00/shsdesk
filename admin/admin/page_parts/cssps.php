@@ -83,11 +83,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
             </div>
             <?php if($user_details["role"] != 2 && $user_details["role"] <= 5){?>
             <div class="btn">
-                <?php if(isset($_REQUEST["school_id"])){?>
-                <button onclick="('.tabs .tab_btn.active').click()" class="secondary">Refresh</button>
-                <?php }else{?>
-                <button onclick="location.reload()" class="secondary">Refresh</button>
-                <?php } ?>
+                <button onclick="$('#lhs .menu .item.active').click()" class="secondary">Refresh</button>
             </div>
             <?php } ?>
             <div class="btn">
@@ -108,7 +104,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     </div>
 </section>
 
-<section id="placement_search">   
+<section id="placement_search" class="table_section">   
     <div class="display">
         <div class="title_bar flex flex-space-content flex-center-align teal">
             <div id="title">Registered Students [Last 20 Registration]</div>
@@ -133,16 +129,20 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <label for="search" style="width: 80%">
                         <input type="search" name="search"
                          title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
-                         autocomplete="off" style="border: 1px solid lightgrey;">
+                         autocomplete="off" style="border: 1px solid lightgrey;" data-search-value="register">
                     </label>
-                    
-                    <div class="btn">
-                        <button name="search_submit" value="register">Search</button>
-                    </div>
+                    <label for="row_display">
+                        <input type="number" name="row_display" id="row_display" class="light" value="10" max="100" min="5">
+                    </label>
                 </div>
             </div>
-            <div class="body">
-                <table>
+            <div class="head no_disp">
+                <div class="btn">
+                    <button data-year="1" data-break-point="10"></button>
+                </div>
+            </div>
+            <div class="body year" id="year1">
+                <table class="sm-full">
                     <thead>
                         <tr>
                             <td>Index Number</td>
@@ -160,22 +160,35 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                         <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="true">
                             <td><?php echo $row["indexNumber"] ?></td>
                             <td><?php echo $row["enrolCode"] ?></td>
-                            <td><?php echo $row["Lastname"]." ".$row["Othernames"] ?></td>
+                            <td class="fullname"><?php echo $row["Lastname"]." ".$row["Othernames"] ?></td>
                             <td><?php echo $row["boardingStatus"] ?></td>
                             <td><?php echo $row["programme"] ?></td>
                             <td><?php echo $row["aggregate"]?></td>
                             <td><?php echo $row["Gender"] ?></td>
                             <td><?php echo $row["trackID"] ?></td>
                             <td class="flex flex-wrap">
-                                <span class="item-event edit">Edit</span>
-                                <span class="item-event delete">Delete</span>
+                                <span class="item-event edit cssps">Edit</span>
+                                <span class="item-event delete cssps">Delete</span>
                             </td>
                         </tr>
                         <?php } ?>
                     </tbody>
-                    <tfoot class="no_disp">
+                    <tfoot>
                         <tr>
-                            <td colspan="6">No Results returned</td>
+                            <td class="pages" colspan="2">
+                                <div class="flex">
+                                    <div class="pagination">
+                                        Page <span class="current"></span>  <strong>of</strong> <span class="last"></span>
+                                    </div>
+                                    <?php if($res->num_rows > 0) : ?>
+                                    <div class="navs">
+                                        <span class="item-event prev" data-break-point="10">Prev</span>
+                                        <span class="item-event next" data-break-point="10">Next</span>
+                                    </div>
+                                    <?php endif; ?>
+                                </div>
+                            </td>
+                            <td class="result" colspan="7"></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -207,16 +220,20 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <label for="search" style="width: 80%">
                         <input type="search" name="search"
                          title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
-                         autocomplete="off" style="border: 1px solid lightgrey;">
+                         autocomplete="off" style="border: 1px solid lightgrey;" data-search-value="unregister">
                     </label>
-                    
-                    <div class="btn">
-                        <button name="search_submit" value="unregister">Search</button>
-                    </div>
+                    <label for="row_display">
+                        <input type="number" name="row_display" id="row_display" class="light" value="10" max="100" min="5">
+                    </label>
                 </div>
             </div>
-            <div class="body">
-                <table>
+            <div class="head no_disp">
+                <div class="btn">
+                    <button data-year="2" data-break-point="10"></button>
+                </div>
+            </div>
+            <div class="body year" id="year2">
+                <table class="sm-full">
                     <thead>
                         <tr>
                             <td>Index Number</td>
@@ -232,22 +249,35 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                         <?php while($row = $res->fetch_assoc()){?>
                         <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="false">
                             <td><?php echo $row["indexNumber"] ?></td>
-                            <td><?php echo $row["Lastname"]." ".$row["Othernames"] ?></td>
+                            <td class="fullname"><?php echo $row["Lastname"]." ".$row["Othernames"] ?></td>
                             <td><?php echo $row["boardingStatus"] ?></td>
                             <td><?php echo $row["programme"] ?></td>
                             <td><?php echo $row["aggregate"]?></td>
                             <td><?php echo $row["Gender"] ?></td>
                             <td><?php echo $row["trackID"] ?></td>
                             <td class="flex flex-wrap">
-                                <span class="item-event edit">Edit</span>
-                                <span class="item-event delete">Delete</span>
+                                <span class="item-event edit cssps">Edit</span>
+                                <span class="item-event delete cssps">Delete</span>
                             </td>
                         </tr>
                         <?php } ?>
                     </tbody>
-                    <tfoot class="no_disp">
+                    <tfoot>
                         <tr>
-                            <td colspan="6">No Results returned</td>
+                            <td class="pages" colspan="2">
+                                <div class="flex">
+                                    <div class="pagination">
+                                        Page <span class="current"></span>  <strong>of</strong> <span class="last"></span>
+                                    </div>
+                                    <?php if($res->num_rows > 0) : ?>
+                                    <div class="navs">
+                                        <span class="item-event prev" data-break-point="10">Prev</span>
+                                        <span class="item-event next" data-break-point="10">Next</span>
+                                    </div>
+                                    <?php endif; ?>
+                                </div>                                
+                            </td>
+                            <td class="result" colspan="7"></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -261,58 +291,12 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     </div>
 </section>
 
-<div id="modal_2" class="fixed no_disp form_modal_form">
-    <form action="<?php echo $url?>/read_excel.php" name="importForm" enctype="multipart/form-data" method="POST">
-        <h5>NB:</h5>
-        <ol>
-            <li>Your file should be a spreadsheet file</li>
-            <li>Spreadsheet files with .xls or .xlsx as extensions are acceptable</li>
-            <li>Your data should have headings for easy entry into the database</li>
-            <li>Make sure you have uploaded all your houses and their required details</li>
-            <li>If you do not have the default spreadsheet file for upload, please click on <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">
-            document1</a> or <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">document2</a> to download</li>
-        </ol>
-        <br>
-        <div class="message_box no_disp">
-            <span class="message">Here is a test message</span>
-            <div class="close"><span>&cross;</span></div>
-        </div>
-        <label for="import" class="file_label">
-            <span class="label_title">Upload your file here</span>
-            <div class="fore_file_display">
-                <input type="file" name="import" id="import" accept=".xls, .xlsx">
-                <span id="plus">+</span>
-                <span id="display_file_name">Choose or drag your file here</span>
-            </div>
-        </label>
-        <div class="flex">
-            <label for="submit" class="btn">
-                <button type="submit" name="submit" value="upload">Upload</button>
-            </label>
-            <label for="close" class="btn">
-                <button type="reset" name="close">Close</button>
-            </label>
-        </div>
-    </form>
+<div id="modal_2" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <?php @include_once($rootPath."/admin/admin/page_parts/file_upload.php"); ?>
 </div>
 
 <div id="table_del" class="modal_yes_no fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-    <div class="yes_no_container">
-        <div class="body">
-            <p id="warning_content">Do you want to delete?</p>
-        </div>
-
-        <form action="<?php echo $url?>/admin/admin/submit.php" class="no_disp" name="table_yes_no_form" id="table_yes_no_form">
-            <input type="hidden" name="indexNumber">
-            <input type="hidden" name="school_id" value="<?php echo $user_school_id?>">
-            <input type="hidden" name="submit" value="table_yes_no_submit">
-        </form>
-
-        <div class="foot btn flex flex-center-content flex-center-align">
-            <button type="button" name="yes_button" class="success" onclick="$('#table_yes_no_form').submit();">Yes</button>
-            <button type="button" name="no_button" class="red" onclick="$('#table_del').addClass('no_disp')">No</button>
-        </div>
-    </div>
+    <?php @include_once($rootPath."/admin/admin/page_parts/table_del.php"); ?>
 </div>
 
 <div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
@@ -336,3 +320,15 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 <?php } ?>
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/table.js?v=<?php echo time()?>" async></script>
+<script>
+    $(document).ready(function(){
+        $(".table_section .head .btn button").click();
+    })
+
+    $("input[name=row_display]").change(function(){
+        myval = $(this).val();
+        $(this).parents(".display").children("#content").children(".head").children(".btn").children("button").attr("data-break-point", myval);
+        $(this).parents(".display").find(".navs").children("span").attr("data-break-point", myval);
+        $(this).parents(".display").children("#content").children(".head").children(".btn").children("button").click();
+    })
+</script>

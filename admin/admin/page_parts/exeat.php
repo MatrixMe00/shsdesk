@@ -83,7 +83,7 @@
     </div>
     <?php 
         $sql = "SELECT * FROM exeat WHERE school_id = $user_school_id";
-        $result = $connect->query($sql);
+        $result = $connect2->query($sql);
 
         if($result->num_rows > 0){
     ?>

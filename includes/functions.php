@@ -466,6 +466,45 @@
     }
 
     /**
+     * Function to directly query connect2 database
+     * 
+     * @param string $columns This receives the roles to fetch
+     * @param string $table Receives table name
+     * @param string $where Receives a where clause command
+     * @param int $limit Number of rows to deliver. Default is 1. Use 0 to fetch everything
+     * 
+     * @return string returns a string of data or error
+     * @return array returns an array of data
+     */
+    function fetchData1(string $columns, string $table, string $where, int $limit = 1){
+        global $connect2;
+
+        $sql = "SELECT $columns
+                FROM $table
+                WHERE $where";
+        
+        //determine if it should set all or some
+        if($limit > 0){
+            $sql .= " LIMIT $limit";
+        }
+        
+        $query = $connect2->query($sql);
+
+        if($query->num_rows > 0){
+            if($query->num_rows == 1){
+                $result = $query->fetch_assoc();
+            }else{
+                $result = $query->fetch_all();
+            }
+                
+        }else{
+            $result = "empty";
+        }       
+
+        return $result;
+    }
+
+    /**
      * This is a function to format entry of names into proper nouns
      * 
      * @param string $name The name of the person to be formated
@@ -700,5 +739,44 @@
         }
 
         return $amount;
+    }
+
+    /**
+     * This function is used to format numbers into international and local formats
+     * 
+     * @param string $number This is the number to be formatted
+     * @param bool $international This determines if it should be in international format or local format
+     * 
+     * @return string returns a string of the formatted number
+     */
+    function remakeNumber(string $number, bool $international = false){
+        if($international){     //add +233
+            //remove any space in it
+            $number = str_replace(" ","",$number);
+
+            //make sure it begins with 0
+            if($number[0] != "0" && strlen($number) < 10){
+                $number = "0".$number;
+            }
+
+            //replace the zero at the beginning
+            if(strlen($number) < 13){
+                $number = substr_replace($number,"233", 0, 1);
+            }
+        }else{      //remove +233
+            if(strlen($number) >= 12)
+                $number = str_replace("+233", "0", $number);
+            
+            //insert spaces
+            if(strlen($number) < 12){
+                $number = str_split($number, 3);
+
+                //set number in xxx xxx xxxx
+                $number = $number[0]." ".$number[1]." ".$number[2].$number[3];
+            }
+        }
+             
+
+        return $number;
     }
 ?>

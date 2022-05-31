@@ -13,7 +13,7 @@
     if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
         $submit = $_REQUEST["submit"];
 
-        if($submit == "upload" || $submit == "upload_ajax"){
+        if($submit == "upload" || $submit == "upload_ajax" || $submit == "upload_students" || $submit == "upload_students_ajax"){
             if(isset($_FILES['import']) && $_FILES["import"]["tmp_name"] != NULL){
                 //retrieve file extension
                 $ext = strtolower(fileExtension("import"));
@@ -35,12 +35,13 @@
                     $max_column = $sheet->getHighestDataColumn();
                     $max_row = $sheet->getHighestDataRow();
 
-                    //check if enrolment or house is exact file
-                    //enrolment end at J, house end at F
-                    if($max_column != "J" && $max_column != "F" && $max_column != "H" && $max_column != "G"){
+                    $acceptable = ["J","F","H","G","I"];
+
+                    //check if right file is sent
+                    if(!array_search($max_column, $acceptable)){
                         echo "Invalid file detected. Please send the correct file to continue";
                         exit(1);
-                    }elseif($max_column == "J" || $max_column == "F"){
+                    }elseif($max_column == "J" || $max_column == "F" || $max_column == "I"){
                         //grab the detail in the first cell
                         $cell =  $sheet->getCell("A1");
                         $cellValue = $cell->getValue();
@@ -262,6 +263,70 @@
                                 }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
                                     echo "Detail for <b>$indexNumber</b> not written. Gender must either be Male or Female";
                                 }           
+                            }else{
+                                echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
+                            }                            
+                        }
+                    }elseif($max_column == "I"){
+                        for($row=2; $row <= $max_row; $row++){
+                            //grab columns
+                            for($col = 0; $col <= $headerCounter; $col++){
+                                $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
+                                
+                                switch ($col) {
+                                    case 0:
+                                        $indexNumber = $cellValue;
+                                        break;
+                                    case 1:
+                                        $Lastname = formatName($cellValue);
+                                        break;
+                                    case 2:
+                                        $Othernames = formatName($cellValue);
+                                        break;
+                                    case 3:
+                                        $Gender = formatName($cellValue);
+                                        break;
+                                    case 4:
+                                        $studentYear = intval($cellValue);
+                                        break;
+                                    case 5:
+                                        $house = strtolower($cellValue);
+                                        $houseID = fetchData("id","houses","LOWER(title)='$house' AND schoolID=$user_school_id");
+                                        break;
+                                    case 6:
+                                        $boardingStatus = formatName($cellValue);
+                                        break;
+                                    case 7:
+                                        $programme = formatName($cellValue);
+                                        break;
+                                    case 8:
+                                        $guardianContact = remakeNumber($cellValue, true);
+                                        break;    
+                                    default:
+                                        "Buffer count is beyond expected input count";
+                                        exit(1);
+                                }
+                            }
+    
+                            //check if index number exists and insert data into database
+                            $index = fetchData1("indexNumber","students_table","indexNumber='$indexNumber'");
+    
+                            if($index == "empty"){
+                                $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, guardianContact, programme, boardingStatus)
+                                    VALUES (?,?,?,?,?,?,?,?,?,?)";
+                                $stmt = $connect2->prepare($sql);
+                                $stmt = $connect2->prepare($sql);
+                                $stmt->bind_param("ssssiiisss",$indexNumber, $Lastname, $Othernames, $Gender, $houseID, $user_school_id, $studentYear,
+                                    $guardianContact, $programme, $boardingStatus);
+                                if($stmt->execute()){
+                                    if($row == $max_row){
+                                        echo "success";
+                                    }
+                                }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
+                                    echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
+                                }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
+                                    echo "Detail for $indexNumber not written. Gender must either be Male or Female";
+                                }                                
                             }else{
                                 echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
                             }                            

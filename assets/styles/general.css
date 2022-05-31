@@ -60,10 +60,44 @@ table{
     margin: 2.5%;
 }
 
+table.full{
+    width: 100%;
+    margin: 0;
+}
+
+table.sm-full{
+    width: 98%;
+    margin: 1%;
+}
+
+table.space-top{
+    margin-top: 1%;
+}
+
 table tbody{
     overflow: auto;
 }
 
+table tbody tr.empty td{
+    padding: 1em;
+    text-align: center;
+}
+
+td.pages > div{
+    padding: 0.2rem 0.6em;
+}
+
+td.pages > div:first-child{
+    padding-left: 0;
+}
+
+td.pages .navs span{
+    font-size: normal !important;
+}
+
+.search{
+    margin: 1% 1% 0;
+}
 /*naming the colors*/
 .blue, .primary{
     background-color: var(--blue);
@@ -361,6 +395,7 @@ form .label.flex-column label{
     border: 1px solid #ccc;
     background-color: #fff;
     margin: 3px;
+    width: -moz-fit-content;
     width: fit-content;
     min-width: 20vw;
 }

@@ -153,3 +153,124 @@ $("form[name=adminUpdateStudent]").submit(function(event){
 
     messageBoxTimeout(form_name, message, message_type, 0);
 })
+
+$(".table_section .head button").click(function(){
+    $(".table_section .head button.primary").removeClass("primary").addClass("light");
+    $(this).toggleClass("light primary");
+})
+
+$(".navs span").click(function(){
+    prev = false, next = false, last = 0;
+
+    parent = $(this).parents(".year").attr("id");
+
+    if($(this).hasClass("prev")){
+        prev = true;
+    }else{
+        next = true;
+    }
+    
+    rows = parseInt($("#" + parent + " table tbody tr").length);
+    breakPoint = parseInt($(this).attr("data-break-point")), current = 0;
+
+    if(rows < breakPoint){
+        breakPoint = rows;
+    }
+    
+    $("#" + parent + " table tbody tr").addClass("no_disp");
+    
+    if(prev){           //the previous button
+        if(parseInt($("#" + parent + " table tfoot tr td .current").html()) > 0){
+            if($("#" + parent + " table tfoot tr td .current").html() != ""){
+                current = breakPoint * parseInt($("#" + parent + " table tfoot tr td .current").html());
+                last = current - breakPoint;
+            }else{
+                last = breakPoint;
+            }
+
+            for(var i = (last-breakPoint) + 1; i <= last; i++){
+                $("#" + parent + " table tbody tr:nth-child(" + i + ")").removeClass("no_disp");
+            }
+
+            $("#" + parent + " table tfoot tr td .current").html(parseInt(last/breakPoint));
+            if(rows % breakPoint == 0){
+                $("#" + parent + " table tfoot tr td .last").html(parseInt(rows/breakPoint));
+            }else{
+                $("#" + parent + " table tfoot tr td .last").html(parseInt(rows/breakPoint) + 1);
+            }
+        }    
+    }else if(next){     //the next button
+        if(parseInt($("#" + parent + " table tfoot tr td .current").html()) < parseInt($("#" + parent + " table tfoot tr td .last").html())){
+            if($("#" + parent + " table tfoot tr td .current").html() != ""){
+                current = breakPoint * parseInt($("#" + parent + " table tfoot tr td .current").html());
+                last = current + breakPoint;
+            }else{
+                last = breakPoint;
+            }
+
+            for(var i = current+1; i < last+1; i++){
+                $("#" + parent + " table tbody tr:nth-child(" + i + ")").removeClass("no_disp");
+            }
+
+            $("#" + parent + " table tfoot tr td .current").html(parseInt(last/breakPoint));
+            if(rows % breakPoint == 0){
+                $("#" + parent + " table tfoot tr td .last").html(parseInt(rows/breakPoint));
+            }else{
+                $("#" + parent + " table tfoot tr td .last").html(parseInt(rows/breakPoint) + 1);
+            }
+        }            
+    }
+
+    if(parseInt(last/breakPoint) - 1 == 0){
+        $("#" + parent + " .navs span.prev").addClass("no_disp");
+    }else{
+        $("#" + parent + " .navs span.prev").removeClass("no_disp");
+    }
+
+    if(parseInt(last/breakPoint) == parseInt($("#" + parent + " table tfoot tr td .last").html())){
+        $("#" + parent + " .navs span.next").addClass("no_disp");
+    }else{
+        $("#" + parent + " .navs span.next").removeClass("no_disp");
+    }
+})
+
+$(".table_section .head .btn button").click(function(){
+    //retrieve year number
+    year = $(this).attr("data-year");
+
+    //display all navigations
+    $("#year" + year + " .navs span").removeClass("no_disp");
+
+    //hide all year sections and display selected year
+    $(".table_section .body .year").addClass("no_disp");
+    $(".table_section .body #year" + year).removeClass("no_disp");
+
+    //retrieve number of rows and breakpoints
+    rows = parseInt($("#year" + year + " table tbody tr").length);
+    breakPoint = parseInt($(this).attr("data-break-point")), current = 0;
+
+    if(rows < breakPoint){
+        breakPoint = rows;
+    }
+
+    //hide all rows of current display
+    $("#year" + year + " table tbody tr").addClass("no_disp");
+
+    //display necessary spots
+    for(var i = 1; i <= breakPoint; i++){
+        $("#year" + year + " table tbody tr:nth-child(" + i + ")").removeClass("no_disp");
+    }
+
+    //update page numbers
+    $("#year" + year + " table tfoot tr td .current").html("1");
+    if(parseInt(rows/breakPoint) > 1 && rows%breakPoint == 0){
+        $("#year" + year + " table tfoot tr td .last").html(parseInt(rows/breakPoint));
+    }else if(parseInt(rows/breakPoint) > 1 || rows%breakPoint > 0){
+        $("#year" + year + " table tfoot tr td .last").html(parseInt(rows/breakPoint) + 1);
+    }else{
+        $("#year" + year + " table tfoot tr td .last").html("1");
+        $("#year" + year + " .navs span.next").addClass("no_disp");
+    }
+
+    $("#year" + year + " .navs span.prev").addClass("no_disp");
+})

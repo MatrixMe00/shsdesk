@@ -13,9 +13,9 @@ if(isset($_REQUEST['submit'])){
         $recipients = [$_REQUEST["phone"]];
         $message = $_REQUEST['message'];
     }elseif($submit == 'exeat_request' || $submit == 'exeat_request_ajax'){
-        $student = fetchData("lastname, othername, primaryPhone","enrol_table","indexNumber='$student_index'");
+        $student = fetchData1("lastname, othernames, guardianContact","students_table","indexNumber='$student_index'");
         if(is_array($student)){
-            $recipients = [$student["primaryPhone"]];
+            $recipients = [$student["guardianContact"]];
             if(intval(date("H")) < 12){
                 $message = "Good Morning! ";
             }elseif(intval(date("H")) < 17){
@@ -27,6 +27,7 @@ if(isset($_REQUEST['submit'])){
             $message .= ", has received an ".formatName($exeat_type)." Exeat to $exeat_town";
             $senderId = fetchData("smsID","admissiondetails","schoolID= $user_school_id");
         }else{
+            echo "<script>alert('Unrecognized student stored')</script>";
             exit(1);
         }
     }

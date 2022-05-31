@@ -21,6 +21,7 @@ SET time_zone = "+00:00";
 -- Database: `shsdesk`
 -- Create the database if it does not exist in the engine
 CREATE DATABASE IF NOT EXISTS shsdesk;
+CREATE DATABASE IF NOT EXISTS shsdesk2;
 
 -- --------------------------------------------------------
 
@@ -143,8 +144,8 @@ CREATE TABLE `shsdesk`.`enrol_table` (
 -- Table structure for table `exeat`
 --
 
-CREATE TABLE `shsdesk`.`exeat` (
-  `id` int(11) NOT NULL,
+CREATE TABLE `shsdesk2`.`exeat` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `indexNumber` varchar(20) NOT NULL,
   `houseID` int(11) NOT NULL,
   `exeatTown` varchar(70) NOT NULL,
@@ -155,8 +156,11 @@ CREATE TABLE `shsdesk`.`exeat` (
   `exeatType` enum('Internal','External') NOT NULL,
   `school_id` int(11) NOT NULL,
   `givenBy` varchar(60) NOT NULL,
-  `returnStatus` tinyint(1) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `returnStatus` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `houseID` (`houseID`,`school_id`),
+  KEY `indexNumber` (`indexNumber`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 
 --
 -- Dumping data for table `exeat`
@@ -420,6 +424,49 @@ CREATE TABLE `shsdesk`.`transaction` (
 --
 -- Dumping data for table `transaction`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `students_table`
+--
+
+CREATE TABLE `shsdesk2`.`students_table` ( 
+  `indexNumber` VARCHAR(25) NOT NULL ,
+  `Lastname` VARCHAR(20) NOT NULL ,
+  `Othernames` VARCHAR(40) NOT NULL ,
+  `Gender` ENUM('Male','Female') NOT NULL ,
+  `houseID` INT NOT NULL ,
+  `school_id` INT NOT NULL ,
+  `studentYear` INT NOT NULL ,
+  `guardianContact` VARCHAR(20) NOT NULL ,
+  `program` VARCHAR(120) NOT NULL ,
+  `boardingStatus` ENUM('Boarder','Day') NOT NULL ,
+  PRIMARY KEY (`indexNumber`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `students_table`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `record_cleaning`
+--
+
+CREATE TABLE `shsdesk2`.`record_cleaning` ( 
+  `id` INT NOT NULL AUTO_INCREMENT , 
+  `school_id` INT NOT NULL , 
+  `cleanDate` VARCHAR(25) NOT NULL , 
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `record_cleaning`
+--
+
+-- --------------------------------------------------------
 
 --
 -- Indexes for dumped tables

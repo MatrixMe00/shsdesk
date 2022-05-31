@@ -1,9 +1,24 @@
 $("table tbody tr .edit").click(function(){
+    //initiate variables to be used to check which table to use
+    cssps = false, student = false;
+
+    //determine which kind of table is being used
+    if($(this).hasClass("cssps")){
+        cssps = true;
+    }else if($(this).hasClass("studs")){
+        student = true;
+    }
+
     //take id number
     id_number = $(this).parents("tr").attr("data-index");
-    registered = $(this).parents("tr").attr("data-register");
 
-    dataString = "index_number=" + id_number + "&registered=" + registered + "&submit=fetchStudentDetails";
+    dataString = "";
+    if(cssps){
+        registered = $(this).parents("tr").attr("data-register");
+        dataString = "index_number=" + id_number + "&registered=" + registered + "&submit=fetchStudentDetails";
+    }else if(student){
+        dataString = "index_number=" + id_number + "&submit=fetchStudentsDetail";
+    }       
 
     //display form modal
     $("#updateStudent").removeClass("no_disp");
@@ -40,46 +55,82 @@ $("table tbody tr .edit").click(function(){
                 $("form[name=adminUpdateStudent] input[name=lname]").val(response["Lastname"]);
                 $("form[name=adminUpdateStudent] input[name=oname]").val(response["Othernames"]);
                 $("form[name=adminUpdateStudent] select[name=gender]").val(response["Gender"]);
+                $("form[name=adminUpdateStudent] select[name=house]").val(response["houseID"]);
+                
+                if(cssps){
+                    if(registered == "true"){
+                        $("form[name=adminUpdateStudent] select[name=house]").prop("disabled", false);
+                        $("form[name=adminUpdateStudent] label[for=house]").removeClass("no_disp");
+                    }else{
+                        $("form[name=adminUpdateStudent] select[name=house]").prop("disabled", true);
+                        $("form[name=adminUpdateStudent] label[for=house]").addClass("no_disp");
+                    }
 
-                if(registered == "true"){
-                    $("form[name=adminUpdateStudent] select[name=house]").prop("disabled", false).val(response["houseID"]);
+                    $("form[name=adminUpdateStudent] input[name=aggregate]").val(response["aggregate"]);
+                    $("form[name=adminUpdateStudent] input[name=jhs]").val(response["jhsAttended"]);
+                    $("form[name=adminUpdateStudent] input[name=dob]").val(response["dob"]);
+                    $("form[name=adminUpdateStudent] input[name=track_id]").val(response["trackID"]);
+                }else if(student){
+                    $("form[name=adminUpdateStudent] select, form[name=adminUpdateStudent] input").css("color", "black").prop("disabled", true);
                     $("form[name=adminUpdateStudent] label[for=house]").removeClass("no_disp");
-                }else{
-                    $("form[name=adminUpdateStudent] select[name=house]").prop("disabled", true);
-                    $("form[name=adminUpdateStudent] label[for=house]").addClass("no_disp");
+                    
+                    $("form[name=adminUpdateStudent] label[for=aggregate]").hide();
+                    $("form[name=adminUpdateStudent] label[for=jhs]").hide();
+                    $("form[name=adminUpdateStudent] label[for=dob]").hide();
+                    $("form[name=adminUpdateStudent] label[for=track_id]").hide();
+
+                    $("form[name=adminUpdateStudent] button[name=submit]").prop("disabled", true);
                 }
 
                 $("form[name=adminUpdateStudent] input[name=student_course]").val(response["programme"]);
-                $("form[name=adminUpdateStudent] input[name=aggregate]").val(response["aggregate"]);
-                $("form[name=adminUpdateStudent] input[name=jhs]").val(response["jhsAttended"]);
-                $("form[name=adminUpdateStudent] input[name=dob]").val(response["dob"]);
-                $("form[name=adminUpdateStudent] input[name=track_id]").val(response["trackID"]);
                 $("form[name=adminUpdateStudent] select[name=boarding_status]").val(response["boardingStatus"]);
 
                 //display form
                 $("#updateStudent form").removeClass("no_disp");
+            }else if(response["status"] == "no-result" && student){
+                alert("Data for requested student could not be found");
+                $("form[name=adminUpdateStudent] button[name=cancel]").click();
             }else{
-                alert("data not found");
+                alert("Requested data could not be found");
                 $("form[name=adminUpdateStudent] button[name=cancel]").click();
             }
         },
         error: function(r){
-            alert("Invalid request to server. Please try again later");
+            if(r.responseText == "no-submission"){
+                alert("No submission was detected. Please try again later");
+            }else{
+                alert("Invalid request to server or an error occurred on the server. Response sent to console. Ask admin for help");
+                console.log(r.responseText);
+            }
             $("form[name=adminUpdateStudent] button[name=cancel]").click();
         }
     })
 })
 
 $("table tbody tr .delete").click(function(){
+    //initiate variables to be used to check which table to use
+    cssps = false, student = false;
+
+    //determine which kind of table is being used
+    if($(this).hasClass("cssps")){
+        cssps = true;
+    }else if($(this).hasClass("studs")){
+        student = true;
+    }
+
     item_id = $(this).parents("tr").attr("data-index");
-    fullname = $(this).parents("tr").children("td:nth-child(2)").html();
+
+    if(cssps){
+        fullname = $(this).parents("tr").children("td.fullname").html();
+    }else if(student){
+        fullname = $(this).parents("tr").children("td.lname").html() + " " + $(this).parents("tr").children("td.oname").html();
+    }
 
     //display yes no modal box
     $("#table_del").removeClass("no_disp");
 
     //message to display
-    // item_header = $(this).parents(".item").children(".top").children(".flex").children(".content_title").children("h4").html();``
-    $("#table_del p#warning_content").html("Do you want to remove <b>" + fullname + "</b> from your database?");
+    $("#table_del p#warning_content").html("Do you want to remove <b>" + fullname + "</b> from your records?");
 
     //fill form with needed details
     $("#table_del input[name=indexNumber]").val(item_id);
@@ -88,13 +139,22 @@ $("table tbody tr .delete").click(function(){
 //delete all records button
 $("button#del_all").click(function(){
     item_id = "all";
-    fullname = "all records".toUpperCase();
+    fullname = "all records".toUpperCase(), message = "";
 
     //display yes no modal box
     $("#table_del").removeClass("no_disp");
 
     //message to display
-    $("#table_del p#warning_content").html("Are you sure you want to remove <b>" + fullname + "</b> from your database?");
+    if($(this).hasClass("studs")){
+        message = "This will clear all <b>THIRD YEARS</b> from the system, and in turn promote all <b>STUDENTS</b> in the system currently to the next class<br>" +  
+                    "Are you sure you want to proceed?";
+        //update model that we are deleting from next database
+        $("#table_del input[name=db]").val("shsdesk2");
+    }else{
+        message = "Are you sure you want to remove <b>" + fullname + "</b> from your database?";
+        $("#table_del input[name=db]").val("");
+    }
+    $("#table_del p#warning_content").html(message);
 
     //fill form with needed details
     $("#table_del input[name=indexNumber]").val(item_id);
@@ -102,10 +162,21 @@ $("button#del_all").click(function(){
 
 $("#table_del form").submit(function(e){
     e.preventDefault();
+
+    if($("form[name=table_yes_no_form] input[name=addFirstYears]").val() == "true"){
+        $("form[name=table_yes_no_form] input[name=submit]").val("addFirstYears");
+    }else{
+        $("form[name=table_yes_no_form] input[name=submit]").val("table_yes_no_submit");
+    }
+
     response = formSubmit($(this), $("form[name=table_yes_no_form] input[name=submit]", false));
     if(response == true){
         if($("#table_del input[name=indexNumber]").val() == "all"){
-            location.reload();
+            $("#lhs .menu .item.active").click();
+        }
+
+        if($("form[name=table_yes_no_form] input[name=addFirstYears]").val() == "true"){
+            $("form[name=table_yes_no_form] input[name=submit]").val("table_yes_no_submit");
         }
 
         //remove row from table

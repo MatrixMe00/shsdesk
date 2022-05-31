@@ -55,7 +55,7 @@
 </section>
  <?php } ?>
 
-<section id="content">
+<section id="content" class="table_section">
     <?php 
         $sql = "SELECT DISTINCT c.*, e.enrolDate, e.enrolCode
             FROM cssps c JOIN enrol_table e
@@ -71,18 +71,20 @@
             <div class="flex flex-center-align">
                 <label for="search" style="width: 80%">
                     <input type="search" name="search"
-                    title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
-                    autocomplete="off">
+                     title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
+                     autocomplete="off" style="border: 1px solid lightgrey;" data-search-value="unregister">
                 </label>
-                   
-                <div class="btn">
-                    <button name="search_submit" value="register">Search</button>
-                </div>
+                <label for="row_display">
+                    <input type="number" name="row_display" id="row_display" class="light" value="10" max="100" min="5">
+                </label>
             </div>
         </div>
+        <div class="btn no_disp">
+            <button data-year="1" data-break-point="10"></button>
+        </div>
     </div>
-    <div class="body">
-        <table>
+    <div class="body year" id="year1">
+        <table class="sm-full">
             <tfoot>
                 <tr>
                     <td colspan="7"></td>
@@ -104,20 +106,38 @@
                 <?php while($row=$res->fetch_assoc()){ ?>
                 <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="true">
                     <td><?php echo $row["indexNumber"] ?></td>
-                    <td><?php echo $row["Lastname"] ?></td>
-                    <td><?php echo $row["Othernames"] ?></td>
+                    <td class="lname"><?php echo $row["Lastname"] ?></td>
+                    <td class="oname"><?php echo $row["Othernames"] ?></td>
                     <td><?php echo $row["enrolCode"] ?></td>
                     <td><?php echo $row["programme"] ?></td>
                     <td><?php echo $row["aggregate"] ?></td>
                     <td><?php echo $row["boardingStatus"] ?></td>
                     <td><?php echo $row["enrolDate"] ?></td>
                     <td class="flex flex-wrap">
-                        <span class="item-event edit">Edit</span>
-                        <span class="item-event delete">Delete</span>
+                        <span class="item-event edit cssps">Edit</span>
+                        <span class="item-event delete studs">Delete</span>
                     </td>
                 </tr>
                 <?php } ?>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td class="pages" colspan="2">
+                        <div class="flex">
+                            <div class="pagination">
+                                Page <span class="current"></span>  <strong>of</strong> <span class="last"></span>
+                            </div>
+                            <?php if($res->num_rows > 0) : ?>
+                            <div class="navs">
+                                <span class="item-event prev" data-break-point="10">Prev</span>
+                                <span class="item-event next" data-break-point="10">Next</span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+                    <td class="result" colspan="7"><?= $res->num_rows ?> results were returned</td>
+                </tr>
+            </tfoot>
         </table>
     </div>
     <?php }else{ ?>
@@ -154,3 +174,15 @@
 <script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js" async></script>
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/table.js?v=<?php echo time()?>" async></script>
+<script>
+    $(document).ready(function(){
+        $(".table_section .head .btn button").click();
+    })
+
+    $("input[name=row_display]").change(function(){
+        myval = $(this).val();
+        $(this).parents("#content").children(".head").children(".btn").children("button").attr("data-break-point", myval);
+        $(this).parents("#content").find(".navs").children("span").attr("data-break-point", myval);
+        $(this).parents("#content").children(".head").children(".btn").children("button").click();
+    })
+</script>

@@ -9,22 +9,6 @@
     //instance of the pdf and qrcode class
     $pdf = new \Mpdf\Mpdf();
 
-    function remakeNumber(string $number){
-        //remove +233
-        if(strlen($number) >= 12)
-            $number = str_replace("+233", "0", $number);
-        
-        //insert spaces
-        if(strlen($number) < 12){
-            $number = str_split($number, 3);
-
-            //set number in xxx xxx xxxx
-            $number = $number[0]." ".$number[1]." ".$number[2].$number[3];
-        }        
-
-        return $number;
-    }
-
     // $_GET["indexNumber"] = "012006601721";
     if((isset($_SESSION["ad_stud_index"]) && !empty($_SESSION["ad_stud_index"])) || isset($_GET["indexNumber"])){   
         //student lastname

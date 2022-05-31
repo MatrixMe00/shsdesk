@@ -81,9 +81,12 @@
  </section>
 
 
-<section class="section_container allocation flex-column">
+<section class="section_container allocation flex-column table_section">
     <div class="head" style="align-self: center">
         <h2>Boarding Students</h2>
+        <div class="btn no_disp">
+            <button data-year="1" data-break-point="10"></button>
+        </div>
     </div>
     <?php
         $res = $connect->query("SELECT DISTINCT (a.indexNumber), a.studentLname, a.studentOname, b.title, c.programme 
@@ -95,8 +98,20 @@
 
         if($res->num_rows > 0){
     ?>
-    <div class="body">
-        <table>
+    <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
+        <div class="flex flex-center-align">
+            <label for="search" style="width: 80%">
+                <input type="search" name="search"
+                 title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
+                 autocomplete="off" style="border: 1px solid lightgrey;" data-search-value="register">
+            </label>
+            <label for="row_display">
+                <input type="number" name="row_display" id="row_display" class="light" value="10" max="100" min="5">
+            </label>
+        </div>
+    </div>
+    <div class="body year" id="year1">
+        <table class="sm-full">
             <thead>
                 <tr>
                     <td>Index Number</td>
@@ -111,16 +126,34 @@
             ?>
                 <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="true">
                     <td><?php echo $row["indexNumber"] ?></td>
-                    <td><?php echo $row["studentLname"]." ".$row["studentOname"] ?></td>
+                    <td class="fullname"><?php echo $row["studentLname"]." ".$row["studentOname"] ?></td>
                     <td><?php echo $row["title"] ?></td>
                     <td><?php echo $row["programme"] ?></td>
                     <td class="flex flex-wrap">
-                        <span class="item-event edit">Edit</span>
-                        <span class="item-event delete">Delete</span>
+                        <span class="item-event edit cssps">Edit</span>
+                        <span class="item-event delete cssps">Delete</span>
                     </td>
                 </tr>
                 <?php } ?>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td class="pages" colspan="2">
+                        <div class="flex">
+                            <div class="pagination">
+                                Page <span class="current"></span>  <strong>of</strong> <span class="last"></span>
+                            </div>
+                            <?php if($res->num_rows > 0) : ?>
+                            <div class="navs">
+                                <span class="item-event prev" data-break-point="10">Prev</span>
+                                <span class="item-event next" data-break-point="10">Next</span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+                    <td class="result" colspan="7"></td>
+                </tr>
+            </tfoot>
         </table>  
     </div>
     <?php }else{
@@ -132,9 +165,12 @@
     ?>
 </section>
 
-<section class="section_container allocation flex-column">
+<section class="section_container allocation flex-column table_section">
     <div class="head" style="align-self: center">
         <h2>Day Students</h2>
+        <div class="btn no_disp">
+            <button data-year="2" data-break-point="10"></button>
+        </div>
     </div>
     <?php
         $res = $connect->query("SELECT DISTINCT (a.indexNumber), a.studentLname, a.studentOname, b.title, c.programme 
@@ -146,8 +182,20 @@
 
         if($res->num_rows > 0){
     ?>
-    <div class="body">
-        <table>
+    <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
+        <div class="flex flex-center-align">
+            <label for="search" style="width: 80%">
+                <input type="search" name="search"
+                 title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
+                 autocomplete="off" style="border: 1px solid lightgrey;" data-search-value="register">
+            </label>
+            <label for="row_display">
+                <input type="number" name="row_display" id="row_display" class="light" value="10" max="100" min="5">
+            </label>
+        </div>
+    </div>
+    <div class="body year" id="year2">
+        <table class="sm-full">
             <thead>
                 <tr>
                     <td>Index Number</td>
@@ -162,16 +210,34 @@
             ?>
                 <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="true">
                     <td><?php echo $row["indexNumber"] ?></td>
-                    <td><?php echo $row["studentLname"]." ".$row["studentOname"] ?></td>
+                    <td class="fullname"><?php echo $row["studentLname"]." ".$row["studentOname"] ?></td>
                     <td><?php echo $row["title"] ?></td>
                     <td><?php echo $row["programme"] ?></td>
                     <td class="flex flex-wrap">
-                        <span class="item-event edit">Edit</span>
-                        <span class="item-event delete">Delete</span>
+                        <span class="item-event edit cssps">Edit</span>
+                        <span class="item-event delete cssps">Delete</span>
                     </td>
                 </tr>
                 <?php } ?>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td class="pages" colspan="2">
+                        <div class="flex">
+                            <div class="pagination">
+                                Page <span class="current"></span>  <strong>of</strong> <span class="last"></span>
+                            </div>
+                            <?php if($res->num_rows > 0) : ?>
+                            <div class="navs">
+                                <span class="item-event prev" data-break-point="10">Prev</span>
+                                <span class="item-event next" data-break-point="10">Next</span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+                    <td class="result" colspan="7"></td>
+                </tr>
+            </tfoot>
         </table>  
     </div>
     <?php }else{
@@ -255,3 +321,15 @@
 <?php } ?>
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/table.js?v=<?php echo time()?>" async></script>
+<script>
+    $(document).ready(function(){
+        $(".table_section .head .btn button").click();
+    })
+
+    $("input[name=row_display]").change(function(){
+        myval = $(this).val();
+        $(this).parents(".table_section").children(".head").children(".btn").children("button").attr("data-break-point", myval);
+        $(this).parents(".table_section").find(".navs").children("span").attr("data-break-point", myval);
+        $(this).parents(".table_section").children(".head").children(".btn").children("button").click();
+    })
+</script>

@@ -232,6 +232,25 @@
             }
 
             echo json_encode($result);
+        }elseif($submit == "fetchStudentsDetail" || $submit == "fetchStudentsDetail_ajax"){
+            $index_number = $_REQUEST["index_number"];
+
+            $sql = "SELECT * FROM students_table WHERE indexNumber='$index_number'";
+
+            $query = $connect2->query($sql);
+
+            $result = array();
+
+            if($query->num_rows > 0){
+                $result = $query->fetch_assoc();
+                $result += array(
+                    "status" => "success"
+                );
+            }else{
+                $result = array("status" => "no-result", "sql" => $sql);
+            }
+
+            echo json_encode($result);
         }elseif($submit == "addHouse" || $submit == "addHouse_ajax"){
             $house_name = $_REQUEST["house_name"];
             $gender = @$_REQUEST["gender"];
@@ -408,8 +427,8 @@
                 $message = "No School provided or school selection was unsuccessful. Please try again later";
             }else{
                 //validate index number
-                $sql = "SELECT houseID FROM house_allocation WHERE indexNumber=?";
-                $stmt = $connect->prepare($sql);
+                $sql = "SELECT houseID FROM students_table WHERE indexNumber=?";
+                $stmt = $connect2->prepare($sql);
                 $stmt->bind_param("s",$student_index);
                 $stmt->execute();
 
@@ -418,15 +437,15 @@
                 if($result->num_rows > 0){
                     //get house id
                     $column = "houseID";
-                    $table = "house_allocation";
+                    $table = "students_table";
                     $where = "indexNumber='$student_index'";
 
-                    $data = fetchData($column, $table, $where);
+                    $data = fetchData1($column, $table, $where);
                     
                     //parse data into database
                     $sql = "INSERT INTO exeat (indexNumber,houseID,exeatTown,exeatDate,expectedReturn,exeatReason,exeatType,school_id,givenBy)
                         VALUES (?,?,?,?,?,?,?,?,?)";
-                    $stmt = $connect->prepare($sql);
+                    $stmt = $connect2->prepare($sql);
                     $stmt->bind_param("sisssssis",$student_index, $data["houseID"],$exeat_town,$exeat_date,$return_date,$exeat_reason,$exeat_type, $school_id, $user_details["fullname"]);
                     $stmt->execute();
 
@@ -549,34 +568,69 @@
             $school_id = $_REQUEST["school_id"];
 
             //delete record
-            if($indexNumber == "all"){
-                $sql = "DELETE FROM cssps WHERE schoolID=$school_id";
-            }else{
-                $sql = "DELETE FROM cssps WHERE indexNumber='$indexNumber'";
-            }
-            if($connect->query($sql)){
+            if($_REQUEST["db"] === ""){
                 if($indexNumber == "all"){
-                    $sql = "DELETE FROM enrol_table WHERE shsID=$school_id";
+                    $sql = "DELETE FROM cssps WHERE schoolID=$school_id";
                 }else{
-                    $sql = "DELETE FROM enrol_table WHERE indexNumber='$indexNumber'";
+                    $sql = "DELETE FROM cssps WHERE indexNumber='$indexNumber'";
                 }
                 if($connect->query($sql)){
                     if($indexNumber == "all"){
-                        $sql = "DELETE FROM house_allocation WHERE schoolID=$school_id";
+                        $sql = "DELETE FROM enrol_table WHERE shsID=$school_id";
                     }else{
-                        $sql = "DELETE FROM house_allocation WHERE indexNumber='$indexNumber'";
+                        $sql = "DELETE FROM enrol_table WHERE indexNumber='$indexNumber'";
                     }
                     if($connect->query($sql)){
-                        echo "success";
+                        if($indexNumber == "all"){
+                            $sql = "DELETE FROM house_allocation WHERE schoolID=$school_id";
+                        }else{
+                            $sql = "DELETE FROM house_allocation WHERE indexNumber='$indexNumber'";
+                        }
+                        if($connect->query($sql)){
+                            echo "success";
+                        }else{
+                            echo "Student detail could not be removed from house allocated";
+                        }
                     }else{
-                        echo "Student detail could not be removed from house allocated";
+                        echo "Could not remove student from your enrolment list";
                     }
                 }else{
-                    echo "Could not remove student from your enrolment list";
+                    echo "Could not remove student from cssps";
                 }
-            }else{
-                echo "Could not remove student from cssps";
-            }
+            }elseif($_REQUEST["db"] == "shsdesk2"){
+                if($indexNumber == "all"){
+                    //delete third years
+                    $sql = "DELETE FROM students_table WHERE school_id=$school_id AND studentYear=3";
+                }else{
+                    $sql = "DELETE FROM students_table WHERE indexNumber = '$indexNumber'";
+                }
+
+                if($connect2->query($sql)){
+                    //promote students
+                    $sql = "UPDATE students_table SET studentYear=3 WHERE school_id=$school_id AND studentYear=2";
+                    if($connect2->query($sql)){
+                        $sql = "UPDATE students_table SET studentYear=2 WHERE school_id=$school_id AND studentYear=1";
+                        if($connect2->query($sql)){
+                            //report that this school has updated its records
+                            $cleanDate = date("Y-m-d H:i:s");
+                            $sql = "INSERT INTO record_cleaning (school_id, cleanDate) VALUES ('$school_id','$cleanDate')";
+                            $connect2->query($sql);
+                            
+                            echo "success";
+                        }else{
+                            echo "Promotion from Year 1 to Year 2 failed";
+                        }
+                    }else{
+                        echo "Promotion from Year 2 to Year 3 failed";
+                    }
+                }else{
+                    if($indexNumber == "all"){
+                        echo "Could not remove Year 3 students from records. Cleaning Failed";
+                    }else{
+                        echo "Could not remove student with index number '$indexNumber' from records";
+                    }                    
+                }
+            }            
         }elseif($submit == "admissiondetails" ||  $submit == "admissiondetails_ajax"){
             $school_name = formatName($_REQUEST["school_name"]);
             $school_email = $_POST["school_email"];
@@ -781,6 +835,43 @@
             }
 
             echo json_encode($data);
+        }elseif($submit == "addFirstYears"){
+            $addFirstYears = boolval($_POST["addFirstYears"]);
+
+            if($addFirstYears){
+                $sql = "SELECT c.indexNumber, c.Lastname, c.Othernames, c.Gender, c.programme, c.boardingStatus, h.houseID, e.primaryPhone
+                    FROM cssps c JOIN house_allocation h
+                    ON c.indexNumber = h.indexNumber
+                    JOIN enrol_table e
+                    ON c.indexNumber = e.indexNumber
+                    WHERE c.schoolID= $user_school_id AND c.enroled=TRUE";
+                $res = $connect->query($sql);
+
+                if($res->num_rows >= 10){
+                    while($row = $res->fetch_assoc()){
+                        //insert found details into shsdesk2
+                        if(is_array(fetchData1("indexNumber","students_table","indexNumber='".$row["indexNumber"]."'"))){
+                            continue;
+                        }else{
+                            $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, guardianContact, programme, boardingStatus)
+                                VALUES (?,?,?,?,?,?,?,?,?,?)";
+                            $studentYear = 1;
+                            $stmt = $connect2->prepare($sql);
+                            $stmt->bind_param("ssssiiisss",$row["indexNumber"], $row["Lastname"], $row["Othernames"], $row["Gender"], $row["houseID"], $user_school_id, $studentYear,
+                                $row["primaryPhone"], $row["programme"], $row["boardingStatus"]);
+                            if(!$stmt->execute()){
+                                echo "Student with index number '".$row["indexNumber"]."' could not be saved. Procedure was stopped";
+                                break;
+                            }
+                        }
+                    }
+                    echo "success";
+                }else{
+                    echo "You have less than 10 first years enroled into the system. Please try again later";
+                }
+            }else{
+                echo "First years are not going to be added";
+            }
         }
     }else{
         echo "no-submission";
