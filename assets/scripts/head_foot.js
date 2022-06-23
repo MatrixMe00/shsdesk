@@ -4,14 +4,14 @@ var percentile = document_height * 0.01;
 
 var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[1];
 
-//get the parent element
-var parent = $("nav").parent().attr("id");
-
 $(document).scroll(function() {
     scrolling_position = $(window).scrollTop();
 
     //change the scroll position to percentage
     scrolling_position = (scrolling_position / document_height) * 100;
+
+    //get the parent element
+    parent = $("body").attr("id");
 
     if(scrolling_position > percentile){
         $("nav").css("background-color", "#222");
@@ -23,8 +23,7 @@ $(document).scroll(function() {
         }else{
             $("nav").css("position", "relative");
             $("main").css("margin-top", "unset");
-        }
-        
+        } 
     }
 })
 

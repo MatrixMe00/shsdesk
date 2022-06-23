@@ -25,7 +25,7 @@
       gtag('config', 'G-W7MF3JTHJ1');
     </script>
 </head>
-<body>
+<body id="index_main">
     <?php @include_once($rootPath.'/blocks/nav.php')?>
 
     <section id="intro">
