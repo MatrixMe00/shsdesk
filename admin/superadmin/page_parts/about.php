@@ -11,7 +11,7 @@
     </div>
 </section>
 
-<section id="about_block" class="page_setup section_main_block">
+<section id="about_block" class="page_setup">
     <div class="head">
         <h3>About Us</h3>
     </div>

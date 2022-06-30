@@ -705,7 +705,7 @@
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown){
-                    alert(textStatus);
+                    alert_box(textStatus, "warning", 7);
                 }
             })
         })

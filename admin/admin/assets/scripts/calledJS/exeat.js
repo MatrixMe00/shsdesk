@@ -63,11 +63,11 @@ $(".item-event.sign-return").click(function(){
                 //remove item from table
                 $(me).remove();
             }else{
-                alert("Update was unsuccessful");
+                alert_box("Update was unsuccessful", "success");
             }
         },
         error: function(){
-            alert("An error occured");
+            alert_box("An error occured", "danger");
         }
     })
 })
@@ -111,11 +111,11 @@ $("tbody tr").click(function(){
                 //reveal form
                 $("#modal").removeClass("no_disp");
             }else{
-                alert(data["status"]);
+                alert_box(data["status"], "warning", 8);
             }
         },
         error: function (){
-            alert("An error was encountered. Please try again later");
+            alert_box("An error was encountered. Please try again later", "danger", 8);
         }
     })
 })

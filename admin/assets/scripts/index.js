@@ -83,14 +83,14 @@ $("#yes_no_form").submit(function(){
             if(text == "update-success"){
                 $("#lhs .menu .item.active").click();
             }else if(text == "update-error"){
-                alert("Unable to cause change. Please try again later");
+                alert_box("Unable to cause change. Please try again later", "warning", 8);
             }else{
-                alert(text);
+                alert_box(text, "danger", 10);
             }
         },
 
         error: function(){
-            alert("Please communication could not be established");
+            alert_box("Please communication could not be established", "warning", 10);
         },
 
         complete: function(){

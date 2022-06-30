@@ -58,7 +58,7 @@ function payWithPaystack(){
             transaction_reference = response.reference;
         },
         onClose: function(){
-            alert('Transaction has been canceled by user');
+            alert_box('Transaction has been canceled by user', "secondary", 10);
         }
     });
     handler.openIframe();
@@ -160,13 +160,13 @@ function sendSMS(reference){
         success: function(response){
             response1 = JSON.parse(JSON.stringify(response));
             if(response1["status"] == "success"){
-                alert("SMS sent successfully");
+                alert_box("SMS sent successfully", "success", 8);
             }else{
-                alert('An sms could not be sent, but payment was successful. Your transaction reference is ' + reference + ". Save this value at a safe place");
+                alert_box('An sms could not be sent, but payment was successful. Your transaction reference is ' + reference + ". Save this value at a safe place", "warning", 10);
             }
         },
         error: function(){
-            alert('An error occured while sending sms, but payment was successful. Your transaction reference is ' + reference + ". Save this value at a safe place");
+            alert_box('An error occured while sending sms, but payment was successful. Your transaction reference is ' + reference + ". Save this value at a safe place", "warning", 10);
         }
     })
 }
@@ -298,6 +298,13 @@ $("form[name=paymentForm]").submit(function(){
                             "Finding trouble? Contact the admin via <a href='tel:" + cont + 
                             "' style='color: blue'>" + cont + "</a></p>";
                     $("#admission #form_footer").html(html);
+
+                    //pass index number into student box in admission form
+                    $("#ad_index").val($("#student_index_number").val());
+
+                    //click the continue button automatically
+                    $("#ad_index").blur();
+                    $("button[name=continue]").prop("disabled", false).click();
 
                     //display admission form
                     $('#admission').removeClass(`no_disp`);

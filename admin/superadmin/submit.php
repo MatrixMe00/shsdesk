@@ -227,21 +227,27 @@
             }
         }elseif($submit == "databaseQuery"){
             $query = $_REQUEST["query"];
+            $semicolons = explode(";",$query);
+            $semicolons = count($semicolons)-1;
+            $operation = strtolower(explode(" ", $query)[0]);
 
-            if(!strpbrk(strtolower($query), "select") || !strpbrk(strtolower($query), "retrieve") || !strpbrk(strtolower($query), "delete") ||
-                !strpbrk(strtolower($query), "update")){
+            if($semicolons == 0){
+                echo "Please break your statement(s) with semicolon(s)";
+            }elseif($operation != "select" && $operation != "retrieve" && $operation != "delete" && $operation != "update"){
                 echo "Please provide an operation name. This could be SELECT, RETRIEVE, DELETE, UPDATE or CREATE";
                 exit();
-            }elseif(strpbrk(strtolower($query), "from")){
+            }elseif(!strpbrk(strtolower($query), "from")){
                 echo "Please provide the FROM clause.";
-            }elseif($result = multi_query($query) || $result = $connect->query($query)){
-                if(strpbrk(strtolower($query), "update") || !strpbrk(strtolower($query), "delete")){
-                    echo "success";
+            }elseif($semicolons > 1 && $connect->multi_query($query)){
+                echo "success";
+            }elseif($semicolons == 1 && $result=$connect->query($query)){
+                if($operation != "select" && $operation != "retrieve"){
+                    echo "successOperation was successful";
                 }else{
-                    echo "<table>";
+                    echo "<table class='full'>";
 
                     //generate the headers
-                    $headers = array_keys($result);
+                    $headers = array_keys($result->fetch_assoc());
                     echo "<tr>";
                     foreach($headers as $key){
                         echo "<td>$key</td>";
@@ -250,13 +256,16 @@
 
                     //results
                     foreach($result as $key=>$value){
-                        if($key == $headers[0] || $key == 0){
-                            echo "<tr>";
+                        foreach($value as $key1=>$value1){
+                            if($key1 == $headers[0] || $key1 == 0){
+                                echo "<tr>";
+                            }
+                            echo "<td>$value1</td>";
+                            if($key1 == end($headers) || $key1 == count($headers)){
+                                echo "</tr>";
+                            }
                         }
-                        echo "<td>$value</td>";
-                        if($key == end($headers) || $key == count($headers) - 1){
-                            echo "</tr>";
-                        }
+                        
                     }
 
                     echo "</table>";

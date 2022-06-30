@@ -340,23 +340,26 @@
 
                 $mail->AddReplyTo($email);
                 $mail->From = $email;
-                $mail->FromName = $fname;
+                $mail->FromName = $fullname;
                 $mail->addAddress('successinnovativehub@gmail.com', 'Admin');     // Add a recipient
 
                 $mail->isHTML(true);                                  // Set email format to HTML
 
                 $mail->Subject = $subject;
                 $mail->Body = $message;
-                $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+                $mail->AltBody = 'This is the body in plain text for non-HTML mail clients. '.$message;
 
                 if (!$mail->send()) {
                     echo 'Message could not be sent.';
-                    echo 'Mailer Error: ' . $mail->ErrorInfo;
+                    // echo 'Mailer Error: ' . $mail->ErrorInfo;
+                    if(strpbrk($mail->ErrorInfo, "SMTP connect() failed.")){
+                        echo " Please check your network connection";
+                    }else{
+                        echo 'Mailer Error: ' . $mail->ErrorInfo;
+                    }
                 } else {
                     echo 'true';
                 }
-
-
             }
         }elseif($submit == "add_payment_data"){
             //receive data from data string
@@ -510,6 +513,44 @@
             }
 
             echo json_encode($array);
+        }elseif($submit == "studentSchool" || $submit == "studentSchool_ajax"){
+            $message = array();
+            if(!isset($_GET["indexNumber"]) || $_GET["indexNumber"] === ""){
+                $message["status"] = "No index number provided";
+            }elseif(strlen($_GET["indexNumber"]) < 5){
+                $message["status"] = "Index number must be at least 5 characters";
+            }elseif(!preg_match("/^[0-9]{5,}$/",$_GET["indexNumber"])){
+                $message["status"] = "Your index number should only be numeric";
+            }else{
+                $indexNumber = $_GET["indexNumber"];
+                $sql = "SELECT c.schoolID, c.Gender, c.enroled, c.Lastname, s.schoolName, s.abbr FROM cssps c JOIN schools s ON c.schoolID = s.id WHERE c.indexNumber='$indexNumber'";
+                $query = $connect->query($sql);
+
+                if($query->num_rows > 0){
+                    $message = $query->fetch_assoc();
+
+                    if($message["enroled"] == false){
+                        $active = fetchData("COUNT(id) as total","houses","schoolID=".$message["schoolID"])["total"];
+                        if($active > 0){
+                            $message["status"] = "success";
+                            if(strtolower($message["Gender"]) == "male"){
+                                $sal = "Mr";
+                            }else{
+                                $sal = "Mad";
+                            }
+                            $message["successMessage"] = "Congratulations $sal. ".$message["Lastname"]." on your admission to ".$message["abbr"];
+                        }else{
+                            $message["status"] = "Your school is not ready for admission. Please try again at another time";
+                        }
+                    }else{
+                        $message["status"] = "This index number has already been enroled. Visit the Student Menu to get your documents";
+                    }                        
+                }else{
+                    $message["status"] = "Index Number could not be found. Please check and try again, else use the message us button";
+                }
+            }
+            
+            echo json_encode($message);
         }
     }
     // echo date("Y-m-d H:i:s")

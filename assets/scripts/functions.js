@@ -656,3 +656,44 @@ function formSubmit(form_element, submit_element, messageBox = true){
 
     return response;
 }
+
+/**
+ * This is a custom override function to show a custom alert display onscreen
+ * This automatically adds the alert modal if it was not found on a page
+ * 
+ * @param {string} message This is the message to be displayed
+ * @param {string} color This is the background color of your message. It is set to primary by default
+ * @param {integer} time This receives the time for the message to be displayed in seconds
+ * 
+ * @return this returns a message at the right top of a screen for an amount of time then disappears
+ */
+ function alert_box(message, color = "primary", time = 5){
+    //search for the alert modal
+    if($("body").find("#alert_modal").length < 1){
+        alert_modal = "<div id=\"alert_modal\" class=\"fixed flex flex-column flex-align-end\"></div>";
+        $("body").append(alert_modal);
+    }
+    my_number = $("#alert_modal").children(".alert_box").length;
+    box = "<div class=\"alert_box " + color + "\" id=\"alert_box" + (my_number + 1) + "\">" + 
+          " <div class=\"message\">" + 
+          "     <span>" + message + "</span>" + 
+          " </div>" + 
+          "</div>";
+    $("#alert_modal").append(box);
+
+    removeAlert("alert_box" + (my_number + 1), time);
+}
+
+/**
+ * This function works with the alert_box to temporarily show an alert message
+ * 
+ * @param {string} id This receives the id of the element to be removed in string format
+ * @param {int} time Receives the time to wait before element is removed 
+ */
+function removeAlert(id, time){
+    if(time > 0){
+        setTimeout(function(){
+            $("#" + id).remove();
+        }, time*1000);
+    }    
+}

@@ -139,9 +139,10 @@ $(".hide_label #student_name").keyup(function(){
 //hide the labels when the reset button is clicked
 $("button[name=student_cancel_operation]").click(function(){
     $(".hide_label").addClass("no_disp");
-    $(".hide_label #student_name").val("");
-    $(".case").removeClass("no_disp");
+    $(".hide_label #student_name, input#student_index_number").val("");
+    $(".case, label[for=student_check]").removeClass("no_disp");
     $(".case select").val("NULL");
+    $("button#student_check").prop("disabled", false).html("Check");
 })
 
 //alert users when they have to fill a required form
@@ -151,6 +152,52 @@ $("#admission input").blur(function() {
 
 $("#admission select").change(function() {
     formRequiredCheck($(this));
+})
+
+//retrieve the school of the student via index number
+$("button#student_check").click(function(){
+    index = $("input#student_index_number").val();
+    if(index === ""){
+        alert_box("Index Number is required", "danger", 7);
+        $("input#student_index_number").focus();
+        return false;
+    }else if(index.length < 5){
+        alert_box("Your index number is too short", "danger", 7);
+        $("input#student_index_number").focus();
+        return false;
+    }
+    dataString = "indexNumber=" + index + "&submit=studentSchool";
+    $.ajax({
+        url: "submit.php",
+        data: dataString,
+        type: "GET",
+        dataType: "json",
+        beforeSend: function(){
+            $("button#student_check").prop("disabled", true);
+            $("button#student_check").html("Checking...");
+        },
+        success: function(data){
+            $("button#student_check").prop("disabled", false).html("Check");
+            data = JSON.parse(JSON.stringify(data));
+            if(data["status"] == "success"){                
+                //select student's school
+                $("#school_select").val(data["schoolID"]);
+
+                //hide this
+                $("button#student_check").parent().addClass("no_disp");
+
+                //preview the payment detail
+                $("#school_select").change();
+
+                alert_box(data["successMessage"], "success", 10);
+            }else{
+                alert_box(data["status"], "danger", 10);
+            }
+        },
+        error: function(status){
+            alert_box(JSON.stringify(status), "danger", 10);
+        }
+    })
 })
 
 /*$("input").blur(function(){

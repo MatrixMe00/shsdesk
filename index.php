@@ -41,6 +41,9 @@
         #video_download{padding: 0.7em 1em; cursor: pointer;}
         #video_download:hover{background-color: lightgrey;}
         #download_register{display: inline-block;}
+        label[for=student_index_number]{width: 100%}
+        #pay_div .btn{padding-bottom: unset}
+        @media screen and (max-width: 720px){#pay_div{flex-wrap: wrap} #pay_div>label{padding-left: unset}}
         @media screen and (max-width: 480px){#message_us{font-size: small;}}
     </style>
 </head>
@@ -191,8 +194,8 @@
         <section id="student">
             <div class="selection flex flex-space-around flex-wrap">
                 <div class="case" data-box="payment_form" id="school_admission_case">
-                    <h3>Online SHS Admission</h3>
-                    <label for="school_select">
+                    <h3>Online SHS Admission</h3><br>
+                    <label for="school_select" class="no_disp">
                         <select name="school_select" id="school_select" class="primary">
                             <option value="NULL">Please select your school</option>
                             <?php
@@ -215,9 +218,18 @@
                             ?>
                         </select>
                     </label>
-                    <label for="payment_button" class="btn hide_label no_disp">
-                        <button name="payment_button" id="payment_button" type="button">Make My Payment</button>
-                    </label>
+                    <div class="flex flex-align-end" id="pay_div">
+                        <label for="student_index_number" class="flex flex-column flex-wrap relative">
+                            <span class="label_title">Provide your JHS index number below</span>
+                            <input type="text" name="student_index_number" id="student_index_number" placeholder="Enter index number">
+                        </label>
+                        <label for="student_check" class="btn">
+                            <button name="student_check" type="button" id="student_check">Check</button>
+                        </label>
+                        <label for="payment_button" class="btn hide_label no_disp">
+                            <button name="payment_button" id="payment_button" type="button">Make My Payment</button>
+                        </label>
+                    </div>           
                 </div>
                 <?php
                     if($show){

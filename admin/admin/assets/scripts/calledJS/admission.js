@@ -109,9 +109,9 @@ $("form[name=admissiondetailsForm]").submit(function(e){
         success: function(text){
             $("form[name=" + $(this).prop("name") + "] .message_box").addClass("no_disp");
             if(text == "success" || text.includes("success")){
-                alert("Update was successful!");
+                alert_box("Update was successful!");
             }else{
-                alert(text);
+                alert_box(text, "primary", 8);
             }
         },
         error: function(){

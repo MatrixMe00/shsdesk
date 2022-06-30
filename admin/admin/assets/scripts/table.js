@@ -88,18 +88,18 @@ $("table tbody tr .edit").click(function(){
                 //display form
                 $("#updateStudent form").removeClass("no_disp");
             }else if(response["status"] == "no-result" && student){
-                alert("Data for requested student could not be found");
+                alert_box("Data for requested student could not be found", "danger", 7);
                 $("form[name=adminUpdateStudent] button[name=cancel]").click();
             }else{
-                alert("Requested data could not be found");
+                alert_box("Requested data could not be found", "danger");
                 $("form[name=adminUpdateStudent] button[name=cancel]").click();
             }
         },
         error: function(r){
             if(r.responseText == "no-submission"){
-                alert("No submission was detected. Please try again later");
+                alert_box("No submission was detected. Please try again later", "danger", 7);
             }else{
-                alert("Invalid request to server or an error occurred on the server. Response sent to console. Ask admin for help");
+                alert_box("Invalid request to server or an error occurred on the server. Response sent to console. Ask admin for help", "danger", 12);
                 console.log(r.responseText);
             }
             $("form[name=adminUpdateStudent] button[name=cancel]").click();
@@ -195,7 +195,7 @@ $("#table_del form").submit(function(e){
             $(not_comp_head).html(parseInt($(not_comp_head).html())-1);
         }
     }else{
-        alert(response);
+        alert_box(response,"danger", 10);
     }
 
     //reset form and delete

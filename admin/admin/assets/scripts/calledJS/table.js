@@ -59,12 +59,12 @@ $("table tbody tr .edit").click(function(){
                 //display form
                 $("#updateStudent form").removeClass("no_disp");
             }else{
-                alert("data not found");
+                alert_box("Data was not found", "danger");
                 $("form[name=adminUpdateStudent] button[name=cancel]").click();
             }
         },
         error: function(r){
-            alert("Invalid request to server. Please try again later");
+            alert_box("Invalid request to server. Please try again later", "danger", 8);
             $("form[name=adminUpdateStudent] button[name=cancel]").click();
         }
     })
@@ -78,7 +78,6 @@ $("table tbody tr .delete").click(function(){
     $("#table_del").removeClass("no_disp");
 
     //message to display
-    // item_header = $(this).parents(".item").children(".top").children(".flex").children(".content_title").children("h4").html();``
     $("#table_del p#warning_content").html("Do you want to remove <b>" + fullname + "</b> from your database?");
 
     //fill form with needed details
@@ -124,7 +123,7 @@ $("#table_del form").submit(function(e){
             $(not_comp_head).html(parseInt($(not_comp_head).html())-1);
         }
     }else{
-        alert(response);
+        alert_box(response,"warning",8);
     }
 
     //reset form and delete

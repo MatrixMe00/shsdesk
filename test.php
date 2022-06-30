@@ -252,11 +252,13 @@ if($room > 0){
 }*/
 
 // echo getTotalMoney(3,3);
-$_REQUEST['submit'] = "exeat_request";
+/*$_REQUEST['submit'] = "exeat_request";
 $student_index = "0012345621";
 $exeat_town = "Nungua";
 $exeat_type = "external";
 
 // include_once($rootPath."/sms/sms.php");
-echo remakeNumber("027 928 4896", true);
+echo remakeNumber("027 928 4896", true);*/
+
+echo preg_match("/^[0-9]{10,}$/", "1234512asd3451234");
 ?>

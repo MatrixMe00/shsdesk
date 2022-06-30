@@ -116,7 +116,7 @@
             if(!textarea.toLowerCase().includes("select") && !textarea.toLowerCase().includes("retreive") && 
             !textarea.toLowerCase().includes("delete") && !textarea.toLowerCase().includes("update") && !textarea.toLowerCase().includes("create")){
                 $("#result_section .body.empty").html("Please provide an operation name. This could be SELECT, RETRIEVE, DELETE, UPDATE or CREATE")
-            }else if(!textarea.toLowerCase().includes("from")){
+            }else if(!textarea.toLowerCase().includes("from") && textarea.toLowerCase().includes("select")){
                 $("#result_section .body.empty").html("Please provide the FROM clause.");
             }else{
                 $.ajax({
@@ -135,6 +135,13 @@
                             data = data.replace("success","");
                             $("#results").html(data);
                             $("#results").show();
+                        }else if(data.includes("<table")){
+                            $("#results").html(data);
+                            $("#results").show();
+                        }else{
+                            $("#result_section .body").show().html("Query contains an error. Please check your query and try again");
+                            $("#results").html("");
+                            $("#results").hide();
                         }
                     }
                 })

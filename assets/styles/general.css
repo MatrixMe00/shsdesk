@@ -235,7 +235,7 @@ form img, .form img{
     border: 1px solid lightgrey;
     padding: 6px 8px;
     cursor: pointer;
-    min-width: 15vw;
+    min-width: 5rem;
 }
 
 .dbl_btn_label{
@@ -445,6 +445,27 @@ form button{
 td{
     border: 1px solid #ccc;
     padding: 5px;
+}
+
+/* a custom alert box*/
+.alert_box{
+    border: 1px solid;
+    padding: 0.5em;
+    min-width: 200px;
+    text-align: center;
+    margin: 0.2em 0.5em;
+    width: -moz-fit-content;
+    width: fit-content;
+}
+
+.alert_box:first-child{margin-top: unset}
+.alert_box:last-child{margin-bottom: unset}
+
+#alert_modal{
+    right: 0;
+    top: 0.5em;
+    text-align: right;
+    z-index: 10;
 }
 
 @media screen and (min-width: 768px) {

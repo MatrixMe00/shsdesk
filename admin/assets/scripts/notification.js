@@ -206,7 +206,7 @@ $(".reply_tab label[for=submit] button[name=submit]").click(function(){
             },
             error: function(t){
                 t = JSON.stringify(t);
-                alert(t);
+                alert_box(t, "warning", 10);
                 
                 //enable the reply input
                 $(parent).children("label[for=reply]").children("input[name=reply]").prop("disabled",false);

@@ -27,7 +27,7 @@ if(isset($_REQUEST['submit'])){
             $message .= ", has received an ".formatName($exeat_type)." Exeat to $exeat_town";
             $senderId = fetchData("smsID","admissiondetails","schoolID= $user_school_id");
         }else{
-            echo "<script>alert('Unrecognized student stored')</script>";
+            echo "<script>alert_box('Unrecognized student stored','warning',10)</script>";
             exit(1);
         }
     }

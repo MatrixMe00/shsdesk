@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 19, 2022 at 12:09 PM
+-- Generation Time: Jun 28, 2022 at 11:43 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.1
 
@@ -19,7 +19,8 @@ SET time_zone = "+00:00";
 
 --
 -- Database: `shsdesk`
--- Create the database if it does not exist in the engine
+-- Database: `shsdesk2`
+--
 CREATE DATABASE IF NOT EXISTS shsdesk;
 CREATE DATABASE IF NOT EXISTS shsdesk2;
 
@@ -48,12 +49,12 @@ CREATE TABLE `shsdesk`.`admins_table` (
 --
 
 INSERT INTO `shsdesk`.`admins_table` (`user_id`, `fullname`, `username`, `email`, `password`, `school_id`, `contact`, `role`, `Active`, `new_login`, `adYear`) VALUES
-(1, 'SHSDesk Developer', 'Developer', 'email@email.com', '21232f297a57a5a743894a0e4a801fc3', NULL, '0279284896', 1, 1, 0, '2021-12-22'),
-(2, 'SHSDesk Superadmin', 'Superadmin', 'email@example.com', '21232f297a57a5a743894a0e4a801fc3', NULL, '0556129340', 3, 1, 0, '2022-01-30'),
-(3, 'John Doe', 'jonDoe', 'jdoe@example.com', '81dc9bdb52d04dc20036dbd8313ed055', 1, '0556129340', 3, 1, 0, '2022-01-30'),
-(4, 'Kwabena Kwakye', 'Kwao', 'myemail@yahoo.com', '81dc9bdb52d04dc20036dbd8313ed055', 1, '0275563321', 4, 1, 0, '2022-01-09'),
-(5, 'Mario Fin', 'Mario', 'duanye@example.com', '81dc9bdb52d04dc20036dbd8313ed055', 2, '+233234412293', 3, 1, 0, '2022-01-18'),
-(6, 'Donald Fin', 'Donald', 'donfin@example.com', '81dc9bdb52d04dc20036dbd8313ed055', 2, '0579218960', 4, 1, 0, '2022-01-22');
+(1, 'SHSDesk Developer', 'New User', 'developer@shsdesk.com', '21232f297a57a5a743894a0e4a801fc3', NULL, '233279284896', 1, 1, 1, '2022-01-10'),
+(2, 'SHSDesk Superadmin', 'Superadmin', 'superadmin@shsdesk.com', '21232f297a57a5a743894a0e4a801fc3', NULL, '233278531456', 2, 1, 0, '2022-01-10'),
+(3, 'John Doe', 'jonDoe', 'jdoe@example.com', '81dc9bdb52d04dc20036dbd8313ed055', 1, '233556129340', 3, 1, 0, '2022-01-11'),
+(4, 'Oliver Kwao', 'Kwao', 'kwao@email.com', '81dc9bdb52d04dc20036dbd8313ed055', 1, '233547863214', 4, 1, 0, '2022-01-11'),
+(5, 'Mario Graham', 'Mario', 'mario@email.com', '81dc9bdb52d04dc20036dbd8313ed055', 2, '233552367120', 3, 1, 0, '2022-01-12'),
+(6, 'Donald Fin', 'Donald', 'donald@email.com', '81dc9bdb52d04dc20036dbd8313ed055', 2, '233579998214', 4, 1, 0, '2022-01-12');
 
 -- --------------------------------------------------------
 
@@ -77,8 +78,8 @@ CREATE TABLE `shsdesk`.`admissiondetails` (
 --
 
 INSERT INTO `shsdesk`.`admissiondetails` (`schoolID`, `titleOfHead`, `headName`, `smsID`, `admissionYear`, `academicYear`, `reopeningDate`, `announcement`) VALUES
-(1, 'Head Master', 'Kwabena Kwakye Yeboah', 'School One', 2021, '2021 / 2022', '2022-04-04', ''),
-(2, 'Head Master', 'Donald Fin', 'School Two', 2021, '2021 / 2022', '2022-04-04', '');
+(1, 'Head Master', 'Oliver Kwao', 'School One', 2022, '2021 / 2022', '2022-04-04', ''),
+(2, 'Head Master', 'Donald Fin', 'School Two', 2022, '2021 / 2022', '2022-04-04', '');
 
 -- --------------------------------------------------------
 
@@ -151,18 +152,14 @@ CREATE TABLE `shsdesk`.`enrol_table` (
   `enrolDate` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `enrol_table`
---
-
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `exeat`
 --
 
-CREATE TABLE `shsdesk2`.`exeat` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `shsdesk`.`exeat` (
+  `id` int(11) NOT NULL,
   `indexNumber` varchar(20) NOT NULL,
   `houseID` int(11) NOT NULL,
   `exeatTown` varchar(70) NOT NULL,
@@ -173,15 +170,8 @@ CREATE TABLE `shsdesk2`.`exeat` (
   `exeatType` enum('Internal','External') NOT NULL,
   `school_id` int(11) NOT NULL,
   `givenBy` varchar(60) NOT NULL,
-  `returnStatus` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
-  KEY `houseID` (`houseID`,`school_id`),
-  KEY `indexNumber` (`indexNumber`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-
---
--- Dumping data for table `exeat`
---
+  `returnStatus` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -241,10 +231,6 @@ CREATE TABLE `shsdesk`.`house_allocation` (
   `boardingStatus` enum('Day','Boarder') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `house_allocation`
---
-
 -- --------------------------------------------------------
 
 --
@@ -257,10 +243,6 @@ CREATE TABLE `shsdesk`.`login_details` (
   `login_time` varchar(30) NOT NULL,
   `logout_time` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `login_details`
---
 
 -- --------------------------------------------------------
 
@@ -280,18 +262,6 @@ CREATE TABLE `shsdesk`.`notification` (
   `Read_by` text DEFAULT NULL,
   `Date` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `notification`
---
-
-INSERT INTO `shsdesk`.`notification` (`ID`, `Sender_id`, `Audience`, `School_id`, `Notification_type`, `Title`, `Description`, `Item_Read`, `Read_by`, `Date`) VALUES
-(1, 1, 'All', 0, 'notice', 'Welcome Notification', 'Test Message one', 1, 'Developer', '2022-01-02'),
-(2, 1, 'All', 0, 'notice', 'Welcome Notification', 'This is SHSDesk Ghana, an online admission management system for senior high schools. From the team, we will want to specially say you are welcome on this system. We hope our services will be pleasing to you and will make you happy.\r\n\r\nHappy New Year!!!', 1, 'Developer', '2022-01-02'),
-(3, 1, 'Success', 0, 'notice', 'System Reset', '&lt;p&gt;System reset complete&lt;/p&gt;', 1, 'Developer', '22-01-2022 16:13:53'),
-(4, 1, 'All', 0, 'notice', 'New Admin Panel', '&lt;p&gt;Changes have been made to the admin panel. Have a view of it at night and day and experience the new beginning of solving eye problems.', 1, 'Developer', '28-01-2022 12:55:20'),
-(5, 3, 'All', 0, 'notice', 'The Gob3 Seller', '&lt;p&gt;All students&lt;strong&gt; who buy gob3&lt;/strong&gt; , you are&lt;span style=&quot;color: #e03e2d;&quot;&gt; warned&lt;/span&gt;.&lt;/p&gt;', 1, 'Superadmin', '11-02-2022 17:15:30'),
-(6, 1, 'All', 0, 'notice', 'Test Announcement', '&lt;p&gt;This is a test announcement to see how things are going for me&lt;/p&gt;', 1, 'Developer', '11-03-2022 00:19:27');
 
 -- --------------------------------------------------------
 
@@ -344,10 +314,6 @@ CREATE TABLE `shsdesk`.`payment` (
   `status` enum('Sent','Pending') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `payment`
---
-
 -- --------------------------------------------------------
 
 --
@@ -364,10 +330,6 @@ CREATE TABLE `shsdesk`.`reply` (
   `Read_by` text DEFAULT NULL,
   `Date` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `reply`
---
 
 -- --------------------------------------------------------
 
@@ -425,8 +387,8 @@ CREATE TABLE `shsdesk`.`schools` (
 --
 
 INSERT INTO `shsdesk`.`schools` (`id`, `logoPath`, `prospectusPath`, `admissionPath`, `schoolName`, `postalAddress`, `abbr`, `headName`, `techName`, `techContact`, `email`, `description`, `category`, `residence_status`, `sector`, `autoHousePlace`, `Active`) VALUES
-(1, 'admin/admin/assets/images/schools/20211224_124112.jpg', 'admin/admin/assets/files/default folder/prospectus.pdf', '&lt;p&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores sequi tempore ducimus assumenda, obcaecati, ut sunt laboriosam nobis temporibus exercitationem esse cum. Corrupti recusandae, modi necessitatibus tempora harum rerum repudiandae!Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores sequi tempore ducimus assumenda, obcaecati, ut sunt laboriosam nobis temporibus exercitationem esse cum. Corrupti recusandae, modi necessitatibus tempora harum rerum repudiandae!&lt;/p&gt;\\r\\n&lt;ul&gt;\\r\\n&lt;li&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores sequi tempore ducimus assumenda, obcaecati, ut sunt laboriosam nobis temporibus exercitationem esse cum. Corrupti recusandae, modi necessitatibus tempora harum rerum repudiandae!&lt;/li&gt;\\r\\n&lt;li&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores sequi tempore ducimus assumenda, obcaecati, ut sunt laboriosam nobis temporibus exercitationem esse cum. Corrupti recusandae, modi necessitatibus tempora harum rerum repudiandae!&lt;/li&gt;\\r\\n&lt;li&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores sequi tempore ducimus assumenda, obcaecati, ut sunt laboriosam nobis temporibus exercitationem esse cum. Corrupti recusandae, modi necessitatibus tempora harum rerum repudiandae!&lt;/li&gt;\\r\\n&lt;/ul&gt;\\r\\n&lt;p&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores sequi tempore ducimus assumenda, obcaecati, ut sunt laboriosam nobis temporibus exercitationem esse cum. Corrupti recusandae, modi necessitatibus tempora harum rerum repudiandae!&lt;/p&gt;', 'School Number One', 'P.O.Box Su 27, Suhum', 'SSTS', 'Kwabena Kwakye Yeboah', 'John Doe', '0556129340', 'jdoe@example.com', '<p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugit pariatur, eveniet tempora facilis molestiae id et? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus vel id nobis distinctio laboriosam laudantium eius, non, facilis accusantium commodi sit, modi quidem placeat.</p>', 1, 'boarding/day', 'government', 1, 1),
-(2, 'admin/admin/assets/images/schools/1 (50).jpg', 'admin/admin/assets/files/default files/prospectus.pdf', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate, autem. Voluptatibus, inventore. Odio quaerat distinctio soluta repellat necessitatibus dicta obcaecati, cumque delectus? Iusto facilis ipsa possimus suscipit dolor consectetur numquam modi nemo, fugit cupiditate accusantium sint illo dicta eius error laudantium id. Cumque maxime atque, quod non quisquam, quaerat tempora id dolorum distinctio qui aliquid nesciunt quo accusamus rem iusto quibusdam incidunt voluptate repellat odio, unde perferendis. Eum, sint vel dicta nostrum similique necessitatibus distinctio ut eaque dolorem architecto accusantium.', 'New School Two', 'P.O. Box KO 312, Koforidua', 'NST', 'Jerry Perry', 'Name Newman', '0552367120', 'email@email.com', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. In delectus, libero nobis eligendi culpa accusantium aut velit deleniti voluptatibus esse tempore sit? Animi non quis beatae accusantium. Quia, voluptate dolorum.', 2, 'boarding/day', 'government', 1, 1);
+(1, 'admin/admin/assets/images/schools/logo1.jpg', 'admin/admin/assets/files/default folder/prospectus.pdf', '&lt;p&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores sequi tempore ducimus assumenda, obcaecati, ut sunt laboriosam nobis temporibus exercitationem esse cum. Corrupti recusandae, modi necessitatibus tempora harum rerum repudiandae!Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores sequi tempore ducimus assumenda, obcaecati, ut sunt laboriosam nobis temporibus exercitationem esse cum. Corrupti recusandae, modi necessitatibus tempora harum rerum repudiandae!&lt;/p&gt;\\r\\n&lt;ul&gt;\\r\\n&lt;li&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores sequi tempore ducimus assumenda, obcaecati, ut sunt laboriosam nobis temporibus exercitationem esse cum. Corrupti recusandae, modi necessitatibus tempora harum rerum repudiandae!&lt;/li&gt;\\r\\n&lt;li&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores sequi tempore ducimus assumenda, obcaecati, ut sunt laboriosam nobis temporibus exercitationem esse cum. Corrupti recusandae, modi necessitatibus tempora harum rerum repudiandae!&lt;/li&gt;\\r\\n&lt;li&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores sequi tempore ducimus assumenda, obcaecati, ut sunt laboriosam nobis temporibus exercitationem esse cum. Corrupti recusandae, modi necessitatibus tempora harum rerum repudiandae!&lt;/li&gt;\\r\\n&lt;/ul&gt;\\r\\n&lt;p&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores sequi tempore ducimus assumenda, obcaecati, ut sunt laboriosam nobis temporibus exercitationem esse cum. Corrupti recusandae, modi necessitatibus tempora harum rerum repudiandae!&lt;/p&gt;', 'School Number One', 'P.O.Box Su 27, Suhum', 'SSTS', 'Oliver Kwao', 'John Doe', '233556129340', 'jdoe@example.com', '<p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugit pariatur, eveniet tempora facilis molestiae id et? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus vel id nobis distinctio laboriosam laudantium eius, non, facilis accusantium commodi sit, modi quidem placeat.</p>', 1, 'boarding/day', 'government', 1, 1),
+(2, 'admin/admin/assets/images/schools/logo2.jpg', 'admin/admin/assets/files/default files/prospectus.pdf', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate, autem. Voluptatibus, inventore. Odio quaerat distinctio soluta repellat necessitatibus dicta obcaecati, cumque delectus? Iusto facilis ipsa possimus suscipit dolor consectetur numquam modi nemo, fugit cupiditate accusantium sint illo dicta eius error laudantium id. Cumque maxime atque, quod non quisquam, quaerat tempora id dolorum distinctio qui aliquid nesciunt quo accusamus rem iusto quibusdam incidunt voluptate repellat odio, unde perferendis. Eum, sint vel dicta nostrum similique necessitatibus distinctio ut eaque dolorem architecto accusantium.', 'New School Two', 'P.O. Box KO 312, Koforidua', 'NST', 'Donald Fin', 'Mario Graham', '233552367120', 'mario@email.com', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. In delectus, libero nobis eligendi culpa accusantium aut velit deleniti voluptatibus esse tempore sit? Animi non quis beatae accusantium. Quia, voluptate dolorum.', 2, 'boarding/day', 'government', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -444,9 +406,9 @@ CREATE TABLE `shsdesk`.`school_category` (
 --
 
 INSERT INTO `shsdesk`.`school_category` (`id`, `title`) VALUES
-(2, 'SHS'),
+(1, 'SHS'),
 (3, 'SHT'),
-(1, 'Technical');
+(2, 'Technical');
 
 -- --------------------------------------------------------
 
@@ -477,29 +439,24 @@ INSERT INTO `shsdesk`.`transaction` (`transactionID`, `contactNumber`, `schoolBo
 ('T148004111419515', '233279284896', 1, '30.00', 'SHSDesk', 'email@email.com', '0.59', '2022-03-29 07:43:54', NULL, 0),
 ('T167712297328658', '233554232123', 1, '30.00', 'SHSDesk', 'email@email.com', '0.59', '2022-04-03 15:58:09', NULL, 0);
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `students_table`
+-- Table structure for table `exeat`
 --
 
-CREATE TABLE `shsdesk2`.`students_table` ( 
-  `indexNumber` VARCHAR(25) NOT NULL ,
-  `Lastname` VARCHAR(20) NOT NULL ,
-  `Othernames` VARCHAR(40) NOT NULL ,
-  `Gender` ENUM('Male','Female') NOT NULL ,
-  `houseID` INT NOT NULL ,
-  `school_id` INT NOT NULL ,
-  `studentYear` INT NOT NULL ,
-  `guardianContact` VARCHAR(20) NOT NULL ,
-  `program` VARCHAR(120) NOT NULL ,
-  `boardingStatus` ENUM('Boarder','Day') NOT NULL ,
-  PRIMARY KEY (`indexNumber`)
-) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `students_table`
---
+CREATE TABLE `shsdesk2`.`exeat` (
+  `id` int(11) NOT NULL,
+  `indexNumber` varchar(20) NOT NULL,
+  `houseID` int(11) NOT NULL,
+  `exeatTown` varchar(70) NOT NULL,
+  `exeatDate` varchar(10) NOT NULL,
+  `expectedReturn` varchar(10) NOT NULL,
+  `returnDate` varchar(20) DEFAULT NULL,
+  `exeatReason` varchar(80) NOT NULL,
+  `exeatType` enum('Internal','External') NOT NULL,
+  `school_id` int(11) NOT NULL,
+  `givenBy` varchar(60) NOT NULL,
+  `returnStatus` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -507,18 +464,30 @@ CREATE TABLE `shsdesk2`.`students_table` (
 -- Table structure for table `record_cleaning`
 --
 
-CREATE TABLE `shsdesk2`.`record_cleaning` ( 
-  `id` INT NOT NULL AUTO_INCREMENT , 
-  `school_id` INT NOT NULL , 
-  `cleanDate` VARCHAR(25) NOT NULL , 
-  PRIMARY KEY (`id`)
-) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `record_cleaning`
---
+CREATE TABLE `shsdesk2`.`record_cleaning` (
+  `id` int(11) NOT NULL,
+  `school_id` int(11) NOT NULL,
+  `cleanDate` varchar(25) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
+
+--
+-- Table structure for table `students_table`
+--
+
+CREATE TABLE `shsdesk2`.`students_table` (
+  `indexNumber` varchar(25) NOT NULL,
+  `Lastname` varchar(20) NOT NULL,
+  `Othernames` varchar(40) NOT NULL,
+  `Gender` enum('Male','Female') NOT NULL,
+  `houseID` int(11) NOT NULL,
+  `school_id` int(11) NOT NULL,
+  `studentYear` int(11) NOT NULL,
+  `guardianContact` varchar(20) NOT NULL,
+  `programme` varchar(120) NOT NULL,
+  `boardingStatus` enum('Boarder','Day') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Indexes for dumped tables
@@ -656,13 +625,13 @@ ALTER TABLE `shsdesk`.`transaction`
 -- AUTO_INCREMENT for table `admins_table`
 --
 ALTER TABLE `shsdesk`.`admins_table`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `exeat`
 --
 ALTER TABLE `shsdesk`.`exeat`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `faq`
@@ -674,130 +643,92 @@ ALTER TABLE `shsdesk`.`faq`
 -- AUTO_INCREMENT for table `houses`
 --
 ALTER TABLE `shsdesk`.`houses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `login_details`
 --
 ALTER TABLE `shsdesk`.`login_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=183;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `notification`
 --
 ALTER TABLE `shsdesk`.`notification`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `pageitemdisplays`
 --
 ALTER TABLE `shsdesk`.`pageitemdisplays`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `shsdesk`.`payment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `reply`
 --
 ALTER TABLE `shsdesk`.`reply`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `shsdesk`.`roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `schools`
 --
 ALTER TABLE `shsdesk`.`schools`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `school_category`
 --
 ALTER TABLE `shsdesk`.`school_category`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+COMMIT;
 
 --
--- Constraints for dumped tables
+-- Indexes for table `exeat`
+--
+ALTER TABLE `exeat`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `houseID` (`houseID`,`school_id`),
+  ADD KEY `indexNumber` (`indexNumber`);
+
+--
+-- Indexes for table `record_cleaning`
+--
+ALTER TABLE `record_cleaning`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `students_table`
+--
+ALTER TABLE `students_table`
+  ADD PRIMARY KEY (`indexNumber`);
+
+--
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- Constraints for table `admins_table`
+-- AUTO_INCREMENT for table `exeat`
 --
-ALTER TABLE `shsdesk`.`admins_table`
-  ADD CONSTRAINT `admins_table_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `admins_table_ibfk_2` FOREIGN KEY (`role`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+ALTER TABLE `exeat`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Constraints for table `admissiondetails`
+-- AUTO_INCREMENT for table `record_cleaning`
 --
-ALTER TABLE `shsdesk`.`admissiondetails`
-  ADD CONSTRAINT `admissiondetails_ibfk_1` FOREIGN KEY (`schoolID`) REFERENCES `schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `cssps`
---
-ALTER TABLE `shsdesk`.`cssps`
-  ADD CONSTRAINT `cssps_ibfk_1` FOREIGN KEY (`schoolID`) REFERENCES `schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `enrol_table`
---
-ALTER TABLE `shsdesk`.`enrol_table`
-  ADD CONSTRAINT `enrol_table_ibfk_1` FOREIGN KEY (`indexNumber`) REFERENCES `cssps` (`indexNumber`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `enrol_table_ibfk_2` FOREIGN KEY (`shsID`) REFERENCES `schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `enrol_table_ibfk_3` FOREIGN KEY (`transactionID`) REFERENCES `transaction` (`transactionID`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `exeat`
---
-ALTER TABLE `shsdesk`.`exeat`
-  ADD CONSTRAINT `exeat_ibfk_1` FOREIGN KEY (`houseID`) REFERENCES `houses` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `houses`
---
-ALTER TABLE `shsdesk`.`houses`
-  ADD CONSTRAINT `houses_ibfk_1` FOREIGN KEY (`schoolID`) REFERENCES `schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `house_allocation`
---
-ALTER TABLE `shsdesk`.`house_allocation`
-  ADD CONSTRAINT `house_allocation_ibfk_1` FOREIGN KEY (`indexNumber`) REFERENCES `cssps` (`indexNumber`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `house_allocation_ibfk_2` FOREIGN KEY (`houseID`) REFERENCES `houses` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `house_allocation_ibfk_3` FOREIGN KEY (`schoolID`) REFERENCES `schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `login_details`
---
-ALTER TABLE `shsdesk`.`login_details`
-  ADD CONSTRAINT `login_details_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `admins_table` (`user_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `reply`
---
-ALTER TABLE `shsdesk`.`reply`
-  ADD CONSTRAINT `reply_ibfk_1` FOREIGN KEY (`Comment_id`) REFERENCES `notification` (`ID`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `schools`
---
-ALTER TABLE `shsdesk`.`schools`
-  ADD CONSTRAINT `schools_ibfk_1` FOREIGN KEY (`category`) REFERENCES `school_category` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `transaction`
---
-ALTER TABLE `shsdesk`.`transaction`
-  ADD CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`schoolBought`) REFERENCES `schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+ALTER TABLE `record_cleaning`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

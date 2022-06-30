@@ -2,42 +2,43 @@
  This project is an online admission system for senior high schools in Ghana
 
 # What to know
- * It is required that this folder be placed in an apache server. If yu are using Xampp or WAMP, then this folder
+ * It is required that this folder be placed in an apache server. If you are using Xampp or WAMP, then this folder
    will have to be in the htdocs folder for it to run
- * The name of the database to this project is 'shsdesk'. It would be created automatically when imported into the
-   MySQL server
+ * The name of the databases to this project is 'shsdesk' and 'shsdesk2'. It would be created automatically when imported into the
+   MySQL server, with or without creating the two databases beforehand
 
 # The Database
  * This project comes with two database which can be used. The databases can be tempered with according to your inputs
- * The name of the database file for demonstration is shsdesk.sql.
- * The name for the production database file is newshsdesk.sql.
- * Both databases can be found in the databases folder in the root folder
+ * The name of the database file for demonstration is demo_database.sql.
+ * The name for the production database file is default_database.sql.
+ * There is another database file called clean_database.sql, which can be used as a clean file for your own default inputs
+ * All databases can be found in the databases directory in the root folder
 
-# Admin - Test Phase using shsdesk.sql
+# Admin - Test Phase using demo_database.sql
  * Two schools have been added to the system for testing purposes. You can access his account using the admin menu
 
  # Logins for accounts which have satisfied requirements
- * Username: jonDoe         Password: 1234
- * Username: Kwao           Password: 1234
+ * Username: jonDoe         Password: 1234    ->    Admin / IT Personnel
+ * Username: Kwao           Password: 1234    ->    School Head
 
  # Logins for accounts which have not satisfied requirements
- * Username: Mario          Password: 1234
- * Username: Donald         Password: 1234
+ * Username: Mario          Password: 1234    ->    Admin / IT Personnel
+ * Username: Donald         Password: 1234    ->    School Head
 
  # Logins for superadmins
  * Username: Developer      Password: admin
  * Username: Superadmin     Password: admin
 
-# Admin - Production Phase using newshsdesk.sql
+# Admin - Production Phase using default_database.sql
  * This database comes with a default user which is the developer
  * Any other addition would be done by the developer and via the registration portal
  * Below are the details for logging in to the admin panel
  * 
- * Username: New User       Password: Password@1      Fullname: SHSDesk Developer     Email: email@email.com
+ * Username: New User       Password: Password@1      Fullname: SHSDesk Developer     Email: developer@shsdesk.com
 
 # Registration
  * A new school subscribed to the services of our system would have to fill the registration form to be noticed on our system
- * Directing your url to /register would open up the registration form for you
+ * Directing your url to /register would open up the registration form for you [http://localhost/shsdesk/register]
 
 # Student upload module
  * A test spreadsheet file labeled demo_students.xlsx can be used to upload its contents into the system

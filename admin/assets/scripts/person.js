@@ -81,12 +81,12 @@ $("#users .item-event.dev").click(function(){
                 $("form #contact").val(json["contact"]);
                 $("form #username").val(json["username"]);
             }else{
-                alert("User Undefined");
+                alert_box("User Undefined", "danger");
                 $("#editAccount").addClass("no_disp");
             }
         },
         error: function (){
-            alert("Error communicating with server. Try again after a page refresh");
+            alert_box("Error communicating with server. Try again after a page refresh", "warning", 8);
         }
     })
 })
@@ -149,7 +149,7 @@ $(".item-event.status").click(function(){
             }
         },
         error: function (){
-            alert("User status could not be modified. Try again later");
+            alert_box("User status could not be modified. Try again later", "danger", 8);
         }
     })
 })

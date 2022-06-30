@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 19, 2022 at 12:09 PM
+-- Generation Time: Jun 28, 2022 at 10:20 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.1
 
@@ -19,7 +19,8 @@ SET time_zone = "+00:00";
 
 --
 -- Database: `shsdesk`
--- Create the database if it does not exist in the engine
+-- Database: `shsdesk2`
+--
 CREATE DATABASE IF NOT EXISTS shsdesk;
 CREATE DATABASE IF NOT EXISTS shsdesk2;
 
@@ -43,13 +44,6 @@ CREATE TABLE `shsdesk`.`admins_table` (
   `adYear` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `admins_table`
---
-
-INSERT INTO `shsdesk`.`admins_table` (`user_id`, `fullname`, `username`, `email`, `password`, `school_id`, `contact`, `role`, `Active`, `new_login`, `adYear`) VALUES
-(1, 'SHSDesk Developer', 'New User', 'email@email.com', '44ffe44097bbce02fbaa42734e92ae04', NULL, '0279284896', 1, 1, 1, '2021-12-22');
-
 -- --------------------------------------------------------
 
 --
@@ -66,10 +60,6 @@ CREATE TABLE `shsdesk`.`admissiondetails` (
   `reopeningDate` varchar(40) DEFAULT NULL,
   `announcement` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `admissiondetails`
---
 
 -- --------------------------------------------------------
 
@@ -91,10 +81,6 @@ CREATE TABLE `shsdesk`.`cssps` (
   `schoolID` int(11) NOT NULL,
   `enroled` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `cssps`
---
 
 -- --------------------------------------------------------
 
@@ -134,18 +120,14 @@ CREATE TABLE `shsdesk`.`enrol_table` (
   `enrolDate` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `enrol_table`
---
-
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `exeat`
 --
 
-CREATE TABLE `shsdesk2`.`exeat` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `shsdesk`.`exeat` (
+  `id` int(11) NOT NULL,
   `indexNumber` varchar(20) NOT NULL,
   `houseID` int(11) NOT NULL,
   `exeatTown` varchar(70) NOT NULL,
@@ -156,15 +138,8 @@ CREATE TABLE `shsdesk2`.`exeat` (
   `exeatType` enum('Internal','External') NOT NULL,
   `school_id` int(11) NOT NULL,
   `givenBy` varchar(60) NOT NULL,
-  `returnStatus` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
-  KEY `houseID` (`houseID`,`school_id`),
-  KEY `indexNumber` (`indexNumber`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-
---
--- Dumping data for table `exeat`
---
+  `returnStatus` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -199,10 +174,6 @@ CREATE TABLE `shsdesk`.`houses` (
   `gender` enum('Male','Female','Both') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `houses`
---
-
 -- --------------------------------------------------------
 
 --
@@ -220,10 +191,6 @@ CREATE TABLE `shsdesk`.`house_allocation` (
   `boardingStatus` enum('Day','Boarder') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `house_allocation`
---
-
 -- --------------------------------------------------------
 
 --
@@ -236,10 +203,6 @@ CREATE TABLE `shsdesk`.`login_details` (
   `login_time` varchar(30) NOT NULL,
   `logout_time` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `login_details`
---
 
 -- --------------------------------------------------------
 
@@ -260,10 +223,6 @@ CREATE TABLE `shsdesk`.`notification` (
   `Date` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `notification`
---
-
 -- --------------------------------------------------------
 
 --
@@ -283,10 +242,6 @@ CREATE TABLE `shsdesk`.`pageitemdisplays` (
   `button_text` varchar(15) DEFAULT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `pageitemdisplays`
---
 
 -- --------------------------------------------------------
 
@@ -309,10 +264,6 @@ CREATE TABLE `shsdesk`.`payment` (
   `status` enum('Sent','Pending') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `payment`
---
-
 -- --------------------------------------------------------
 
 --
@@ -330,10 +281,6 @@ CREATE TABLE `shsdesk`.`reply` (
   `Date` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `reply`
---
-
 -- --------------------------------------------------------
 
 --
@@ -347,10 +294,6 @@ CREATE TABLE `shsdesk`.`roles` (
   `access` tinyint(1) NOT NULL DEFAULT 1,
   `school_id` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `roles`
---
 
 -- --------------------------------------------------------
 
@@ -378,10 +321,6 @@ CREATE TABLE `shsdesk`.`schools` (
   `Active` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `schools`
---
-
 -- --------------------------------------------------------
 
 --
@@ -392,15 +331,6 @@ CREATE TABLE `shsdesk`.`school_category` (
   `id` int(11) NOT NULL,
   `title` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `school_category`
---
-
-INSERT INTO `shsdesk`.`school_category` (`id`, `title`) VALUES
-(2, 'SHS'),
-(3, 'SHT'),
-(1, 'Technical');
 
 -- --------------------------------------------------------
 
@@ -422,32 +352,23 @@ CREATE TABLE `shsdesk`.`transaction` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `transaction`
+-- Table structure for table `exeat`
 --
 
--- --------------------------------------------------------
-
---
--- Table structure for table `students_table`
---
-
-CREATE TABLE `shsdesk2`.`students_table` ( 
-  `indexNumber` VARCHAR(25) NOT NULL ,
-  `Lastname` VARCHAR(20) NOT NULL ,
-  `Othernames` VARCHAR(40) NOT NULL ,
-  `Gender` ENUM('Male','Female') NOT NULL ,
-  `houseID` INT NOT NULL ,
-  `school_id` INT NOT NULL ,
-  `studentYear` INT NOT NULL ,
-  `guardianContact` VARCHAR(20) NOT NULL ,
-  `program` VARCHAR(120) NOT NULL ,
-  `boardingStatus` ENUM('Boarder','Day') NOT NULL ,
-  PRIMARY KEY (`indexNumber`)
-) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `students_table`
---
+CREATE TABLE `exeat` (
+  `id` int(11) NOT NULL,
+  `indexNumber` varchar(20) NOT NULL,
+  `houseID` int(11) NOT NULL,
+  `exeatTown` varchar(70) NOT NULL,
+  `exeatDate` varchar(10) NOT NULL,
+  `expectedReturn` varchar(10) NOT NULL,
+  `returnDate` varchar(20) DEFAULT NULL,
+  `exeatReason` varchar(80) NOT NULL,
+  `exeatType` enum('Internal','External') NOT NULL,
+  `school_id` int(11) NOT NULL,
+  `givenBy` varchar(60) NOT NULL,
+  `returnStatus` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -455,18 +376,30 @@ CREATE TABLE `shsdesk2`.`students_table` (
 -- Table structure for table `record_cleaning`
 --
 
-CREATE TABLE `shsdesk2`.`record_cleaning` ( 
-  `id` INT NOT NULL AUTO_INCREMENT , 
-  `school_id` INT NOT NULL , 
-  `cleanDate` VARCHAR(25) NOT NULL , 
-  PRIMARY KEY (`id`)
-) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `record_cleaning`
---
+CREATE TABLE `record_cleaning` (
+  `id` int(11) NOT NULL,
+  `school_id` int(11) NOT NULL,
+  `cleanDate` varchar(25) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
+
+--
+-- Table structure for table `students_table`
+--
+
+CREATE TABLE `students_table` (
+  `indexNumber` varchar(25) NOT NULL,
+  `Lastname` varchar(20) NOT NULL,
+  `Othernames` varchar(40) NOT NULL,
+  `Gender` enum('Male','Female') NOT NULL,
+  `houseID` int(11) NOT NULL,
+  `school_id` int(11) NOT NULL,
+  `studentYear` int(11) NOT NULL,
+  `guardianContact` varchar(20) NOT NULL,
+  `programme` varchar(120) NOT NULL,
+  `boardingStatus` enum('Boarder','Day') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Indexes for dumped tables
@@ -604,13 +537,13 @@ ALTER TABLE `shsdesk`.`transaction`
 -- AUTO_INCREMENT for table `admins_table`
 --
 ALTER TABLE `shsdesk`.`admins_table`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `exeat`
 --
 ALTER TABLE `shsdesk`.`exeat`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `faq`
@@ -622,130 +555,92 @@ ALTER TABLE `shsdesk`.`faq`
 -- AUTO_INCREMENT for table `houses`
 --
 ALTER TABLE `shsdesk`.`houses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `login_details`
 --
 ALTER TABLE `shsdesk`.`login_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=183;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `notification`
 --
 ALTER TABLE `shsdesk`.`notification`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `pageitemdisplays`
 --
 ALTER TABLE `shsdesk`.`pageitemdisplays`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `shsdesk`.`payment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `reply`
 --
 ALTER TABLE `shsdesk`.`reply`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `shsdesk`.`roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `schools`
 --
 ALTER TABLE `shsdesk`.`schools`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `school_category`
 --
 ALTER TABLE `shsdesk`.`school_category`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT;
 
 --
--- Constraints for dumped tables
+-- Indexes for table `exeat`
+--
+ALTER TABLE `shsdesk2`.`exeat`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `houseID` (`houseID`,`school_id`),
+  ADD KEY `indexNumber` (`indexNumber`);
+
+--
+-- Indexes for table `record_cleaning`
+--
+ALTER TABLE `shsdesk2`.`record_cleaning`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `students_table`
+--
+ALTER TABLE `shsdesk2`.`students_table`
+  ADD PRIMARY KEY (`indexNumber`);
+
+--
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- Constraints for table `admins_table`
+-- AUTO_INCREMENT for table `exeat`
 --
-ALTER TABLE `shsdesk`.`admins_table`
-  ADD CONSTRAINT `admins_table_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `admins_table_ibfk_2` FOREIGN KEY (`role`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+ALTER TABLE `shsdesk2`.`exeat`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Constraints for table `admissiondetails`
+-- AUTO_INCREMENT for table `record_cleaning`
 --
-ALTER TABLE `shsdesk`.`admissiondetails`
-  ADD CONSTRAINT `admissiondetails_ibfk_1` FOREIGN KEY (`schoolID`) REFERENCES `schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `cssps`
---
-ALTER TABLE `shsdesk`.`cssps`
-  ADD CONSTRAINT `cssps_ibfk_1` FOREIGN KEY (`schoolID`) REFERENCES `schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `enrol_table`
---
-ALTER TABLE `shsdesk`.`enrol_table`
-  ADD CONSTRAINT `enrol_table_ibfk_1` FOREIGN KEY (`indexNumber`) REFERENCES `cssps` (`indexNumber`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `enrol_table_ibfk_2` FOREIGN KEY (`shsID`) REFERENCES `schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `enrol_table_ibfk_3` FOREIGN KEY (`transactionID`) REFERENCES `transaction` (`transactionID`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `exeat`
---
-ALTER TABLE `shsdesk`.`exeat`
-  ADD CONSTRAINT `exeat_ibfk_1` FOREIGN KEY (`houseID`) REFERENCES `houses` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `houses`
---
-ALTER TABLE `shsdesk`.`houses`
-  ADD CONSTRAINT `houses_ibfk_1` FOREIGN KEY (`schoolID`) REFERENCES `schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `house_allocation`
---
-ALTER TABLE `shsdesk`.`house_allocation`
-  ADD CONSTRAINT `house_allocation_ibfk_1` FOREIGN KEY (`indexNumber`) REFERENCES `cssps` (`indexNumber`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `house_allocation_ibfk_2` FOREIGN KEY (`houseID`) REFERENCES `houses` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `house_allocation_ibfk_3` FOREIGN KEY (`schoolID`) REFERENCES `schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `login_details`
---
-ALTER TABLE `shsdesk`.`login_details`
-  ADD CONSTRAINT `login_details_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `admins_table` (`user_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `reply`
---
-ALTER TABLE `shsdesk`.`reply`
-  ADD CONSTRAINT `reply_ibfk_1` FOREIGN KEY (`Comment_id`) REFERENCES `notification` (`ID`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `schools`
---
-ALTER TABLE `shsdesk`.`schools`
-  ADD CONSTRAINT `schools_ibfk_1` FOREIGN KEY (`category`) REFERENCES `school_category` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `transaction`
---
-ALTER TABLE `shsdesk`.`transaction`
-  ADD CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`schoolBought`) REFERENCES `schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+ALTER TABLE `shsdesk2`.`record_cleaning`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

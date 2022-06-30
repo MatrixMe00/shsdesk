@@ -23,10 +23,10 @@ $("form[name=carouselForm]").submit(function(e){
     $("form[name=carouselForm]"), $("form[name=carouselForm] button[name=submit]"));
 
     if(response == true){
-        alert("Carousel Was Added Successfully");
+        alert_box("Carousel Was Added Successfully");
         $("#lhs .menu .item.active").click();
     }else if(response == "error"){
-        alert("A problem occured on the server. Please try again")
+        alert_box("A problem occured on the server. Please try again", "danger", 8);
     }
 })
 
@@ -128,6 +128,11 @@ $(".item .title_bar.top").click(function(){
 //it will be used to track original text contents
 desc_val = "";
 
+$("#about_block .span_edit").click(function(){
+    message = $("#about_desc").html();
+    dataString = "item_page=about&item_type=main_about_desc&item_desc=" + message + "submit=";
+    alert(message);
+})
 //edit a content
 $(".span_edit").click(function(){
     //check its html name and work with it
@@ -138,7 +143,11 @@ $(".span_edit").click(function(){
         desc_val = $(this).parent().siblings(".middle").children(".desc").html();
 
         //change to cancel
-        $(this).html("Cancel");
+        //check parent
+        parent = $(this).parents("section").attr("id");
+
+        if(parent != "about_block")
+            $(this).html("Cancel");
 
         //add the edit feature to the description element
         $(this).parent().siblings(".middle").children(".desc").prop("contenteditable",true).focus();
@@ -262,7 +271,13 @@ $("span.item-event").click(function(){
     table = "pageitemdisplays";
 
     if(item_event == "edit"){
+        parent = $(this).parents("section").attr("id");
 
+        if(parent == "about_block"){
+
+        }else{
+
+        }
     }else if(item_event == "delete"){
         //display yes no modal box
         $("#gen_del").removeClass("no_disp");
