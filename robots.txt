@@ -12,7 +12,7 @@ Disallow: /includes/
 Disallow: /PhpSpreadSheet/
 Disallow: /phpmailer/
 Disallow: /sms/
-Disallow: /tcpdf/
+Disallow: /mpdf/
 Disallow: /customPdfGenerator.php
 Disallow: /read_excel.php
 Disallow: /create_excel.php
