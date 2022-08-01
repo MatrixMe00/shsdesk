@@ -392,6 +392,7 @@ section{
     padding: 1% 1.5% 1% 0.2%;
     font-variant: small-caps;
     font-size: larger;
+    width: -moz-fit-content;
     width: fit-content;
     border-bottom: 1px solid;
     margin-bottom: 1em;
