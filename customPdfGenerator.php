@@ -63,7 +63,7 @@
         $pdf->SetAuthor("SHSDesk");
         $pdf->SetTitle("Admission Letter | $lastname");
         $pdf->SetSubject("Admission Letter");
-        $pdf->SetKeywords("Admission, SHSDesk, letter, document");
+        $pdf->SetKeywords("Admission, SHSDesk, letter, document, $lastname, MatrixMe");
 
         //user data
         $date_now = date("M j, Y")." at ".date("H:i:sa");
@@ -176,7 +176,120 @@
 
         //output html
         $pdf->Output("Admission Form | $lastname.pdf", "D");
+    }elseif($_REQUEST["admission_print"] && $_REQUEST["admission_print"] != null){
+        $html = $_REQUEST["html"];
+        $index = $_REQUEST["ad_index"];
+
+        //empty spots should be indicated as empty
+        $html = str_replace("><", ">Not Defined<", $html);
+
+        // echo $html; return;
+
+        $index = fetchData("*","cssps","indexNumber='$index'");
+
+        if(!is_array($index)){
+            echo "<script>alert('Error encountered. Index Number is invalid or no data was fetched');</script>";
+            exit(1);
+        }
+
+        //make settings for footer
+        $footer = array (
+            'odd' => array (
+                'L' => array (
+                    'content' => 'Page {PAGENO} of {nbpg}',
+                    'font-size' => 10,
+                    'font-style' => 'R',
+                    'font-family' => 'Times',
+                    'color'=>'#000000'
+                ),
+                'C' => array (
+                    'content' => getSchoolDetail(intval($index["schoolID"]))["schoolName"],
+                    'font-size' => 10,
+                    'font-style' => 'R',
+                    'font-family' => 'Times',
+                    'color'=>'#000000'
+                ),
+                'line' => 1
+            ),
+            'even' => array (
+                'L' => array (
+                    'content' => 'Page {PAGENO} of {nbpg}',
+                    'font-size' => 10,
+                    'font-style' => 'R',
+                    'font-family' => 'Times',
+                    'color'=>'#000000'
+                ),
+                'C' => array (
+                    'content' => getSchoolDetail(intval($index["schoolID"]))["schoolName"],
+                    'font-size' => 10,
+                    'font-style' => 'R',
+                    'font-family' => 'Times',
+                    'color'=>'#000000'
+                ),
+                'line' => 1
+            )
+        );
+
+        //apply footer settings
+        $pdf->setFooter($footer);
+
+        //provide document information
+        $pdf->SetCreator("MatrixMe");
+        $pdf->SetAuthor("SHSDesk");
+        $pdf->SetTitle("Admission Summary | ".$index["Lastname"]);
+        $pdf->SetSubject("Admission Summary");
+        $pdf->SetKeywords("Admission, SHSDesk, summary, document");
+
+        $date_now = date("M j, Y")." at ".date("H:i:sa");
+
+        $content = <<<HTML
+        <head>
+            <style>
+                fieldset{
+                    display: block;
+                    margin-bottom: 1cm;
+                    border: 1px solid black;
+                }
+                .joint{
+                    margin: 5px;
+                }
+
+                .joint .label{
+                    float: left;
+                    clear: right;
+                    width: 47%;
+                    border: 1px solid lightgrey;
+                    margin: 1px 5px;
+                    padding: 5px;
+                    min-height: 40px;
+                }
+
+                .label .value{
+                    color: #222;
+                    font-variant: small-caps;
+                }
+
+                .ng-hide{
+                    display: none;
+                }
+            </style>
+        </head>
+        <form>
+            $html
+        </form>
+        <br><hr><p>Print Date: $date_now</p>
+        HTML;
+
+        //write some html
+        $pdf->writeHTML($content);
+
+        //output html
+        $pdf->Output("Admission Summary | ".$index["Lastname"].".pdf", "D");
     }else{
         echo "No result to deliver";
     }
 ?>
+<!-- <link rel="stylesheet" href="assets/styles/index_page.css">
+            <link rel="stylesheet" href="assets/styles/admissionForm.css">
+            <link rel="stylesheet" href="assets/styles/general.css">
+            <link rel="stylesheet" href="assets/styles/admin/admin_form.css"> -->

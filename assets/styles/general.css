@@ -395,8 +395,7 @@ form .label.flex-column label{
     border: 1px solid #ccc;
     background-color: #fff;
     margin: 3px;
-    width: -moz-fit-content;
-    width: fit-content;
+    width: 100%;
     min-width: 20vw;
 }
 

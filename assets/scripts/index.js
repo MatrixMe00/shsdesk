@@ -189,7 +189,9 @@ $("button#student_check").click(function(){
                 //preview the payment detail
                 $("#school_select").change();
 
-                alert_box(data["successMessage"], "success", 10);
+                // alert_box(data["successMessage"], "success", 10);
+                $("span#res_ad_index").html(index);
+                alert(data["successMessage"]);
             }else{
                 alert_box(data["status"], "danger", 10);
             }

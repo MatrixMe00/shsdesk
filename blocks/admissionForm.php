@@ -6,7 +6,7 @@
                         <span class="tab_button no_disp" data-views="view2">
                             Step 2
                         </span>
-                        <span class="tab_button no_disp" data-views="view3">
+                        <span class="tab_button no_disp" id="sumView" data-views="view3">
                             Step 3
                         </span>
                     </div>
@@ -176,13 +176,13 @@
                                                 <img src="<?php echo $url?>/assets/images/icons/home.png" alt="birth_place">
                                             </span>
                                             <input type="text" name="ad_birth_place" id="ad_birth_place" placeholder="Place of Birth*" 
-                                            pattern="[a-zA-Z\s]{6,}[\.\-\']{0,}" required ng-model="ad_birth_place">
+                                            pattern="[a-zA-Z\s]{2,}[\.\-\']{0,}" required ng-model="ad_birth_place">
                                         </label>
                                     </div>
                                 </fieldset>
                             </div>
                         </div>
-                        <div id="view2" class="view_box no_disp">
+                        <div id="view2" class="view_box">
                             <div class="head">
                                 <h2>Application Form</h2>
                             </div>
@@ -321,7 +321,7 @@
                                 </fieldset>
                             </div>                           
                         </div>
-                        <div id="view3" class="view_box no_disp">
+                        <div id="view3" class="view_box">
                             <div class="head">
                                 <h2>Final Results</h2>
                             </div>
@@ -351,7 +351,7 @@
                                                 <span>JHS Index Number</span>
                                             </div>
                                             <div class="value">
-                                                <span>{{ad_index}}</span>
+                                                <span id="res_ad_index"></span>
                                             </div>
                                         </div>
                                         <div class="label">
@@ -591,7 +591,7 @@
                         <div class="close"><span>&cross;</span></div>
                     </div>
                     
-                    <div class="flex">
+                    <div class="flex flex-wrap">
                         <label for="continue" class="btn">
                             <button name="continue" type="button" disabled >Continue</button>
                         </label>
@@ -599,6 +599,12 @@
                             <button type ="button" name="submit_admission" class="dbl_btn img_btn" disabled value="admissionFormSubmit">
                                 <img src="<?php echo $url?>/assets/images/icons/save-outline.svg" alt="save">
                                 <span>Save</span>
+                            </button>
+                        </label>
+                        <label for="print_summary" class="btn no_disp">
+                            <button type ="button" name="print_summary" class="dbl_btn img_btn secondary" disabled value="admissionFormSubmit">
+                                <img src="<?php echo $url?>/assets/images/icons/print-outline.svg" alt="print">
+                                <span>Print</span>
                             </button>
                         </label>
                         <label for="modal_cancel" class="btn dbl_btn_label">

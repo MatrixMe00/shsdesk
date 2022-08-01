@@ -154,9 +154,15 @@ $("label[for=agree]").click(function(){
     if(check == false){
         //change the type of the admission button
         $("button[name=submit_admission]").prop("type","button");
+
+        //disable print button
+        $("button[name=print_summary]").prop("disabled", true);
     }else if(check == true){
         //change the type of the admission button
         $("button[name=submit_admission]").prop("type","submit");
+
+        //enable print button
+        $("button[name=print_summary]").prop("disabled", false);
     }
     $("button[name=submit_admission]").prop("disabled", !check);
 })
@@ -678,6 +684,36 @@ $("form[name=admissionForm]").submit(function(e){
             type = "error";
 
             messageBoxTimeout(form_element.prop("name"), message, type);
+        }
+    })
+})
+
+//display print button on admission form
+$(".tab_button").click(function(){
+    id = $(this).attr("id");
+
+    if(id == "sumView"){
+        $("label[for=print_summary]").removeClass("no_disp");
+    }else{
+        $("label[for=print_summary]").addClass("no_disp");
+    }
+})
+
+//print summary on button click
+$("label[for=print_summary] button").click(function(){
+    html = $("#" + $("#sumView").attr("data-views")).html();
+    index = $("input#ad_index").val();
+
+    $.ajax({
+        url: "customPdfGenerator.php",
+        data: "admission_print=true&html=" + html + "&ad_index=" + index,
+        type: "POST",
+        success: function(data){
+            alert_box("Your document is ready", "primary");
+            alert_box(data,"secondary");
+        },
+        error: function(){
+            alert_box("Your details could not be printed. Please try again later", "error");
         }
     })
 })
