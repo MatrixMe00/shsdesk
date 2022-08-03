@@ -80,7 +80,7 @@
                     </div>
                 <div class="foot">
                         <p>
-                            @2021 shsdesk.com
+                            @<?php echo date("Y") ?> shsdesk.com
                         </p>
                     </div>
                 </form>

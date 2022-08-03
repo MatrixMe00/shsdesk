@@ -41,8 +41,6 @@
         #video .head{padding-top: 10px;padding-bottom: 10px;}
         #video .body{padding-bottom: 10px;}
         #video video{max-width: 640px;}
-        #video_download{padding: 0.7em 1em; cursor: pointer;}
-        #video_download:hover{background-color: lightgrey;}
         #download_register{display: inline-block;}
         label[for=student_index_number]{width: 100%}
         #pay_div .btn{padding-bottom: unset}
@@ -224,7 +222,7 @@
                     <div class="flex flex-align-end" id="pay_div">
                         <label for="student_index_number" class="flex flex-column flex-wrap relative">
                             <span class="label_title">Provide your JHS index number below</span>
-                            <input type="text" name="student_index_number" id="student_index_number" placeholder="Enter index number">
+                            <input type="text" name="student_index_number" id="student_index_number" placeholder="Enter JHS index number [Eg. 100000000021]">
                         </label>
                         <label for="student_check" class="btn">
                             <button name="student_check" type="button" id="student_check">Check</button>
@@ -455,12 +453,12 @@
                     </video>
                     
                 </div>
-                <div id="download_register">
+                <div id="download_register" class="sm-sm-b btn">
                     <a href="<?php echo $url?>/assets/file/How-To-Register (720px).mp4" download>
-                        <span id="video_download" class="light">Download Video [720px]</span>
+                        <button type="button" class="light border b-secondary plain-r">Download Video [720px]</button>
                     </a>
                     <a href="<?php echo $url?>/assets/file/How-To-Register (1080px).mp4" download>
-                        <span id="video_download" class="light">Download Video [1080px]</span>
+                        <button type="button" class="light border b-secondary plain-r">Download Video [1080px]</button>
                     </a>
                 </div>
                 

@@ -208,6 +208,197 @@ button.red:hover, button.danger:hover{
     font-size: auto;
 }
 
+/*plain displays*/
+.plain, .plain-r{
+    background-color: transparent;
+    color: inherit;
+    border-style: solid;
+}
+
+.plain:hover, .plain-r:hover{
+    border-width: thin !important;
+    outline-width: thick;
+    outline-style: solid;
+    outline-color: transparent !important;
+}
+
+.plain:hover{
+    background-color: transparent !important;
+    color: inherit !important;
+}
+
+.plain.blue, .plain.primary,
+.plain-r.blue, .plain-r.primary{
+    border-color: var(--primary);
+    outline-color: var(--primary);
+}
+
+.plain.orange, .plain-r.orange{
+    border-color: var(--orange);
+    outline-color: var(--orange);
+}
+
+.plain.gray, .plain.secondary,
+.plain-r.gray, .plain-r.secondary{
+    border-color: var(--secondary);
+    outline-color: var(--secondary);
+}
+
+.plain.gray-dark, .plain.dark,
+.plain-r.gray-dark, .plain-r.dark{
+    border-color: var(--dark);
+    outline-color: var(--dark);
+}
+
+.plain.gray-dark:hover, .plain.dark:hover,
+.plain-r.gray-dark:hover, .plain-r.dark:hover{
+    border-color: var(--secondary);
+}
+
+.plain.light,
+.plain-r.light{
+    border-color: var(--light);
+    outline-color: var(--light);
+}
+
+.plain.white,
+.plain-r.white{
+    border-color: var(--white);
+    outline-color: var(--white);
+}
+
+.plain.red, .plain.danger,
+.plain-r.red, .plain-r.danger{
+    border-color: var(--danger);
+    outline-color: var(--danger);
+}
+
+.plain.cyan, .plain-r.cyan{
+    border-color: var(--cyan);
+    outline-color: var(--cyan);
+}
+
+.plain.green, .plain.success,
+.plain-r.green, .plain-r.success{
+    border-color: var(--success);
+    outline-color: var(--success);
+}
+
+.plain.yellow, .plain.warning,
+.plain-r.yellow, .plain-r.warning{
+    border-color: var(--warning);
+    outline-color: var(--warning);
+}
+
+.plain.teal, .plain-r.teal{
+    border-color: var(--teal);
+    outline-color: var(--teal);
+}
+/*end of plain displays*/
+
+/*transparent background*/
+.b-trans-sm2{
+    --alpha: 0.9;
+}
+
+.b-trans-sm1{
+    --alpha: 0.85;
+}
+.b-trans-sm{
+    --alpha: 0.75;
+}
+.b-trans-med{
+    --alpha: 0.65;
+}
+
+.b-trans{
+    --alpha: 0.5;
+}
+
+.b-trans-l{
+    --alpha: 0.45;
+}
+
+.b-trans-l1{
+    --alpha: 0.35;
+}
+
+.b-trans-l2{
+    --alpha: 0.25;
+}
+/*end of creating alpha variable*/
+
+.blue[class*=b-trans], .primary[class*=b-trans]{
+    background-color: hsla(211, 100%, 50%, var(--alpha));
+}
+.indigo[class*=b-trans]{
+    background-color: hsla(263, 90%, 51%, var(--alpha));
+} 
+
+.purple[class*=b-trans]{
+    background-color: hsla(261, 51%, 51%, var(--alpha));
+} 
+
+.red[class*=b-trans], .danger[class*=b-trans]{
+    background-color: hsla(354, 70%, 54%, var(--alpha));
+}
+
+.pink[class*=b-trans]{
+    background-color: hsla(332, 79%, 58%, var(--alpha));
+}
+
+.orange[class*=b-trans]{
+    background-color: hsla(27, 98%, 54%, var(--alpha));
+} 
+
+.yellow[class*=b-trans], .warning[class*=b-trans]{
+    background-color: hsla(45, 100%, 51%, var(--alpha));
+} 
+
+.green[class*=b-trans], .success[class*=b-trans]{
+    background-color: hsla(134, 61%, 41%, var(--alpha));
+} 
+
+.teal[class*=b-trans]{
+    background-color: hsla(162, 73%, 46%, var(--alpha));
+}
+
+.cyan[class*=b-trans], .info[class*=b-trans]{
+    background-color: hsla(188, 78%, 41%, var(--alpha));
+} 
+
+.white[class*=b-trans]{
+    background-color: hsla(0, 0%, 100%, var(--alpha));
+} 
+
+.light[class*=b-trans]{
+    background-color: hsla(210, 17%, 98%, var(--alpha));
+} 
+
+.gray[class*=b-trans], .secondary[class*=b-trans]{
+    background-color: hsla(208, 7%, 46%, var(--alpha));
+} 
+
+.gray-dark[class*=b-trans], .dark[class*=b-trans]{
+    background-color: hsla(210, 10%, 23%, var(--alpha));
+}
+
+.black[class*=b-trans], .black0[class*=b-trans]{
+    background-color: hsla(0, 0%, 0%, var(--alpha));
+}
+
+.black1[class*=b-trans]{
+    background-color: hsla(0, 0%, 7%, var(--alpha));
+}
+
+.black2[class*=b-trans]{
+    background-color: hsla(0, 0%, 13%, var(--alpha));
+}
+
+.black3[class*=b-trans]{
+    background-color: hsla(0, 0%, 20%, var(--alpha));
+}
+
 .display_image_box{
     padding: 1%;
     *border: 1px solid;
@@ -334,8 +525,29 @@ form .label.flex-column label{
     right: 0;
 }
 
+/*format flex displays*/
 .flex{
     display: flex;
+}
+
+.iflex{
+    display: inline-flex;
+}
+
+.flex-all-center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-eq > *{
+    flex: 1;
+}
+
+.iflex-all-center{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .flex-wrap{
@@ -366,6 +578,14 @@ form .label.flex-column label{
     flex-direction: column;
 }
 
+.flex-column-r{
+    flex-direction: column-reverse;
+}
+
+.flex-row-r{
+    flex-direction: row-reverse;
+}
+
 .flex-row{
     flex-direction: row;
 }
@@ -390,6 +610,453 @@ form .label.flex-column label{
     align-items: flex-end;
 }
 
+.self-align-start{
+    align-self: flex-start;
+}
+
+.self-align-end{
+    align-self: flex-end;
+}
+
+.self-align-center{
+    align-self: center;
+}
+
+.self-justify-start{
+    justify-self: flex-start;
+}
+
+.self-justify-end{
+    justify-self: flex-end;
+}
+.self-justify-center{
+    align-self: center;
+}
+/*end of flex displays*/
+
+/*borders*/
+.ls-border, .l-border, .border{
+    border: thin solid;
+}
+.ld-border{
+    border: thin dotted;
+}
+.lda-border{
+    border: thin dashed;
+}
+.ms-border, .m-border{
+    border: medium solid;
+}
+.md-border{
+    border: medium dotted;
+}
+.mda-border{
+    border: medium dashed;
+}
+.ts-border, .t-border{
+    border: thick solid;
+}
+.td-border{
+    border: thick dotted;
+}
+.tda-border{
+    border: thick dashed;
+}
+.b-blue, .b-primary{
+    border-color: var(--primary) !important;
+}
+
+.b-gray, .b-secondary{
+    border-color: var(--secondary) !important;
+}
+
+.b-gray-dark, .b-dark{
+    border-color: var(--dark) !important;
+}
+
+.b-light{
+    border-color: var(--light) !important;
+}
+
+.b-white{
+    border-color: var(--white) !important;
+}
+
+.b-red, .b-danger{
+    border-color: var(--danger) !important;
+}
+
+.b-orange{
+    border-color: var(--orange) !important;
+}
+
+.b-green, .b-success{
+    border-color: var(--success) !important;
+}
+
+.b-yellow, .b-warning{
+    border-color: var(--warning) !important;
+}
+
+.b-teal{
+    border-color: var(--teal) !important;
+}
+
+.b-cyan{
+    border-color: var(--cyan) !important;
+}
+
+.b-purple{
+    border-color: var(--purple) !important;
+}
+
+.b-indigo{
+    border-color: var(--indigo) !important;
+}
+
+.b-unset{
+    border: unset !important;
+}
+/*end of borders*/
+
+/*margins*/
+.m-sm > *, .sm-sm{
+    margin: 0.25rem !important;
+}
+
+.m-sm-lr > *, .sm-sm-lr{
+    margin-left: 0.25rem !important;
+    margin-right: 0.25rem !important;
+}
+
+.m-sm-tp > *, .sm-sm-tp{
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.m-sm-t > *, .sm-sm-t {
+    margin-top: 0.25rem !important;
+}
+
+.m-sm-b > *, .sm-sm-b {
+    margin-bottom: 0.25rem !important;
+}
+
+.m-sm-l > *, .sm-sm-l {
+    margin-left: 0.25rem !important;
+}
+
+.m-sm-r > *, .sm-sm-r {
+    margin-right: 0.25rem !important;
+}
+
+.m-med > *, .sm-med{
+    margin: 0.5rem !important;
+}
+
+.m-med-lr > *, .sm-med-lr{
+    margin-left: 0.5rem !important;
+    margin-right: 0.5rem !important;
+}
+
+.m-med-tp > *, .sm-med-tp{
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.m-med-t > *, .sm-med-t {
+    margin-top: 0.5rem !important;
+}
+
+.m-med-b > *, .sm-med-b {
+    margin-bottom: 0.5rem !important;
+}
+
+.m-med-l > *, .sm-med-l {
+    margin-left: 0.5rem !important;
+}
+
+.m-med-r > *, .sm-med-r {
+    margin-right: 0.5rem !important;
+}
+
+.m-lg > *, .sm-lg{
+    margin: 0.75rem !important;
+}
+
+.m-lg-lr > *, .sm-lg-lr{
+    margin-left: 0.75rem !important;
+    margin-right: 0.75rem !important;
+}
+
+.m-lg-tp > *, .sm-lg-tp{
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+}
+
+.m-lg-t > *, .sm-lg-t {
+    margin-top: 0.75rem !important;
+}
+
+.m-lg-b > *, .sm-lg-b {
+    margin-bottom: 0.75rem !important;
+}
+
+.m-lg-l > *, .sm-lg-l {
+    margin-left: 0.75rem !important;
+}
+
+.m-lg-r > *, .sm-lg-r {
+    margin-right: 0.75rem !important;
+}
+
+.m-xlg > *, .sm-xlg{
+    margin: 1rem !important;
+}
+
+.m-xlg-lr > *, .sm-xlg-lr{
+    margin-left: 1rem !important;
+    margin-right: 1rem !important;
+}
+
+.m-xlg-tp > *, .sm-xlg-tp{
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.m-xlg-t > *, .sm-xlg-t {
+    margin-top: 1rem !important;
+}
+
+.m-xlg-b > *, .sm-xlg-b {
+    margin-bottom: 1rem !important;
+}
+
+.m-xlg-l > *, .sm-xlg-l {
+    margin-left: 1rem !important;
+}
+
+.m-xlg-r > *, .sm-xlg-r {
+    margin-right: 1rem !important;
+}
+
+.m-xxlg > *, .sm-xxlg{
+    margin: 2rem !important;
+}
+
+.m-xxlg-lr > *, .sm-xxlg-lr{
+    margin-left: 2rem !important;
+    margin-right: 2rem !important;
+}
+
+.m-xxlg-tp > *, .sm-xxlg-tp{
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
+}
+
+.m-xxlg-t > *, .sm-xxlg-t {
+    margin-top: 2rem !important;
+}
+
+.m-xxlg-b > *, .sm-xxlg-b {
+    margin-bottom: 2rem !important;
+}
+
+.m-xxlg-l > *, .sm-xxlg-l {
+    margin-left: 2rem !important;
+}
+
+.m-xxlg-r > *, .sm-xxlg-r {
+    margin-right: 2rem !important;
+}
+
+.ml-unset > *, .sml-unset{
+    margin-left: unset;
+}
+.mr-unset > *, .smr-unset{
+    margin-right: unset;
+}
+.mb-unset > *, .smb-unset{
+    margin-bottom: unset;
+}
+.mt-unset > *, .smt-unset{
+    margin-top: unset;
+}
+
+.m-unset > *, .sm-unset{
+    margin: unset;
+}
+/*end of margins*/
+
+/*paddings*/
+.p-sm > *, .sp-sm{
+    padding: 0.25rem !important;
+}
+
+.p-sm-lr > *, .sp-sm-lr{
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+}
+
+.p-sm-tp > *, .sp-sm-tp{
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+}
+
+.p-sm-t > *, .sp-sm-t {
+    padding-top: 0.25rem !important;
+}
+
+.p-sm-b > *, .sp-sm-b {
+    padding-bottom: 0.25rem !important;
+}
+
+.p-sm-l > *, .sp-sm-l {
+    padding-left: 0.25rem !important;
+}
+
+.p-sm-r > *, .sp-sm-r {
+    padding-right: 0.25rem !important;
+}
+
+.p-med > *, .sp-med{
+    padding: 0.5rem !important;
+}
+
+.p-med-lr > *, .sp-med-lr{
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}
+
+.p-med-tp > *, .sp-med-tp{
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+
+.p-med-t > *, .sp-med-t {
+    padding-top: 0.5rem !important;
+}
+
+.p-med-b > *, .sp-med-b {
+    padding-bottom: 0.5rem !important;
+}
+
+.p-med-l > *, .sp-med-l {
+    padding-left: 0.5rem !important;
+}
+
+.p-med-r > *, .sp-med-r {
+    padding-right: 0.5rem !important;
+}
+
+.p-lg > *, .sp-lg{
+    padding: 0.75rem !important;
+}
+
+.p-lg-lr > *, .sp-lg-lr{
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+}
+
+.p-lg-tp > *, .sp-lg-tp{
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+}
+
+.p-lg-t > *, .sp-lg-t {
+    padding-top: 0.75rem !important;
+}
+
+.p-lg-b > *, .sp-lg-b {
+    padding-bottom: 0.75rem !important;
+}
+
+.p-lg-l > *, .sp-lg-l {
+    padding-left: 0.75rem !important;
+}
+
+.p-lg-r > *, .sp-lg-r {
+    padding-right: 0.75rem !important;
+}
+
+.p-xlg > *, .sp-xlg{
+    padding: 1rem !important;
+}
+
+.p-xlg-lr > *, .sp-xlg-lr{
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+
+.p-xlg-tp > *, .sp-xlg-tp{
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+
+.p-xlg-t > *, .sp-xlg-t {
+    padding-top: 1rem !important;
+}
+
+.p-xlg-b > *, .sp-xlg-b {
+    padding-bottom: 1rem !important;
+}
+
+.p-xlg-l > *, .sp-xlg-l {
+    padding-left: 1rem !important;
+}
+
+.p-xlg-r > *, .sp-xlg-r {
+    padding-right: 1rem !important;
+}
+
+.p-xxlg > *, .sp-xxlg{
+    padding: 2rem !important;
+}
+
+.p-xxlg-lr > *, .sp-xxlg-lr{
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+}
+
+.p-xxlg-tp > *, .sp-xxlg-tp{
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+}
+
+.p-xxlg-t > *, .sp-xxlg-t {
+    padding-top: 2rem !important;
+}
+
+.p-xxlg-b > *, .sp-xxlg-b {
+    padding-bottom: 2rem !important;
+}
+
+.p-xxlg-l > *, .sp-xxlg-l {
+    padding-left: 2rem !important;
+}
+
+.p-xxlg-r > *, .sp-xxlg-r {
+    padding-right: 2rem !important;
+}
+
+.pl-unset > *, .spl-unset{
+    padding-left: unset !important;
+}
+.pr-unset > *, .spr-unset{
+    padding-right: unset !important;
+}
+.pb-unset > *, .spb-unset{
+    padding-bottom: unset !important;
+}
+.pt-unset > *, .spt-unset{
+    padding-top: unset !important;
+}
+
+.p-unset > *, .sp-unset{
+    padding: unset !important;
+}
+/*end of paddings*/
+
 .label{
     display:flex;
     border: 1px solid #ccc;
@@ -412,6 +1079,7 @@ form .label.flex-column label{
     text-align: right;
 }
 
+/*element positioning*/
 .fixed{
     position: fixed;
 }
@@ -424,9 +1092,72 @@ form .label.flex-column label{
     position: absolute;
 }
 
+.absolute.top-left, .fixed.top-left{
+    top: 0;
+    left: 0;
+}
+
+.absolute.top-right, .fixed.top-right{
+    top: 0;
+    right: 0;
+}
+
+.absolute.bottom-left, .fixed.bottom-left{
+    bottom: 0;
+    left: 0;
+}
+
+.absolute.bottom-right, .fixed.bottom-right{
+    bottom: 0;
+    right: 0;
+}
+
+.absolute.center, .fixed.center{
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+}
+
+.absolute.bottom-center, .fixed.bottom-center{
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+}
+
+.absolute.top-center, .fixed.top-center{
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+}
+
 .static{
     position: static;
 }
+
+.sticky{
+    position: -webkit-sticky;
+    position: sticky;
+}
+/*end of positioning*/
 
 .shadow{
     position: absolute;

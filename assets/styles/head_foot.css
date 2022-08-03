@@ -39,6 +39,7 @@ nav{
     display: flex;
     font-size: larger;
     cursor: pointer;
+    width: -moz-fit-content;
     width: fit-content;
 }
 
@@ -145,4 +146,12 @@ footer{
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.foot-contact{
+    padding-bottom: 10px !important;
+    border-bottom: 1px solid var(--light);
+    margin-bottom: 10px !important;
+    width: -moz-fit-content;
+    width: fit-content;
 }

@@ -1,0 +1,492 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
+
+:root {
+    --blue: #007bff;
+    --indigo: #6610f2;
+    --purple: #6f42c1;
+    --pink: #e83e8c;
+    --red: #dc3545;
+    --orange: #fd7e14;
+    --yellow: #ffc107;
+    --green: #28a745;
+    --teal: #20c997;
+    --cyan: #17a2b8;
+    --white: #fff;
+    --gray: #6c757d;
+    --gray-dark: #343a40;
+    --primary: #007bff;
+    --secondary: #6c757d;
+    --success: #28a745;
+    --info: #17a2b8;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --light: #f8f9fa;
+    --dark: #343a40;
+}
+
+label .title_message{
+    background-color: rgba(15,15,15,0.85);
+    color: white;
+    border-radius: 5px;
+    display: none;
+    margin-top: 3px;
+    padding: 5px 8px;
+}
+
+label .title_message:hover{
+    background-color: rgba(15, 15, 15, 0.95);
+}
+
+/*display the title message when the textbox is in focus*/
+label input:focus~.title_message, label textarea:focus~.title_message{
+    display: block;
+    position: absolute;
+    top: 110%;
+    z-index: 2;
+    left: 0;
+    right: 0;
+}
+
+*{
+    scroll-behavior: smooth;
+    font-family: 'Times New Roman', 'Merriweather', serif;
+}
+
+/*tables*/
+table{
+    display: table !important;
+    border: 1px solid lightgrey;
+    width: 95%;
+    margin: 2.5%;
+}
+
+table.full{
+    width: 100%;
+    margin: 0;
+}
+
+table.sm-full{
+    width: 98%;
+    margin: 1%;
+}
+
+table.space-top{
+    margin-top: 1%;
+}
+
+table tbody{
+    overflow: auto;
+}
+
+table tbody tr.empty td{
+    padding: 1em;
+    text-align: center;
+}
+
+td.pages > div{
+    padding: 0.2rem 0.6em;
+}
+
+td.pages > div:first-child{
+    padding-left: 0;
+}
+
+td.pages .navs span{
+    font-size: normal !important;
+}
+
+.search{
+    margin: 1% 1% 0;
+}
+/*naming the colors*/
+.blue, .primary{
+    background-color: var(--blue);
+    color: white;
+}
+
+button.blue:hover, button.primary:hover{
+    background-color: rgb(50,50,255);
+}
+
+button:disabled{
+    background-color: initial !important;
+    color: #555 !important;
+    cursor: default !important;
+}
+
+button.dark:hover, button.gray-dark:hover{
+    background-color: var(--light);
+    color: var(--dark);
+}
+
+button.cyan:hover, button.info:hover{
+    background-color: var(--primary);
+}
+
+button.secondary:hover, button.grey:hover{
+    color: initial;
+    background-color: initial;
+}
+
+button.teal:hover{
+    background-color: rgb(62, 150, 100);
+}
+.indigo{
+    background-color: var(--indigo);
+    color: white;
+} 
+
+.purple{
+    background-color: var(--purple);
+    color: white;
+} 
+
+.red, .danger{
+    background-color: var(--red);
+    color: white;
+}
+
+button.red:hover, button.danger:hover{
+    background-color: rgb(255,50,50);
+}
+
+.pink{
+    background-color: var(--pink);
+    color: white;
+}
+
+.orange{
+    background-color: var(--orange);
+    color: white;
+} 
+
+.yellow, .warning{
+    background-color: var(--yellow);
+    color: white;
+} 
+
+.green, .success{
+    background-color: var(--green);
+    color: white;
+} 
+
+.teal{
+    background-color: var(--teal);
+    color: white;
+}
+
+.cyan, .info{
+    background-color: var(--cyan);
+    color: white;
+} 
+
+.white{
+    background-color: var(--white);
+    color: black;
+} 
+
+.light{
+    background-color: var(--light);
+    color: black;
+} 
+
+.gray, .secondary{
+    background-color: var(--gray);
+    color: white;
+} 
+
+.gray-dark, .dark{
+    background-color: var(--gray-dark);
+    color: white;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: all 0.5s;
+    font-size: auto;
+}
+
+.display_image_box{
+    padding: 1%;
+    *border: 1px solid;
+}
+
+.display_image_box img{
+    width: 100%;
+}
+img{
+    width: 100%;
+}
+
+form img, .form img{
+    width: unset;
+}
+.logo{
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
+
+.btn button{
+    outline: none;
+    border: 1px solid lightgrey;
+    padding: 6px 8px;
+    cursor: pointer;
+    min-width: 5rem;
+}
+
+.dbl_btn_label{
+    display: flex;
+}
+
+.dbl_btn_label button{
+    margin: 0 3px;
+    padding: 5px;
+}
+
+.btn:first-child{
+    padding-left: unset !important;
+}
+
+.btn button:hover{
+    border-bottom-left-radius: 0.65rem;
+    border-bottom-right-radius: 0.65rem;
+}
+
+.no_disp, .form_modal_box.no_disp{
+    display: none;
+}
+
+.item-event{
+    font-size: small;
+    padding: 0.4em;
+    cursor: default;
+}
+
+.item-event{
+    color: blue;
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+.item-event:hover{
+    text-decoration: underline;
+}
+
+.item-event.info{
+    color: grey;
+    background-color: transparent;
+    cursor: default;
+}
+
+.item-event.info:hover{
+    text-decoration: none;
+}
+
+form .label.flex-column{
+    border: unset;
+    width: 100%;
+}
+
+form .label.no_disp{
+    display: none;
+}
+
+form .label.flex-column label{
+    width: inherit;
+    margin: unset;
+}
+
+.fadeOut{
+    animation: fadeOut ease 0.7s;
+    animation-iteration-count: 1;
+}
+
+*{
+    animation: fadeIn ease 0.5s;
+    animation-iteration-count: 1;
+}
+
+@keyframes fadeOut{
+    from{opacity: 1;}
+    50%{opacity: 0.5; height: unset;}
+    to{opacity: 0;}
+}
+
+@keyframes fadeIn{
+    0%{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+
+.form_modal_box{
+    background:rgba(15, 15, 15, 0.85);
+    height: 100vh;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.flex{
+    display: flex;
+}
+
+.flex-wrap{
+    flex-wrap: wrap;
+}
+
+.flex-no-wrap{
+    flex-wrap: nowrap;
+}
+
+.flex-center-content{
+    justify-content: center;
+}
+
+.flex-space-content{
+    justify-content: space-between;
+}
+
+.flex-space-around{
+    justify-content: space-around;
+}
+
+.flex-center-align{
+    align-items: center;
+}
+
+.flex-column{
+    flex-direction: column;
+}
+
+.flex-row{
+    flex-direction: row;
+}
+
+.flex-content-end{
+    justify-content: flex-end;
+}
+
+.flex-content-start{
+    justify-content: flex-start !important;
+}
+
+.flex-align-start{
+    align-items: flex-start !important;
+}
+
+.flex-content-end{
+    justify-content: flex-end;
+}
+
+.flex-align-end{
+    align-items: flex-end;
+}
+
+.label{
+    display:flex;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    margin: 3px;
+    width: 100%;
+    min-width: 20vw;
+}
+
+.label .name{
+    min-width: 80px;
+    padding: 5px;
+}
+
+.label .value{
+    padding-left: 0.5em;
+    flex: 1;
+    border-left: 1px dashed #ccc;
+    padding: 5px;
+    text-align: right;
+}
+
+.fixed{
+    position: fixed;
+}
+
+.relative{
+    position: relative;
+}
+
+.absolute{
+    position: absolute;
+}
+
+.static{
+    position: static;
+}
+
+.shadow{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(15, 15, 15, 0.55);
+}
+
+form button{
+    max-width: 180px;
+}
+
+td{
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+/* a custom alert box*/
+.alert_box{
+    border: 1px solid;
+    padding: 0.5em;
+    min-width: 200px;
+    text-align: center;
+    margin: 0.2em 0.5em;
+    width: -moz-fit-content;
+    width: fit-content;
+}
+
+.alert_box:first-child{margin-top: unset}
+.alert_box:last-child{margin-bottom: unset}
+
+#alert_modal{
+    right: 0;
+    top: 0.5em;
+    text-align: right;
+    z-index: 10;
+}
+
+@media screen and (min-width: 768px) {
+    .btn button{
+        min-width: 10vw;
+    }
+
+    .display_image_box{
+        max-width: unset !important;
+    }
+
+    .form_modal_box form, .form_modal_box .form{
+        min-width: 70vw;
+    }
+}
+
+@media screen and (max-width: 768px){
+    .form_modal_box form, .form_modal_box .form{
+        min-width: 95vw;
+    }
+}
+
+@media screen and (min-width: 520px) {
+    
+}
