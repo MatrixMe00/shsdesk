@@ -208,3 +208,28 @@ $("button#student_check").click(function(){
 $("select").change(function(){
     $(".tabs span.tab_button.active").click();
 })*/
+
+//get contact of admin
+$("select#getContact").change(function(){
+    if($(this).val() != ""){
+        $.ajax({
+            url: "submit.php",
+            data: "submit=getContact&schoolID=" + $(this).val(),
+            dataType: "text",
+            beforeSend: function(){
+                $("span#contResult").html("Fetching contact...");
+            },
+            success: function(data){
+                if(data != "")
+                    $("span#contResult").html(data);
+                else
+                    $("span#contResult").html("no results were returned");
+            },
+            error: function(data){
+                $("span#contResult").html(JSON.stringify(data));
+            }
+        })
+    }else{
+        $("span#contResult").html("");
+    }
+})

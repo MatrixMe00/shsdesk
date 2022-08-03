@@ -34,7 +34,10 @@
         #message_us{
             padding: 1em; position: fixed; bottom: 5vh; left: 3vw; 
             border-radius: 10px; font-size: large; font-weight: bold;
-        }#video{text-align: center;}
+        }#video{text-align: center; flex: 7 1 600px; margin: auto 10px}
+        #contacts{flex:5 1 200px; text-align: center; padding: 0.3rem 1rem 1rem;
+            height: -moz-fit-content; height: fit-content; margin: 0 10px}
+        #contacts > *{margin: 0.5rem auto}
         #video .head{padding-top: 10px;padding-bottom: 10px;}
         #video .body{padding-bottom: 10px;}
         #video video{max-width: 640px;}
@@ -412,27 +415,58 @@
         </section>
         <?php }?>
         
-        <section id="video" class="light">
-            <div class="head">
-                <h3>How to Register your details</h3>
-            </div>
-            <div class="body">
-                <p>Please take a look at the video below to be guided on how to register yourself for admission</p>
-            </div>
-            <div>
-                <video controls width="80%" cite="https://www.bensound.com">
-                    <source src="<?php echo $url?>/assets/file/How-To-Register.mp4" type="video/mp4">
-                    Video not supported by browser
-                </video>
+        <div class="flex flex-wrap flex-center-content">
+            <section id="contacts" class="secondary">
+                <div class="head">
+                    <h3>For Assistance</h3>
+                </div>
+                <div class="body">
+                    <p>Please select your choice school to get the contact of your admin</p>
+                    <label for="getContact">
+                        <select name="getContact" id="getContact">
+                            <option value="">Select A School</option>
+                            <?php 
+                                $sql = "SELECT id, schoolName FROM schools WHERE Active=1";
+                                $res = $connect->query($sql);
+                                if($res->num_rows > 0){
+                                    while($row = $res->fetch_assoc()){
+                                        echo "
+                                        <option value=\"".$row['id']."\">".$row["schoolName"]."</option>
+                                        ";
+                                    }
+                                }
+                            ?>
+                        </select>
+                    </label>                    
+                    <span id="contResult"></span>
+                </div>
+            </section>
+            <section id="video" class="light">
+                <div class="head">
+                    <h3>How to Register your details</h3>
+                </div>
+                <div class="body">
+                    <p>Please take a look at the video below to be guided on how to register yourself for admission</p>
+                </div>
+                <div>
+                    <video controls width="80%" cite="https://www.bensound.com">
+                        <source  src="<?php echo $url?>/assets/file/How-To-Register (720px).mp4" type="video/mp4">
+                        Video not supported by browser
+                    </video>
+                    
+                </div>
+                <div id="download_register">
+                    <a href="<?php echo $url?>/assets/file/How-To-Register (720px).mp4" download>
+                        <span id="video_download" class="light">Download Video [720px]</span>
+                    </a>
+                    <a href="<?php echo $url?>/assets/file/How-To-Register (1080px).mp4" download>
+                        <span id="video_download" class="light">Download Video [1080px]</span>
+                    </a>
+                </div>
                 
-            </div>
-            <div id="download_register">
-                <a href="<?php echo $url?>/assets/file/How-To-Register.mp4" download>
-                    <span id="video_download" class="light">Download Video</span>
-                </a>
-            </div>
-            
-        </section>
+            </section>
+        </div>
+        
     </main>
     
     <a href="https://wa.me/233200449223">

@@ -746,10 +746,11 @@
      * 
      * @param string $number This is the number to be formatted
      * @param bool $international This determines if it should be in international format or local format
+     * @param bool $space This determines if it should be spaced
      * 
      * @return string returns a string of the formatted number
      */
-    function remakeNumber(string $number, bool $international = false){
+    function remakeNumber(string $number, bool $international = false, $space = true){
         if($international){     //add +233
             //remove any space in it
             $number = str_replace(" ","",$number);
@@ -775,7 +776,9 @@
                 $number = $number[0]." ".$number[1]." ".$number[2].$number[3];
             }
         }
-             
+        
+        if(!$space)
+            $number = str_replace(" ", "", $number);
 
         return $number;
     }

@@ -551,7 +551,34 @@
             }
             
             echo json_encode($message);
+        }elseif($submit == "getContact" || $submit == "getContact_ajax"){
+            $schoolID = $_REQUEST["schoolID"];
+
+            //search admins table for school admin
+            $result = $connect->query("SELECT fullname, contact FROM admins_table WHERE school_id = $schoolID AND role=3");
+
+            if($result->num_rows > 0){
+                if($result->num_rows > 1){
+                    $counter = 1;
+                    $total = $result->num_rows;
+
+                    while($counter <= $total && $row = $result->fetch_assoc()){
+                        echo "<a href=\"tel:".remakeNumber($row["contact"],true,false)."\">".remakeNumber($row["contact"],false)."</a> - ".$row["fullname"];
+
+                        if($counter < $total){
+                            echo "<br>";
+                        }
+                    }
+                }else{
+                    $row = $result->fetch_assoc();
+                    echo "<a href=\"tel:".remakeNumber($row["contact"],true,false)."\">".remakeNumber($row["contact"],false)."</a> - ".$row["fullname"];
+                }
+            }
+        }else{
+            echo "Provided submission could not be found. Please try again, else use the message us button";
         }
+    }else{
+        echo "No recognized submission detected. Please try again, else use the message us button";
     }
     // echo date("Y-m-d H:i:s")
 ?>
