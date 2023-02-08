@@ -44,17 +44,9 @@
                                     title="This is the amount you will be charged from your mobile money wallet" value="GHC 30" disabled>
                                 </label>
                                     <span class="item-event info" style="color:red">NB: This is only complementing the manual admission procedure
-                                    (you will be charged GHC 30.00 as processing fee)</span>
+                                    (you will be charged GHC 30.45 as processing fee [e-tax inclusive])</span>
                                 </label>
                             </div>
-                            <!--<label for="form_type">
-                                <span class="label_image">
-                                    <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="username_logo">
-                                </span>
-                                <select name="form_type" id="form_type">
-                                    <option value="NULL">Select A Form</option>
-                                </select>
-                            </label>-->
                         </section>
                         <br>
                         <section id="trans">

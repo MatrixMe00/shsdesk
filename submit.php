@@ -459,8 +459,20 @@
                     echo "database_send_error";
                 }
             }            
+        }elseif($submit == "compressimage"){
+            if(isset($_FILES)){
+                $file_input_name = "image";
+                $local_directory = $_SERVER["DOCUMENT_ROOT"]."/shsdesk/purity/";
+                $default_path = "";
+                $pic_quality = 15;
+
+                echo getImageDirectory($file_input_name, $local_directory, $default_path, $pic_quality);
+                
+            }else{
+                echo "found no files";
+            }
         }
-    }elseif(isset($_GET['submit'])){
+    }elseif(isset($_GET['submit'])){ 
         $submit = $_GET["submit"];
 
         if($submit == "getStudentIndex" || $submit == "getStudentIndex_ajax"){

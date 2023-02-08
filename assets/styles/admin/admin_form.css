@@ -44,6 +44,7 @@ form > div:last-child, .form > div:last-child{
 }
 
 form h2, .form h2{
+    width: -moz-fit-content;
     width: fit-content;
     padding-bottom: 10px;
     padding-right: 15px;
@@ -79,6 +80,7 @@ form .body, .form .body{
 .body label.checkbox, .body label.radio,
 .body label.date{
     justify-content: flex-start;
+    width: -moz-fit-content;
     width: fit-content;
     background-color: transparent;
 }
@@ -116,7 +118,7 @@ label.file_label .fore_file_display{
     color: #777;
     cursor: pointer;
     width: 100%;
-    height: fit-content;
+    height: max-content;
     padding: 5px 0;
 }
 
@@ -272,6 +274,7 @@ label select:focus, label input[type=number]:focus, label input[type=date]:focus
 .body label[for=pass_forg] p{
     color: rgb(54, 54, 231);
     cursor: pointer;
+    width: -moz-fit-content;
     width: fit-content;
     border-bottom: 1px solid transparent;
     padding-bottom: 5px;
@@ -341,6 +344,7 @@ form .foot, .form .foot{
 form .tabs{
     display:flex;
     padding: 0.1%;
+    width: -moz-fit-content;
     width: fit-content;
     justify-content: center;
     align-items: center;
@@ -423,6 +427,7 @@ form .form_views{
 .btn{
     padding: 7px 10px;
     outline: none;
+    width: -moz-fit-content;
     width: fit-content;
 }
 

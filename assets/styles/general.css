@@ -719,6 +719,67 @@ form .label.flex-column label{
 }
 /*end of borders*/
 
+/*text alignment*/
+.txt-al-r{
+    text-align: right;
+}
+
+.txt-al-l{
+    text-align: left;
+}
+
+.txt-al-c{
+    text-align: center;
+}
+
+.txt-al-j{
+    text-align: justify;
+}
+
+.txt-fs3{
+    font-size: xx-small;
+}
+.txt-fs2{
+    font-size: x-small;
+}
+.txt-fs1{
+    font-size: smaller;
+}
+.txt-fs{
+    font-size: small;
+}
+.txt-fm{
+    font-size: medium;
+}
+.txt-fn{
+    font-size: normal;
+}
+.txt-fl{
+    font-size: large;
+}
+.txt-fl1{
+    font-size: larger;
+}
+.txt-fl2{
+    font-size: x-large;
+}
+.txt-fl3{
+    font-size: xx-large;
+}
+
+.txt-bold{
+    font-weight: bold;
+}
+
+.txt-bold1{
+    font-weight: bolder;
+}
+
+.txt-underline{
+    text-decoration: underline;
+}
+/*end of text alignment*/
+
 /*margins*/
 .m-sm > *, .sm-sm{
     margin: 0.25rem !important;

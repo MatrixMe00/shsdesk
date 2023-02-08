@@ -157,6 +157,7 @@ $("#admission select").change(function() {
 //retrieve the school of the student via index number
 $("button#student_check").click(function(){
     index = $("input#student_index_number").val();
+    $("input#student_check").prop('data-index',index);
     if(index === ""){
         alert_box("Index Number is required", "danger", 7);
         $("input#student_index_number").focus();
@@ -189,9 +190,9 @@ $("button#student_check").click(function(){
                 //preview the payment detail
                 $("#school_select").change();
 
-                // alert_box(data["successMessage"], "success", 10);
+                alert_box(data["successMessage"], "success", 10);
                 $("span#res_ad_index").html(index);
-                alert(data["successMessage"]);
+                // alert(data["successMessage"]);
             }else{
                 alert_box(data["status"], "danger", 10);
             }

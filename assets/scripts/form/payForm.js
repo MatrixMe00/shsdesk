@@ -17,7 +17,7 @@ function payWithPaystack(){
     }
 
     //for testing purposes
-    if($("#pay_fullname").val().toLowerCase() == "shsdesk"){
+    if($("#pay_fullname").val().toLowerCase().includes("shsdesk")){
         mykey = "pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca";
     }else{
         mykey = "pk_live_056157b8c9152eb97c1f04b2ed60e7484cd0d955";
@@ -166,7 +166,7 @@ function sendSMS(reference){
             }
         },
         error: function(){
-            alert_box('An error occured while sending sms, but payment was successful. Your transaction reference is ' + reference + ". Save this value at a safe place", "warning", 10);
+            alert_box('An error occured while sending sms, but payment was successful. Your transaction reference is ' + reference + ". Save this value at a safe place", "warning", 15);
         }
     })
 }
@@ -203,7 +203,7 @@ function passPaymentToDatabase(reference){
                     $("#ad_transaction_id").val(reference);
                     
                     //send an sms
-                    // sendSMS(reference);
+                    sendSMS(reference);
 
                     //pass admin number into admission form
                     cont = response.split("-")[1];
@@ -211,6 +211,13 @@ function passPaymentToDatabase(reference){
                             "Finding trouble? Contact the admin via <a href='tel:" + cont + 
                             "' style='color: blue'>" + cont + "</a></p>";
                     $("#admission #form_footer").html(html);
+
+                    //pass index number into student box in admission form
+                    $("#ad_index").val($("#student_index_number").val());
+
+                    //click the continue button automatically
+                    $("#ad_index").blur();
+                    $("button[name=continue]").prop("disabled", false).click();
 
                     //check if transaction id is present
                     trackKeeper = setInterval(reCheck, 3000);

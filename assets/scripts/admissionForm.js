@@ -706,14 +706,19 @@ $("label[for=print_summary] button").click(function(){
 
     $.ajax({
         url: "customPdfGenerator.php",
-        data: "admission_print=true&html=" + html + "&ad_index=" + index,
+        data: {
+            admission_print: true,
+            html: html,
+            ad_index: index
+        },
         type: "POST",
+        cache: true,
         success: function(data){
             alert_box("Your document is ready", "primary");
             alert_box(data,"secondary");
         },
-        error: function(){
-            alert_box("Your details could not be printed. Please try again later", "error");
+        error: function(p){
+            alert_box(JSON.stringify(p), "error", 10);
         }
     })
 })

@@ -25,7 +25,7 @@
             width: 80vw;
         }
 
-        @media screen and (orientation: landscape) and (min-width:748px){
+        @media screen and (orientation: landscape) and (min-width:770px){
             body{
                 background-size: cover;
                 background-position: center;
@@ -43,7 +43,7 @@
 </head>
 <body>
     <main>
-        <form action="<?php echo $url?>/submit.php" method="post" name="studentForm">
+        <form action="<?php echo $url?>/submit.php" method="post" name="studentForm" class="img-label">
             <div class="head">
                 <h2>Student Portal</h2>
             </div>

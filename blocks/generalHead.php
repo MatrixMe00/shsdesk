@@ -10,6 +10,10 @@
 
     <!--General Stylesheets-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/head_foot.css?v=<?php echo time()?>">
+    <?php if(isset($gen1) && $gen1 == true){?>
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/general1.css?v=<?php echo time()?>">
+    <?php }else{ ?>
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/general.css?v=<?php echo time()?>">
+    <?php }?>
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/loader.css?v=<?php echo time()?>">

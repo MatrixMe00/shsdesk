@@ -54,13 +54,14 @@
      * @param string $local_storage_directory This is the directory path where the image is stored
      * @param string $default_image_path This is the path of the default image to be used if there 
      * is no image provided
+     * @param int $pic_quality This is the quality of the image to be compressed
      * 
      * @return string This function return the directory of the image stored
      */
-    function getImageDirectory(string $image_input_name, string $local_storage_directory, string $default_image_path = ""):string{
+    function getImageDirectory(string $image_input_name, string $local_storage_directory, string $default_image_path = "", $pic_quality = 40):string{
         if(isset($_FILES[$image_input_name]) && $_FILES[$image_input_name]["tmp_name"] != null){
             //compress the image to 40% quality
-            $_FILES[$image_input_name]["tmp_name"] = compress($_FILES[$image_input_name]["tmp_name"], $_FILES[$image_input_name]["tmp_name"], 40);
+            $_FILES[$image_input_name]["tmp_name"] = compress($_FILES[$image_input_name]["tmp_name"], $_FILES[$image_input_name]["tmp_name"], $pic_quality);
             
             //get a local directory
             $image_directory = $local_storage_directory;
