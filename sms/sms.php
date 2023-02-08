@@ -6,10 +6,10 @@ if(isset($_REQUEST['submit'])){
     $endPoint = 'https://webapp.usmsgh.com/api/sms/send';
 
     // api key
-    $apiToken = '309|57D6wfBwUEPtd2MdSOkJkRA0wR0kHJpanM4Y6yBS';
+    $apiToken = '313|XvzFfivJR6eq7a4Cz3f4pNVkGKdFz4RMF48INToZ ';
 
     if($submit == 'sendTransaction'){
-        $senderId = "MatrixMe";
+        $senderId = "SHSDesk";
         $recipients = [$_REQUEST["phone"]];
         $message = $_REQUEST['message'];
     }elseif($submit == 'exeat_request' || $submit == 'exeat_request_ajax'){
