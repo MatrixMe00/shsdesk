@@ -222,7 +222,7 @@
                     <div class="flex flex-align-end" id="pay_div">
                         <label for="student_index_number" class="flex flex-column flex-wrap relative">
                             <span class="label_title">Provide your JHS index number below</span>
-                            <input type="text" name="student_index_number" id="student_index_number" placeholder="Enter JHS index number [Eg. 100000000021]">
+                            <input type="text" name="student_index_number" id="student_index_number" data-index="" placeholder="Enter JHS index number [Eg. 100000000021]">
                         </label>
                         <label for="student_check" class="btn">
                             <button name="student_check" type="button" id="student_check">Check</button>
@@ -447,17 +447,17 @@
                     <p>Please take a look at the video below to be guided on how to register yourself for admission</p>
                 </div>
                 <div>
-                    <video controls width="80%" cite="https://www.bensound.com">
-                        <source  src="<?php echo $url?>/assets/file/How-To-Register (720px).mp4" type="video/mp4">
+                    <video controls width="80%" cite="https://www.fesliyanstudios.com">
+                        <source  src="<?php echo $url?>/assets/file/SHSDesk Demo Video - 720px.mp4" type="video/mp4">
                         Video not supported by browser
                     </video>
                     
                 </div>
                 <div id="download_register" class="sm-sm-b btn">
-                    <a href="<?php echo $url?>/assets/file/How-To-Register (720px).mp4" download>
+                    <a href="<?php echo $url?>/assets/file/SHSDesk Demo Video - 720px.mp4" download>
                         <button type="button" class="light border b-secondary plain-r">Download Video [720px]</button>
                     </a>
-                    <a href="<?php echo $url?>/assets/file/How-To-Register (1080px).mp4" download>
+                    <a href="<?php echo $url?>/assets/file/SHSDesk Demo Video - 1080px.mp4" download>
                         <button type="button" class="light border b-secondary plain-r">Download Video [1080px]</button>
                     </a>
                 </div>
@@ -468,7 +468,7 @@
     </main>
     
     <a href="https://wa.me/233200449223">
-        <span id="message_us" class="primary">
+        <span id="message_us" class="primary no_disp">
             Message Us
         </span>
     </a>
