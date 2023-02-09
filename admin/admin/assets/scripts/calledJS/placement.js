@@ -59,6 +59,11 @@ $("form[name=importForm").submit(function(e){
                 message = "File could not be uploaded";
             }else if(response == "extension-error"){
                 message = "Incorrect file type sent, please send correct file format"
+            }else if(response.toLowerCase().includes("invalid file")){
+                message = response;
+            }else if(response.toLowerCase().includes("candidate")){
+                message = response;
+                type = "warning";
             }else{
                 message = response;
             }
@@ -82,32 +87,25 @@ $("form[name=importForm] button[name=close]").click(function(){
 
     //reload page
     if(importSuccess){
-        (".tabs .tab_btn.active").click();
+        $("#lhs .item.active").click();
     }
 })
 
-//search button workout
-$(".btn button[name=search_submit]").click(function(){
-    search_value = $(this).parent().siblings("label[for=search]").children("input").val();
-
-    dataString = "search_value=" + search_value + "&submit=" + $(this).val();
+//search field workout
+$("label[for=search] input[name=search]").keyup(function(){
+    search_value = $(this).val();
 
     table_foot = $(this).parents("#content").children(".body").children("table").children("tfoot");
     table_body = $(this).parents("#content").children(".body").children("table").children("tbody");
 
-    //store initial data of the body
-    init_data = $(table_body).html();
-
-    td = $(table_foot).children("tr").children("td");
+    //grab portion for displaying result counts
+    td = $(table_foot).children("tr").children("td.result");
 
     if(search_value == ""){
-        $(td).html("Search value is empty");
-        $(table_foot).removeClass("no_disp");
-
-        setTimeout(function(){
-            $(table_foot).addClass("no_disp");
-        },5000);
+        $(td).html("");
+        $(table_foot).children("tr").children("td:first-child").attr("hidden", false);
     }else{
+        $(table_foot).children("tr").children("td:first-child").attr("hidden", true);
         //covert search value to lower case
         search_value = search_value.toLowerCase();
 
@@ -130,4 +128,3 @@ $(".btn button[name=search_submit]").click(function(){
         $(table_foot).removeClass("no_disp");
     }
 })
-

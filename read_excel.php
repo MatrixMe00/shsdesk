@@ -35,19 +35,17 @@
                     $max_column = $sheet->getHighestDataColumn();
                     $max_row = $sheet->getHighestDataRow();
 
-                    $acceptable = ["J","F","H","G","I"];
+                    $acceptable = ["K","F","H","G","I"];
 
                     //check if right file is sent
-                    if(!array_search($max_column, $acceptable)){
-                        echo "Invalid file detected. Please send the correct file to continue";
-                        exit(1);
-                    }elseif($max_column == "J" || $max_column == "F" || $max_column == "I"){
+                    if($max_column == "J" || $max_column == "F" || $max_column == "I"){
                         //grab the detail in the first cell
                         $cell =  $sheet->getCell("A1");
                         $cellValue = $cell->getValue();
 
                         if(strtolower($cellValue) != "index number"){
-                            echo "Desired file was not received";
+                            //display error if the first column isnt the index number
+                            echo "First column not identified as 'index number'. Please follow the format directed in the documents above";
                             exit(1);
                         }
                     }elseif($max_column == "H" || $max_column == "G"){
@@ -59,6 +57,9 @@
                             echo "The file you sent cannot be defined. Please send a valid file format";
                             exit(1);
                         }
+                    }elseif(!array_search($max_column, $acceptable)){
+                        echo "Invalid file detected. Please send the correct file to continue";
+                        exit(1);
                     }
 
                     //create a general column header
@@ -111,6 +112,7 @@
                             }
                         }
 
+                        //cell is by default defined as not merged
                         return "false";
                     }
                     

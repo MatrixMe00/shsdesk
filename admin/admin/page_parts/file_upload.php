@@ -6,6 +6,8 @@
                 <li>Spreadsheet files with .xls or .xlsx as extensions are acceptable</li>
                 <li>Your data should have headings for easy entry into the database</li>
                 <li>Make sure you have uploaded all your houses and their required details</li>
+                <li>Make sure your file's last column is any of these: <strong><em>[F,G,H,I,J]</em></strong>. Anything outside these would be rejected</li>
+                <li>Verify that the first column in your document is labeled <strong>"index number"</strong>. The system would mark a file without this first column as invalid</li>
                 <li>If you do not have the default spreadsheet file for upload, please click on <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">
                 document1</a> or <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">document2</a> to download</li>
             </ol>
