@@ -1280,10 +1280,7 @@ td{
 }
 
 @media screen and (min-width: 520px) {
-    form button, form .btn{
-        width: 100%;
-        display: block;
-    }
+    
 }
 
 /*widths*/
