@@ -581,6 +581,9 @@ $("form[name=admissionForm]").submit(function(e){
                 }else if(response == "no-enrolment-code"){
                     message = "No enrolment code was provided";
                     i = 1;
+                }else if(response == "enrolment-code-short"){
+                    message = "Your enrolment code should be 10 characters long";
+                    i = 1;
                 }else if(response == "wrong-school"){
                     message = "Error with school name. Please report to admin";
                     i = 1;

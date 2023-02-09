@@ -82,6 +82,8 @@
                 $message = "no-index-number";
             }elseif(empty($ad_enrol_code)){
                 $message = "no-enrolment-code";
+            }elseif(strlen($ad_enrol_code) != 10){
+                $message = "enrolment-code-short";
             }elseif($shs_placed == "error"){
                 $message = "wrong-school";
             }elseif(empty($ad_aggregate)){

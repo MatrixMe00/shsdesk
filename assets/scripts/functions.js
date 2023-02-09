@@ -247,7 +247,7 @@ function checkForm(i){
     ad_witness_phone = $("#ad_witness_phone").val();
 
     if(parseInt(i) == 1){
-        if(ad_enrol_code != "" && ad_index != "" && ad_aggregate != "" && ad_course != "" &&
+        if(ad_enrol_code != "" && ad_enrol_code.length != 10 && ad_index != "" && ad_aggregate != "" && ad_course != "" &&
         ad_oname != "" && ad_lname != "" && ad_gender != "" && ad_year != "" && ad_month != "" 
         && ad_day != "" && ad_birth_place != ""){
             if(ad_jhs != "" && ad_jhs_district != "" && ad_jhs_town != ""){
