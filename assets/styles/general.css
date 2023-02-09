@@ -1285,3 +1285,8 @@ td{
         display: block;
     }
 }
+
+/*widths*/
+.w-full{
+    width: 100%;
+}

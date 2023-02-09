@@ -192,7 +192,7 @@
             <div class="shadow"></div>
         </section>
 
-        <section id="student">
+        <section id="student" class="flex-all-center flex-column">
             <div class="selection flex flex-space-around flex-wrap">
                 <div class="case" data-box="payment_form" id="school_admission_case">
                     <h3>Online SHS Admission</h3><br>
@@ -222,13 +222,13 @@
                     <div class="flex flex-align-end" id="pay_div">
                         <label for="student_index_number" class="flex flex-column flex-wrap relative">
                             <span class="label_title">Provide your JHS index number below</span>
-                            <input type="text" name="student_index_number" id="student_index_number" data-index="" placeholder="Enter JHS index number [Eg. 100000000021]">
+                            <input type="text" name="student_index_number" id="student_index_number" class="sp-lg" data-index="" placeholder="Enter JHS index number [Eg. 100000000021]">
                         </label>
                         <label for="student_check" class="btn">
-                            <button name="student_check" type="button" id="student_check">Check</button>
+                            <button name="student_check" type="button" id="student_check" class="w-full">Check</button>
                         </label>
                         <label for="payment_button" class="btn hide_label no_disp">
-                            <button name="payment_button" id="payment_button" type="button">Make My Payment</button>
+                            <button name="payment_button" id="payment_button" type="button" class="w-full">Make My Payment</button>
                         </label>
                     </div>           
                 </div>
@@ -468,7 +468,7 @@
     </main>
     
     <a href="https://wa.me/233200449223">
-        <span id="message_us" class="primary no_disp">
+        <span id="message_us" class="primary">
             Message Us
         </span>
     </a>
