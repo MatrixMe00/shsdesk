@@ -25,13 +25,13 @@
                                                 <img src="<?php echo $url?>/assets/images/icons/cash-outline.svg" alt="transaction">
                                             </span>
                                             <input type="text" name="ad_transaction_id" id="ad_transaction_id"
-                                            ng-model="ad_transaction_id" disabled placeholder="Transaction ID">
+                                            ng-model="ad_transaction_id" readonly placeholder="Transaction ID">
                                         </label>
                                         <label for="shs_placed" class="no_disp">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/school-outline.svg" alt="shs">
                                             </span>
-                                            <input type="text" name="shs_placed" id="shs_placed" ng-model="shs_placed" disabled placeholder="SHS Name">
+                                            <input type="text" name="shs_placed" id="shs_placed" ng-model="shs_placed" readonly placeholder="SHS Name">
                                         </label>
                                         <label for="ad_enrol_code" class="no_disp">
                                             <span class="label_image">
@@ -53,14 +53,14 @@
                                             </span>
                                             <input type="text" name="ad_aggregate" id="ad_aggregate" maxlength="2"
                                             placeholder="Enter your aggregate here" title="Enter your aggregate here" pattern="[0-9]+" 
-                                            ng-model="ad_aggregate" disabled>
+                                            ng-model="ad_aggregate" readonly>
                                         </label>
                                         <label for="ad_course" class="no_disp">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/book-outline.svg" alt="course">
                                             </span>
                                             <input type="text" name="ad_course" id="ad_course" title="Enter your course here" placeholder="Enter your course here*" pattern="[a-zA-Z\s]{5,}" 
-                                            ng-model="ad_course" disabled>
+                                            ng-model="ad_course" readonly>
                                         </label>
                                     </div>
                                 </fieldset>
@@ -74,14 +74,14 @@
                                             </span>
                                             <input type="text" name="ad_lname" id="ad_lname" class="text_input" 
                                             placeholder="Your Lastname*" autocomplete="off" ng-model="ad_lname" pattern="[a-zA-Z\s]{6,}[\.\-\']{0,}" 
-                                            title="Enter your lastname only, do not add any space" required>
+                                            title="Enter your lastname only, do not add any space" required readonly>
                                         </label>
                                         <label for="ad_oname">
                                             <span class="label_image">
                                                 <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="othername">
                                             </span>
                                             <input type="text" name="ad_oname" id="ad_oname" class="text_input" placeholder="Other name(s)" 
-                                            autocomplete="off" ng-model="ad_oname" title="Enter any other name(s) you have" required>
+                                            autocomplete="off" ng-model="ad_oname" title="Enter any other name(s) you have" required readonly>
                                         </label>
                                     </div>
                                     <div class="joint">

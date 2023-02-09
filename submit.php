@@ -84,6 +84,8 @@
                 $message = "no-enrolment-code";
             }elseif(strlen($ad_enrol_code) != 10){
                 $message = "enrolment-code-short";
+            }elseif(fetchData("enrolCode","enrol_table","enrolCode='$ad_enrol_code'") != "empty"){
+                $message = "enrolment-code-exist";
             }elseif($shs_placed == "error"){
                 $message = "wrong-school";
             }elseif(empty($ad_aggregate)){

@@ -103,7 +103,7 @@ $("button[name=modal_cancel]").click(function(){
         $("#pay_amount").prop("disabled", true);
     }else if($(this).parents(".form_modal_box").prop("id") == "admission"){
         //enable the index input field
-        $("#ad_index").prop("disabled", false);
+        $("#ad_index").prop("readonly", false);
 
         //display the continue
         $("form[name=admissionForm] label[for=continue]").removeClass("no_disp");
@@ -407,21 +407,21 @@ $("button[name=continue]").click(function(){
                 $("#res_shs_placed").html($("#shs_placed").val());
                 
                 //disable the index input field
-                $("#ad_index").prop("disabled", true);
+                $("#ad_index").prop("readonly", true);
             }else if(data["status"] == "wrong-school-select"){
                 //display an error message
                 $("#view1 .para_message").html("Incorrect school chosen. Select your right school to continue and enter your transaction ID to continue");
 
                 //disable these controls for the time being so that user can take a look at the error
                 $("form[name=admissionForm] button[name=continue]").prop('disabled', true);
-                $('#ad_enrol').prop('disabled', true);
+                $('#ad_enrol').prop('readonly', true);
                 $('button[name=modal_cancel]').prop('disabled', true);
 
                 setTimeout(function(){
                     $("#view1 .para_message").html("Parts with * means they are required fields");
 
                     $("form[name=admissionForm] button[name=continue]").prop('disabled', false);
-                    $('#ad_enrol').prop('disabled', false);
+                    $('#ad_enrol').prop('readonly', false);
                     $('button[name=modal_cancel]').prop('disabled', false);
 
                     $("form button[name=modal_cancel]").click();
@@ -432,12 +432,12 @@ $("button[name=continue]").click(function(){
 
                 //disable these controls for the time being so that user can take a look at the error
                 $("form[name=admissionForm] button[name=continue]").prop('disabled', true);
-                $('#ad_enrol').prop('disabled', true);
+                $('#ad_enrol').prop('readonly', true);
                 $('button[name=modal_cancel]').prop('disabled', true);
 
                 setTimeout(function(){
                     $("form[name=admissionForm] button[name=continue]").prop('disabled', false);
-                    $('#ad_enrol').prop('disabled', false);
+                    $('#ad_enrol').prop('readonly', false);
                     $('button[name=modal_cancel]').prop('disabled', false);
                 },3000);
 
@@ -450,12 +450,12 @@ $("button[name=continue]").click(function(){
 
                 //disable these controls for the time being so that user can take a look at the error
                 $("form[name=admissionForm] button[name=continue]").prop('disabled', true);
-                $('#ad_enrol').prop('disabled', true);
+                $('#ad_enrol').prop('readonly', true);
                 $('button[name=modal_cancel]').prop('disabled', true);
 
                 setTimeout(function(){
                     $("form[name=admissionForm] button[name=continue]").prop('disabled', false);
-                    $('#ad_enrol').prop('disabled', false);
+                    $('#ad_enrol').prop('readonly', false);
                     $('button[name=modal_cancel]').prop('disabled', false);
                 },3000);
 
@@ -493,7 +493,7 @@ $("form[name=admissionForm] button[name=modal_cancel]").click(function(){
     $("form[name=admissionForm] #enrol_field label[for=ad_index]").removeClass("no_disp");
 
     //enable the index input field
-    $("#ad_index").prop("disabled", false);
+    $("#ad_index").prop("readonly", false);
 })
 
 //submit the admission form
@@ -581,9 +581,15 @@ $("form[name=admissionForm]").submit(function(e){
                 }else if(response == "no-enrolment-code"){
                     message = "No enrolment code was provided";
                     i = 1;
+                    $("#ad_enrol_code").focus();
                 }else if(response == "enrolment-code-short"){
                     message = "Your enrolment code should be 10 characters long";
                     i = 1;
+                    $("#ad_enrol_code").focus();
+                }else if(response == "enrolment-code-exist"){
+                    message = "The enrolment code <b>'" + $("#ad_enrol_code").val() + "'</b> already exists. Please check your placement form and provide a valid one";
+                    i = 1;
+                    $("#ad_enrol_code").focus();
                 }else if(response == "wrong-school"){
                     message = "Error with school name. Please report to admin";
                     i = 1;
