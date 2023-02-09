@@ -59,13 +59,14 @@ $("form[name=importForm").submit(function(e){
                 message = "File could not be uploaded";
             }else if(response == "extension-error"){
                 message = "Incorrect file type sent, please send correct file format"
-            }else if(response.toLowerCase().includes("invalid file")){
-                message = response;
-            }else if(response.toLowerCase().includes("candidate")){
-                message = response;
-                type = "warning";
             }else{
                 message = response;
+
+                if(response.toLowerCase().includes("column")){
+                    type = "primary";
+                }else if(response.toLowerCase().includes("candidate")){
+                    type = "warning";
+                }
             }
         }
 

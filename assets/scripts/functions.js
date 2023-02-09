@@ -382,7 +382,7 @@ function fileUpload(file_element, form_element, submit_element, messageBox = tru
         },
         success: function(text){
             $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
-            if(text == "success" || text.includes("success")){
+            if(text == "success"){
                 response = true;
             }else{
                 response = text;
