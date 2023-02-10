@@ -197,6 +197,7 @@ label select:focus, label input[type=number]:focus, label input[type=date]:focus
 .btn_label[for=submit]{
     background-color: transparent;
     border: unset;
+    width: auto;
     margin-top: 15px;
 }
 
@@ -204,7 +205,7 @@ label select:focus, label input[type=number]:focus, label input[type=date]:focus
     background-color: hsl(219, 79%, 55%);
     border: 1px solid transparent;
     border-radius: 5px;
-    width: 30vw;
+    width: 100%;
     cursor: pointer;
     font-weight: 600;
     color: white;

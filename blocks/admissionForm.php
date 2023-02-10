@@ -607,11 +607,11 @@
                                 <span>Print</span>
                             </button>
                         </label>
-                        <label for="modal_cancel" class="btn dbl_btn_label">
+                        <label for="modal_cancel" class="btn">
                             <button type="reset" name="modal_cancel" value="cancel">Cancel</button>
                         </label>
                     </div>
                     <div id="form_footer">
                     </div>
-                    <a href="<?php echo $url?>/pdf_handle.php" style="display:none !important" id="handle_pdf" target="_blank" rel="nofollow"></a>
+                    <a href="<?php echo $url?>/pdf_handle.php" class="no_disp" id="handle_pdf" target="_blank" rel="nofollow"></a>
                 </form>

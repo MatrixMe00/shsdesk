@@ -229,6 +229,8 @@ nav.light .menu .item:hover{
         display: flex;
         align-items: center;
     }
+
+    /* when ham burger is clicked in small screen */
     body.ham_click #container{
         flex-direction: row;
     }
@@ -238,10 +240,10 @@ nav.light .menu .item:hover{
     }
 
     body #lhs #top{
-        display: none;
+        display: none !important;
     }
     body.ham_click #lhs #top{
-        display: flex;
+        display: flex !important;
     }
 
     body #lhs #middle{

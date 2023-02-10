@@ -90,7 +90,7 @@
                 <p onclick="location.href='<?php echo $url?>/password.php'">Forgot Your Password?</p>
             </label>
             <label for="submit" class="btn_label">
-                <button type="submit" name="submit" value="login">Login</button>
+                <button type="submit" name="submit" value="login" class="sp-lg">Login</button>
             </label>
         </div>
         <div class="foot">
