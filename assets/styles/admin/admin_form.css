@@ -302,6 +302,7 @@ label select:focus, label input[type=number]:focus, label input[type=date]:focus
 
 .body .joint label, .body .joint .label{
     flex: 1;
+    width: auto;
 }
 
 form .foot, .form .foot{
@@ -419,7 +420,9 @@ form .form_views{
 
 @media screen and (max-width: 768px){
     .body .joint{
-        display: block;
+        justify-content: stretch;
+        align-items: stretch;
+        flex-direction: column;
     }
 
     label.checkbox{

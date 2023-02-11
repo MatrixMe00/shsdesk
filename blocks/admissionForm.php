@@ -590,25 +590,24 @@
                         <span class="message"></span>
                         <div class="close"><span>&cross;</span></div>
                     </div>
-                    
-                    <div class="flex flex-wrap">
-                        <label for="continue" class="btn">
-                            <button name="continue" type="button" disabled >Continue</button>
+                    <div class="flex flex-eq flex-wrap gap-sm">
+                        <label for="continue" class="btn sw-full w-full sp-unset">
+                            <button name="continue" type="button" class="sp-lg w-fluid teal" disabled >Continue</button>
                         </label>
-                        <label for="submit_admission" class="btn no_disp">
-                            <button type ="button" name="submit_admission" class="dbl_btn img_btn" disabled value="admissionFormSubmit">
+                        <label for="submit_admission" class="btn w-full smt-unset sp-unset no_disp">
+                            <button type ="button" name="submit_admission" class="img_btn w-fluid sp-md primary" disabled value="admissionFormSubmit">
                                 <img src="<?php echo $url?>/assets/images/icons/save-outline.svg" alt="save">
                                 <span>Save</span>
                             </button>
                         </label>
-                        <label for="print_summary" class="btn no_disp">
-                            <button type ="button" name="print_summary" class="dbl_btn img_btn secondary" disabled value="admissionFormSubmit">
+                        <label for="print_summary" class="btn w-full smt-unset sp-unset no_disp">
+                            <button type ="button" name="print_summary" class="img_btn w-fluid sp-md indigo" disabled value="admissionFormSubmit">
                                 <img src="<?php echo $url?>/assets/images/icons/print-outline.svg" alt="print">
                                 <span>Print</span>
                             </button>
                         </label>
-                        <label for="modal_cancel" class="btn">
-                            <button type="reset" name="modal_cancel" value="cancel">Cancel</button>
+                        <label for="modal_cancel" class="btn w-full sp-unset">
+                            <button type="reset" name="modal_cancel" class="sp-lg w-fluid secondary" value="cancel">Cancel</button>
                         </label>
                     </div>
                     <div id="form_footer">
