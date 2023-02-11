@@ -65,7 +65,7 @@
             </div>
             <div class="foot">
                 <p>
-                    @2021 shsdesk.com
+                    @<?= date("Y") ?> shsdesk.com
                 </p>
             </div>
         </form>
