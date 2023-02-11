@@ -1169,11 +1169,11 @@ img{
 .m-xxlg-b > *, .sm-xxlg-b {margin-bottom: 2rem !important;}
 .m-xxlg-l > *, .sm-xxlg-l {margin-left: 2rem !important;}
 .m-xxlg-r > *, .sm-xxlg-r {margin-right: 2rem !important;}
-.ml-unset > *, .sml-unset{margin-left: unset;}
-.mr-unset > *, .smr-unset{margin-right: unset;}
-.mb-unset > *, .smb-unset{margin-bottom: unset;}
-.mt-unset > *, .smt-unset{margin-top: unset;}
-.m-unset > *, .sm-unset{margin: unset;}
+.ml-unset > *, .sml-unset{margin-left: unset !important;}
+.mr-unset > *, .smr-unset{margin-right: unset !important;}
+.mb-unset > *, .smb-unset{margin-bottom: unset !important;}
+.mt-unset > *, .smt-unset{margin-top: unset !important;}
+.m-unset > *, .sm-unset{margin: unset !important;}
 /*end of margins*/
 
 /*paddings*/
@@ -1251,6 +1251,13 @@ img{
 .p-unset > *, .sp-unset{padding: unset !important;}
 /*end of paddings*/
 
+/* gaps */
+.gap-sm{gap: 0.5rem}
+.gap-md{gap: 1rem}
+.gap-lg{gap: 1.5rem;}
+.gap-xlg{gap: 2rem;}
+/* end of gaps */
+
 /* widths */
 /* percentage width */
 .wp-1{width: 10%;}
@@ -1262,7 +1269,7 @@ img{
 .wp-7{width: 70%;}
 .wp-8{width: 80%;}
 .wp-9{width: 90%;}
-.w-full{width: 100%;}
+.w-full{width: 100% !important;}
 /* end of widths */
 
 /*box shadows*/
@@ -1927,7 +1934,8 @@ form .joint > *, form .joint > *{
     /* form elements */
     input, select, textarea{min-width: 250px;}
     /* end of form elements */
-    /* end of forms */    
+    /* end of forms */
+
 }
 
 @media screen and (max-width: 768px){
@@ -1986,5 +1994,14 @@ form .joint > *, form .joint > *{
 
     .blog-container .h-card > *{
         flex: initial;
+    }
+
+    .flex-wrap{
+        flex-direction: column;
+        flex-wrap: unset !important;
+    }
+    .flex-wrap > *{
+        display: block;
+        width: 100%;
     }
 }

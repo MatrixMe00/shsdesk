@@ -26,12 +26,19 @@ fieldset{
     margin-bottom: 10px;
     padding: 0.2em;
 }
+.selection{min-width: 768px; max-width: 820px;}
 
-@media screen and (max-width: 650px){
-    #payment_form form, #admission form{
-        width: 90vw;
+@media screen and (max-width: 768px){
+    #pay_div{flex-direction: column} 
+    #pay_div>label{padding-left: unset}
+    .selection.flex, .selection *.flex{
+        display: initial !important;
     }
-
+    .selection{text-align: center; min-width: unset; max-width: 600px !important; margin: auto;}
+    .selection span{display: block;}
+    .selection input{width: 100%; margin: 5px auto}
+}
+@media screen and (max-width: 650px){
     #student .selection{
         display: block;
     }

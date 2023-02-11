@@ -239,12 +239,19 @@ label select:focus, label input[type=number]:focus, label input[type=date]:focus
     align-items: center;
 }
 
+.img_btn:disabled{
+    border: 1px solid lightgrey;
+    border-radius: unset;
+}
 .img_btn img{
     flex: 0;
     filter: invert(1);
     padding: 2px;
 }
 
+.img_btn:disabled img{
+    filter: invert(0);
+}
 .img_btn span{
     margin-left: 3px;
 }

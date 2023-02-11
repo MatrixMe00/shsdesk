@@ -59,15 +59,15 @@
                             </label>
                         </section>
                     </div>
-                    <div class="flex">
-                        <label for="submit" class="btn">
-                            <button type="button" name="submit" value="login" class="dbl_btn img_btn" id="paymentFormButton" disabled>
+                    <div class="flex flex-eq flex-wrap gap-sm">
+                        <label for="submit" class="btn_label smt-unset sp-unset">
+                            <button type="button" name="submit" value="login" class="img_btn w-fluid primary sp-md" id="paymentFormButton" disabled>
                                 <img src="<?php echo $url?>/assets/images/icons/lock.png" alt="lock">
                                 <span>Continue</span>
                             </button>
                         </label>
-                        <label for="modal_cancel" class="btn dbl_btn_label">
-                            <button type="reset" name="modal_cancel" value="cancel">Cancel</button>
+                        <label for="modal_cancel" class="btn w-full sp-unset">
+                            <button type="reset" name="modal_cancel" value="cancel" class="sp-lg w-fluid secondary">Cancel</button>
                         </label>
                     </div>
                 <div class="foot">
