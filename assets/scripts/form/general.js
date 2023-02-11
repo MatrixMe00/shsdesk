@@ -60,14 +60,14 @@ function messageBoxTimeout(form_name, message, message_type, time=5){
     //change the time to miliseconds
     time = time * 1000;
 
-    $(form_name + ".message_box").removeClass("error success load").addClass(message_type).show();
+    $(form_name + ".message_box").removeClass("error success load no_disp").addClass(message_type).show();
     $(form_name + ".message_box .message").html(message)
 
     //prevent the timeout function if the time is set to 0
     if(time > 0){
         setTimeout(function(){
-            $(form_name + ".message_box").removeClass("error success load");
-            $(form_name + ".message_box").slideUp();
+            $(form_name + ".message_box").removeClass("error success load").addClass("no_disp");
+            // $(form_name + ".message_box").slideUp();
             $(form_name + ".message_box .message").html('');
         }, time);
     }

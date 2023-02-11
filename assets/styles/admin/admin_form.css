@@ -66,7 +66,7 @@ form .body, .form .body{
 }
 
 .body label, .body label input, .body label select{
-    min-height: 32px;
+    min-height: 35px;
 }
 
 .body label.btn{
@@ -184,7 +184,6 @@ label input[type=text], label input[type=password],
 label input[type=email], label input.tel, 
 label select, label input[type=number], label input[type=url],
 label input[type=date]{
-    min-height: 5vh;
     background-color: whitesmoke;
 }
 
@@ -266,6 +265,7 @@ label select:focus, label input[type=number]:focus, label input[type=date]:focus
 
 .body label.flex-column{
     align-items: flex-start;
+    width: auto;
 }
 
 .body label.flex-column input, .body label.flex-column select{
