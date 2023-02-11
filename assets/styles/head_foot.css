@@ -1,27 +1,15 @@
 *{
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    transition: all 0.2s;
+    padding: 0; margin: 0; box-sizing: border-box; transition: all 0.2s;
 }
 
 a{
-    color: inherit;
-    text-decoration: unset;
+    color: inherit; text-decoration: unset;
 }
 
 nav{
-    background-color: #222;
-    display: flex;
-    align-items: center;
-    color: white;
+    background-color: #222; display: flex; align-items: center; color: white;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', 'Merriweather', serif !important;
-    position: relative;
-    left: 0;
-    right: 0;
-    top:0;
-    z-index: 2;
-    justify-content: space-between;
+    position: relative; left: 0; right: 0; top:0; z-index: 2; justify-content: space-between;
 }
 
 #index_main nav{
@@ -35,43 +23,28 @@ nav{
 }
 
 #logo #name{
-    padding: 5px;
-    display: flex;
-    font-size: larger;
-    cursor: pointer;
-    width: -moz-fit-content;
-    width: fit-content;
+    padding: 5px; display: flex; font-size: larger; cursor: pointer;
+    width: -moz-fit-content; width: fit-content;
 }
 
 #name span:first-child{
-    align-self: stretch;
-    font-size: larger;
+    align-self: stretch; font-size: larger;
 }
 
 #name span:last-child{
-    font-size: medium;
-    align-self: flex-start;
-    font-weight: 400;
-    margin-left: 2px;
-    padding-top: 3px;
+    font-size: medium; align-self: flex-start; font-weight: 400; margin-left: 2px; padding-top: 3px;
 }
 
 #buttons{
-    display: flex;
-    padding-right: 10px;
-    align-items: center;
-    justify-content: center;
+    display: flex; padding-right: 10px; align-items: center; justify-content: center;
 }
 
 #buttons .button{
-    padding: 1px 5px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid transparent;
+    padding: 1px 5px; padding-bottom: 5px; border-bottom: 1px solid transparent;
 }
 
 #buttons .button:hover{
-    border-bottom-color: white;
-    padding-top: 10px;
+    border-bottom-color: white; padding-top: 10px;
 }
 
 #ham_button{
@@ -87,17 +60,11 @@ nav{
         display: initial;
     }
     #ham_button span{
-        display: block;
-        background-color: white;
-        height: 4px;
-        width: 25px;
-        margin: 2px;
+        display: block; background-color: white; height: 4px; width: 25px; margin: 2px;
     }
 
     #ham_button{
-        cursor: pointer;
-        margin-right: 15px;
-        align-self: center;
+        cursor: pointer; margin-right: 15px; align-self: center;
     }
 
     #ham_button.click span:nth-child(2){
@@ -109,49 +76,43 @@ nav{
     }
 
     #ham_button.click span:first-child{
-        transform: rotate(45deg);
-        position: absolute;
-        right: 0;
-        top: -6px;
+        transform: rotate(45deg); position: absolute; right: 0; top: -6px;
     }
 
     #ham_button.click span:last-child{
-        transform: rotate(-45deg);
-        position: absolute;
-        right: 0;
-        top: -6px;
+        transform: rotate(-45deg); position: absolute; right: 0; top: -6px;
     }
 
     #buttons{
-        position: absolute;
-        top: 100%;
-        background-color: inherit;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: stretch;
-        padding-bottom: 5px;
+        position: absolute; top: 100%; background-color: #111d; flex-direction: column;
+        align-items: flex-start; justify-content: stretch; padding-bottom: 5px; min-height: 50vh;
+    }
+
+    nav.fixed #buttons{
+        background-color: inherit !important;
     }
 
     #buttons.flex{
-        display: flex;
-        right: inherit;
-        left: inherit;
+        display: flex; right: inherit; left: inherit;
+    }
+
+    #buttons > .button{
+        margin: 10px auto;
+        flex: 0.7;
+        font-size: large;
+    }
+
+    #buttons > .button:hover{
+        padding-top: unset;
     }
 }
 
 footer{
-    background-color: rgb(35,35,35);
-    padding: 1.5em;
-    color: ghostwhite;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: rgb(35,35,35); padding: 1.5em; color: ghostwhite; display: flex;
+    justify-content: center; align-items: center;
 }
 
 .foot-contact{
-    padding-bottom: 10px !important;
-    border-bottom: 1px solid var(--light);
-    margin-bottom: 10px !important;
-    width: -moz-fit-content;
-    width: fit-content;
+    padding-bottom: 10px !important; border-bottom: 1px solid var(--light); margin-bottom: 10px !important;
+    width: -moz-fit-content; width: fit-content;
 }
