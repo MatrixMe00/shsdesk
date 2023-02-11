@@ -43,9 +43,18 @@
         #video video{max-width: 640px;}
         #download_register{display: inline-block;}
         label[for=student_index_number]{width: 100%}
-        #pay_div .btn{padding-bottom: unset}
-        @media screen and (max-width: 720px){#pay_div{flex-wrap: wrap} #pay_div>label{padding-left: unset}}
-        @media screen and (max-width: 480px){#message_us{font-size: small;}}
+        .selection{min-width: 768px; max-width: 920px;}
+        @media screen and (max-width: 768px){
+            #pay_div{flex-direction: column} 
+            #pay_div>label{padding-left: unset}
+            .selection.flex, .selection *.flex{
+                display: initial !important;
+            }
+            .selection{text-align: center; min-width: unset; max-width: 600px !important; margin: auto;}
+            .selection span{display: block;}
+            .selection input{width: 100%; margin: 5px auto}
+        }
+        @media screen and (max-width: 480px){#message_us{font-size: normal;}}
     </style>
 </head>
 <body ng-app="index_application" id="index_main">
@@ -193,7 +202,7 @@
         </section>
 
         <section id="student" class="flex-all-center flex-column">
-            <div class="selection flex flex-space-around flex-wrap">
+            <div class="selection w-fluid w-fluid-child flex flex-space-around flex-wrap">
                 <div class="case" data-box="payment_form" id="school_admission_case">
                     <h3>Online SHS Admission</h3><br>
                     <label for="school_select" class="no_disp">
@@ -220,15 +229,15 @@
                         </select>
                     </label>
                     <div class="flex flex-align-end" id="pay_div">
-                        <label for="student_index_number" class="flex flex-column flex-wrap relative">
+                        <label for="student_index_number" class="flex flex-column flex-wrap relative" style="flex: 7">
                             <span class="label_title">Provide your JHS index number below</span>
                             <input type="text" name="student_index_number" id="student_index_number" class="sp-lg" data-index="" placeholder="Enter JHS index number [Eg. 100000000021]">
                         </label>
-                        <label for="student_check" class="btn">
-                            <button name="student_check" type="button" id="student_check" class="w-full">Check</button>
+                        <label for="student_check" class="btn sp-unset w-fluid-child self-align-end" style="flex:3">
+                            <button name="student_check" type="button" id="student_check" class="sp-lg-tp primary">Check</button>
                         </label>
-                        <label for="payment_button" class="btn hide_label no_disp">
-                            <button name="payment_button" id="payment_button" type="button" class="w-full">Make My Payment</button>
+                        <label for="payment_button" class="btn sp-unset w-fluid-child self-align-end hide_label no_disp" style="flex: 3">
+                            <button name="payment_button" id="payment_button" type="button" class="sp-lg-tp primary">Make My Payment</button>
                         </label>
                     </div>           
                 </div>
@@ -274,8 +283,8 @@
                     </label>
                 </div><?php } ?>
             </div>
-            <label for="student_cancel_operation" class="btn" style="display:block; text-align: center; width: 100%;">
-                    <button name="student_cancel_operation">Reset</button>
+            <label for="student_cancel_operation" class="btn sm-lg-t w-fluid w-fluid-child" style="display:block; text-align: center; width: 100%;">
+                    <button name="student_cancel_operation" class="sp-lg-tp secondary" style="max-width: 600px ">Reset</button>
                 </label>
 
             <div id="payment_form" class="form_modal_box no_disp">
