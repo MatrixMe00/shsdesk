@@ -289,7 +289,3 @@
         echo "No result to deliver";
     }
 ?>
-<!-- <link rel="stylesheet" href="assets/styles/index_page.css">
-            <link rel="stylesheet" href="assets/styles/admissionForm.css">
-            <link rel="stylesheet" href="assets/styles/general.css">
-            <link rel="stylesheet" href="assets/styles/admin/admin_form.css"> -->
