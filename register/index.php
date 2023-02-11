@@ -1,4 +1,4 @@
-<?php include_once("../includes/session.php")?>
+<?php include_once($_SERVER["DOCUMENT_ROOT"]."/shsdesk/includes/session.php")?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -208,7 +208,7 @@
             </div>
             <div class="foot">
                 <p>
-                    @2021 shsdesk.com
+                    @<?= date("Y") ?> shsdesk.com
                 </p>
             </div>
         </form>

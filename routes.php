@@ -58,8 +58,12 @@
             $page_title = "Php route project - Solutions";
             include_once('./pages/school.php');
         }
+        else if($actual_path == "/contact"){
+            $page_title = "Php route project - Solutions";
+            include_once('./pages/contact.php');
+        }
         else {
             $page_title = "error 404 not found!";
-            include_once('./404.php');
+            include_once('./404.html');
         }
     ?>

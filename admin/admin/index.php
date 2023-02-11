@@ -1,11 +1,11 @@
-<?php 
+<?php
     //depending on where the page is being called from
     $this_url = $_SERVER["REQUEST_URI"];
 
-    if(strpos($this_url, "admin/admin/") || strpos($this_url, "admin/superadmin/")){
-        include_once("../../includes/session.php");
+    if(strpos($this_url, "shsdesk")){
+        include_once($_SERVER["DOCUMENT_ROOT"]."/shsdesk/includes/session.php");
     }else{
-        include_once("../includes/session.php");
+        include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
     }
 
 if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){

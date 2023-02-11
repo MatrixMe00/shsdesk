@@ -1,4 +1,13 @@
-<?php include_once("../includes/session.php");?>
+<?php
+    //depending on where the page is being called from
+    $this_url = $_SERVER["REQUEST_URI"];
+
+    if(strpos($this_url, "shsdesk")){
+        include_once($_SERVER["DOCUMENT_ROOT"]."/shsdesk/includes/session.php");
+    }else{
+        include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
