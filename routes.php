@@ -1,33 +1,4 @@
 <?php
-
-// $request = $_SERVER['REQUEST_URI'];
-
-// switch ($request) {
-//     case '/' :
-//     case '' :
-//         require __DIR__ . '/index.php';
-//         break;
-//     case '/about' :
-//         require __DIR__ . 'pages/about.php';
-//         break;
-//     case '/contact' :
-//         require __DIR__ . '/pages/contact.php';
-//         break;
-//     case '/faq' :
-//         require __DIR__ . '/pages/faq.php';
-//         break;
-//     case '/school' :
-//         require __DIR__ . '/pages/school.php';
-//         break;
-//     default:
-//         http_response_code(404);
-//         // require __DIR__ . '/views/404.php';
-//         break;
-// }
-
-?>
-
-<?php
         $url_requested = $_SERVER['REQUEST_URI'];
         $url_len = strlen($url_requested);
         
