@@ -15,9 +15,9 @@
     <script src="assets/scripts/functions.min.js?v=<?php echo time()?>" async></script>
 
     <!--Styles-->
-    <link rel="stylesheet" href="assets/styles/general.css">
-    <link rel="stylesheet" href="assets/styles/admin/admin_form.css">
-    <link rel="stylesheet" href="assets/styles/loader.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="assets/styles/general.min.css">
+    <link rel="stylesheet" href="assets/styles/admin/admin_form.min.css">
+    <link rel="stylesheet" href="assets/styles/loader.min.css?v=<?php echo time()?>">
 
     <style>
         body{

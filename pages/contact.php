@@ -23,7 +23,7 @@
 
 
     <!--Stylesheets-->
-    <link rel="stylesheet" href="../assets/styles/contact.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="../assets/styles/contact.min.css?v=<?php echo time()?>">
 </head>
 <body>
     <div id="cover"></div>

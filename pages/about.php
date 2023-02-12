@@ -22,7 +22,7 @@
     site, admission, queing, long queing">
 
     <!--Stylesheets-->
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/about/about.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/about/about.min.css?v=<?php echo time()?>">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>

@@ -25,10 +25,10 @@
     <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
 
     <!--Styles-->
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/head_foot.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/faq.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/general.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/head_foot.min.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.min.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/faq.min.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/general.min.css?v=<?php echo time()?>">
 </head>
 <body>
     <?php @include_once($rootPath.'/blocks/nav.php')?>

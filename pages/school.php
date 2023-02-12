@@ -22,8 +22,7 @@
     <meta name="keywords" content="school, shs, shsdesk, placed, register, admission, prospectus, code">
 
     <!--Stylesheets-->
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/school/school.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admissionForm.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/school/school.min.css?v=<?php echo time()?>">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>
@@ -119,16 +118,6 @@
 
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
-    <?php if($show){?>
-    <div id="payment_form" class="form_modal_box no_disp">
-        <?php include_once($rootPath."/blocks/admissionPaymentForm.php");?>
-    </div>
-
-    <div id="admission" class="form_modal_box flex no_disp">
-        <?php include_once($rootPath.'/blocks/admissionForm.php')?>
-    </div>
-    <?php } ?>
-
     <div class="fixed flex flex-center-content flex-center-align form_modal_box no_disp" id="more_detail">
         <form class="form">
             <div class="head">
@@ -150,7 +139,6 @@
     <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
     <script src="<?php echo $url?>/assets/scripts/index.min.js?v=<?php echo time()?>" async></script>
     <script src="<?php echo $url?>/assets/scripts/head_foot.min.js?v=<?php echo time()?>" async></script>
-    <script src="<?php echo $url?>/assets/scripts/admissionForm.min.js?v=<?php echo time(); ?>" async></script>
 
     <!--Angular scripts-->
     <script src="<?php echo $url?>/assets/scripts/angular_index.min.js?v=<?php echo time()?>" async></script>

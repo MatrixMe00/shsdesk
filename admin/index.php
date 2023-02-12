@@ -27,9 +27,9 @@
     <script src="<?php echo $url?>/assets/scripts/functions.min.js?v=<?php echo time()?>" async></script>
 
     <!--Styles-->
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/general.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/loader.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.min.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/general.min.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/loader.min.css?v=<?php echo time()?>">
 
     <style>
         body{

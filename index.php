@@ -14,8 +14,8 @@
     senior, high, technical school, technical, secondary, secondary school, student admission, student, admission">
 
     <!--Stylesheets-->
-    <link rel="stylesheet" href="assets/styles/index_page.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="assets/styles/admissionForm.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="assets/styles/index_page.min.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="assets/styles/admissionForm.min.css?v=<?php echo time()?>">
 
     <!--Payment script-->
     <script src="https://js.paystack.co/v1/inline.js" defer></script>
