@@ -73,9 +73,9 @@
 
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
-    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
-    <script src="<?php echo $url?>/assets/scripts/head_foot.min.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/head_foot.min.js?v=<?php echo time()?>"></script>
 </body>
 
-<script src="<?php echo $url?>/assets/scripts/contact.min.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/assets/scripts/contact.min.js?v=<?php echo time()?>"></script>
 </html>

@@ -5,7 +5,7 @@
         $actual_path = substr($url_requested,strpos($url_requested,'/'),$url_len); 
     
         if($actual_path == "/"){
-            $page_title = "Php route project - Home";
+            $page_title = "SHSDesk | Home";
             include_once('./index.php');
         }    
         else if(preg_match("!/products/[a-z,A-Z,0-9]!",$actual_path)){
@@ -14,24 +14,28 @@
             $data_arr = [
                 'content_to_show' => $actual_route
             ];      
-            $page_title = "Php route project - ".$actual_route;
+            $page_title = "SHSDesk | ".$actual_route;
             include_once('./index.php');
         }
         else if($actual_path == "/about"){        
-            $page_title = "Php route project - Products";
+            $page_title = "SHSDesk | About Us";
             include_once('./pages/about.php');
         }
         else if($actual_path == "/faq"){
-            $page_title = "Php route project - Solutions";
+            $page_title = "SHSDesk | FAQ";
             include_once('./pages/faq.php');
         }
         else if($actual_path == "/school"){
-            $page_title = "Php route project - Solutions";
+            $page_title = "SHSDesk | Schools";
             include_once('./pages/school.php');
         }
         else if($actual_path == "/contact"){
-            $page_title = "Php route project - Solutions";
+            $page_title = "SHSDesk | Contact Us";
             include_once('./pages/contact.php');
+        }
+        else if(strpos($actual_path, "/admin/admin") || strpos($actual_path, "/admin/superadmin")){
+            $page_title = "SHSDesk | Admin";
+            include_once('./admin');
         }
         else {
             $page_title = "error 404 not found!";

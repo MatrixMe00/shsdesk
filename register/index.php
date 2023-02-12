@@ -1,4 +1,13 @@
-<?php include_once($_SERVER["DOCUMENT_ROOT"]."/shsdesk/includes/session.php")?>
+<?php
+    //depending on where the page is being called from
+    $this_url = $_SERVER["REQUEST_URI"];
+
+    if(strpos($this_url, "shsdesk")){
+        include_once($_SERVER["DOCUMENT_ROOT"]."/shsdesk/includes/session.php");
+    }else{
+        include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,16 +18,6 @@
     <title>SHSDesk - Register Your School</title>
     <meta name="description" content="Subscribe to our service for free. Register with SHSDesk to put you in the plan to be able to manage student admission and to easily receive record details">
     <meta name="keywords" content="subscribe, register, shs, desk, shsdesk, free, service, student, admission, application, school, category">
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-    
-      gtag('config', 'G-W7MF3JTHJ1');
-    </script>
     <style>
         @media screen and (min-width: 768px){
             form{
@@ -217,8 +216,8 @@
     <?php @include_once($rootPath.'/blocks/footer.php')?>
     
     <!--Document Scripts-->
-    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
-    <script src="<?php echo $url?>/assets/scripts/form/register.min.js" async></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/form/register.min.js?v=<?= time() ?>"></script>
 
     <!--TinyMCE scripts-->
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>

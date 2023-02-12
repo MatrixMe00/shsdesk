@@ -2021,7 +2021,7 @@ form .joint > *, form .joint > *{
     }
     .flex-wrap > *{
         display: block;
-        width: 100% !important;
+        flex: 1 1 auto !important;
     }
     .flex-wrap.wrap-half{
         flex-direction: row !important;

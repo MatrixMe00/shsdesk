@@ -9,6 +9,7 @@ Disallow: /admin/submit.php
 Disallow: /assets/
 Disallow: /blocks/
 Disallow: /includes/
+Disallow: /pages/faq.php
 Disallow: /PhpSpreadSheet/
 Disallow: /phpmailer/
 Disallow: /sms/

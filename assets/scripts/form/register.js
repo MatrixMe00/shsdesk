@@ -16,11 +16,11 @@ $("input[type=file]").change(function(){
     }
 })
 
-//the avatar of te school
+//the avatar of the school
 $("input[name=avatar]").change(function(){
     if($(this).val() != ''){
         //show the selected image
-        $("label[for=display_avatar]").show();  
+        $("label[for=display_avatar]").removeClass("no_disp");  
 
         //make the file ready for display
         var file = $("input[type=file]").get(0).files[0];
@@ -39,7 +39,7 @@ $("input[name=avatar]").change(function(){
         }
     }else{
         //hide the selected image
-        $("label[for=display_avatar]").hide();
+        $("label[for=display_avatar]").addClass("no_disp");
 
         //empty the image src
         $("#display_avatar img").prop("src", "");

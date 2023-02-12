@@ -23,21 +23,11 @@
 
     <!--Stylesheets-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/school/school.min.css?v=<?php echo time()?>">
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-    
-      gtag('config', 'G-W7MF3JTHJ1');
-    </script>
 </head>
 <body>
     <?php @include_once($rootPath.'/blocks/nav.php')?>
 
-    <main class="flex flex-wrap">
+    <main class="flex flex-wrap no-wrap-col">
         <?php
             $result = $connect->query("SELECT * FROM schools");
 
@@ -136,12 +126,9 @@
     </div>
 
     <!--Document scripts-->
-    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
-    <script src="<?php echo $url?>/assets/scripts/index.min.js?v=<?php echo time()?>" async></script>
-    <script src="<?php echo $url?>/assets/scripts/head_foot.min.js?v=<?php echo time()?>" async></script>
-
-    <!--Angular scripts-->
-    <script src="<?php echo $url?>/assets/scripts/angular_index.min.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/index.min.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/head_foot.min.js?v=<?php echo time()?>"></script>
 
     <script>
         nav_height = $("nav").height();

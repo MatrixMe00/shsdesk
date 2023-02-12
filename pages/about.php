@@ -23,16 +23,6 @@
 
     <!--Stylesheets-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/about/about.min.css?v=<?php echo time()?>">
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-    
-      gtag('config', 'G-W7MF3JTHJ1');
-    </script>
 </head>
 <body id="index_main">
     <?php @include_once($rootPath.'/blocks/nav.php')?>
@@ -194,9 +184,6 @@
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
     <!--Document scripts-->
-    <script src="<?php echo $url?>/assets/scripts/head_foot.min.js?v=<?php echo time()?>" async></script>
-
-    <!--Angular scripts-->
-    <script src="<?php echo $url?>/assets/scripts/angular_index.min.js" async></script>
+    <script src="<?php echo $url?>/assets/scripts/head_foot.min.js?v=<?php echo time()?>"></script>
 </body>
 </html>

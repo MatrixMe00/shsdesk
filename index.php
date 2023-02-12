@@ -17,19 +17,10 @@
     <link rel="stylesheet" href="assets/styles/index_page.min.css?v=<?php echo time()?>">
     <link rel="stylesheet" href="assets/styles/admissionForm.min.css?v=<?php echo time()?>">
 
-    <!--Payment script-->
+    <!--Payment and angular script-->
     <script src="https://js.paystack.co/v1/inline.js" defer></script>
+    <script src="<?php echo $url?>/assets/scripts/angular/angular.min.js?v=<?php echo time()?>" async></script>
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-    
-      gtag('config', 'G-W7MF3JTHJ1');
-    </script>
-    
     <style>
         #message_us{
             padding: 1em; position: fixed; bottom: 5vh; left: 3vw; 
@@ -451,7 +442,7 @@
                     </video>
                     
                 </div>
-                <div id="download_register" class="sm-sm-b btn">
+                <div id="download_register" class="sm-sm-b btn m-sm">
                     <a href="<?php echo $url?>/assets/file/SHSDesk Demo Video - 720px.mp4" download>
                         <button type="button" class="light border b-secondary plain-r">Download Video [720px]</button>
                     </a>
@@ -474,15 +465,15 @@
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
     <!--Document scripts-->
-    <script src="assets/scripts/form/general.min.js?v=<?php echo time()?>" defer></script>
-    <script src="assets/scripts/index.min.js?v=<?php echo time()?>" defer></script>
-    <script src="assets/scripts/head_foot.min.js?v=<?php echo time()?>" defer></script>
+    <script src="assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
+    <script src="assets/scripts/index.min.js?v=<?php echo time()?>"></script>
+    <script src="assets/scripts/head_foot.min.js?v=<?php echo time()?>"></script>
     <script src="assets/scripts/admissionForm.min.js?v=<?php echo time(); ?>"></script>
 
     <!--Angular scripts-->
     <script src="assets/scripts/angular_index.js?v=<?php echo time()?>" defer></script>
 
     <!--Payment scripts-->
-    <script src="assets/scripts/form/payform.min.js?v=<?php echo time();?>"></script>
+    <script src="assets/scripts/form/payform.min.js?v=<?php echo time();?>" defer></script>
 </body>
 </html>
