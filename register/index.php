@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <?php @include_once($rootPath.'/blocks/generalHead.php')?>
-    <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/tinymce.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/tinymce.min.css?v=<?php echo time()?>">
 
     <!--Document title-->
     <title>SHSDesk - Register Your School</title>

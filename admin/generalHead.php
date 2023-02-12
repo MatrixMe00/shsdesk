@@ -14,8 +14,8 @@
     <!--Document Style-->
     <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/general.min.css?v=<?php echo time()?>">
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin_index_page.min.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/index.css?v=<?php echo time()?>">
-    <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/notification.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/index.min.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/notification.min.css?v=<?php echo time()?>">
 
     <!--Tiny MCE-->
-    <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/tinymce.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/tinymce.min.css?v=<?php echo time()?>">
