@@ -197,6 +197,6 @@
     <script src="<?php echo $url?>/assets/scripts/head_foot.js?v=<?php echo time()?>" async></script>
 
     <!--Angular scripts-->
-    <script src="<?php echo $url?>/assets/scripts/angular_index.js" async></script>
+    <script src="<?php echo $url?>/assets/scripts/angular_index.min.js" async></script>
 </body>
 </html>

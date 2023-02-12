@@ -157,4 +157,4 @@
         </div>
     </div>
 </div>
-<script src="<?php echo $url?>/admin/superadmin/assets/scripts/schools.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/superadmin/assets/scripts/schools.min.js?v=<?php echo time()?>" async></script>

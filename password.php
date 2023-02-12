@@ -11,7 +11,7 @@
 
     <!--Scripts-->
     <script src="assets/scripts/jquery/uncompressed_jquery.js?v=<?php echo time()?>" async></script>
-    <script src="assets/scripts/index.js?v=<?php echo time()?>" async></script>
+    <script src="assets/scripts/index.min.js?v=<?php echo time()?>" async></script>
     <script src="assets/scripts/functions.js?v=<?php echo time()?>" async></script>
 
     <!--Styles-->
@@ -139,7 +139,7 @@
         </div>
     </div>
 <script src="assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/assets/scripts/password.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/assets/scripts/password.min.js?v=<?php echo time()?>" async></script>
 </body>
 </html>
 

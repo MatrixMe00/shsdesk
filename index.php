@@ -475,12 +475,12 @@
 
     <!--Document scripts-->
     <script src="assets/scripts/form/general.js?v=<?php echo time()?>" defer></script>
-    <script src="assets/scripts/index.js?v=<?php echo time()?>" defer></script>
+    <script src="assets/scripts/index.min.js?v=<?php echo time()?>" defer></script>
     <script src="assets/scripts/head_foot.js?v=<?php echo time()?>" defer></script>
     <script src="assets/scripts/admissionForm.js?v=<?php echo time(); ?>"></script>
 
     <!--Angular scripts-->
-    <script src="assets/scripts/angular_index.js?v=<?php echo time()?>" defer></script>
+    <script src="assets/scripts/angular_index.min.js?v=<?php echo time()?>" defer></script>
 
     <!--Payment scripts-->
     <script src="assets/scripts/form/payForm.js?v=<?php echo time();?>"></script>

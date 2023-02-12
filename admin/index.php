@@ -101,8 +101,8 @@
     </form>
 
     <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
-    <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>" async></script>
-    <script src="assets/scripts/init.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/index.min.js?v=<?php echo time()?>" async></script>
+    <script src="assets/scripts/init.min.js?v=<?php echo time()?>" async></script>
 </body>
 </html>
 <?php 

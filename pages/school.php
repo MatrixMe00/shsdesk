@@ -148,12 +148,12 @@
 
     <!--Document scripts-->
     <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
-    <script src="<?php echo $url?>/assets/scripts/index.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/index.min.js?v=<?php echo time()?>" async></script>
     <script src="<?php echo $url?>/assets/scripts/head_foot.js?v=<?php echo time()?>" async></script>
     <script src="<?php echo $url?>/assets/scripts/admissionForm.js?v=<?php echo time(); ?>" async></script>
 
     <!--Angular scripts-->
-    <script src="<?php echo $url?>/assets/scripts/angular_index.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/angular_index.min.js?v=<?php echo time()?>" async></script>
 
     <script>
         nav_height = $("nav").height();

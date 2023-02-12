@@ -227,9 +227,9 @@
         </div>
     </div>
 
-    <script src="<?php echo $url?>/admin/assets/scripts/angular_index.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/angular_index.min.js?v=<?php echo time()?>" async></script>
     <script src="<?php echo $url?>/assets/scripts/admissionForm.js?v=<?php echo time(); ?>" async></script>
-    <script src="<?php echo $url?>/admin/assets/scripts/index.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/index.min.js?v=<?php echo time()?>" async></script>
     <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
 
     <script>
