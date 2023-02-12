@@ -70,8 +70,8 @@
                 title="Provide a reason for the exeat" maxlength="80"></textarea>
             </label>
 
-            <label for="submit" class="btn">
-                <button type="submit" name="submit" value="exeat_request" class="primary">Give Exeat</button>
+            <label for="submit" class="btn sm-md-t w-full-child w-full wmax-xs">
+                <button type="submit" name="submit" value="exeat_request" class="primary sp-lg">Give Exeat</button>
             </label>
         </div>
     </form>
@@ -230,5 +230,5 @@
     </div>
 </div>
 
-<script src="<?php echo $url?>/admin/admin/assets/scripts/exeat.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/exeat.min.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>

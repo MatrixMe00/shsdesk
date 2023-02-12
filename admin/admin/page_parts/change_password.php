@@ -32,12 +32,12 @@
             <span class="label_title">Show Password</span>
         </label>
         <label for="submit" class="btn_label">
-            <button type="submit" name="submit" value="change_password">Change Password</button>
+            <button type="submit" name="submit" value="change_password" class="sp-lg">Change Password</button>
         </label>
     </div>
     <div class="foot">
         <p>
-            @2021 shsdesk.com
+            @<?= date("Y") ?> shsdesk.com
         </p>
     </div>
 </form>

@@ -126,8 +126,8 @@
 <?php if($user_details["role"] == 3){ ?>
 <section>
     <div class="base-foot">
-        <div class="btn">
-            <button onclick="$('#adminAdd').removeClass('no_disp')" class="cyan">Add a new user</button>
+        <div class="btn w-full w-full-child" style="max-width: 12rem">
+            <button onclick="$('#adminAdd').removeClass('no_disp')" class="cyan sp-lg">Add a new user</button>
         </div>
     </div>
 </section>
@@ -186,10 +186,10 @@
 </div>
     
     <?php if($user_details["role"] == 3){ ?>
-    <div id="adminAdd" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <div id="adminAdd" class="fixed flex flex-center-content flex-center-align form_modal_box">
         <?php require_once($rootPath."/admin/adminAdd.php") ?>
     </div>
     <?php } ?>
 
-    <script type="text/javascript" src="<?php echo $url?>/admin/assets/scripts/person.js?v=<?php echo time()?>" async></script>
-    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
+    <script type="text/javascript" src="<?php echo $url?>/admin/assets/scripts/person.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>

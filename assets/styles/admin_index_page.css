@@ -358,6 +358,10 @@ nav.light .menu .item:hover{
         transition: all 1s;
     }
 
+    nav.dark #ham span{
+        background-color: white;
+    }
+
     .item img{
         width: 95%;
     }

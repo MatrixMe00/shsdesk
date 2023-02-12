@@ -39,4 +39,4 @@
         </form>
     </div>
 
-    <script src="<?php echo $url?>/admin/admin/assets/scripts/updateStat.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/admin/admin/assets/scripts/updateStat.min.js?v=<?php echo time()?>"></script>

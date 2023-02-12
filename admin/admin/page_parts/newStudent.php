@@ -98,12 +98,14 @@
             </label>
         </div>
     </div>
-    <div class="foot flex">
-        <label for="submit" class="btn">
-            <button type="submit" name="submit" value="adminAddStudent">Save</button>
-        </label>
-        <label for="cancel" class="btn">
-            <button type="reset" name="cancel">Cancel</button>
-        </label>
+    <div class="foot">
+        <div class="flex flex-wrap gap-sm flex-eq wmax-xs">
+            <label for="submit" class="btn w-full sm-unset sp-unset">
+                <button type="submit" name="submit" class="primary w-fluid sp-med xs-rnd" value="adminAddStudent">Save</button>
+            </label>
+            <label for="cancel" class="btn w-full sm-unset sp-unset">
+                <button type="reset" name="cancel" class="red w-fluid sp-med xs-rnd">Cancel</button>
+            </label>
+        </div>
     </div>
 </form>

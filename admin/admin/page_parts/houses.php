@@ -90,15 +90,18 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     </div><?php } ?>
 </section>
 
-<section class="flex flex-wrap flex-center-align">
-    <div class="btn">
-        <button onclick="$('#modal').removeClass('no_disp')" class="secondary">Add New House</button>
+<section>
+    <div class="flex flex-wrap flex-center-align w-full flex-eq wmax-sm">
+        <div class="btn sm-unset w-full w-full-child">
+            <button onclick="$('#modal').removeClass('no_disp')" class="indigo sp-lg">Add New House</button>
+        </div>
+        <?php if(isset($_SESSION["real_status"]) && $_SESSION["real_status"]){?>
+        <div class="btn sm-unset w-full w-full-child">
+            <button name="submit" value="houses" class="request_btn cyan sp-lg">Generate Report</button>
+        </div>
+        <?php } ?>
     </div>
-    <?php if(isset($_SESSION["real_status"]) && $_SESSION["real_status"]){?>
-    <div class="btn">
-        <button name="submit" value="houses" class="request_btn cyan">Generate Report</button>
-    </div>
-    <?php } ?>
+    
 </section>
 
 <section>
@@ -280,9 +283,9 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 </div>
 
 <?php if(isset($_REQUEST["school_id"])){?>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/addHouse.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/general.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/addHouse.min.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/general.js?v=<?php echo time()?>"></script>
 <?php }else{?>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/addHouse.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/addHouse.min.js?v=<?php echo time()?>"></script>
 <?php } ?>
-<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>

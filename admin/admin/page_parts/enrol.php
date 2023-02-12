@@ -49,8 +49,8 @@
 
 <?php if(isset($_SESSION["real_status"]) && $_SESSION["real_status"]){?>
 <section class="flex flex-wrap flex-center-align"> 
-    <div class="btn">
-        <button name="submit" value="enrolment" class="request_btn cyan">Generate Report</button>
+    <div class="btn w-full w-full-child" style="max-width: 12rem">
+        <button name="submit" value="enrolment" class="request_btn cyan sp-lg">Generate Report</button>
     </div>
 </section>
  <?php } ?>
@@ -170,10 +170,10 @@
     </div>
 </div>
 
-<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.min.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.min.js" async></script>
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/table.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/table.min.js?v=<?php echo time()?>" async></script>
 <script>
     $(document).ready(function(){
         $(".table_section .head .btn button").click();

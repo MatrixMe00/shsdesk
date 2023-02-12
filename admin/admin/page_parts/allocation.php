@@ -61,14 +61,14 @@
 <?php if($_SESSION["real_status"]){?>
 <section class="flex flex-wrap flex-center-align"> 
     <div class="btn">
-        <button name="submit" value="houses" class="request_btn cyan">Generate Report</button>
+        <button name="submit" value="houses" class="request_btn cyan sp-med">Generate Report</button>
     </div>
     <div class="btn">
         <button onclick="$('#modal_2').removeClass('no_disp')" <?php
             $autoHousePlace = getSchoolDetail($user_school_id, true)["autoHousePlace"];
             if($autoHousePlace)
                 echo "disabled";
-        ?>>Import Allocation List</button>
+        ?> class="orange sp-med">Import Allocation List</button>
     </div>
 </section>
  <?php } ?>
@@ -312,15 +312,15 @@
     //choose the details to show when a student clicks
     if(isset($_REQUEST["school_id"])){
 ?>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/placement.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/newstudent.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/placement.min.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/newstudent.min.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/general.js?v=<?php echo time()?>" async></script>
 <?php }else{ ?>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.min.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.min.js?v=<?php echo time()?>" async></script>
 <?php } ?>
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/table.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/table.min.js?v=<?php echo time()?>" async></script>
 <script>
     $(document).ready(function(){
         $(".table_section .head .btn button").click();

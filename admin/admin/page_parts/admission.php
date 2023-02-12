@@ -121,13 +121,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                 <?php 
                 //remove visible escape characters
                 $message = $schoolDetail["admissionPath"];
-                /*$message = str_replace("\\r", "", $schoolDetail["admissionPath"]);
-                $message = str_replace("\\n", "", $message);
-                $message = str_replace("\\", "", $message);
-                $message = str_replace("<p></p>","", $message);*/
-                
                 echo  $message;
-                
                 ?>
                 </textarea>
             </label>
@@ -194,25 +188,25 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     </span>
                 </label>
             </div>
-
-            <label for="submit" class="btn">
-                <button type="submit" name="submit" value="admissiondetails">Save</button>
-            </label>
-
             <div class="message_box no_disp">
                 <span class="message">Here is a test message</span>
                 <div class="close"><span>&cross;</span></div>
             </div>
         </div>
         <div class="foot">
+            <div class="flex-all-center w-full sm-xlg-b sm-med-t">
+                <label for="submit" class="btn sm-unset sp-unset w-full w-full-child wmax-xs">
+                    <button type="submit" name="submit" value="admissiondetails" class="primary sp-lg">Save</button>
+                </label>
+            </div>
             <p>
                 @<?php echo date("Y")." ".$_SERVER['HTTP_HOST']?>
             </p>
         </div>
     </form>
 
-    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
-    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js" async></script>
-    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js" async></script>
-    <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>" async></script>
-    <script src="<?php echo $url?>/admin/admin/assets/scripts/admission.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
+    <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/admin/admin/assets/scripts/admission.min.js?v=<?php echo time()?>"></script>

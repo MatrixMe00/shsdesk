@@ -94,12 +94,14 @@
             placeholder="Contact Number">
         </label>
     </div>
-    <div class="foot flex">
-        <label for="submit" class="btn">
-            <button type="submit" name="submit" class="primary" value="addAdmin">Submit</button>
+    <div class="foot">
+        <div class="flex flex-wrap flex-eq wmax-xs">
+            <label for="submit" class="btn w-full w-full-child">
+                <button type="submit" name="submit" class="primary sp-med" value="addAdmin">Submit</button>
+            </label>
+            <label for="cancel" class="btn w-full w-full-child">
+                <button type="button" name="cancel" value="cancel" class="red sp-med" onclick="$('#adminAdd').addClass('no_disp')">Cancel</button>
         </label>
-        <label for="cancel" class="btn">
-            <button type="button" name="cancel" value="cancel" class="red" onclick="$('#adminAdd').addClass('no_disp')">Cancel</button>
-       </label>
+        </div>
     </div>
 </form>

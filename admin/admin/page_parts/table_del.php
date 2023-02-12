@@ -11,8 +11,11 @@
             <input type="hidden" name="addFirstYears" value="">
         </form>
 
-        <div class="foot btn flex flex-center-content flex-center-align">
-            <button type="button" name="yes_button" class="success" onclick="$('#table_yes_no_form').submit();">Yes</button>
-            <button type="button" name="no_button" class="red" onclick="$('#table_del').addClass('no_disp')">No</button>
+        <div class="foot flex flex-center-content flex-center-align">
+            <div class="btn w-full-child wmax-xs flex gap-sm w-full">
+                <button type="button" name="yes_button" class="primary" onclick="$('#table_yes_no_form').submit();">Yes</button>
+                <button type="button" name="no_button" class="red" onclick="$('#table_del').addClass('no_disp')">No</button>
+            </div>
+            
         </div>
     </div>

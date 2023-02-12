@@ -1260,16 +1260,27 @@ img{
 
 /* widths */
 /* percentage width */
-.wp-1{width: 10%;}
-.wp-2{width: 20%;}
-.wp-3{width: 30%;}
-.wp-4{width: 40%;}
-.wp-5{width: 50%;}
-.wp-6{width: 60%;}
-.wp-7{width: 70%;}
-.wp-8{width: 80%;}
-.wp-9{width: 90%;}
-.w-full{width: 100% !important;}
+.wp-1, .wp-1-child > *{width: 10%;}
+.wp-2, .wp-2-child > *{width: 20%;}
+.wp-3, .wp-3-child > *{width: 30%;}
+.wp-4, .wp-4-child > *{width: 40%;}
+.wp-5, .wp-5-child > *{width: 50%;}
+.wp-6, .wp-6-child > *{width: 60%;}
+.wp-7, .wp-7-child > *{width: 70%;}
+.wp-8, .wp-8-child > *{width: 80%;}
+.wp-9, .wp-9-child > *{width: 90%;}
+.w-full, .w-full-child > *{width: 100% !important;}
+.w-auto, .w-auto-child > *{width: auto;}
+.w-max-unset, .wc-max-unset > *{max-width: unset !important;}
+.w-min-unset, .wc-min-unset > *{min-width: unset !important;}
+
+/* max widths by screen */
+.wmax-xs{max-width: 468px}
+.wmax-sm{max-width: 580px}
+.wmax-md{max-width: 768px}
+.wmax-lg{max-width: 1020px}
+.wmax-xl{max-width: 1200px}
+/* end of max widths */
 /* end of widths */
 
 /*box shadows*/
@@ -1984,6 +1995,14 @@ form .joint > *, form .joint > *{
     }
     /* end of forms */
 
+    /* buttons */
+    .btn button{
+        max-width: unset !important;
+        min-width: unset !important;
+        width: 100% !important;
+    }
+    /* end of buttons */
+
     .card{
         flex-grow: 1;
     }
@@ -2002,6 +2021,13 @@ form .joint > *, form .joint > *{
     }
     .flex-wrap > *{
         display: block;
-        width: 100%;
+        width: 100% !important;
+    }
+    .flex-wrap.wrap-half{
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+    }
+    .flex-wrap.wrap-half > *{
+        flex: 1 1 45% !important;
     }
 }

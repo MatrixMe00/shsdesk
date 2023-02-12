@@ -119,12 +119,15 @@
             </label>
         </div>
     </div>
-    <div class="foot flex">
-        <label for="submit" class="btn">
-            <button type="submit" name="submit" class="primary" value="adminUpdateStudent">Update</button>
-        </label>
-        <label for="cancel" class="btn">
-            <button type="reset" name="cancel" class="danger">Cancel</button>
-        </label>
+    <div class="foot">
+        <div class="flex flex-wrap gap-sm flex-eq wmax-xs">
+            <label for="submit" class="btn w-full sm-unset sp-unset">
+                <button type="submit" name="submit" class="primary w-fluid sp-med" value="adminUpdateStudent">Update</button>
+            </label>
+            <label for="cancel" class="btn w-full sm-unset sp-unset">
+                <button type="reset" name="cancel" class="red w-fluid sp-med">Cancel</button>
+            </label>
+        </div>
+        
     </div>
 </form>

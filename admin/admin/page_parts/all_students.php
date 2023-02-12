@@ -88,32 +88,22 @@
         <div class="head">
             <h2>Student Controls</h2>
         </div>
-        <div class="body flex flex-wrap">
-            <div class="btn">
+        <div class="body flex flex-wrap wrap-h btn w-auto-child w-full gap-sm wrap-half p-med flex-eq">
                 <button onclick="$('#modal').removeClass('no_disp')" class="cyan">Add New Student</button>
-            </div>
             <?php if($user_details["role"] != 2 && $user_details["role"] <= 5){?>
-            <div class="btn">
                 <button onclick="$('#lhs .menu .item.active').click()" class="secondary">Refresh</button>
-            </div>
             <?php } ?>
-            <div class="btn">
                 <button type="button" onclick="$('#modal_2').removeClass('no_disp')" class="teal">Import From Excel</button>
-            </div>
             <?php 
                 $res = $connect->query("SELECT COUNT(indexNumber) AS total FROM cssps WHERE schoolID = $user_school_id")->fetch_assoc()["total"];
                 // $res = $connect2->query("SELECT COUNT(indexNumber) AS total FROM students_table WHERE school_id = $user_school_id")->fetch_assoc()["total"];
                 if(intval($res) > 0){
                     if($user_details["role"] != 2 && $user_details["role"] <= 5){ 
             ?>
-            <div class="btn">
                 <button id="del_all" title="This clears all third years from the system, and in turn promote all students in the system currently to the next class";
                 class="red studs">Clean Records</button>
-            </div>
             <?php   } ?>
-            <div class="btn">
                 <button type="button" class="" id="addFirstYears">Transfer First Years</button>
-            </div>
             <?php } ?>
         </div>
     </div>
@@ -122,15 +112,15 @@
 <section id="students_section" class="table_section">
     <div class="head">
         <h2>Student Year</h2>
-        <div class="flex">
-            <div class="btn">
-                <button class="primary year_btn" data-year="1" data-break-point="10">Year One</button>
+        <div class="flex flex-wrap wrap-half gap-sm flex-eq wmax-sm">
+            <div class="btn w-full sm-unset sp-unset">
+                <button class="primary year_btn w-full" data-year="1" data-break-point="10">Year One</button>
             </div>
-            <div class="btn">
-                <button class="light year_btn" data-year="2" data-break-point="10">Year Two</button>
+            <div class="btn w-full sm-unset sp-unset">
+                <button class="light year_btn w-full" data-year="2" data-break-point="10">Year Two</button>
             </div>
-            <div class="btn">
-                <button class="light year_btn" data-year="3" data-break-point="10">Year Three</button>
+            <div class="btn w-full sm-unset sp-unset">
+                <button class="light year_btn w-full" data-year="3" data-break-point="10">Year Three</button>
             </div>
         </div>
     </div>
@@ -214,10 +204,10 @@
     <?php @include_once($rootPath."/admin/admin/page_parts/update_student.php")?>
 </div>
 
-<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.min.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.min.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/table.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/table.min.js?v=<?php echo time()?>" async></script>
 <script>
     $(document).ready(function(){
         $("#students_section .head .btn:first-child button").click();

@@ -77,26 +77,19 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         <div class="head">
             <h2>Placement Actions</h2>
         </div>
-        <div class="body flex flex-wrap">
-            <div class="btn">
+        <div class="body btn flex flex-wrap wrap-half w-full-child w-full gap-sm border p-med flex-eq">
                 <button onclick="$('#modal').removeClass('no_disp')" class="cyan">Add New Student</button>
-            </div>
             <?php if($user_details["role"] != 2 && $user_details["role"] <= 5){?>
-            <div class="btn">
                 <button onclick="$('#lhs .menu .item.active').click()" class="secondary">Refresh</button>
-            </div>
             <?php } ?>
-            <div class="btn">
                 <button type="button" onclick="$('#modal_2').removeClass('no_disp')" class="teal">Import From Excel</button>
-            </div>
             <?php 
                 $res = $connect->query("SELECT COUNT(indexNumber) AS total FROM cssps WHERE schoolID = $user_school_id")->fetch_assoc()["total"];
                 if(intval($res) > 0){
             ?>
             <?php if($user_details["role"] != 2 && $user_details["role"] <= 5){ ?>
-            <div class="btn">
                 <button id="del_all" title="This deletes all saved data from your records. Data would need to be reuploaded again"
-                class="red">Delete All Records</button>
+                class="red">Delete All Record
             </div>
             <?php } ?>
             <?php } ?>
@@ -311,15 +304,15 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     //choose the details to show when a student clicks
     if(isset($_REQUEST["school_id"])){
 ?>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/placement.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/newstudent.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/placement.min.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/newstudent.min.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/general.js?v=<?php echo time()?>" async></script>
 <?php }else{ ?>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.min.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.min.js?v=<?php echo time()?>" async></script>
 <?php } ?>
 <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/table.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/table.min.js?v=<?php echo time()?>" async></script>
 <script>
     $(document).ready(function(){
         $(".table_section .head .btn button").click();
