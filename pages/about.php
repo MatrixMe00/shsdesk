@@ -39,7 +39,7 @@
 
     <section id="intro">
         <div id="background">
-            <img src="<?php echo "$url/assets/images/default/javier-quesada-qYfwGVNJqSA-unsplash.jpg"?>" alt="Books on table">
+            <img src="<?php echo "$url/assets/images/default/javier-quesada-qYfwGVNJqSA-unsplash.jpg"?>" loading="lazy" alt="Books on table">
         </div>
         <div class="shadow"></div>
         <div class="head">
@@ -100,7 +100,7 @@
                 ?>
                 <div class="gallery_box">
                     <div class="image">
-                        <img src="<?php echo $url?>/assets/images/default/ges.jfif" alt="">
+                        <img src="<?php echo $url?>/assets/images/default/ges.jfif" loading="lazy" alt="">
                     </div>
                     <div class="body">
                         <div class="caption">
@@ -113,7 +113,7 @@
                 </div>
                 <div class="gallery_box">
                     <div class="image">
-                        <img src="<?php echo $url?>/assets/images/default/ghanaian student.jfif" alt="">
+                        <img src="<?php echo $url?>/assets/images/default/ghanaian student.jfif" loading="lazy" alt="">
                     </div>
                     <div class="body">
                         <div class="caption">
@@ -126,7 +126,7 @@
                 </div>
                 <div class="gallery_box">
                     <div class="image">
-                        <img src="<?php echo $url?>/assets/images/default/shs student 2.jfif" alt="">
+                        <img src="<?php echo $url?>/assets/images/default/shs student 2.jfif" loading="lazy" alt="">
                     </div>
                     <div class="body">
                         <div class="caption">
@@ -139,7 +139,7 @@
                 </div>
                 <div class="gallery_box">
                     <div class="image">
-                        <img src="<?php echo $url?>/assets/images/default/shs student.jfif" alt="">
+                        <img src="<?php echo $url?>/assets/images/default/shs student.jfif" loading="lazy" alt="">
                     </div>
                     <div class="body">
                         <div class="caption">
@@ -162,7 +162,7 @@
                 <div class="desc flex flex-wrap flex-center-content flex-center-align">
                     <div class="person">
                         <div class="image">
-                            <img src="<?php echo $url?>/assets/images/default/library.jfif" alt="">
+                            <img src="<?php echo $url?>/assets/images/default/library.jfif" loading="lazy" alt="">
                         </div>
                         <div class="body">
                             <span class="name">Success Yeboah</span>
@@ -174,7 +174,7 @@
                     </div>
                     <div class="person">
                         <div class="image">
-                            <img src="<?php echo $url?>/assets/images/default/library.jfif" alt="">
+                            <img src="<?php echo $url?>/assets/images/default/library.jfif" loading="lazy" alt="">
                         </div>
                         <div class="body">
                             <span class="name">Seth Afosah</span>

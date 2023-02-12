@@ -48,7 +48,7 @@
         <div class="school flex flex-center-content flex-center-align">
             <div class="head">
                 <div class="image_div">
-                    <img src="<?php echo $url?>/<?php echo $row["logoPath"]?>" alt="School Name">
+                    <img src="<?php echo $url?>/<?php echo $row["logoPath"]?>" loading="lazy" alt="School Name">
                 </div>
                 <div class="name">
                     <h3><?php echo $row["schoolName"]?></h3>

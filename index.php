@@ -60,7 +60,7 @@
                         if($result->num_rows > 0){
                             while($row=$result->fetch_assoc()){
                     ?>
-                    <img src="<?php echo $url."/".$row['item_img']?>" alt="<?php echo $row['image_alt']?>">
+                    <img src="<?php echo $url."/".$row['item_img']?>" alt="<?php echo $row['image_alt']?>" loading="lazy">
                     <?php }
                     }else{
                         echo "
