@@ -83,7 +83,7 @@
         </form>
     </main>
 
-    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
     <script>
         $("button[name=submit]").click(function(){
             id = $("input[name=teacherID]").val();

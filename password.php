@@ -12,7 +12,7 @@
     <!--Scripts-->
     <script src="assets/scripts/jquery/uncompressed_jquery.js?v=<?php echo time()?>" async></script>
     <script src="assets/scripts/index.min.js?v=<?php echo time()?>" async></script>
-    <script src="assets/scripts/functions.js?v=<?php echo time()?>" async></script>
+    <script src="assets/scripts/functions.min.js?v=<?php echo time()?>" async></script>
 
     <!--Styles-->
     <link rel="stylesheet" href="assets/styles/general.css">
@@ -138,7 +138,7 @@
             <p>Click <a href="<?php echo $url?>/admin/">here</a> to login with your new details</p>
         </div>
     </div>
-<script src="assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
+<script src="assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/assets/scripts/password.min.js?v=<?php echo time()?>" async></script>
 </body>
 </html>

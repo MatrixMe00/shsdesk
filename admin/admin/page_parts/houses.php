@@ -284,8 +284,8 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 
 <?php if(isset($_REQUEST["school_id"])){?>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/addHouse.min.js?v=<?php echo time()?>"></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/general.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/calledJS/general.min.js?v=<?php echo time()?>"></script>
 <?php }else{?>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/addHouse.min.js?v=<?php echo time()?>"></script>
 <?php } ?>
-<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>

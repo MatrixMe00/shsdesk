@@ -158,8 +158,8 @@
         
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
-    <script src="<?php echo $url?>/assets/scripts/head_foot.js"></script>
-    <script src="<?php echo $url?>/assets/scripts/form/general.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/head_foot.min.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.min.js"></script>
     <script src="<?php echo $url?>/assets/scripts/faq.js"></script>
 </body>
 </html>

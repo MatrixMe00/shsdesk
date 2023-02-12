@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="assets/styles/admissionForm.css?v=<?php echo time()?>">
 
     <!--Payment script-->
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js" defer></script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W7MF3JTHJ1"></script>
@@ -474,15 +474,15 @@
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
     <!--Document scripts-->
-    <script src="assets/scripts/form/general.js?v=<?php echo time()?>" defer></script>
+    <script src="assets/scripts/form/general.min.js?v=<?php echo time()?>" defer></script>
     <script src="assets/scripts/index.min.js?v=<?php echo time()?>" defer></script>
-    <script src="assets/scripts/head_foot.js?v=<?php echo time()?>" defer></script>
-    <script src="assets/scripts/admissionForm.js?v=<?php echo time(); ?>"></script>
+    <script src="assets/scripts/head_foot.min.js?v=<?php echo time()?>" defer></script>
+    <script src="assets/scripts/admissionForm.min.js?v=<?php echo time(); ?>"></script>
 
     <!--Angular scripts-->
     <script src="assets/scripts/angular_index.min.js?v=<?php echo time()?>" defer></script>
 
     <!--Payment scripts-->
-    <script src="assets/scripts/form/payForm.js?v=<?php echo time();?>"></script>
+    <script src="assets/scripts/form/payform.min.js?v=<?php echo time();?>"></script>
 </body>
 </html>

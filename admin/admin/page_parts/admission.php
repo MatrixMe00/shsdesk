@@ -205,7 +205,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         </div>
     </form>
 
-    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce.min.js?v=<?php echo time()?>"></script>

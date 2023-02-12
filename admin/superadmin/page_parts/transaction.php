@@ -184,7 +184,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     </div>
 </section>
 
-<script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
 <script>
     $("form[name=newTransactionForm]").submit(function(){
         type = "error";

@@ -24,7 +24,7 @@
 
     <!--Scripts-->
     <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js" async></script>
-    <script src="<?php echo $url?>/assets/scripts/functions.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/functions.min.js?v=<?php echo time()?>" async></script>
 
     <!--Styles-->
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.css?v=<?php echo time()?>">
@@ -100,7 +100,7 @@
         </div>
     </form>
 
-    <script src="<?php echo $url?>/assets/scripts/form/general.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
     <script src="<?php echo $url?>/assets/scripts/index.min.js?v=<?php echo time()?>" async></script>
     <script src="assets/scripts/init.min.js?v=<?php echo time()?>" async></script>
 </body>
