@@ -480,7 +480,7 @@
     <script src="assets/scripts/admissionForm.min.js?v=<?php echo time(); ?>"></script>
 
     <!--Angular scripts-->
-    <script src="assets/scripts/angular_index.min.js?v=<?php echo time()?>" defer></script>
+    <script src="assets/scripts/angular_index.js?v=<?php echo time()?>" defer></script>
 
     <!--Payment scripts-->
     <script src="assets/scripts/form/payform.min.js?v=<?php echo time();?>"></script>
