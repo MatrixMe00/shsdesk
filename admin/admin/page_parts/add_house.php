@@ -76,7 +76,7 @@
     <div class="foot flex-all-center w-full-child">
         <div class="flex flex-wrap w-fluid-child flex-eq gap-sm wmax-xs">
             <label for="submit" class="btn sm-unset sp-unset w-fluid-child">
-                <button type="submit" name="submit" class="primary sp-med" value="updateHouse">Add House</button>
+                <button type="submit" name="submit" class="primary sp-med" value="addHouse">Add House</button>
             </label>
             <label for="close" class="btn sm-unset sp-unset w-fluid-child">
                 <button type="reset" name="cancel" value="cancel" onclick="$(this).parents('#modal').addClass('no_disp')" class="secondary sp-med">Cancel</button>
