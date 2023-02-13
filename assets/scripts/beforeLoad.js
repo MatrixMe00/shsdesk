@@ -1,11 +1,11 @@
 //the loader container
-const loader = "<div id=\"page_loading\" class=\"absolute center txt-fl\" style=\"z-index: 900; background-color: white\">" + 
+const loader = "<div id=\"page_loading\" class=\"fixed center txt-fl\" style=\"z-index: 900; background-color: white\">" + 
                 "<span>Page is loading <span id=\"circle-animate\" class=\"black sp-sm round\" style=\"width: 10px; height: 10px; display: inline-block\"></span></span>" + 
                 "</div>"
 
 //push loader into body
 $("html").append(loader)
-$("body").css("overflow", "hidden")
+$("html").css("overflow", "hidden")
 
 //opacity for the circle
 opacity = 0;
@@ -25,7 +25,7 @@ timer = setInterval(function(){
         clearInterval(timer)
         clearInterval(blink)
         $("#page_loading").remove();
-        $("body").css("overflow", "auto")
+        $("html").css("overflow", "auto")
     }
 
     //declare that it has finished running once
