@@ -127,15 +127,17 @@ function formRequiredCheck(element) {
     //grab content
     content = $(element).val();
 
-    //check if element has max length
-    maxlength = $(element).prop("maxlength");
+    //check if element has max length or min length
+    maxlength = $(element).attr("maxlength");
+    minlength = $(element).attr("minlength");
 
-    if(maxlength <= 0){
-        maxlength = 0;
-    }
+    if(maxlength == null){maxlength = 0}
+    if(minlength == null){minlength = 1}
 
     //if element is required, paint as red else as green
-    if(required && maxlength > 0 && content.length < maxlength){
+    if((required && minlength > 1 && content.length < minlength) || 
+        (required && maxlength > 0 && content.length < maxlength)
+    ){
         $(element).css("border", "1px solid red");
     }else if(required && content.length < 1){
         $(element).css("border", "1px solid red");
@@ -202,7 +204,7 @@ function resetAccepts(){
  */
 function checkForm(i){
     //return value
-    return_value = true;
+    an_error = true;
 
     //cssps details
     shs_placed = $("#shs_placed").val();
@@ -252,36 +254,38 @@ function checkForm(i){
         && ad_day != "" && ad_birth_place != ""){
             if(ad_jhs != "" && ad_jhs_district != "" && ad_jhs_town != ""){
                 $(".tab_button.active").removeClass("incomplete");
-                return_value = false;
+                an_error = false;
 
                 //prepare to be agreed
                 accept1 = true;
             }else{
-                return_value = true;
+                an_error = true;
 
                 //disagree with document
                 accept1 = false;
             }
         }else{
             $(".tab_button.active").addClass("incomplete");
-            return_value = true;
+            an_error = true;
         }
     }else if(parseInt(i) == 2){
-        if(((ad_father_name != "" && ad_father_occupation != "") || (ad_mother_name != "" && ad_mother_occupation != "") || ad_guardian_name != "") && 
-        ad_resident != "" && ad_phone != "" && ad_witness != "" && ad_witness_phone != ""){
+        if((((ad_father_name != "" && ad_father_occupation != "") && ad_father_name.length >= 6) || 
+          ((ad_mother_name != "" && ad_mother_occupation != "") && ad_mother_name.length >= 6) || 
+          (ad_guardian_name != "") && ad_guardian_name.length >= 5) && ad_resident != "" && 
+          ad_phone != "" && ad_witness != "" && ad_witness_phone != ""){
             $(".tab_button.active").removeClass("incomplete");
-            return_value = false;
+            an_error = false;
 
             //prepare to be agreed
             accept2 = true;
         }else{
             $(".tab_button.active").addClass("incomplete");
-            return_value = true;
+            an_error = true;
         }
     }
 
     //check if tab is completely filled with required data
-    if(return_value == false){
+    if(an_error == false){
         next = parseInt(i) + 1;
         element = $(".tab_button:nth-child(" + next + ")");
         if($(element).hasClass("no_disp")){
@@ -292,15 +296,15 @@ function checkForm(i){
     //enable or disable agree button
     if(accept1 && accept2){
         $("label[for=agree] input[name=agree]").prop("disabled", false);
-        return_value = false;
+        an_error = false;
 
         if(parseInt(i) == 3){
             val = $("label[for=agree] input[name=agree]").prop("checked");
 
             if(val){
-                return_value = false;
+                an_error = false;
             }else{
-                return_value = true;
+                an_error = true;
             }
         }
     }else{
@@ -310,7 +314,7 @@ function checkForm(i){
     //update interest
     $("#res_ad_interest").html($("input#interest").val());
 
-    return return_value;
+    return an_error;
 }
 
 /**
