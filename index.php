@@ -19,7 +19,7 @@
 
     <!--Payment and angular script-->
     <script src="https://js.paystack.co/v1/inline.js" defer></script>
-    <script src="<?php echo $url?>/assets/scripts/angular/angular.min.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/angular/angular.min.js?v=<?php echo time()?>"></script>
 
     <style>
         #message_us{
@@ -471,9 +471,9 @@
     <script src="assets/scripts/admissionForm.min.js?v=<?php echo time(); ?>"></script>
 
     <!--Angular scripts-->
-    <script src="assets/scripts/angular_index.js?v=<?php echo time()?>" defer></script>
+    <script src="assets/scripts/angular_index.js?v=<?php echo time()?>"></script>
 
     <!--Payment scripts-->
-    <script src="assets/scripts/form/payform.min.js?v=<?php echo time();?>" defer></script>
+    <script src="assets/scripts/form/payForm.min.js?v=<?php echo time();?>"></script>
 </body>
 </html>

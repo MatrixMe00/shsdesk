@@ -16,3 +16,6 @@
     <?php }?>
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/admin/admin_form.min.css?v=<?php echo time()?>">
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/loader.min.css?v=<?php echo time()?>">
+
+    <!-- loader -->
+    <script src="<?php echo $url?>/assets/scripts/beforeLoad.min.js?v=<?php echo time()?>"></script>
