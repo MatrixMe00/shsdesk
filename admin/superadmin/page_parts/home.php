@@ -173,7 +173,7 @@
                     <input type="text" name="item_head" id="item_head" placeholder="Provide a title for this block*" required>
                 </label>
                 <label for="item_desc" class="flex">
-                    <textarea type="text" name="item_desc" id="item_desc" placeholder="Provide a  brief description about the carousel*" class="admin_tinymce"></textarea></textarea>
+                    <textarea type="text" name="item_desc" id="item_desc" placeholder="Provide a  brief description about the carousel*" class="sadmin_tinymce"></textarea></textarea>
                 </label>
                 <div class="flex flex-center-align flex-wrap">
                     <label for="item_button" class="checkbox">

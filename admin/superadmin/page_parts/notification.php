@@ -505,7 +505,7 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="message">
                 </span>
-                <textarea name="message" maxlength="400" placeholder="Enter your announcement in this space. You should not exceed 400 characters" class="admin_tinymce"></textarea>
+                <textarea name="message" maxlength="400" placeholder="Enter your announcement in this space. You should not exceed 400 characters" class="sadmin_tinymce"></textarea>
             </label>
             <div id="#aud">
                 <p style="padding-left: 12px">Select your audience</p>
