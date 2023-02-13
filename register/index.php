@@ -114,7 +114,7 @@
                         <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="icon">
                     </span>
                     <textarea type="text" name="description" id="description" placeholder="Provide a  brief description about the school [800 characters max]*"
-                    class="tinymce" maxlength="800" autocomplete="off" title="Provide a brief description about your school"></textarea>
+                    class="admin_tinymce" maxlength="800" autocomplete="off" title="Provide a brief description about your school"></textarea>
                 </label>
 
                 <div class="joint flex-wrap">
@@ -179,13 +179,17 @@
                         <span class="display_file_name">Choose or drag your file here</span>
                     </div>
                 </label>
-                
                 <p id="demo_doc"><a href="<?php echo $url?>/admin/admin/assets/files/default files/Admission_Form__Demo.pdf">Download Demo Admission Letter [PDF]</a></p>
+                
+                <label for="admission_letter_head" class="flex flex-column gap-sm">
+                    <span class="label_title txt-bold">Admission Letter Heading [Optional]</span>
+                    <input type="text" name="admission_letter_head" id="admission_letter_head" class="border sp-med" placeholder="Default: Offer of Admission" title="Provide your custom heading to be displayed on your admission letter">
+                </label>
                 <label for="admission_letter" class="textarea">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="admission" srcset="">
                     </span>
-                    <textarea name="admission_letter" id="admission_letter" class="tinymce" placeholder="Please provide a body for your admission letter. Refer to the demo document to know what is expected of you"></textarea>
+                    <textarea name="admission_letter" id="admission_letter" class="admin_tinymce" placeholder="Please provide a body for your admission letter. Refer to the demo document to know what is expected of you"></textarea>
                 </label>
 
                 <label for="autoHousePlace" class="checkbox">

@@ -56,25 +56,28 @@
         }
 
         //school and technical's details
-        $school_name = formatName($connect->real_escape_string($_POST["school_name"]));
-        $abbreviation = strtoupper($connect->real_escape_string($_POST["abbreviation"]));
-        $head_name = formatName($connect->real_escape_string($_POST["head_name"]));
-        $technical_name = formatName($connect->real_escape_string($_POST["technical_name"]));
-        $technical_phone = $connect->real_escape_string($_POST["technical_phone"]);
+        $school_name = formatName($_POST["school_name"]);
+        $abbreviation = strtoupper($_POST["abbreviation"]);
+        $head_name = formatName($_POST["head_name"]);
+        $technical_name = formatName($_POST["technical_name"]);
+        $technical_phone = $_POST["technical_phone"];
         
         //address
-        $school_email = $connect->real_escape_string($_POST["school_email"]);
-        $postal_address = formatName($connect->real_escape_string($_POST["postal_address"]));
+        $school_email = $_POST["school_email"];
+        $postal_address = formatName($_POST["postal_address"]);
         
         //school's description
-        $description = $connect->real_escape_string($_POST["description"]);
+        $description = htmlentities($_POST["description"]);
 
         //other details of school
-        $category = $connect->real_escape_string($_POST["category"]);
-        $residence_status = $connect->real_escape_string($_POST["residence_status"]);
-        $sector = $connect->real_escape_string($_POST["sector"]);
-        @$autoHousePlace = $connect->real_escape_string($_POST["autoHousePlace"]);
-        $admission_letter = $connect->real_escape_string(htmlentities($_POST["admission_letter"]));
+        $category = $_POST["category"];
+        $residence_status = $_POST["residence_status"];
+        $sector = $_POST["sector"];
+        @$autoHousePlace = $_POST["autoHousePlace"];
+
+        //admission letter
+        $admission_letter_head = $_POST["admission_letter_head"];
+        $admission_letter = htmlentities($_POST["admission_letter"]);
 
         if(@$autoHousePlace == "true" || @$autoHousePlace == "on"){
             @$autoHousePlace = true;
@@ -187,14 +190,14 @@
         $prostectusDirectory = $prostectusDirectory[1];
 
         //query the database
-        $query = "INSERT INTO schools (logoPath, prospectusPath, admissionPath, schoolName, postalAddress, abbr, 
+        $query = "INSERT INTO schools (logoPath, prospectusPath, admissionPath, admissionHead, schoolName, postalAddress, abbr, 
             headName, techName, techContact, email, description, category, residence_status, sector, 
             autoHousePlace) 
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
 
         //prepare query for entry into database
         $result = $connect->prepare($query);
-        $result->bind_param("sssssssssssissi", $image_directory, $prostectusDirectory, $admission_letter, 
+        $result->bind_param("ssssssssssssissi", $image_directory, $prostectusDirectory, $admission_letter, $admission_letter_head,
         $school_name, $postal_address, $abbreviation, $head_name, $technical_name, $technical_phone, $school_email, $description, 
         $category, $residence_status, $sector, $autoHousePlace);
 
@@ -230,25 +233,29 @@
                 $this_month = date("m");
                 $admission_year = $this_year;
 
-                if($this_month < 9){
+                /*if($this_month < 9){
                     $admission_year = $this_year - 1;
-                }
+                }*/
 
                 //get the academic year
                 $prev_year = null;
                 $next_year = null;
-                $this_date = date("Y-m-1");
+                // $this_date = date("Y-m-1");
+                $this_date = date("Y-m-d");
 
-                if($this_date < date("Y-09-01")){
+                // if($this_date < date("Y-09-01")){
+                /*if($this_date <= date("Y-m-01")){
                     $prev_year = date("Y") - 1;
                     $next_year = date("Y");
                 }else{
                     $prev_year = date("Y");
                     $next_year = date("Y") + 1;
-                }
+                }*/
+
+                $prev_year = date("Y");
+                $next_year = date("Y") + 1;
 
                 $academic_year = "$prev_year / $next_year";
-
 
                 //insert data into admission details table
                 $sql = "INSERT INTO admissiondetails (schoolID, headName, admissionYear, academicYear) 
@@ -267,7 +274,8 @@
                    <b>Username</b>: New User<br>
                    <b>Password</b>: Password@1<br><br>
                    
-                   Upon registration, you shall be asked for your full name [$technical_name] and email [$school_email]. Please do well to provide the right details
+                   Upon registration, you shall be asked for your full name [$technical_name] and email [$school_email]. 
+                   Please do well to provide the right details to activate your account
                 </p>";
     
                 echo "<p>Click <a href=\"$url/admin/\">here</a> to log into your portal</p>";
