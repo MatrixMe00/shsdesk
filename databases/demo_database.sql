@@ -367,6 +367,7 @@ CREATE TABLE `shsdesk`.`schools` (
   `logoPath` varchar(255) NOT NULL,
   `prospectusPath` varchar(255) NOT NULL,
   `admissionPath` text NOT NULL,
+  `admissionHead` varchar(255) NOT NULL DEFAULT 'Offer Of Admission',
   `schoolName` varchar(150) NOT NULL,
   `postalAddress` varchar(40) NOT NULL,
   `abbr` varchar(50) DEFAULT NULL,
