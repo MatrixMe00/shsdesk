@@ -639,10 +639,11 @@
             $head_title = $_POST["head_title"];
             $sms_id = $_POST["sms_id"];
             $reopening = $_POST["reopening"];
-            $announcement = $connect->real_escape_string($_POST["announcement"]);
-            $admission = $connect->real_escape_string(htmlentities($_POST["admission"]));
+            $announcement = htmlentities($_POST["announcement"]);
+            $admission_head = $_POST["admission_head"];
+            $admission = htmlentities($_POST["admission"]);
             $autoHousePlace = $_POST["autoHousePlace"];
-            $description = $connect->real_escape_string($_POST["description"]);
+            $description = htmlentities($_POST["description"]);
             $school_id = $_REQUEST["school_id"];
 
             $message = "";
@@ -696,7 +697,7 @@
                     $prostectusDirectory = $prostectusDirectory[1];
                 }else{
                     echo "<p>File provided for prospectus is not a PDF</p>";
-                    echo "<p>Please go back and provide valid document form</p>";
+                    echo "<p>Please provide a valid document</p>";
                 }
 
                 $pros_mod = true;
@@ -710,28 +711,28 @@
 
             if($message == ""){
                 if($logo_mod && $pros_mod){
-                    $sql = "UPDATE schools SET logoPath=?, prospectusPath=?, admissionPath=?, schoolName=?, postalAddress=?, headName=?, email=?,
+                    $sql = "UPDATE schools SET logoPath=?, prospectusPath=?, admissionPath=?, admissionHead=?, schoolName=?, postalAddress=?, headName=?, email=?,
                             description=?, autoHousePlace=? WHERE id=?";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("ssssssssii",$image_directory,$prostectusDirectory, $admission, $school_name, $postal_address, $head_name,
+                    $stmt->bind_param("sssssssssii",$image_directory,$prostectusDirectory, $admission, $admission_head, $school_name, $postal_address, $head_name,
                         $school_email, $description, $autoHousePlace, $school_id);
                 }elseif($logo_mod){
-                    $sql = "UPDATE schools SET logoPath=?, admissionPath=?, schoolName=?, postalAddress=?, headName=?, email=?,
+                    $sql = "UPDATE schools SET logoPath=?, admissionPath=?, admissionHead=?, schoolName=?, postalAddress=?, headName=?, email=?,
                             description=?, autoHousePlace=? WHERE id=?";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("sssssssii",$image_directory, $admission, $school_name, $postal_address, $head_name,
+                    $stmt->bind_param("ssssssssii",$image_directory, $admission, $admission_head, $school_name, $postal_address, $head_name,
                         $school_email, $description, $autoHousePlace, $school_id);
                 }elseif($pros_mod){
-                    $sql = "UPDATE schools SET prospectusPath=?, admissionPath=?, schoolName=?, postalAddress=?, headName=?, email=?,
+                    $sql = "UPDATE schools SET prospectusPath=?, admissionPath=?, admissionHead=?, schoolName=?, postalAddress=?, headName=?, email=?,
                             description=?, autoHousePlace=? WHERE id=?";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("sssssssii",$prostectusDirectory, $admission, $school_name, $postal_address, $head_name,
+                    $stmt->bind_param("ssssssssii",$prostectusDirectory, $admission, $admission_head, $school_name, $postal_address, $head_name,
                         $school_email, $description, $autoHousePlace, $school_id);
                 }else{
-                    $sql = "UPDATE schools SET admissionPath=?, schoolName=?, postalAddress=?, headName=?, email=?,
+                    $sql = "UPDATE schools SET admissionPath=?, admissionHead=?, schoolName=?, postalAddress=?, headName=?, email=?,
                             description=?, autoHousePlace=? WHERE id=?";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("ssssssii", $admission, $school_name, $postal_address, $head_name,
+                    $stmt->bind_param("sssssssii", $admission, $admission_head, $school_name, $postal_address, $head_name,
                         $school_email, $description, $autoHousePlace, $school_id);
                 }
 
@@ -741,22 +742,27 @@
                     $this_month = date("m");
                     $admission_year = $this_year;
 
-                    if($this_month < 9){
+                    /*if($this_month < 9){
                         $admission_year = $this_year - 1;
-                    }
+                    }*/
 
                     //get the academic year
                     $prev_year = null;
                     $next_year = null;
-                    $this_date = date("Y-m-1");
+                    // $this_date = date("Y-m-1");
+                    $this_date = date("Y-m-d");
 
-                    if($this_date < date("Y-09-01")){
+                    // if($this_date < date("Y-09-01")){
+                    /*if($this_date <= date("Y-m-01")){
                         $prev_year = date("Y") - 1;
                         $next_year = date("Y");
                     }else{
                         $prev_year = date("Y");
                         $next_year = date("Y") + 1;
-                    }
+                    }*/
+
+                    $prev_year = date("Y");
+                    $next_year = date("Y") + 1;
 
                     $academic_year = "$prev_year / $next_year";
 

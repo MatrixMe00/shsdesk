@@ -25,6 +25,7 @@
             $_SESSION["ad_it_admin"] = $school["techName"];
             $_SESSION["ad_message"] = $school["admissionPath"];
             $_SESSION["ad_school_logo"] = $school["logoPath"];
+            $_SESSION["ad_admission_title"] = $school["admissionHead"];
             $_SESSION["ad_reopening"] = fetchData("reopeningDate","admissiondetails","schoolID=".$student["schoolID"])["reopeningDate"];
 
             //student details

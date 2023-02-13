@@ -26,14 +26,15 @@
                     <input type="password" name="new_password" id="new_password" required title="Enter a new password for yourself"
                     placeholder="New Password">
                 </label>
-
-                <div class="flex">
-                    <label for="submit" class="btn">
-                        <button type="submit" name="submit" value="new_user_update">Submit</button>
-                    </label>
-                    <label for="cancel" class="btn">
-                        <button type="button" name="cancel" value="cancel" onclick="location.href='<?php echo $url?>/admin/logout.php'">Cancel</button>
-                    </label>
+                <div class="foot flex-all-center w-full-child">
+                    <div class="flex flex-wrap w-fluid-child flex-eq gap-sm wmax-xs">
+                        <label for="submit" class="btn sm-unset sp-unset w-fluid-child">
+                            <button type="submit" name="submit" class="primary sp-med" value="new_user_update">Submit</button>
+                        </label>
+                        <label for="close" class="btn sm-unset sp-unset w-fluid-child">
+                            <button type="reset" name="cancel" value="cancel" onclick="location.href='<?php echo $url?>/admin/logout.php'" class="secondary sp-med">Cancel</button>
+                        </label>
+                    </div>
                 </div>
             </div>
         </form>

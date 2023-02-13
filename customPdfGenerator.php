@@ -87,11 +87,7 @@
         $reopening = date("jS F, Y", strtotime($_SESSION["ad_reopening"]));
 
         $message = html_entity_decode($_SESSION["ad_message"]);
-
-        $message = str_replace("\\r", "", $message);
-        $message = str_replace("\\n", "", $message);
-        $message = str_replace("\\", "", $message);
-        $message = str_replace("<p></p>","", $message);
+        $message = str_replace(PHP_EOL, '', $message);
 
         $message .= "<br><span>Yours faithfully, </span>";
 
@@ -102,6 +98,7 @@
         $school_phone = remakeNumber($_SESSION["ad_school_phone"]);
         $logo = $_SESSION["ad_school_logo"];
         $logo = html_entity_decode("<img src=\"$url/$logo\" alt=\"logo\" width=\"30mm\" height=\"30mm\">", ENT_QUOTES);
+        $ad_title = $_SESSION["ad_admission_title"];
 
         //qrcode
         $newqr = '<barcode code="Document digitally signed by '.$head_master.'" type="QR" class="barcode" size="1" error="M" disableborder="0"
@@ -144,7 +141,7 @@
             <div class="body">
                 <br><span>Dear $gender</span>
                 <div class="letter">
-                    <h3 class="letter_title" style="text-align: center;"><u>Offer Of Admission</u></h3>
+                    <h3 class="letter_title" style="text-align: center;"><u>$ad_title</u></h3>
                     <div class="candidate_info" style="text-align: start;">
                         <span>Enrolment Code: $enrolment_code</span><br>
                         <span>Candidate Name: $candidate</span><br>
@@ -166,7 +163,7 @@
                     <i>--Digitally Signed in QR Code--</i>
                 </span><br>
                 <span class="headMaster">$head_master</span><br>
-                <span class="it-admin">$it_name</span>
+                <span class="it-admin">[School Head]</span>
             </div>
         </div>
         HTML;

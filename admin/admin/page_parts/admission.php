@@ -112,26 +112,32 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                 </label>
             </div>
             
-            <label for="admission">
-                <span class="label_image">
-                    <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="announce">
-                </span>
+            <label for="admission_head" class="flex flex-column gap-sm sm-xlg-b">
+                    <span class="label_title txt-bold">Admission Letter Heading [Optional]</span>
+                    <input type="text" name="admission_head" id="admission_head" class="border sp-med txt-al-c" placeholder="Default: Offer of Admission" 
+                        title="Provide your custom heading to be displayed on your admission letter" value="<?= $schoolDetail["admissionHead"] ?>">
+                </label>
+            <label for="admission" class="flex flex-column gap-sm sm-xlg-b">
+                <span class="label_title txt-bold">Body of Admission Letter</span>
                 <textarea name="admission" id="admission" placeholder="Update the body for your admission letter" 
-                class="tinymce" title="Body of admission letter ">
-                <?php 
-                //remove visible escape characters
-                $message = $schoolDetail["admissionPath"];
-                echo  $message;
-                ?>
+                class="admin_tinymce" title="Body of admission letter ">
+                    <?php 
+                        //remove visible escape characters
+                        $message = html_entity_decode($schoolDetail["admissionPath"]);
+                        $message = str_replace(PHP_EOL, '', $message);
+                        echo  $message;
+                    ?>
                 </textarea>
             </label>
-            <label for="description">
-                <span class="label_image">
-                    <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="announce">
-                </span>
+            <label for="description" class="flex flex-column gap-sm sm-xlg-b">
+                <span class="label_title txt-bold">Description about your school</span>
                 <textarea name="description" id="description" placeholder="A description about your school..." 
-                class="tinymce" title="Description of school to be previewed on schools list in main website">
-                <?php echo $schoolDetail["description"] ?>
+                class="admin_tinymce" title="Description of school to be previewed on schools list in main website">
+                    <?php 
+                        $message = html_entity_decode($schoolDetail["description"]);
+                        $message = str_replace(PHP_EOL, '', $message);
+                        echo $message 
+                    ?>
                 </textarea>
             </label>
 
