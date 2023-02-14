@@ -328,7 +328,7 @@ function checkForm(i){
  * @return {boolean|string} Returns a boolean value or an error message
  */
 
-function fileUpload(file_element, form_element, submit_element, messageBox = true){
+async function fileUpload(file_element, form_element, submit_element, messageBox = true){
     formData = new FormData();
 
     //preparing file and submit values
@@ -392,8 +392,8 @@ function fileUpload(file_element, form_element, submit_element, messageBox = tru
                 response = text;
             }
         },
-        error: function(){
-            message = "Please check your internet connection and try again";
+        error: function(er){
+            message = JSON.parse(JSON.stringify(er));
             type = "error";
 
             messageBoxTimeout(form_element.prop("name"), message, type);

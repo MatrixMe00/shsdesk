@@ -250,7 +250,7 @@
             <div class="body">
                 <br><span>Dear $gender</span>
                 <div class="letter">
-                    <h3 class="letter_title" style="text-align: center;"><u>$ad_title</u></h3>
+                    <h3 class="letter_title" style="text-align: center; font-size: 11pt"><u>$ad_title</u></h3>
                     <div class="candidate_info" style="text-align: start;">
                         <span>Enrolment Code: $enrolment_code</span><br>
                         <span>Candidate Name: $candidate</span><br>

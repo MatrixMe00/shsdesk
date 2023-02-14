@@ -33,7 +33,7 @@ $(".title_bar #close").click(function(){
 
 //uploading the excel file
 var importSuccess = false;
-$("form[name=importForm").submit(function(e){
+$("form[name=importForm").submit(async function(e){
     e.preventDefault();
     $("form[name=importForm] .message_box").css("overflow","auto");
     $("form[name=importForm] .message_box").css("max-height","300px");
@@ -42,7 +42,7 @@ $("form[name=importForm").submit(function(e){
         messageBoxTimeout("importForm","No file has been chosen", "error");
     }else{
         //submit the form
-        response = fileUpload($("form[name=importForm] input#import"), $(this), $("form[name=importForm] button[name=submit]"));
+        const response = await fileUpload($("form[name=importForm] input#import"), $(this), $("form[name=importForm] button[name=submit]"));
 
         if(response == true){
             message = "Data has been recorded successfully";

@@ -43,7 +43,7 @@
                         $cell =  $sheet->getCell("A1");
                         $cellValue = $cell->getValue();
 
-                        if(strtolower($cellValue) != "index number"){
+                        if(strtolower($cellValue) != "index number" || strval(strpos(strtolower($cellValue), "index")) == "false"){
                             //display error if the first column isnt the index number
                             echo "First column not identified as 'index number'. Please follow the format directed in the documents above";
                             exit(1);
@@ -53,7 +53,7 @@
                         $cell = $sheet->getCell("A2");
                         $cellValue = $cell->getValue();
 
-                        if(strtolower($cellValue) != "index"){
+                        if(strval(strpos(strtolower($cellValue), "index")) == "false"){
                             echo "The file you sent cannot be defined. Please send a valid file format. Make sure it begins with 'index'";
                             exit(1);
                         }
