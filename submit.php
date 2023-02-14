@@ -278,6 +278,7 @@
                     $_SESSION["ad_message"] = $school["admissionPath"];
                     $_SESSION["ad_school_prospectus"] = $school["prospectusPath"];
                     $_SESSION["ad_reopening"] = fetchData("reopeningDate","admissiondetails","schoolID=$shs_placed")["reopeningDate"];
+                    $_SESSION["ad_admission_title"] = $school["admissionHead"];
 
                     //student details
                     $_SESSION["ad_stud_index"] = $student["indexNumber"];

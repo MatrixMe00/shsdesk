@@ -76,12 +76,12 @@
                             <h1><?php echo $row['item_head']?></h1>
                         </div>
                         <div class="body">
-                            <span class="text">
+                            <span class="text txt-fl">
                                 <?php echo html_entity_decode($row['item_desc'])?>
                             </span>
                             <?php if($row['item_button'] == "1"){?>
-                            <div class="btn">
-                                <button type="button"><?php echo $row['button_text']?></button>
+                            <div class="btn sml-unset spl-unset">
+                                <button type="button" class="sp-med"><?php echo $row['button_text']?></button>
                             </div>
                             <?php } ?>
                         </div>
