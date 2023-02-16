@@ -38,7 +38,7 @@
                                                 <img src="<?php echo $url?>/assets/images/icons/reader-outline.svg" alt="enrol code">
                                             </span>
                                             <input type="text" name="ad_enrol_code" id="ad_enrol_code" ng-model="ad_enrol_code" placeholder="Your Enrolment Code*" 
-                                            title="Enter your enrolment code on your placement form" maxlength="10" minlength="10" required>
+                                            title="Enter your enrolment code on your placement form" maxlength="6" minlength="6" required>
                                         </label>
                                         <label for="ad_index">
                                             <span class="label_image">
@@ -607,7 +607,7 @@
                             </button>
                         </label>
                         <label for="modal_cancel" class="btn w-full sp-unset">
-                            <button type="reset" name="modal_cancel" class="sp-lg w-fluid secondary" value="cancel">Cancel</button>
+                            <button type="reset" name="modal_cancel" class="sp-lg w-fluid secondary" value="cancel" ng-click="formreset()">Cancel</button>
                         </label>
                     </div>
                     <div id="form_footer">

@@ -99,6 +99,9 @@ $("button[name=modal_cancel]").click(function(){
         $("form[name=paymentForm] input").prop("disabled", false);
         $("form[name=paymentForm]")[0].reset();
 
+        //reset the index number field
+        $("button[name=student_cancel_operation]").click();
+
         //keep the amount section disabled
         $("#pay_amount").prop("disabled", true);
     }else if($(this).parents(".form_modal_box").prop("id") == "admission"){

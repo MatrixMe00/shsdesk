@@ -742,9 +742,9 @@
                     $this_month = date("m");
                     $admission_year = $this_year;
 
-                    /*if($this_month < 9){
+                    if($this_month < 9){
                         $admission_year = $this_year - 1;
-                    }*/
+                    }
 
                     //get the academic year
                     $prev_year = null;
@@ -752,17 +752,13 @@
                     // $this_date = date("Y-m-1");
                     $this_date = date("Y-m-d");
 
-                    // if($this_date < date("Y-09-01")){
-                    /*if($this_date <= date("Y-m-01")){
+                    if($this_date < date("Y-09-01")){
                         $prev_year = date("Y") - 1;
                         $next_year = date("Y");
                     }else{
                         $prev_year = date("Y");
                         $next_year = date("Y") + 1;
-                    }*/
-
-                    $prev_year = date("Y");
-                    $next_year = date("Y") + 1;
+                    }
 
                     $academic_year = "$prev_year / $next_year";
 

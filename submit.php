@@ -82,7 +82,7 @@
                 $message = "no-index-number";
             }elseif(empty($ad_enrol_code)){
                 $message = "no-enrolment-code";
-            }elseif(strlen($ad_enrol_code) != 10){
+            }elseif(strlen($ad_enrol_code) != 6){
                 $message = "enrolment-code-short";
             }elseif(fetchData("enrolCode","enrol_table","enrolCode='$ad_enrol_code'") != "empty"){
                 $message = "enrolment-code-exist";
@@ -212,9 +212,18 @@
                             $student_details = fetchData("*", "cssps", "indexNumber='$ad_index'");
                             
                             //allocate a house for student
-                            $next_room = setHouse($ad_gender,$shs_placed,$ad_index,$house);
+                            $next_room = setHouse($ad_gender,$shs_placed, $ad_index, $house, $student_details["boardingStatus"]);
                             
-                            if($next_room > 0){
+                            if(is_null($next_room)){
+                                //enter students into table but without houses
+                                $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
+                                    VALUES(?,?,?,?,NULL,?,?)";
+                                $stmt = $connect->prepare($sql);
+                                $stmt->bind_param("sissss", $student_details["indexNumber"], $student_details["schoolID"], $student_details["Lastname"], $student_details["Othernames"], $student_details["Gender"], $student_details["boardingStatus"]);
+                                $stmt->execute();
+                                
+                                $_SESSION["ad_stud_house"] = "e";
+                            }elseif($next_room > 0){
                                 //parse entry into allocation table
                                 $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
                                     VALUES(?,?,?,?,?,?,?)";
@@ -225,7 +234,7 @@
                                 
                                 $_SESSION["ad_stud_house"] = fetchData("title","houses","id=$next_room")["title"];
                             }else{
-                                //this is the first entry, place student into house
+                                //this is the first entry, place student into first house on the list
                                 $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
                                     VALUES(?,?,?,?,?,?,?)";
                                 $stmt = $connect->prepare($sql);
@@ -288,7 +297,11 @@
                     $_SESSION["ad_stud_residence"] = $student["boardingStatus"];
                     $_SESSION["ad_stud_program"] = $student["programme"];
                     $_SESSION["ad_stud_gender"] = $student["Gender"];
-                    $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"])["title"];
+
+                    //convert house name for only auto house placed students
+                    if($_SESSION["ad_stud_house"] !== "e"){
+                        $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"])["title"];
+                    }
                 }else{
                     if(str_contains(strtolower(strval($result->error)), "duplicate")){
                         $message = "Your data has already been written. Please navigate to <a href='https://www.shsdesk.com/student'>shsdesk.com/student</a> to print document";

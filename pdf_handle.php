@@ -58,7 +58,9 @@
             }
         }else{
             if(is_array(fetchData("houseID","house_allocation","indexNumber='".$_SESSION["ad_stud_index"]."'"))){
-                $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$_SESSION["ad_stud_index"]."'")["houseID"])["title"];
+                if(!isset($_SESSION["ad_stud_house"]) || $_SESSION["ad_stud_house"] !== "e"){
+                    $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$_SESSION["ad_stud_index"]."'")["houseID"])["title"];
+                }
                 
                 $houses = 1;
             }else{

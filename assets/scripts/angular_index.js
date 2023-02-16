@@ -15,4 +15,38 @@ app.controller("AdmissionController",function($scope){
 
         $scope.ad_birthdate = month + " " + day + ", " + year;
     }
+
+    $scope.formreset = function(){
+        //cssps details
+        $scope.ad_enrol_code = ""
+
+        //personal details of candidate
+        $scope.ad_jhs = ""
+        $scope.ad_jhs_town = ""
+        $scope.ad_jhs_district = ""
+        $scope.ad_birthdate = ""
+        $scope.ad_year = ""
+        $scope.ad_month = ""
+        $scope.ad_day = ""
+        $scope.ad_birth_place = ""
+
+        //parents particulars
+        $scope.ad_father_name = ""
+        $scope.ad_father_occupation = ""
+        $scope.ad_mother_name = ""
+        $scope.ad_mother_occupation = ""
+        $scope.ad_guardian_name = ""
+        $scope.ad_resident = ""
+        $scope.ad_postal_address = ""
+        $scope.ad_phone = ""
+        $scope.ad_other_phone = ""
+
+        //others
+        $scope.ad_awards = ""
+        $scope.ad_position = ""
+
+        //witness
+        $scope.ad_witness = ""
+        $scope.ad_witness_phone = ""
+    }
 })
