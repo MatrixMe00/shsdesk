@@ -52,12 +52,7 @@
                     <div class="content">
                         <p><?php 
                             $sub = substr($row["description"], 0, 300);
-                            $sub = strip_tags($sub);
-
-                            //remove visible escape characters
-                            $sub = str_replace("\\r", "", $sub);
-                            $sub = str_replace("\\n", "", $sub);
-                            $sub = str_replace("\\", "", $sub);
+                            $sub = strip_tags(html_entity_decode($sub));
 
                             echo $sub;
                             if(intval(strlen($row["description"])) > 300){
