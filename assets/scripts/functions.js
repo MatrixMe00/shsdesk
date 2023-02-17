@@ -318,6 +318,34 @@ function checkForm(i){
 }
 
 /**
+ * This function converts serialized form into formdata element
+ * @param {any} form This is the serialized form data to be coverted
+ * @return {FormData} returns a FormData value
+ */
+function toFormData(form){
+    const split_lenght = form.length
+    let formData = new FormData()
+
+    //loop and fill form data
+    let counter = 0;
+    while(counter < split_lenght){
+        //grab each array data
+        new_data = form_data[counter]
+
+        key = new_data["name"]
+        value = new_data["value"]
+
+        //append to form data
+        formData.append(key, value)
+
+        //move to next data
+        counter++
+    }
+
+    return formData
+}
+
+/**
  * This function will be used to parse any file type into the database
  * 
  * @param {string} file_element This takes the element name of the file
@@ -338,23 +366,7 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
 
     //strip form data into array form and attain total data
     form_data = $(form_element).serializeArray();
-    split_lenght = form_data.length;
-
-    //loop and fill form data
-    counter = 0;
-    while(counter < split_lenght){
-        //grab each array data
-        new_data = form_data[counter];
-
-        key = new_data["name"];
-        value = new_data["value"];
-
-        //append to form data
-        formData.append(key, value);
-
-        //move to next data
-        counter++;
-    }
+    formData = toFormData(form_data)
 
     //append name and value of file
     formData.append(file_name, file);
@@ -414,7 +426,7 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
  * @return {boolean|array} Returns a boolean value or an array
  */
 
- function jsonFileUpload(file_element, form_element, submit_element, messageBox = true){
+ async function jsonFileUpload(file_element, form_element, submit_element, messageBox = true){
     formData = new FormData();
 
     //preparing file and submit values
@@ -424,23 +436,7 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
 
     //strip form data into array form and attain total data
     form_data = $(form_element).serializeArray();
-    split_lenght = form_data.length;
-
-    //loop and fill form data
-    counter = 0;
-    while(counter < split_lenght){
-        //grab each array data
-        new_data = form_data[counter];
-
-        key = new_data["name"];
-        value = new_data["value"];
-
-        //append to form data
-        formData.append(key, value);
-
-        //move to next data
-        counter++;
-    }
+    formData = toFormData(form_data)
 
     //append name and value of file
     formData.append(file_name, file);

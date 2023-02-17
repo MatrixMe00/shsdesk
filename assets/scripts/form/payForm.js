@@ -2,6 +2,7 @@
 reference_parsed = false;
 payment_received = false;
 transaction_reference = "";
+retry_counter = 0;
 
 //variable to be used for tracking
 trackKeeper = null;
@@ -16,22 +17,11 @@ function payWithPaystack(){
         cust_email = "successinnovativehub@gmail.com";
     }
 
-    //for testing purposes
-    if($("#pay_fullname").val().toLowerCase().includes("shsdesk")){
-        mykey = "pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca";
-    }else{
-        mykey = "pk_live_056157b8c9152eb97c1f04b2ed60e7484cd0d955";
-    }
-
     var handler = PaystackPop.setup({
-        key: mykey,
+        key: "pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca",
         email: cust_email,
         amount: cust_amount,
         currency: "GHS",
-        // ref: ,
-        // firstname: ,
-        // lastname: ,
-        // label: ,
         metadata: {
             custom_fields: [
                 {
@@ -43,6 +33,11 @@ function payWithPaystack(){
                     display_name: "Customer's Name",
                     variable_name: "customer_name",
                     value: $("#pay_fullname").val()
+                },
+                {
+                    display_name: "School Name",
+                    variable_name: "school_name",
+                    value: $("#school_admission_case #school_select option:selected").html()
                 }
             ]
         },
@@ -50,12 +45,25 @@ function payWithPaystack(){
             //mark that payment has been received
             payment_received = true;
 
-            //parse data into database
-            passPaymentToDatabase(response.reference);
-            // $('#admission').removeClass(`no_disp`);
+            //pass a message that payment has been made
+            message = "Transaction was made successfully";
+            messageBoxTimeout("paymentForm", message, "success");
+            alert_box(message, "success", 3.5)
 
+            //pull out admission form right after payment
+            displayAdmissionForm(response.reference);
+            
+            //send an sms
+            sendSMS(response.reference);
+
+            //parse data into database in the background
+            passPaymentToDatabase(response.reference);
+            
             //store reference into memory
             transaction_reference = response.reference;
+
+            //check if transaction id is present in db after 3.5 seconds
+            trackKeeper = setInterval(reCheck, 3500);
         },
         onClose: function(){
             alert_box('Transaction has been canceled by user', "secondary", 10);
@@ -64,7 +72,21 @@ function payWithPaystack(){
     handler.openIframe();
 }
 
-function trackTransactions(reference = ""){
+//function to display the admission form
+function displayAdmissionForm(trans_ref){
+    //pass transaction id to admission form
+    $("#ad_transaction_id").val(trans_ref);
+
+    //pass index number into student box in admission form
+    $("#ad_index").val($("#student_index_number").val());
+
+    //click the continue button automatically to retrieve data and show form
+    $("#ad_index").blur();
+    $("#admission button[name=continue]").prop("disabled", false).click();
+}
+
+//this is a retry approach for the transactions
+async function trackTransactions(reference = ""){
     if(!reference_parsed){
         fullname = $("#pay_fullname").val();
         email = $("#pay_email").val();
@@ -83,13 +105,12 @@ function trackTransactions(reference = ""){
             dataString = "transaction_id=" + reference + "&contact_number=" + phone + "&school=" + school_id + "&amount=" + amount + "&deduction=" + 
                         deduction + "&contact_email=" + email + "&contact_name=" + fullname + "&submit=trackTransaction";
 
-            $.ajax({
+            await $.ajax({
                 url: $("form[name=paymentForm]").attr("action"),
                 type: "POST",
                 dataType: "text",
                 data: dataString,
                 cache: false,
-                async: false,
                 success: function(response){
                     if(response.includes("success")){
                         //pass transaction id to admission form
@@ -98,8 +119,8 @@ function trackTransactions(reference = ""){
                         //signal that reference has been parsed
                         reference_parsed = true;
 
-                        message = "Form could not open automatically. Please enter your transaction reference to open it.";
-                        messageBoxTimeout("paymentForm", message, "load", 0);
+                        message = "Reference ID confirmed";
+                        alert_box(message, "success", 3.5)
                     }else if(response.includes("already-exist")){
                         //signal that reference is already parsed
                         reference_parsed = true;
@@ -127,6 +148,7 @@ function trackTransactions(reference = ""){
 
 function reCheck(){
     if(transaction_reference != ""){
+        ++retry_counter;                //indicate a retry count
         reference_parsed = trackTransactions(transaction_reference);
     }
 
@@ -137,11 +159,12 @@ function reCheck(){
         //reset references
         reference_parsed = false;
         payment_received = false;
-        transaction_reference = "";        
+        transaction_reference = "";
+        retry_counter = 0
 
         //stop interval check
         clearInterval(trackKeeper);
-    }
+    }else if(retry_counter == 3 && !reference_parsed){ alert_box("Slow network detected", "warning", 8)}
 }
 
 function sendSMS(reference){
@@ -160,7 +183,7 @@ function sendSMS(reference){
         success: function(response){
             response1 = JSON.parse(JSON.stringify(response));
             if(response1["status"] == "success"){
-                alert_box("SMS sent successfully", "success", 8);
+                alert_box("SMS sent successfully", "success");
             }else{
                 alert_box('An sms could not be sent, but payment was successful. Your transaction reference is ' + reference + ". Save this value at a safe place", "warning", 10);
             }
@@ -172,7 +195,7 @@ function sendSMS(reference){
 }
 
 //function to pass data into database
-function passPaymentToDatabase(reference){
+async function passPaymentToDatabase(reference){
     fullname = $("#pay_fullname").val();
     email = $("#pay_email").val();
     phone = $("#pay_phone").val();
@@ -190,21 +213,14 @@ function passPaymentToDatabase(reference){
         dataString = "transaction_id=" + reference + "&contact_number=" + phone + "&school=" + school_id + "&amount=" + amount + "&deduction=" + 
                     deduction + "&contact_email=" + email + "&contact_name=" + fullname + "&submit=add_payment_data";
 
-        $.ajax({
+        await $.ajax({
             url: $("form[name=paymentForm]").attr("action"),
             type: "POST",
             dataType: "text",
             data: dataString,
             cache: false,
-            async: false,
             success: function(response){
                 if(response.includes("success")){
-                    //pass transaction id to admission form
-                    $("#ad_transaction_id").val(reference);
-                    
-                    //send an sms
-                    sendSMS(reference);
-
                     //pass admin number into admission form
                     cont = response.split("-")[1];
                     html = "<p style='text-align: center; font-size: small; color: #666'>" + 
@@ -212,46 +228,32 @@ function passPaymentToDatabase(reference){
                             "' style='color: blue'>" + cont + "</a></p>";
                     $("#admission #form_footer").html(html);
 
-                    //pass index number into student box in admission form
-                    $("#ad_index").val($("#student_index_number").val());
-
-                    //click the continue button automatically
-                    $("#ad_index").blur();
-                    $("button[name=continue]").prop("disabled", false).click();
-
-                    //check if transaction id is present
-                    trackKeeper = setInterval(reCheck, 3000);
-
-                    //display admission form
-                    $('#admission').removeClass(`no_disp`);
-
-                    message = "Transaction was made successfully";
-                    messageBoxTimeout("paymentForm", message, "success");
+                    message = "Transaction ID confirmed";
+                    alert_box(message, "success", 3.5)
                 }else if(response == "database_send_error"){
                     form_name = "paymentForm";
-                    message = "An error was encountered! Please try again in a short while with your reference id";
-                    message_type = "error";
-                    time = 10;
+                    message = "Admin contact could not be retrieved";
+                    message_type = "warning";
                     
-                    messageBoxTimeout(form_name, message, message_type, time);
+                    alert_box(message, message_type)
                 }else{
                     form_name = "paymentForm";
-                    message = "An error was encountered while we tried to process your data. Please try again later.";
-                    message_type = "error";
+                    message = "An error prevented the admin contact to be retrieved";
+                    message_type = "warning";
                     time = 10;
                     
-                    messageBoxTimeout(form_name, message, message_type, time);
+                    alert_box(message, message_type)
                 }
             },
             error: function(){
-                message = "Error communicating with server. Check your connection, enter your transaction code and try again";
+                message = "Error communicating with server. Validation failed on first try";
 
                 //enable only the transaction_id section
                 $("#pay_fullname, #pay_email, #pay_phone").prop("disabled", true);
 
                 $("#pay_reference").prop("disabled", false);
 
-                messageBoxTimeout("paymentForm",message, "error");
+                alert_box(message, "warning");
 
                 exit(1);
             }
@@ -272,7 +274,6 @@ $("form[name=paymentForm]").submit(function(){
 
         //go to paystack payment method
         payWithPaystack();
-        // passPaymentToDatabase("T1234567890");
     }else{
         //disable other input elements
         $("#pay_fullname, #pay_email, #pay_phone").prop("disabled", true).val("");
@@ -288,7 +289,6 @@ $("form[name=paymentForm]").submit(function(){
             dataType: "text",
             cache: false,
             beforeSend: function(){
-                //message = "Please wait...";
                 message = loadDisplay({size:"small", animation:"anim-fade anim-swing"});
                 messageType = "load";
                 time = 0;

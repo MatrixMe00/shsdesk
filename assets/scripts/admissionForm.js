@@ -362,6 +362,7 @@ $("button[name=continue]").click(function(){
         async: false,
         beforeSend: function(){
             $("#view1 .para_message").html("Checking index number, please wait...");
+            alert_box("Retrieving CSSPS data...", "secondary", 2);
         },
         success: function(json){
             $("#view1 .para_message").html("Parts with * means they are required fields");
@@ -411,6 +412,11 @@ $("button[name=continue]").click(function(){
                 
                 //disable the index input field
                 $("#ad_index").prop("readonly", true);
+
+                alert_box("CSSPS data has been filled", "success", 1.5)
+
+                //display admission form
+                $('#admission').removeClass('no_disp');
             }else if(data["status"] == "wrong-school-select"){
                 //display an error message
                 $("#view1 .para_message").html("Incorrect school chosen. Select your right school to continue and enter your transaction ID to continue");
@@ -465,6 +471,8 @@ $("button[name=continue]").click(function(){
                 setTimeout(function(){
                     $("#view1 .para_message").html("Parts with * means they are required fields");
                 },7000);
+            }else{
+                alert_box("Your data could not be retrieved. Please try again with your transaction ID", "warning", 7)
             }
         },
         error: function(r){
