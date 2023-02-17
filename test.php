@@ -124,7 +124,7 @@ if($result->num_rows == 1){
                         // }
 
 //count number of houses of the school
-/*$sql = "SELECT id, maleHeadPerRoom, maleTotalRooms, femaleHeadPerRoom, femaleTotalRooms
+$sql = "SELECT id, maleHeadPerRoom, maleTotalRooms, femaleHeadPerRoom, femaleTotalRooms
 FROM houses
 WHERE schoolID = $shs_placed AND (gender = '$ad_gender' OR gender='Both')";
 $result = $connect->query($sql);
@@ -166,7 +166,7 @@ $student_details = fetchData("*", "cssps", "indexNumber='$ad_index'");
 
 }
 
-function setHouse($ad_gender, $shs_placed, $ad_index, $house){
+/*function setHouse($ad_gender, $shs_placed, $ad_index, $house){
     global $connect;
     $next_room = 0;
 
@@ -241,15 +241,17 @@ function setHouse($ad_gender, $shs_placed, $ad_index, $house){
     }
 
     return $next_room;
-}
+}*/
 
-$room = setHouse($ad_gender,$shs_placed,$ad_index,$house);
+$room = setHouse($ad_gender,$shs_placed,$house, "boarder");
 
-if($room > 0){
-    echo "A room was provided";
+if(is_null($room)){
+    echo "A null value was returned";
+}elseif($room > 0){
+    echo "room $room was provided";
 }else{
     echo "A new room has to be provided";
-}*/
+}
 
 // echo getTotalMoney(3,3);
 /*$_REQUEST['submit'] = "exeat_request";
@@ -260,5 +262,5 @@ $exeat_type = "external";
 // include_once($rootPath."/sms/sms.php");
 echo remakeNumber("027 928 4896", true);*/
 
-echo preg_match("/^[0-9]{10,}$/", "1234512asd3451234");
+// echo preg_match("/^[0-9]{10,}$/", "1234512asd3451234");
 ?>
