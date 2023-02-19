@@ -208,16 +208,16 @@
                             ?>
                         </select>
                     </label>
-                    <div class="flex flex-align-end" id="pay_div">
+                    <div class="flex flex-center-align gap-sm" id="pay_div">
                         <label for="student_index_number" class="flex flex-column flex-wrap relative" style="flex: 4">
                             <span class="label_title">Provide your JHS index number below</span>
-                            <input type="text" name="student_index_number" id="student_index_number" class="sp-lg" data-index="" placeholder="Enter JHS index number [Eg. 100000000021]">
+                            <input type="text" name="student_index_number" id="student_index_number" class="sp-lg ms-border" data-index="" placeholder="Enter JHS index number [Eg. 100000000022]">
                         </label>
                         <label for="student_check" class="btn sp-unset w-fluid-child self-align-end" style="flex:1">
                             <button name="student_check" type="button" id="student_check" class="sp-lg-tp primary">Check</button>
                         </label>
                         <label for="payment_button" class="btn sp-unset w-fluid-child self-align-end hide_label no_disp" style="flex: 1">
-                            <button name="payment_button" id="payment_button" type="button" class="sp-lg-tp primary">Make My Payment</button>
+                            <button name="payment_button" id="payment_button" type="button" class="sp-lg-tp orange">Make My Payment</button>
                         </label>
                     </div>           
                 </div>
