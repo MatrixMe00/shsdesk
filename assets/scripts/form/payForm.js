@@ -13,15 +13,12 @@ function payWithPaystack(){
     cust_amount = parseInt(cust_amount[1]) * 100;
     cust_email = $("form[name=paymentForm] .body #pay_email").val();
 
-    if(cust_email == ""){
-        cust_email = "successinnovativehub@gmail.com";
-    }
-
     var handler = PaystackPop.setup({
-        key: "pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca",
+        key: "pk_live_056157b8c9152eb97c1f04b2ed60e7484cd0d955",
         email: cust_email,
         amount: cust_amount,
         currency: "GHS",
+        split_code: "SPL_U6mW80wZNH",
         metadata: {
             custom_fields: [
                 {
@@ -272,8 +269,16 @@ $("form[name=paymentForm]").submit(function(){
         $("#pay_reference").prop("disabled", true);
         $("#pay_fullname, #pay_email, #pay_phone").prop("disabled", false);
 
-        //go to paystack payment method
-        payWithPaystack();
+        if($("#pay_fullname").val() === "" || $("pay_fullname").val() === null){
+            messageBoxTimeout("paymentForm", "Please provide your fullname", "error");
+        }else if($("#pay_email").val() === "" || $("pay_email").val() === null){
+            messageBoxTimeout("paymentForm", "Please provide your fullname", "error");
+        }else if($("#pay_phone").val() === "" || $("pay_phone").val() === null){
+            messageBoxTimeout("paymentForm", "Please provide your fullname", "error");
+        }else{
+            //go to paystack payment method
+            payWithPaystack();
+        }        
     }else{
         //disable other input elements
         $("#pay_fullname, #pay_email, #pay_phone").prop("disabled", true).val("");

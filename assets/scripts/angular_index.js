@@ -42,6 +42,7 @@ app.controller("AdmissionController",function($scope){
         $scope.ad_other_phone = ""
 
         //others
+        $scope.interest = ""
         $scope.ad_awards = ""
         $scope.ad_position = ""
 
