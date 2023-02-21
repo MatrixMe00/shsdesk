@@ -40,7 +40,7 @@
             JOIN houses h
             ON h.id = ho.houseID
             WHERE e.shsID=$user_school_id
-            ORDER BY e.aggregateScore ASC";
+            ORDER BY e.enrolDate ASC";
 
             //exception headers, end it with an empty field
             $exception_headers = array("shsID","transactionID","schoolName","");
@@ -170,7 +170,7 @@
     $query = $connect->query($sql);
     
     //variable to check a house break
-    $house_break = "";
+    $house_break = ""; $date_break = "";
     while($result=$query->fetch_assoc()){
         if($submit == "houses"){
             //check the former house name and provide space where the need be
@@ -233,6 +233,18 @@
                 $result["returnStatus"] = "Returned";
             }else{
                 $result["returnStatus"] = "Not Returned";
+            }
+        }
+
+        //divide enroled candidates into months and years
+        if($submit === "enrolment"){
+            if($date_break !== ""){
+                if(date("Y-m-j", strtotime($date_break)) !== date("Y-m-j", strtotime($result["enrolDate"]))){
+                    ++$rowCounter;
+                    $date_break = $result["enrolDate"];
+                }
+            }else{
+                $date_break = $result["enrolDate"];
             }
         }
         
