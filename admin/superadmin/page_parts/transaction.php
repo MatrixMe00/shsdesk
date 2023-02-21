@@ -288,8 +288,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     $("#trans_left h2").html(data["trans_left"]);
                 },
                 error: function(e){
-                    e = JSON.parse(JSON.stringify(e));
-                    console.log(e["statusText"]);
+                    alert_box("Network error encountered. Get internet access to continue")
                     clearInterval(this);
                 }
             })
