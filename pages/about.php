@@ -41,7 +41,7 @@
             <p>The system is designed by S&S Innovative Hub and are ready to serve you.</p>
         </div>
         </section>
-    <main class="flex flex-wrap">
+    <main class="flex flex-column gap-sm">
         <div id="lhs">   
             <section id="ceo">
                 <div class="head">
@@ -145,7 +145,7 @@
         </div>
         
         <div id="rhs">
-            <section id="team">
+            <section id="team" class="sp-xlg-tp sp-med-lr">
                 <div class="head">
                     <h1>Our Team</h1>
                 </div>
@@ -157,7 +157,7 @@
                         <div class="body">
                             <span class="name">Success Yeboah</span>
                             <span class="role">CEO</span>
-                            <span class="more">
+                            <span class="more no_disp">
                                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum quisquam, amet provident animi nemo laboriosam?
                             </span>
                         </div>
@@ -169,10 +169,46 @@
                         <div class="body">
                             <span class="name">Seth Afosah</span>
                             <span class="role">Developer</span>
-                            <span class="more">
+                            <span class="more no_disp">
                                 He is a developer and he specializes in web development, mobile development and windows applications.
                                 You can <a href="tel:+233279284896">contact</a> him privately and will provide needed help. You can also follow him on 
                                 facebook, instagram and twitter.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="person">
+                        <div class="image">
+                            <img src="<?php echo $url?>/assets/images/default/library.jfif" loading="lazy" alt="">
+                        </div>
+                        <div class="body">
+                            <span class="name">Prosper Gantey</span>
+                            <span class="role">Operations Manager</span>
+                            <span class="more no_disp">
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum quisquam, amet provident animi nemo laboriosam?
+                            </span>
+                        </div>
+                    </div>
+                    <div class="person">
+                        <div class="image">
+                            <img src="<?php echo $url?>/assets/images/default/library.jfif" loading="lazy" alt="">
+                        </div>
+                        <div class="body">
+                            <span class="name">Joshua Honu</span>
+                            <span class="role">System Analyst</span>
+                            <span class="more no_disp">
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum quisquam, amet provident animi nemo laboriosam?
+                            </span>
+                        </div>
+                    </div>
+                    <div class="person">
+                        <div class="image">
+                            <img src="<?php echo $url?>/assets/images/default/library.jfif" loading="lazy" alt="">
+                        </div>
+                        <div class="body">
+                            <span class="name">Selase Ahiadzi</span>
+                            <span class="role">Trainer / System Analyst</span>
+                            <span class="more no_disp">
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum quisquam, amet provident animi nemo laboriosam?
                             </span>
                         </div>
                     </div>
