@@ -101,7 +101,7 @@
     <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
         <div class="flex flex-center-align">
             <label for="search" style="width: 80%">
-                <input type="search" name="search"
+                <input type="search" name="search" data-max-break-point="<?= fetchData("COUNT(indexNumber) as total","cssps","schoolID=$user_school_id")["total"] ?>"
                  title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
                  autocomplete="off" style="border: 1px solid lightgrey;" data-search-value="register">
             </label>
@@ -185,7 +185,7 @@
     <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
         <div class="flex flex-center-align">
             <label for="search" style="width: 80%">
-                <input type="search" name="search"
+                <input type="search" name="search" data-max-break-point="<?= fetchData("COUNT(indexNumber) as total","cssps","schoolID=$user_school_id")["total"] ?>"
                  title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
                  autocomplete="off" style="border: 1px solid lightgrey;" data-search-value="register">
             </label>

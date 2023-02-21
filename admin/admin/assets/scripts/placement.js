@@ -92,6 +92,33 @@ $("form[name=importForm] button[name=close]").click(function(){
     }
 })
 
+//maximize search to all students
+$("label[for=search] input[name=search]").focus(function(){
+    max_rows = $(this).attr("data-max-break-point")
+
+    //pass the max rows as the breakpoint for all
+    $(this).parents(".table_section").find(".navs").children("span").attr("data-break-point", max_rows)
+    $(this).parents(".form").siblings(".head").find("button").attr("data-break-point", max_rows)
+    $(this).parents(".form").siblings(".head").find("button").click()
+})
+
+//reset to state before search
+$("label[for=search] input[name=search]").blur(function(){
+    if($(this).val() === ""){
+        def_ault = $(this).parents(".table_section").find("input[name=row_display]").val()
+        table_foot = $(this).parents(".table_section").find("table").children("tfoot");
+        alert_box($(table_foot).html())
+
+        //pass default values into needful elements
+        $(this).parents(".table_section").find(".navs").children("span").attr("data-break-point", def_ault)
+        $(this).parents(".form").siblings(".head").find("button").attr("data-break-point", def_ault)
+        $(this).parents(".table_section").find("table").find("tr").show();
+        $(this).parents(".form").siblings(".head").find("button").click()
+        $(table_foot).children("tr").children("td:first-child").attr("hidden", false);
+        $(table_foot).children("tr").children("td:last-child").html("");
+    }
+})
+
 //search field workout
 $("label[for=search] input[name=search]").keyup(function(){
     search_value = $(this).val();
