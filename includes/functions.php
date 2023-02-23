@@ -442,8 +442,12 @@
         global $connect;
 
         $sql = "SELECT $columns
-                FROM $table
-                WHERE $where";
+                FROM $table";
+        
+        if($where !== ""){
+            $sql .= " WHERE $where";
+        }
+                
 
         //determine if it should set all or some
         if($limit > 0){
@@ -456,7 +460,7 @@
             if($query->num_rows == 1){
                 $result = $query->fetch_assoc();
             }else{
-                $result = $query->fetch_all();
+                $result = $query->fetch_all(MYSQLI_ASSOC);
             }
                 
         }else{
@@ -481,8 +485,11 @@
         global $connect2;
 
         $sql = "SELECT $columns
-                FROM $table
-                WHERE $where";
+                FROM $table";
+        
+        if($where !== ""){
+            $sql .= " WHERE $where";
+        }
         
         //determine if it should set all or some
         if($limit > 0){
@@ -495,7 +502,7 @@
             if($query->num_rows == 1){
                 $result = $query->fetch_assoc();
             }else{
-                $result = $query->fetch_all();
+                $result = $query->fetch_all(MYSQLI_ASSOC);
             }
                 
         }else{

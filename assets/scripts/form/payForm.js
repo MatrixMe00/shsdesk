@@ -271,9 +271,9 @@ $("form[name=paymentForm]").submit(function(){
         if($("#pay_fullname").val() === "" || $("pay_fullname").val() === null){
             messageBoxTimeout("paymentForm", "Please provide your fullname", "error");
         }else if($("#pay_email").val() === "" || $("pay_email").val() === null){
-            messageBoxTimeout("paymentForm", "Please provide your fullname", "error");
+            messageBoxTimeout("paymentForm", "Please provide your email", "error");
         }else if($("#pay_phone").val() === "" || $("pay_phone").val() === null){
-            messageBoxTimeout("paymentForm", "Please provide your fullname", "error");
+            messageBoxTimeout("paymentForm", "Please provide your phone number", "error");
         }else{
             //go to paystack payment method
             payWithPaystack();
