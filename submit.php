@@ -585,7 +585,21 @@
             $schoolID = $_REQUEST["schoolID"];
 
             //search admins table for school admin
-            $result = $connect->query("SELECT fullname, contact FROM admins_table WHERE school_id = $schoolID AND role=3");
+            $admins = fetchData("id","roles","id > 2 AND title LIKE 'admin%'", 0);
+            $sql = "SELECT fullname, contact FROM admins_table";
+            
+            if(is_array($admins)){
+                $sql .= " WHERE school_id=$schoolID AND (";
+                foreach($admins as $admin){
+                    $sql .= " role=".$admin["id"];
+
+                    if(end($admins) != $admin){
+                        $sql .= " OR ";
+                    }
+                }
+                $sql .= ")";
+            }
+            $result = $connect->query($sql);
 
             if($result->num_rows > 0){
                 if($result->num_rows > 1){

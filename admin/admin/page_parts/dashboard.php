@@ -145,8 +145,9 @@
     </div>
 </section>
 
-<?php if($user_details["role"] <= 5){ ?>
+<?php if(str_contains(strtolower(getRole($user_details["role"])), "admin") || str_contains(strtolower(getRole($user_details["role"])), "school head")){ ?>
 <section class="section_container">
+    <?php if(floatval(fetchData("price","roles","id=".$user_details["role"])["price"]) > 0){ ?>
     <div class="content secondary">
         <div class="head">
             <h2>GHC
@@ -218,13 +219,15 @@
             <span>Made This Week</span>
         </div>
     </div>
+    <?php } ?>
     
-    <?php if($user_details["role"] <= 3){?>
+    <?php if($user_details["role"] <= 3 || str_contains(strtolower(getRole($user_details["role"])), "admin")){?>
     <div class="content dark">
         <div class="head">
             <h2>GHC
                 <?php
-                    $temp_price = fetchData("price","roles","id=4")["price"];
+                    $head_title = str_replace("admin", "school head", getRole($user_details["role"]));
+                    $temp_price = fetchData("price","roles","title='$head_title'")["price"];
                     $res = $connect->query("SELECT enrolDate FROM enrol_table WHERE shsID=$user_school_id");
                     
                     $amount = 0;

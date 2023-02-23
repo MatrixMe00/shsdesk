@@ -212,15 +212,28 @@
 </section>
 <?php }?>
 
-<?php if(isset($_SESSION["user_login_id"]) && $user_details["role"] != 4 || $user_details["role"] <= 5){?>
+<?php if(isset($_SESSION["user_login_id"]) && ($user_details["role"] <= 2 || str_contains(strtolower(getRole($user_details["role"])), "admin"))){?>
 <section>
     <div class="head">
         <h3>Admin<?php if($user_details["role"] <= 2){echo "s"; }?></h3>
     </div>
     <?php
-        $sql = "SELECT * FROM payment WHERE user_role = 3";
         if($user_school_id > 0){
-            $sql .= " AND school_id= $user_school_id";
+            $sql = "SELECT * FROM payment WHERE user_role = ".$user_details["role"]." AND school_id= $user_school_id";
+        }else{
+            $admins = fetchData("id","roles","id > 2 AND title LIKE 'admin%'", 0);
+            $sql = "SELECT * FROM payment";
+            
+            if(is_array($admins)){
+                $sql .= " WHERE ";
+                foreach($admins as $admin){
+                    $sql .= " user_role=".$admin["id"];
+
+                    if(end($admins) != $admin){
+                        $sql .= " OR ";
+                    }
+                }
+            }
         }
         $result = $connect->query($sql);
 
@@ -319,9 +332,26 @@
         <h3>School Head<?php if($user_details["role"] <= 2){echo "s"; }?></h3>
     </div>
     <?php
-        $sql = "SELECT * FROM payment WHERE user_role = 4";
         if($user_school_id > 0){
-            $sql .= " AND school_id= $user_school_id";
+            if(str_contains(strtolower(getRole($user_details["role"])), "admin")){
+                $sql = "SELECT * FROM payment WHERE user_role = ".(intval($user_details["role"])+1)." AND school_id= $user_school_id";
+            }else{
+                $sql = "SELECT * FROM payment WHERE user_role = ".$user_details["role"]." AND school_id= $user_school_id";
+            }
+        }else{
+            $admins = fetchData("id","roles","id > 2 AND title LIKE 'school head%'", 0);
+            $sql = "SELECT * FROM payment";
+            
+            if(is_array($admins)){
+                $sql .= " WHERE ";
+                foreach($admins as $admin){
+                    $sql .= " user_role=".$admin["id"];
+
+                    if(end($admins) != $admin){
+                        $sql .= " OR ";
+                    }
+                }
+            }
         }
         $result = $connect->query($sql);
 

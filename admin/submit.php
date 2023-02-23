@@ -527,8 +527,11 @@
             if($result->num_rows > 0){
                 while($row = $result->fetch_assoc()){
                     //work on admin
-                    $price_admin = $connect->query("SELECT price FROM roles WHERE id=3")->fetch_assoc()["price"];
-                    $price_school = $connect->query("SELECT price FROM roles WHERE id=4")->fetch_assoc()["price"];
+                    $admin_role_id = fetchData("r.id","roles r JOIN admins_table a ON r.id=a.role", "r.title LIKE 'admin%' AND a.school_id=".$row["id"])["id"];
+                    $school_role_id = $admin_role_id + 1;
+                    
+                    $price_admin = $connect->query("SELECT price FROM roles WHERE id=$admin_role_id")->fetch_assoc()["price"];
+                    $price_school = $connect->query("SELECT price FROM roles WHERE id=$school_role_id")->fetch_assoc()["price"];
                     $amount_admin = 0;
                     $amount_school = 0;
 
@@ -537,8 +540,8 @@
                     $calc_res = $connect->query($calc_sql);
 
                     if($calc_res->num_rows > 0){
-                        $gen_admin = getTotalMoney(3,$row["id"]);
-                        $gen_school = getTotalMoney(4,$row["id"]);
+                        $gen_admin = getTotalMoney($admin_role_id,$row["id"]);
+                        $gen_school = getTotalMoney($school_role_id,$row["id"]);
 
                         $total_students = $calc_res->fetch_assoc()["total"];
                         $amount_admin = ($total_students * $price_admin) - $gen_admin;
@@ -550,18 +553,18 @@
                         continue;
                     }
 
-                    if($amount_admin > 0){
+                    if($amount_admin > 0 && floatval($price_admin) > 0){
                         $student = $amount_admin / $price_admin;
                         
-                        $pay_sql = "SELECT * FROM payment WHERE school_id=".$row["id"]." AND user_role=3 AND status = 'Pending'";
+                        $pay_sql = "SELECT * FROM payment WHERE school_id=".$row["id"]." AND user_role=$admin_role_id AND status = 'Pending'";
                         $pay_result = $connect->query($pay_sql);
                         
                         if($pay_result->num_rows > 0){
-                            $new_sql = "UPDATE payment SET amount=$amount_admin, studentNumber=$student WHERE school_id=".$row["id"]." AND user_role=3 AND status='Pending'";
+                            $new_sql = "UPDATE payment SET amount=$amount_admin, studentNumber=$student WHERE school_id=".$row["id"]." AND user_role=$admin_role_id AND status='Pending'";
                             $connect->query($new_sql);
                         }else{
                             $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
-                                VALUES (3, ".$row["id"].", $amount_admin, $student, 'Pending')";
+                                VALUES ($admin_role_id, ".$row["id"].", $amount_admin, $student, 'Pending')";
                             $connect->query($new_sql);
                         }
                     }
@@ -569,15 +572,15 @@
                     if($amount_school > 0){
                         $student = $amount_school / $price_school;
                         
-                        $pay_sql = "SELECT * FROM payment WHERE school_id=".$row["id"]." AND user_role=4 AND status = 'Pending'";
+                        $pay_sql = "SELECT * FROM payment WHERE school_id=".$row["id"]." AND user_role=$school_role_id AND status = 'Pending'";
                         $pay_result = $connect->query($pay_sql);
                         
                         if($pay_result->num_rows > 0){
-                            $new_sql = "UPDATE payment SET amount=$amount_school, studentNumber=$student WHERE school_id=".$row["id"]." AND user_role=4 AND status='Pending';";
+                            $new_sql = "UPDATE payment SET amount=$amount_school, studentNumber=$student WHERE school_id=".$row["id"]." AND user_role=$school_role_id AND status='Pending';";
                             $connect->query($new_sql);
                         }else{
                             $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
-                                VALUES (4, ".$row["id"].", $amount_school, $student, 'Pending')";
+                                VALUES ($school_role_id, ".$row["id"].", $amount_school, $student, 'Pending')";
                             $connect->query($new_sql);
                         }
                     }

@@ -90,7 +90,7 @@
         </div>
         <div class="body flex flex-wrap wrap-h btn w-auto-child w-full gap-sm wrap-half p-med flex-eq">
                 <button onclick="$('#modal').removeClass('no_disp')" class="cyan">Add New Student</button>
-            <?php if($user_details["role"] != 2 && $user_details["role"] <= 5){?>
+            <?php if($user_details["role"] != 2 && ($user_details["role"] <= 5 || str_contains(strtolower(getRole($user_details["role"])), "admin"))){?>
                 <button onclick="$('#lhs .menu .item.active').click()" class="secondary">Refresh</button>
             <?php } ?>
                 <button type="button" onclick="$('#modal_2').removeClass('no_disp')" class="teal">Import From Excel</button>
@@ -98,7 +98,7 @@
                 $res = $connect->query("SELECT COUNT(indexNumber) AS total FROM cssps WHERE schoolID = $user_school_id")->fetch_assoc()["total"];
                 // $res = $connect2->query("SELECT COUNT(indexNumber) AS total FROM students_table WHERE school_id = $user_school_id")->fetch_assoc()["total"];
                 if(intval($res) > 0){
-                    if($user_details["role"] != 2 && $user_details["role"] <= 5){ 
+                    if($user_details["role"] != 2 && ($user_details["role"] <= 5 || str_contains(strtolower(getRole($user_details["role"])), "admin"))){ 
             ?>
                 <button id="del_all" title="This clears all third years from the system, and in turn promote all students in the system currently to the next class";
                 class="red studs">Clean Records</button>
