@@ -38,7 +38,12 @@
             $_SESSION["ad_stud_gender"] = $student["Gender"];
             
             if(is_array(fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'"))){
-                $_SESSION["ad_stud_house"] = fetchData("title","houses","id=".fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"])["title"];
+                $house_id = fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"];
+                if(!is_null($house_id)){
+                    $_SESSION["ad_stud_house"] = fetchData("title","houses","id=$house_id")["title"];
+                }else{
+                    $_SESSION["ad_stud_house"] = "e";
+                }
                 
                 $houses = 1;
             }else{

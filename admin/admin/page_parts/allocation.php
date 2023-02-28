@@ -56,6 +56,19 @@
             <span>Registered Day Students</span>
         </div>
     </div>
+    <?php $not_allocated_houses = fetchData("COUNT(indexNumber) as total","house_allocation","houseID IS NULL AND schoolID=$user_school_id")["total"];
+    if($not_allocated_houses > 0){
+    ?>
+    <div class="content orange">
+        <div class="head">
+            <h2>
+                <?= $not_allocated_houses ?>
+            </h2>
+        </div>
+        <div class="body">
+            <span>Students without House</span>
+        </div>
+    </div><?php } ?>
 </section>
 
 <?php if($_SESSION["real_status"]){?>
@@ -79,6 +92,79 @@
         manually uploaded by you. Manual house allocation will have to upload their document via </p>
     </div>
  </section>
+ 
+ <?php if($not_allocated_houses > 0){ ?>
+ <section>
+     <div class="head" style="align-self: center">
+        <h2>Students Not Allocated Houses</h2>
+        <div class="btn no_disp">
+            <button data-year="1" data-break-point="10"></button>
+        </div>
+     </div>
+     <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
+        <div class="flex flex-center-align">
+            <label for="search" style="width: 80%">
+                <input type="search" name="search" data-max-break-point="<?= fetchData("COUNT(indexNumber) as total","cssps","schoolID=$user_school_id")["total"] ?>"
+                 title="Enter a search here. It could be from any column of the table" placeholder="Search by any value in the table below..."
+                 autocomplete="off" style="border: 1px solid lightgrey;" data-search-value="register">
+            </label>
+            <label for="row_display">
+                <input type="number" name="row_display" id="row_display" class="light" value="10" max="100" min="5">
+            </label>
+        </div>
+     </div>
+     <?php 
+        $res = $connect->query("SELECT DISTINCT (a.indexNumber), a.studentLname, a.studentOname, c.programme 
+            FROM house_allocation a JOIN cssps c 
+            ON a.indexNumber = c.indexNumber
+            WHERE a.schoolID = $user_school_id AND a.houseID IS NULL");
+     ?>
+     <div class="body year" id="year1">
+        <table class="sm-full">
+            <thead>
+                <tr>
+                    <td>Index Number</td>
+                    <td>Full name</td>
+                    <td>Program</td>
+                </tr>
+            </thead>
+            <tbody>
+            <?php
+                while($row = $res->fetch_assoc()){
+            ?>
+                <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="true">
+                    <td><?php echo $row["indexNumber"] ?></td>
+                    <td class="fullname"><?php echo $row["studentLname"]." ".$row["studentOname"] ?></td>
+                    <td><?php echo $row["programme"] ?></td>
+                    <td class="flex flex-wrap">
+                        <span class="item-event edit cssps">Edit</span>
+                        <span class="item-event delete cssps">Delete</span>
+                    </td>
+                </tr>
+                <?php } ?>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="pages" colspan="2">
+                        <div class="flex">
+                            <div class="pagination">
+                                Page <span class="current"></span>  <strong>of</strong> <span class="last"></span>
+                            </div>
+                            <?php if($res->num_rows > 0) : ?>
+                            <div class="navs">
+                                <span class="item-event prev" data-break-point="10">Prev</span>
+                                <span class="item-event next" data-break-point="10">Next</span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+                    <td class="result" colspan="7"></td>
+                </tr>
+            </tfoot>
+        </table>  
+     </div>
+ </section>
+ <?php } ?>
 
 
 <section class="section_container allocation flex-column table_section">
