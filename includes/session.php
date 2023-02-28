@@ -22,7 +22,7 @@ if($connect2->connect_error){
 }
 
 //creating a default root path for finding php documents
-$rootPath = $_SERVER["DOCUMENT_ROOT"]."/shsdesk";
+$rootPath = $_SERVER["DOCUMENT_ROOT"];
 
 //creating a default url for folder files
 //grabbing protocol
@@ -32,7 +32,7 @@ $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== "off" || $_SERVE
 $domain_name = $_SERVER['HTTP_HOST'];
 
 //$url = $protocol.$domain_name;
-$url = $protocol.$domain_name."/shsdesk";
+$url = $protocol.$domain_name;
 
 //start a session
 if(!session_start())
