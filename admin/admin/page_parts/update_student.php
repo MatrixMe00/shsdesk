@@ -30,19 +30,19 @@
                 <input type="text" name="lname" id="lname" required autocomplete="off" placeholder="Lastname*"
                 title="Enter the lastname of the student here">
             </label>
-            <!-- <label for="fname">
-                <span class="label_image">
-                    <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="firstname">
-                </span>
-                <input type="text" name="fname" id="fname" required
-                autocomplete="off" placeholder="Firstname*" title="Enter the firstname of the student">
-            </label> -->
             <label for="oname">
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="othernames">
                 </span>
                 <input type="text" name="oname" id="oname" required
                 autocomplete="off" placeholder="Other Name(s)" title="Enter other names of the student">
+            </label>
+            <label for="enrolCode" class="no_disp">
+                <span class="label_image">
+                    <img src="<?php echo $url?>/assets/images/icons/reader-outline.svg" alt="firstname">
+                </span>
+                <input type="text" name="enrolCode" id="enrolCode"
+                autocomplete="off" placeholder="Enrolment Code*" title="Provide Student's enrolment code">
             </label>
             <label for="gender">
                 <span class="label_image">

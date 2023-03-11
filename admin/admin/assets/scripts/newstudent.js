@@ -67,7 +67,11 @@ $("form[name=adminAddStudent]").submit(function(event){
             message = "Othername field is empty";
         }else if(response == "gender-not-set"){
             message = "Please select a gender";
-        }else if(response == "boardin-status-not-set"){
+        }else if(response == "no-enrol-code"){
+            message = "Please provide an enrolment code for this registered student";
+        }else if(response == "enrol-code-short"){
+            message = "Enrolment code should be a minimum of 6 characters";
+        }else if(response == "boarding-status-not-set"){
             message = "Please select a boarding status";
         }else if(response == "no-student-program-set"){
             message = "You have not specified student's program";

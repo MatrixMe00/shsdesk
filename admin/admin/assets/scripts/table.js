@@ -60,10 +60,13 @@ $("table tbody tr .edit").click(function(){
                 if(cssps){
                     if(registered == "true"){
                         $("form[name=adminUpdateStudent] select[name=house]").prop("disabled", false);
-                        $("form[name=adminUpdateStudent] label[for=house]").removeClass("no_disp");
+                        $("form[name=adminUpdateStudent] label[for=house], form[name=adminUpdateStudent] label[for=enrolCode]")
+                        .removeClass("no_disp");
+                        $("form[name=adminUpdateStudent] input[name=enrolCode]").val(response["enrolCode"])
                     }else{
                         $("form[name=adminUpdateStudent] select[name=house]").prop("disabled", true);
-                        $("form[name=adminUpdateStudent] label[for=house]").addClass("no_disp");
+                        $("form[name=adminUpdateStudent] label[for=house], form[name=adminUpdateStudent] label[for=enrolCode]")
+                        .addClass("no_disp");
                     }
 
                     $("form[name=adminUpdateStudent] input[name=aggregate]").val(response["aggregate"]);

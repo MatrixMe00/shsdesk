@@ -147,6 +147,7 @@
             $gender = strip_tags(stripslashes($_REQUEST["gender"]));
             $boarding_status = strip_tags(stripslashes($_REQUEST["boarding_status"]));
             $student_course = strip_tags(stripslashes($_REQUEST["student_course"]));
+            $enrolCode = $_REQUEST["enrolCode"];
             $aggregate = strip_tags(stripslashes($_REQUEST["aggregate"]));
             $jhs = strip_tags(stripslashes($_REQUEST["jhs"]));
             $dob = strip_tags(stripslashes($_REQUEST["dob"]));
@@ -189,11 +190,25 @@
                 $stmt->bind_param("sssssissss",$lname,$oname,$gender,$boarding_status,$student_course,
                     $aggregate,$jhs,$dob,$track_id, $student_index);
                 if($stmt->execute()){
-                    //make update to house allocation
-                    $sql = "UPDATE house_allocation SET studentLname=?, studentOname=?, houseID=?, studentGender=?, boardingStatus=? 
-                        WHERE indexNumber=?";
-                    $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("ssisss", $lname, $oname, $house, $gender, $boarding_status, $student_index);
+                    //update student enrolment data
+                    if(fetchData("enroled","cssps","indexNumber='$student_index'")["enroled"]){
+                        if(empty($enrolCode)){
+                            $message = "no-enrol-code";
+                        }elseif(strlen($enrolCode) < 6){
+                            $message = "enrol-code-short";
+                        }else{
+                            $sql = "UPDATE enrol_table SET program=?, lastname=?, othername=?, gender=?, jhsName=?, birthdate=?, enrolCode=? WHERE indexNumber=?";
+                            $stmt = $connect->prepare($sql);
+                            $stmt->bind_param("ssssssss",$student_course, $lname, $oname, $gender, $jhs, $dob, $enrolCode, $student_index);
+                            $stmt->execute();
+                        }
+
+                        //make update to house allocation
+                        $sql = "UPDATE house_allocation SET studentLname=?, studentOname=?, houseID=?, studentGender=?, boardingStatus=? 
+                            WHERE indexNumber=?";
+                        $stmt = $connect->prepare($sql);
+                        $stmt->bind_param("ssisss", $lname, $oname, $house, $gender, $boarding_status, $student_index);
+                    }
                     if($stmt->execute()){
                         $message = "success";
                     }else{
@@ -210,9 +225,10 @@
             $registered = $_REQUEST["registered"];
 
             if($registered == "true"){
-                $sql = "SELECT c.*, h.houseID 
+                $sql = "SELECT c.*, e.enrolCode, h.houseID 
                     FROM cssps c JOIN house_allocation h
                     ON c.indexNumber = h.indexNumber 
+                    JOIN enrol_table e ON c.indexNumber = e.indexNumber
                     WHERE c.indexNumber='$index_number'";
             }else{
                 $sql = "SELECT * FROM cssps WHERE indexNumber='$index_number' AND enroled=FALSE";
