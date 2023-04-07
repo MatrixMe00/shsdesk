@@ -809,4 +809,27 @@
 
         return $number;
     }
+    
+    /**
+     * The function is used to format the id of a program into the form PID XXXX
+     * @param string|int $subject_id This is the id to be converted
+     * @param string $prefix The prefix is used to provide the pre-text of the identifier
+     * @return string Returns the formatted program id
+     */
+    function formatItemId($subject_id, $prefix){
+        switch (strlen($subject_id)){
+            case 1:
+                $subject_id = "000".$subject_id; break;
+            case 2:
+                $subject_id = "00".$subject_id; break;
+            case 3:
+                $subject_id = "0".$subject_id; break;
+            default:
+                $subject_id = $subject_id;
+        }
+
+        $subject_id = "$prefix $subject_id";
+
+        return $subject_id;
+    }
 ?>

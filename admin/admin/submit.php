@@ -890,6 +890,169 @@
             }else{
                 echo "First years are not going to be added";
             }
+        }elseif($submit == "addNewCourse" || $submit == "addNewCourse_ajax"){
+            @$course_name = $_GET["course_name"];
+            @$course_alias = $_GET["course_alias"];
+            @$school_id = intval($_GET["school_id"]);
+
+            $message = ""; $status = false; $final = array(); $isFirst = false;
+
+            if(empty($course_name)){
+                $message = "Course Name was not provided";
+            }elseif(empty($school_id) || $school_id <= 0){
+                $message = "No school has been selected. Please check and try again";
+            }else{
+                $sql = "INSERT INTO courses (school_id, course_name, short_form) VALUES (?,?,?)";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("iss", $school_id, $course_name, $course_alias);
+
+                if($stmt->execute()){
+                    $message = !empty($course_alias) ? $course_alias : $course_name;
+                    $message .= " has been added";
+                    $status = true;
+
+                    //mark if this is the first course
+                    if(intval(fetchData1("COUNT(*) as total","courses","school_id=$school_id")["total"]) == 1){
+                        $isFirst = true;
+                    }
+                }else{
+                    $message = !empty($course_alias) ? $course_alias : $course_name;
+                    $message .= " could not be added";
+                }
+            }
+
+            $final = [
+                "message" => $message,
+                "status" => $status,
+                "isFirst" => $isFirst
+            ];
+
+            header("Content-Type: application/json");
+            echo json_encode($final);
+        }elseif($submit == "addNewTeacher" || $submit == "addNewTeacher_ajax"){
+            @$teacher_lname = $_GET["teacher_lname"];
+            @$teacher_oname = $_GET["teacher_oname"];
+            @$teacher_gender = $_GET["teacher_gender"];
+            @$teacher_email = $_GET["teacher_email"];
+            @$teacher_phone = $_GET["teacher_phone"];
+            @$course_ids = $_GET["course_ids"];
+            @$school_id = $_GET["school_id"];
+
+            $message = ""; $status = false; $final = array();
+
+            if(empty($teacher_lname)){
+                $message = "Please provide the lastname of the teacher";
+            }elseif(empty($teacher_oname)){
+                $message = "Please provide the othername(s) of the teacher";
+            }elseif(empty($teacher_gender)){
+                $message = "Please select the gender of the teacher";
+            }elseif(empty($teacher_phone)){
+                $message = "Please provide a phone number";
+            }elseif(strlen($teacher_phone) < 10){
+                $message = "Please enter a valid phone number";
+            }elseif(empty($course_ids)){
+                $message = "Please assign the teacher at least one course";
+            }elseif(empty($school_id)){
+                $message = "No school selected. Please check and try again";
+            }else{
+                $sql = "INSERT INTO teachers (lname, oname, gender, email, phone_number, school_id, course_id, joinDate)
+                    VALUES (?,?,?,?,?,?,?,NOW())";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("sssssis", $teacher_lname, $teacher_oname, $teacher_gender, $teacher_email, $teacher_phone, $school_id, $course_ids);
+                if($stmt->execute()){
+                    //insert into login
+                    $teacher_id = fetchData1("teacher_id","teachers","phone_number = '$teacher_phone'");
+                    if($teacher_id != "empty"){
+                        $connect2->query("INSERT INTO teacher_login (user_id) VALUES (".$teacher_id["teacher_id"].")");
+                        $message = "Teacher has been added";
+                        $status = true;
+                    }else{
+                        $message = "Teacher added, but teacher cannot login. Please contact the administrator for help";
+                    }
+                }else{
+                    $message = "Teacher could not be added";
+                }
+            }
+
+            $final = [
+                "message" => $message,
+                "status" => $status
+            ];
+
+            header("Content-Type: application/json");
+            echo json_encode($final);
+        }elseif($submit == "addProgram" || $submit == "addProgram_ajax"){
+            $message = ""; $status = false; $final = array();
+
+            @$program_name = $_GET["program_name"];
+            @$school_id = $_GET["school_id"];
+            @$course_ids = $_GET["course_ids"];
+            
+            if(empty($program_name)){
+                $message = "Please provide the name of the program";
+            }elseif(empty($school_id) || $school_id < 1){
+                $message = "Your desired school has not been specified";
+            }elseif(empty($course_ids)){
+                $message = "Please select the courses/subjects held in this program";
+            }else{
+                $sql = "INSERT INTO program (school_id, program_name, course_ids) VALUES (?,?,?)";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("iss", $school_id, $program_name, $course_ids);
+
+                if($stmt->execute()){
+                    $message = "The program has been saved.";
+                    $status = true;
+                }else{
+                    $message = "The program could not be saved. Please try again.";
+                }
+            }
+
+            $final = [
+                "message" => $message,
+                "status" => $status
+            ];
+
+            header("Content-Type: application/json");
+            echo json_encode($final);
+        }elseif($submit == "delete_item" || $submit == "delete_item_ajax"){
+            @$item_id = $_GET["item_id"];
+            @$table_name = $_GET["table_name"];
+            @$column_name = $_GET["column_name"];
+            @$db = $_GET["db"];
+
+            if($db == "shsdesk"){
+                $db = $connect;
+            }else{
+                $db = $connect2;
+            }
+
+            $sql = "DELETE FROM $table_name WHERE $column_name=$item_id";
+            if($db->query($sql)){
+                echo "success";
+            }else{
+                echo "Failed to delete data";
+            }
+        }
+        elseif($submit == "getProgram" || $submit == "getProgram_ajax"){
+            $message = null; $status = false; $final = array();
+
+            $program_id = $_REQUEST["program_id"];
+
+            $message = fetchData1("*","program","program_id=$program_id");
+
+            if(is_array($message)){
+                $status = true;
+            }else{
+                $status = false;
+            }
+
+            $final = [
+                "status" => $status,
+                "results" => $message
+            ];
+
+            header("Content-Type: application/json");
+            echo json_encode($final);
         }
     }else{
         echo "no-submission";

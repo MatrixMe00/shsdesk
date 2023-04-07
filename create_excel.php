@@ -32,13 +32,15 @@
 
     //sql statement
     if($submit == "enrolment"){
-        $sql = "SELECT e.*, s.schoolName, h.title AS houseName
+        $sql = "SELECT e.*, s.schoolName, h.title AS houseName, c.boardingStatus
             FROM enrol_table e JOIN schools s
             ON e.shsID = s.id
             JOIN house_allocation ho
             ON e.indexNumber = ho.indexNumber
             JOIN houses h
             ON h.id = ho.houseID
+            JOIN cssps c
+            ON e.indexNumber = c.indexNumber
             WHERE e.shsID=$user_school_id
             ORDER BY e.enrolDate ASC";
 

@@ -381,7 +381,7 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
     $.ajax({
         url: $(form_element).attr("action"),
         data: formData,
-        method: "post",
+        method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
         dataType: "text",
         cache: false,
         async: false,
@@ -451,7 +451,7 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
     $.ajax({
         url: $(form_element).attr("action"),
         data: formData,
-        method: "post",
+        method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
         dataType: "json",
         cache: false,
         async: false,
@@ -539,7 +539,7 @@ function formSubmit(form_element, submit_element, messageBox = true){
     $.ajax({
         url: $(form_element).attr("action"),
         data: formData,
-        method: "post",
+        method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
         dataType: "text",
         cache: false,
         async: false,
@@ -580,9 +580,7 @@ function formSubmit(form_element, submit_element, messageBox = true){
  * 
  * @return {boolean|array} returns a boolean value or an array
  */
- function jsonFormSubmit(form_element, submit_element, messageBox = true){
-    // formData = new FormData();
-
+ async function jsonFormSubmit(form_element, submit_element, messageBox = true){
     //submit value
     submit = $(submit_element).val();
 
@@ -618,15 +616,14 @@ function formSubmit(form_element, submit_element, messageBox = true){
         formData += "&submit=" + submit + "_ajax";
     }
 
-    response = null;
+    let response = null;
     
-    $.ajax({
+    await $.ajax({
         url: $(form_element).attr("action"),
         data: formData,
-        method: "post",
+        method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
         dataType: "json",
         cache: false,
-        async: false,
         beforeSend: function(){
             if(messageBox){
                 message = loadDisplay({size: "small"});
@@ -639,18 +636,22 @@ function formSubmit(form_element, submit_element, messageBox = true){
         success: function(text){
             $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
             text = JSON.parse(JSON.stringify(text));
-
-            if(text["status"] == "success" || text["status"].includes("success")){
-                response = true;
-            }else{
-                response = text;
+            
+            if(typeof text["status"] === "boolean"){
+                response = text
+            }else if(typeof text["status"] === "string"){
+                if(text["status"] == "success" || text["status"].includes("success"))
+                    response = true
+                else
+                    response = text
             }
         },
-        error: function(){
-            message = "Please check your internet connection and try again";
+        error: function(e){
+            // message = "Please check your internet connection and try again";
+            message = JSON.stringify(e)
             type = "error";
 
-            messageBoxTimeout(form_element.prop("name"), message, type);
+            messageBoxTimeout(form_element.prop("name"), message, type, 0);
         }
     })
 

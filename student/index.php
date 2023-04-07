@@ -1,14 +1,28 @@
-<?php include_once("../includes/session.php")?>
+<?php 
+    include_once("../includes/session.php");
+    
+    //boolean value to determine if page should render in student login mode or admission mode
+    $isStudentLogin = false;
+    if(str_contains($rootPath,"student")){
+        $isStudentLogin = true;
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <?php include_once($rootPath."/blocks/generalHead.php")?>
     
-    <title>Student Portal</title>
+    <title><?= $isStudentLogin ? "SHSDesk | Student Login":"Student Portal" ?></title>
 
-    <meta name="description" content="This is the portal for students on the SHSDesk system. Use this portal to attain documents
-    and also results. Provide your index number and proceed to the session of the system you will want delivered to you. SHSDesk
-    is ready to provide all that you need.">
+    <?php if($isStudentLogin) : ?>
+        <meta name="description" content="This is the SHSDesk students portal. Students are able to access details
+        about themselves and also about their various schools. This section serves students with their terminal
+        reports and other information from the schools.">
+    <?php else : ?>
+        <meta name="description" content="This is the portal for students on the SHSDesk system. Use this portal to attain documents
+        and also results. Provide your index number and proceed to the session of the system you will want delivered to you. SHSDesk
+        is ready to provide all that you need.">
+    <?php endif; ?>
 
     <style>
         body{
@@ -45,7 +59,7 @@
     <main>
         <form action="<?php echo $url?>/submit.php" method="post" name="studentForm" class="img-label">
             <div class="head">
-                <h2>Student Portal</h2>
+                <h2><?= $isStudentLogin ? "Student Login":"Student Portal" ?></h2>
             </div>
             <div class="body">
                 <div class="message_box no_disp">
@@ -53,34 +67,57 @@
                     <div class="close"><span>&cross;</span></div>
                 </div>
                 <p style="font-size: small; color: #444; text-align: center">
+                <?php if($isStudentLogin) : ?>
+                    This is the SHSDesk students login portal. Please provide your student index number and click enter
+                    to access your dashboard.
+                <?php else : ?>
                     This is the SHSDesk students portal. You can access your admission details using the admission button
-                    or use the Enter button to proceed into your portal
+                    below.
+                <?php endif; ?>
                 </p>
                 <label for="indexNumber">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="username_logo">
                     </span>
-                    <input type="text" name="indexNumber" id="indexNumber" class="text_input" placeholder="Your JHS index number" autocomplete="off"
+                    <input type="text" name="indexNumber" id="indexNumber" class="text_input" placeholder="<?= $isStudentLogin ? "Index Number or Username" : "Your JHS index number" ?>" autocomplete="off"
                     title="Enter your jhs index number to continue">
                 </label>
+                <?php if($isStudentLogin): ?>
+                <label for="password">
+                <span class="label_image">
+                    <img src="<?php echo $url?>/assets/images/icons/key-outline.svg" alt="password">
+                </span>
+                <input type="password" name="password" id="password" class="text_input" placeholder="Your Password" autocomplete="off">
+                <?php endif; ?>
+            </label>
             </div>
-            <div class="foot">
-                <div class="flex">
-                    <div class="btn">
-                        <button type="submit" name="entry" class="teal" title="Proceed to your portal. Currently disabled" disabled>Enter</button>
-                    </div>
-                    <div class="btn">
-                        <button type="button" name="admission" class="cyan" title="Proceed to download admission documents">Admission Documents</button>
-                    </div>
-                </div>
+            <?php if ($isStudentLogin): ?>
+            <div class="btn_label">
+                <button type="submit" name="entry" class="teal sp-lg" title="Proceed to your portal. Currently disabled" disabled value="studentLogin">Enter</button>
             </div>
+            <?php else : ?>
+            <div class="btn_label">
+                <button type="button" name="admission" class="cyan sp-lg" title="Proceed to download admission documents" disabled>Admission Documents</button>
+            </div>
+            <?php endif; ?>
         </form>
     </main>
 
     <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
     <script>
+        $("input[name=<?= $isStudentLogin ? "password":"indexNumber" ?>]").keyup(function(){
+            let number_of_characters = $(this).val().length;
+
+            if(number_of_characters >= <?= $isStudentLogin ? 1:6 ?>){
+                $("button").prop("disabled",false)
+            }else{
+                $("button").prop("disabled",true)
+            }
+        })
         //admission details button
-        $("button[name=admission]").click(function(){
+        $("button[name=<?= $isStudentLogin ? "entry":"admission" ?>]").click(function(e){
+            e.preventDefault()
+
             //take index number
             indexNumber = $("input#indexNumber").val();
 
@@ -89,9 +126,12 @@
             }else if(indexNumber.length < 5){
                 messageBoxTimeout("studentForm", "Index number length too short. Please provide at least 5 character long index number", "error");
             }else{
+                <?php if(!$isStudentLogin) : ?>
                 $.ajax({
                     url: $("form").attr("action"),
-                    data: "submit=getStudentIndex&index_number=" + indexNumber,
+                    data:{
+                        submit: "getStudentIndex", index_number: indexNumber
+                    },
                     dataType: "json",
                     beforeSend: function(){
                         message = "Searching details, please wait...";
@@ -140,9 +180,21 @@
                         messageBoxTimeout("studentForm", JSON.stringify(r), "load", 0);
                     }
                 })
-            }
+                <?php else : ?>
+                    if($("input#password").val() === ""){
+                        message = "No password provided"
+                        type = "error"
+                        time = 5
 
-            
+                        messageBoxTimeout(message,type,time)
+                    }else{
+                        location.href="main.php"
+                    }
+                /*$.ajax({
+                    url: $(this).attr("action"),
+                })*/
+                <?php endif; ?>
+            }
         })
     </script>
 </body>

@@ -227,8 +227,8 @@ button:disabled{
 
 button.dark:hover, button.gray-dark:hover,
 .h-dark:hover, .h-gray-dark:hover{
-    background-color: var(--light);
-    color: var(--dark);
+    background-color: var(--secondary);
+    color: var(--light);
 }
 
 button.light:hover, .h-light:hover{
@@ -270,8 +270,8 @@ button.cyan:hover, button.info:hover,
 
 button.secondary:hover, button.grey:hover,
 .h-secondary:hover, .h-grey:hover{
-    color: initial;
-    background-color: initial;
+    color: var(--dark);
+    background-color: var(--light);
 }
 
 button.teal:hover,
@@ -524,10 +524,13 @@ img{
 
 .btn button{
     outline: none;
-    border: 1px solid lightgrey;
     padding: 6px 8px;
     cursor: pointer;
     min-width: 5rem;
+}
+
+.btn button:not([class*=border]){
+    border: 1px solid lightgrey;
 }
 
 .btn.b-curve button:hover{
@@ -892,13 +895,19 @@ img{
     width: 100%;
 }
 
-.h-max, .h-max-child > *{
+.hmax, .hmax-child > *{
     height: -moz-max-content;
     height: max-content;
 }
-.h-min, .h-min-child > *{
+.hmin, .hmin-child > *{
     height: -moz-min-content;
     height: min-content;
+}
+.h-unset, .h-unset-child > *{
+    height: unset !important;
+}
+.hmax-unset, .hmax-unset-child > *{
+    max-height: unset !important;
 }
 .h-fluid, .h-fluid-child > *{
     height: 100%;
@@ -1104,6 +1113,16 @@ img{
 /*end of borders*/
 
 /*margins*/
+.m-auto > *, .sm-auto{margin: auto !important;}
+.m-auto-t > *, .sm-auto-t,.m-auto-tp > *, .sm-auto-tp
+{margin-top: auto !important;}
+.m-auto-b > *, .sm-auto-b, .m-auto-tp > *, .sm-auto-tp
+{margin-bottom: auto !important;}
+.m-auto-l > *, .sm-auto-l,.m-auto-lr > *, .sm-auto-lr
+{margin-left: auto !important;}
+.m-auto-r > *, .sm-auto-r,.m-auto-lr > *, .sm-auto-lr
+{margin-right: auto !important;}
+
 .m-sm > *, .sm-sm{margin: 0.25rem !important;}
 .m-sm-lr > *, .sm-sm-lr{
     margin-left: 0.25rem !important; margin-right: 0.25rem !important;
@@ -1284,15 +1303,15 @@ img{
 /* end of widths */
 
 /*box shadows*/
-.lt-shade{
+.lt-shade, .lt-shade-h{
     box-shadow: 0 0 0.1rem 0 var(--dark);
 }
 
-.md-shade, .lt-shade:hover{
+.md-shade, .md-shade-h, .lt-shade-h:hover{
     box-shadow: 0 0 0.25rem 0 var(--dark);
 }
 
-.lg-shade, .md-shade:hover{
+.lg-shade, .md-shade-h:hover{
     box-shadow: 0 0 0.4rem 0 var(--dark);
 }
 /*end of shadow box*/
@@ -1423,6 +1442,13 @@ img{
     position: -webkit-sticky;
     position: sticky;
 }
+
+.top{top: 0;}
+.bottom{bottom: 0;}
+.left{left: 0;}
+.right{right: 0;}
+.top-left{top:0; left: 0}
+.top-right
 /*end of positioning*/
 
 /*shadow overlay*/
