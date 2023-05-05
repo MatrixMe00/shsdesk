@@ -154,6 +154,7 @@ $(".reply_tab label[for=submit] button[name=submit]").click(function(){
             type: $(parent).attr("method"),
             dataType: "json",
             async: false,
+            timeout: 15000,
             beforeSend: function(){
                 //disable the reply input
                 $(parent).children("label[for=reply]").children("input[name=reply]").prop("disabled",true);
@@ -204,8 +205,11 @@ $(".reply_tab label[for=submit] button[name=submit]").click(function(){
                 $(parent).children("label[for=reply]").children("input[name=reply]").prop("disabled",false);
                 $(this).prop("disabled", false);
             },
-            error: function(t){
+            error: function(t, textStatus){
                 t = JSON.stringify(t);
+                if(textStatus = "timeout"){
+                    t = "Connection was timed out due to slow network. Please try again later.";
+                }
                 alert_box(t, "warning", 10);
                 
                 //enable the reply input
@@ -317,6 +321,7 @@ $(".notif_box.unread").mouseleave(function(){
             type: "get",
             dataType: "text",
             async: true,
+            timeout: 15000,
             success: function (text){
                 if(text == "success"){
                     //mark as read box
@@ -329,6 +334,11 @@ $(".notif_box.unread").mouseleave(function(){
 
                     //subtract from total
                     $("#lhs .item.active .news_number span").html(news_number - 1);
+                }
+            },
+            error: function(xhr, textStatus){
+                if(textStatus == "timeout"){
+                    alert_box("Connection was timed out due to slow network. Please try agin later", "danger", 10)
                 }
             }
         })        

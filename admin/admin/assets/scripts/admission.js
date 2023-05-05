@@ -99,6 +99,7 @@ $("form[name=admissiondetailsForm]").submit(function(e){
         async: false,
         contentType: false,
         processData: false,
+        timeout: 15000,
         beforeSend: function(){
             message = loadDisplay({size: "small"});
             type = "load";
@@ -114,8 +115,13 @@ $("form[name=admissiondetailsForm]").submit(function(e){
                 alert_box(text, "danger", 8);
             }
         },
-        error: function(){
-            message = "Please check your internet connection and try again";
+        error: function(xhr, textMessage){
+            if(textMessage == "timeout"){
+                message = "Connection was timed out. Please take a moment and try again"
+            }else{
+                message = "Please check your internet connection and try again"
+            }
+            
             type = "error";
 
             messageBoxTimeout($(this).prop("name"), message, type);

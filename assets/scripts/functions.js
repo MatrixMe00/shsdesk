@@ -387,6 +387,7 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
         async: false,
         contentType: false,
         processData: false,
+        timeout: 15000,
         beforeSend: function(){
             if(messageBox){
                 message = loadDisplay({size: "small"});
@@ -404,8 +405,12 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
                 response = text;
             }
         },
-        error: function(er){
+        error: function(er, textStatus){
             message = JSON.parse(JSON.stringify(er));
+
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later"
+            }
             type = "error";
 
             messageBoxTimeout(form_element.prop("name"), message, type);
@@ -457,6 +462,7 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
         async: false,
         contentType: false,
         processData: false,
+        timeout: 15000,
         beforeSend: function(){
             if(messageBox){
                 message = loadDisplay({size: "small"});
@@ -476,8 +482,12 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
                 response = text;
             }
         },
-        error: function(){
+        error: function(xhr, textStatus){
             message = "Please check your internet connection and try again";
+            
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later"
+            }
             type = "error";
 
             messageBoxTimeout(form_element.prop("name"), message, type);
@@ -543,6 +553,7 @@ function formSubmit(form_element, submit_element, messageBox = true){
         dataType: "text",
         cache: false,
         async: false,
+        timeout: 15000,
         beforeSend: function(){
             if(messageBox){
                 message = loadDisplay({size: "small"});
@@ -560,8 +571,12 @@ function formSubmit(form_element, submit_element, messageBox = true){
                 response = text;
             }
         },
-        error: function(){
+        error: function(xhr, textStatus){
             message = "Please check your internet connection and try again";
+            
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later"
+            }
             type = "error";
 
             messageBoxTimeout(form_element.prop("name"), message, type);
@@ -624,6 +639,7 @@ function formSubmit(form_element, submit_element, messageBox = true){
         method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
         dataType: "json",
         cache: false,
+        timeout: 15000,
         beforeSend: function(){
             if(messageBox){
                 message = loadDisplay({size: "small"});
@@ -646,9 +662,13 @@ function formSubmit(form_element, submit_element, messageBox = true){
                     response = text
             }
         },
-        error: function(e){
+        error: function(e, textStatus){
             // message = "Please check your internet connection and try again";
             message = JSON.stringify(e)
+
+            if(textStatus === "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later"
+            }
             type = "error";
 
             messageBoxTimeout(form_element.prop("name"), message, type, 0);

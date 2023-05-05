@@ -42,6 +42,7 @@ $("table tbody tr .edit").click(function(){
         data: dataString,
         dataType: "json",
         cache: true,
+        timeout: 15000,
         success: function(response){
             response = JSON.parse(JSON.stringify(response));
 
@@ -98,8 +99,10 @@ $("table tbody tr .edit").click(function(){
                 $("form[name=adminUpdateStudent] button[name=cancel]").click();
             }
         },
-        error: function(r){
-            if(r.responseText == "no-submission"){
+        error: function(r, texMessage){
+            if(textMessage === "timeout"){
+                alert_box("Connection was timed out or was slow. Please try again.", "danger", 10);
+            }else if(r.responseText == "no-submission"){
                 alert_box("No submission was detected. Please try again later", "danger", 7);
             }else{
                 alert_box("Invalid request to server or an error occurred on the server. Response sent to console. Ask admin for help", "danger", 12);

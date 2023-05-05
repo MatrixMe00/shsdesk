@@ -70,6 +70,7 @@ $("#users .item-event.dev").click(function(){
         url: $("form[name=addAdmin]").attr("action"),
         data: dataString,
         dataType: "json",
+        timeout: 15000,
         success: function (json){
             json = JSON.parse(JSON.stringify(json));
 
@@ -85,8 +86,14 @@ $("#users .item-event.dev").click(function(){
                 $("#editAccount").addClass("no_disp");
             }
         },
-        error: function (){
-            alert_box("Error communicating with server. Try again after a page refresh", "warning", 8);
+        error: function (xhr, textStatus){
+            let message = ""
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later"
+            }else{
+                message = "Error communicating with server. Try again after a page refresh"
+            }
+            alert_box(message, "warning", 8);
         }
     })
 })
@@ -141,6 +148,7 @@ $(".item-event.status").click(function(){
         url: $("form[name=user_account_form]").prop("action"),
         data: "submit=status_modify&stat=" + stat + "&user_id=" + user_id,
         cache: false,
+        timeout: 15000,
         success: function (){
             if(text.toLowerCase() == "activate"){
                 $(me).html("Deactivate");
@@ -148,8 +156,14 @@ $(".item-event.status").click(function(){
                 $(me).html("Activate");
             }
         },
-        error: function (){
-            alert_box("User status could not be modified. Try again later", "danger", 8);
+        error: function (xhr, textStatus){
+            let message = ""
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later"
+            }else{
+                message = "User status could not be modified. Try again later"
+            }
+            alert_box(message, "danger", 8);
         }
     })
 })

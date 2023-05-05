@@ -360,6 +360,7 @@ $("button[name=continue]").click(function(){
         dataType: "json",
         cache: true,
         async: false,
+        timeout: 15000,
         beforeSend: function(){
             $("#view1 .para_message").html("Checking index number, please wait...");
             alert_box("Retrieving CSSPS data...", "secondary", 2);
@@ -475,8 +476,14 @@ $("button[name=continue]").click(function(){
                 alert_box("Your data could not be retrieved. Please try again with your transaction ID", "warning", 7)
             }
         },
-        error: function(r){
-            $("#view1 .para_message").html(JSON.stringify(r));
+        error: function(r, textStatus){
+            let message = JSON.stringify(r)
+
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later"
+            }
+
+            $("#view1 .para_message").html(message);
 
             setTimeout(function(){
                 $("#view1 .para_message").html("Parts with * means they are required fields");
@@ -558,6 +565,7 @@ $("form[name=admissionForm]").submit(function(e){
         dataType: "text",
         cache: false,
         async: false,
+        timeout: 15000,
         beforeSend: function(){
             message = loadDisplay({size: "small"});
             type = "load";
@@ -699,8 +707,14 @@ $("form[name=admissionForm]").submit(function(e){
                 messageBoxTimeout("admissionForm", message, type, time);
             }
         },
-        error: function(){
-            message = "Please check your internet connection and try again";
+        error: function(xhr, textStatus){
+            let message = ""
+
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later"
+            }else{
+                message = "Please check your internet connection and try again";
+            }
             type = "error";
 
             messageBoxTimeout(form_element.prop("name"), message, type);
@@ -733,12 +747,19 @@ $("label[for=print_summary] button").click(function(){
         },
         type: "POST",
         cache: true,
+        timeout: 15000,
         success: function(data){
             alert_box("Your document is ready", "primary");
             alert_box(data,"secondary");
         },
-        error: function(p){
-            alert_box(JSON.stringify(p), "error", 10);
+        error: function(p, textStatus){
+            p = JSON.stringify(p)
+
+            if(textStatus == "timeout"){
+                p = "Connection was timed out due to a slow network. Please try again later"
+            }
+            
+            alert_box(p, "error", 10);
         }
     })
 })

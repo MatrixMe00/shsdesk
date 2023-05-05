@@ -27,6 +27,7 @@ $("table tbody tr .edit").click(function(){
         data: dataString,
         dataType: "json",
         cache: true,
+        timeout: 15000,
         success: function(response){
             response = JSON.parse(JSON.stringify(response));
 
@@ -63,8 +64,15 @@ $("table tbody tr .edit").click(function(){
                 $("form[name=adminUpdateStudent] button[name=cancel]").click();
             }
         },
-        error: function(r){
-            alert_box("Invalid request to server. Please try again later", "danger", 8);
+        error: function(r, textStatus){
+            let message = ""
+
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later."
+            }else{
+                message = "Invalid request to server. Please try again later"
+            }
+            alert_box(message, "danger", 8);
             $("form[name=adminUpdateStudent] button[name=cancel]").click();
         }
     })

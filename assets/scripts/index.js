@@ -173,6 +173,7 @@ $("button#student_check").click(function(){
         data: dataString,
         type: "GET",
         dataType: "json",
+        timeout: 15000,
         beforeSend: function(){
             $("button#student_check").prop("disabled", true);
             $("button#student_check").html("Checking...");
@@ -197,8 +198,14 @@ $("button#student_check").click(function(){
                 alert_box(data["status"], "danger", 10);
             }
         },
-        error: function(status){
-            alert_box(JSON.stringify(status), "danger", 10);
+        error: function(status, textStatus){
+            let message = ""
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later"
+            }else{
+                message = JSON.stringify(status)
+            }
+            alert_box(message, "danger", 10);
         }
     })
 })
@@ -217,6 +224,7 @@ $("select#getContact").change(function(){
             url: "submit.php",
             data: "submit=getContact&schoolID=" + $(this).val(),
             dataType: "text",
+            timeout: 15000,
             beforeSend: function(){
                 $("span#contResult").html("Fetching contact...");
             },
@@ -226,8 +234,14 @@ $("select#getContact").change(function(){
                 else
                     $("span#contResult").html("no results were returned");
             },
-            error: function(data){
-                $("span#contResult").html(JSON.stringify(data));
+            error: function(data, textStatus){
+                let message = ""
+                if(textStatus == "timeout"){
+                    message = "Connection was timed out due to a slow network. Please try again later"
+                }else{
+                    message = JSON.stringify(data)
+                }
+                $("span#contResult").html(message);
             }
         })
     }else{

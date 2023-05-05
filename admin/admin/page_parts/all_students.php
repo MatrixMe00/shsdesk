@@ -110,7 +110,7 @@
 </section>
 
 <section id="students_section" class="table_section">
-    <div class="head">
+    <div class="head flex-all-center flex-column gap-md">
         <h2>Student Year</h2>
         <div class="flex flex-wrap wrap-half gap-sm flex-eq wmax-sm">
             <div class="btn w-full sm-unset sp-unset">

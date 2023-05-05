@@ -103,6 +103,7 @@ $("table tbody tr .edit").click(function(){
         data: "submit=fetchHouseDetails&id=" + id,
         method: "get",
         dataType: "json",
+        timeout: 15000,
         beforeSend: function(){
             $("#modal_1 #getLoader").html(loadDisplay({
                 circular: true, 
@@ -149,6 +150,13 @@ $("table tbody tr .edit").click(function(){
                 //display form
                 $("#modal_1 .my_loader").fadeOut();
                 $("form[name=updateHouseForm]").removeClass("no_disp");
+            }
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            if(textStatus == "timeout"){
+                alert_box("Connection was timed out due to slow network. Please try again later", "danger", 10)
+            }else{
+                alert_box("An unknown error has been encountered. Please try again later", "danger", 10)
             }
         }
     })

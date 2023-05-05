@@ -40,6 +40,7 @@ $("form").submit(function(e){
             dataType: "html",
             type: "POST",
             async: true,
+            timeout: 15000,
             beforeSend: function(){
                 message = loadDisplay();
                 message_type = "load";
@@ -70,9 +71,16 @@ $("form").submit(function(e){
                 }
                 messageBoxTimeout("loginForm",message, message_type, time);                      
             },
-            error: function(){
-                message = "Cannot connect to server. Please try again";
+            error: function(xhr, textStatus){
+                let message = ""
+                if(textStatus == "timeout"){
+                    message = "Connection was timed out. Please try again later"
+                }else{
+                    message = "Cannot connect to server. Please try again";
+                }
                 message_type = "error";
+
+                messageBoxTimeout("loginForm",message, message_type)
             }
         })
     }

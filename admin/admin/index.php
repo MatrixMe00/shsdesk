@@ -142,7 +142,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                             <span>Students List</span>
                         </div>
                     </div>
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/subjects.php" name="subjects" title="Students List">
+                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/subjects.php" name="subjects" title="Students List" data-tab="courses">
                         <div class="icon">
                             <img src="<?php echo $url?>/assets/images/icons/book-outline.svg" alt="students" />
                         </div>

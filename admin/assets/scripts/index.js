@@ -32,7 +32,7 @@ $(".item").click(function(){
             type: "GET",
             cache: false,
             dataType: "html",
-
+            timeout: 15000,
             beforeSend: function(){
                 element = "<div class=\"relative\" style=\"height: " + rhs_height + "px\">" + 
                             loadDisplay({
@@ -47,9 +47,17 @@ $(".item").click(function(){
                 $("#rhs .body").html(html);
             },
 
-            error: function(){
+            error: function(xhr, textStatus){
+                let message = ""
+
+                if(textStatus == "timeout"){
+                    message = "Connection was timed out, slow network detected. Please try again later."
+                }else{
+                    message = "This page is currently unavailable to you. Try again later"
+                }
+
                 errorElement = "<div class=\"item empty\"  style=\"height: " + rhs_height + "px\">\n" + 
-                                "<p>This page is currently unavailable to you. Try again later</p>\n" + 
+                                "<p>" + message + "</p>\n" + 
                                 "</div>";
                 $("#rhs .body").html(errorElement);
             }
@@ -78,7 +86,7 @@ $("#yes_no_form").submit(function(){
         data: $(this).serialize(),
         type: "get",
         dataType: "text",
-
+        timeout: 15000,
         success: function(text){
             if(text == "update-success"){
                 $("#lhs .menu .item.active").click();
@@ -89,8 +97,15 @@ $("#yes_no_form").submit(function(){
             }
         },
 
-        error: function(){
-            alert_box("Please communication could not be established", "warning", 10);
+        error: function(xhr, textStatus){
+            let message = ""
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try agin later"
+            }else{
+                message = "Proper server communication could not be established"
+            }
+            
+            alert_box(message, "warning", 10);
         },
 
         complete: function(){
@@ -100,8 +115,8 @@ $("#yes_no_form").submit(function(){
 })
 
 $("#logout").click(function(){
-    var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[1];
-    //var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[0];
+    // var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[1];
+    var url = location.protocol + '//' + location.host + "/" + location.pathname.split("/")[0];
 
     //tell user he is logging out
     $("#rhs .body").html("Logging out, please wait...");

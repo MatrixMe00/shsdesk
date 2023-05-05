@@ -950,6 +950,8 @@
                 $message = "Please provide a phone number";
             }elseif(strlen($teacher_phone) < 10){
                 $message = "Please enter a valid phone number";
+            }elseif(empty($teacher_email)){
+                $message = "Please provide an email";
             }elseif(empty($course_ids)){
                 $message = "Please assign the teacher at least one course";
             }elseif(empty($school_id)){
@@ -1032,8 +1034,7 @@
             }else{
                 echo "Failed to delete data";
             }
-        }
-        elseif($submit == "getProgram" || $submit == "getProgram_ajax"){
+        }elseif($submit == "getProgram" || $submit == "getProgram_ajax"){
             $message = null; $status = false; $final = array();
 
             $program_id = $_REQUEST["program_id"];
@@ -1049,6 +1050,142 @@
             $final = [
                 "status" => $status,
                 "results" => $message
+            ];
+
+            header("Content-Type: application/json");
+            echo json_encode($final);
+        }elseif($submit == "updateProgram" || $submit == "updateProgram_ajax"){
+            $message = ""; $status = false; $final = array();
+
+            @$program_name = $_GET["program_name"];
+            @$program_id = $_GET["program_id"];
+            @$course_ids = $_GET["course_ids"];
+            
+            if(empty($program_id) || intval($program_id) < 0){
+                $message = "Program could not be selected";
+            }elseif(empty($program_name)){
+                $message = "Please provide the name of the program";
+            }elseif(empty($course_ids)){
+                $message = "Please select the courses/subjects held in this program";
+            }else{
+                $sql = "UPDATE program SET program_name=?, course_ids=? WHERE program_id=?";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("ssi", $program_name, $course_ids, $program_id);
+
+                if($stmt->execute()){
+                    $message = "The program has been updated";
+                    $status = true;
+                }else{
+                    $message = "The program could not be saved. Please try again.";
+                }
+            }
+
+            $final = [
+                "message" => $message,
+                "status" => $status
+            ];
+
+            header("Content-Type: application/json");
+            echo json_encode($final);
+        }elseif($submit == "getItem" || $submit == "getItem_ajax"){
+            $message = null; $status = false; $final = array();
+            
+            $item_id = $_REQUEST["item_id"];
+            $item_table = $_REQUEST["item_table"];
+            $item_table_col = $_REQUEST["item_table_col"];
+            
+            $item_id = intval($item_id) ? $item_id : "'$item_id'";
+            $sql = "SELECT * FROM $item_table WHERE $item_table_col=$item_id";
+            
+            if($result = $connect2->query($sql)){
+                $message = $result->fetch_all(MYSQLI_ASSOC);
+                $status = true;
+            }else{
+                $message = "Data could not be retrieved";
+            }
+
+            $final = [
+                "results" => $message,
+                "status" => $status
+            ];
+
+            header("Content-Type: application/json");
+            echo json_encode($final);
+        }elseif($submit == "updateCourse" || $submit == "updateCourse_ajax"){
+            @$course_name = $_GET["course_name"];
+            @$course_alias = $_GET["course_alias"];
+            @$course_id = intval($_GET["course_id"]);
+
+            $message = ""; $status = false; $final = array();
+
+            if(empty($course_name)){
+                $message = "Course Name was not provided";
+            }elseif(empty($course_id) || $course_id <= 0){
+                $message = "No course/subject has been selected. Please check and try again";
+            }else{
+                $sql = "UPDATE courses SET course_name=?, short_form=? WHERE course_id=?";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("ssi", $course_name, $course_alias, $course_id);
+
+                if($stmt->execute()){
+                    $message = !empty($course_alias) ? $course_alias : $course_name;
+                    $message .= " has been updated";
+                    $status = true;
+                }else{
+                    $message = !empty($course_alias) ? $course_alias : $course_name;
+                    $message .= " could not be updated";
+                }
+            }
+
+            $final = [
+                "message" => $message,
+                "status" => $status
+            ];
+
+            header("Content-Type: application/json");
+            echo json_encode($final);
+        }elseif($submit == "updateTeacher" || $submit == "updateTeacher_ajax"){
+            @$teacher_lname = $_GET["teacher_lname"];
+            @$teacher_oname = $_GET["teacher_oname"];
+            @$teacher_gender = $_GET["teacher_gender"];
+            @$teacher_email = $_GET["teacher_email"];
+            @$teacher_phone = $_GET["teacher_phone"];
+            @$course_ids = $_GET["course_ids"];
+            @$teacher_id = $_GET["teacher_id"];
+
+            $message = ""; $status = false; $final = array();
+
+            if(empty($teacher_lname)){
+                $message = "Please provide the lastname of the teacher";
+            }elseif(empty($teacher_oname)){
+                $message = "Please provide the othername(s) of the teacher";
+            }elseif(empty($teacher_gender)){
+                $message = "Please select the gender of the teacher";
+            }elseif(empty($teacher_phone)){
+                $message = "Please provide a phone number";
+            }elseif(strlen($teacher_phone) < 10){
+                $message = "Please enter a valid phone number";
+            }elseif(empty($teacher_email)){
+                $message = "Please provide an email";
+            }elseif(empty($course_ids)){
+                $message = "Please assign the teacher at least one course";
+            }elseif(empty($teacher_id)){
+                $message = "No teacher selected. Please check and try again";
+            }else{
+                $sql = "UPDATE teachers SET lname=?, oname=?, gender=?, email=?, phone_number=?, course_id=? WHERE teacher_id=?";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("ssssssi", $teacher_lname, $teacher_oname, $teacher_gender, $teacher_email, $teacher_phone, $course_ids, $teacher_id);
+                if($stmt->execute()){
+                    $message = "Details for $teacher_lname has been updated";
+                    $status = true;
+                }else{
+                    $message = "Teacher could not be added";
+                }
+            }
+
+            $final = [
+                "message" => $message,
+                "status" => $status
             ];
 
             header("Content-Type: application/json");

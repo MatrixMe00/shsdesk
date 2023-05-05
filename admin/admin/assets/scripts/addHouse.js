@@ -104,6 +104,7 @@ $("table tbody tr .edit").click(function(){
         data: "submit=fetchHouseDetails&id=" + id,
         method: "get",
         dataType: "json",
+        timeout: 15000,
         beforeSend: function(){
             $("#modal_1 #getLoader").html(loadDisplay({
                 circular: true, 
@@ -150,6 +151,11 @@ $("table tbody tr .edit").click(function(){
                 //display form
                 $("#modal_1 .my_loader").fadeOut();
                 $("form[name=updateHouseForm]").removeClass("no_disp");
+            }
+        },
+        error: function(xhr, textStatus){
+            if(textStatus == "timeout"){
+                alert("Connection took too long. Please try again later")
             }
         }
     })

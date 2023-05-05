@@ -81,49 +81,7 @@
 </section>
 
 <section id="newProgram" class="sp-xlg-tp section_box no_disp">
-    <form action="<?= $url ?>/admin/admin/submit.php" name="addProgramForm" class="wmax-md w-full sm-auto" method="GET">
-        <div class="head">
-            <h2>Add a new program</h2>
-        </div>
-        <div class="message_box no_disp">
-            <span class="message"></span>
-            <div class="close"><span>&cross;</span></div>
-        </div>
-        <div class="body flex flex-column gap-md">
-            <label for="program_name" class="flex-column gap-sm">
-                <span class="label_title">Name of Program</span>
-                <input type="text" name="program_name" id="program_name" placeholder="Name of Program">
-            </label>
-
-            <label for="">
-                <p>Select the courses taught in this program</p>
-            </label>
-
-            <?php $courses = fetchData1("*","courses","school_id=$user_school_id", 0); 
-                if(is_array($courses)) : ?>
-            <div class="joint" id="courseIDs">
-                <?php for($counter=0; $counter < count($courses); $counter++) : $course = $courses[$counter]; ?>
-                <label for="course_id<?= $counter ?>" class="checkbox">
-                    <input type="checkbox" name="course_id" id="course_id<?= $counter ?>" value="<?= $course['course_id'] ?>">
-                    <span class="label_title"><?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?></span>
-                </label>
-                <?php endfor; ?>
-            </div>
-            <?php else: ?>
-                <label for="">
-                    <p>Oops, no courses were found. Please add one to continue</p>
-                </label>
-            <?php endif; ?>
-
-            <!-- hidden inputs -->
-            <input type="hidden" name="school_id" value="<?= $user_school_id ?>">
-            <input type="hidden" name="course_ids" value="">
-
-            <div class="btn sm-unset w-full">
-                <button type="submit" class="primary w-full sp-med" name="submit" value="addProgram">Submit</button>
-            </div>
-        </div>
-    </form>
+    <?php require "$url/admin/admin/page_parts/subTeaForms.php?form_type=addProgram&school_id=$user_school_id" ?>
 </section>
 
 <div id="table_del" class="modal_yes_no fixed flex flex-center-content flex-center-align form_modal_box no_disp">
@@ -135,54 +93,7 @@
         <div id="getLoader"></div>
         <span class="item-event" id="cancelUpdate" style="color: white; margin-top: 10px; padding-left: 10px; text-align: center">Cancel</span>
     </div>
-    <form action="<?= $url ?>/admin/admin/submit.php" name="updateProgramForm" class="wmax-md w-full sm-auto no_disp" method="GET">
-        <div class="head">
-            <h2>Update Program</h2>
-        </div>
-        <div class="message_box no_disp">
-            <span class="message"></span>
-            <div class="close"><span>&cross;</span></div>
-        </div>
-        <div class="body flex flex-column gap-md">
-            <label for="u_program_name" class="flex-column gap-sm">
-                <span class="label_title">Name of Program</span>
-                <input type="text" name="program_name" id="u_program_name" placeholder="Name of Program">
-            </label>
-
-            <label for="">
-                <p>Select the courses taught in this program</p>
-            </label>
-
-            <?php $courses = fetchData1("*","courses","school_id=$user_school_id", 0); 
-                if(is_array($courses)) : ?>
-            <div class="joint" id="courseIDs">
-                <?php for($counter=0; $counter < count($courses); $counter++) : $course = $courses[$counter]; ?>
-                <label for="u_course_id<?= $counter ?>" class="checkbox">
-                    <input type="checkbox" name="course_id" id="u_course_id<?= $counter ?>" value="<?= $course['course_id'] ?>">
-                    <span class="label_title"><?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?></span>
-                </label>
-                <?php endfor; ?>
-            </div>
-            <?php else: ?>
-                <label for="">
-                    <p>Oops, no courses were found. Please add one to continue</p>
-                </label>
-            <?php endif; ?>
-
-            <!-- hidden inputs -->
-            <input type="hidden" name="program_id" value="">
-            <input type="hidden" name="course_ids" value="">
-
-            <div class="flex flex-wrap w-full gap-sm flex-eq wmax-xs sm-auto">
-                <label for="submit" class="btn w-full sm-unset sp-unset">
-                    <button type="submit" name="submit" class="primary w-fluid sp-med xs-rnd" value="updateProgram">Update</button>
-                </label>
-                <label for="cancel" class="btn w-full sm-unset sp-unset">
-                    <button type="reset" name="cancel" class="red w-fluid sp-med xs-rnd" onclick="$('#updateProgram').addClass('no_disp')">Cancel</button>
-                </label>
-            </div>
-        </div>
-    </form>
+    <?php require "$url/admin/admin/page_parts/subTeaForms.php?form_type=updateProgram&school_id=$user_school_id" ?>
 </div>
 
 <script>
@@ -276,7 +187,8 @@
                             if(results["course_ids"].includes(element_val)){
                                 $(element).prop('checked', true)
                             }
-                        })        
+                        })
+                        $("#updateProgram input[name=course_ids]").val(results["course_ids"])  
                     }else{
                         alert(results)
                     }
@@ -332,6 +244,20 @@
     $("form[name=updateProgramForm]").submit(function(e){
         e.preventDefault()
 
-        alert("Update coming soon")
+        const response = jsonFormSubmit($(this), $(this).find("button[name=submit]"))
+        response.then((return_data)=>{
+            return_data = JSON.parse(JSON.stringify(return_data))
+            
+            messageBoxTimeout($(this).prop("name"), return_data["message"], return_data["status"] ? "success" : "error")
+
+            if(return_data["status"] === true || return_data["status"] === "true"){                
+                $("button.control_btn").attr("data-refresh","true")
+            }
+
+            //refresh page if first course
+            if($("form").prop("name") === "addCourseForm" && return_data["isFirst"]){
+                location.href = location.href
+            }
+        })
     })
 </script>

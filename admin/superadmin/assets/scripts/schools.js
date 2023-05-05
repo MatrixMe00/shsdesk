@@ -55,6 +55,7 @@ $(".tabs .tab_btn").click(function(){
     $.ajax({
         url: "superadmin/submit.php",
         data: "submit=fetchEdit&school_id=" + school_id + "&content_box=" + content_box,
+        timeout: 15000,
         beforeSend: function(){
             //show loader if there is no content
             htm = $("#edit_modal .content .content_box." + content_box).html();
@@ -77,10 +78,17 @@ $(".tabs .tab_btn").click(function(){
                   "flex flex-center-content flex-center-align no_disp"
                 ).html(html);
         },
-        error: function (){
+        error: function (xhr, textStatus){
+            let message = ""
+
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later"
+            }else{
+                message = "An error occured. Please reload the page and try again, else contact admin for support"
+            }
             $("#edit_modal .content .content_box." + content_box).addClass(
                   "flex flex-center-content flex-center-align"
-                ).html("An error occured. Please reload the page and try again, else contact admin for support");
+                ).html(message);
         }
     })
 })

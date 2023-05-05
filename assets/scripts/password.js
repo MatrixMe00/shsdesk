@@ -13,6 +13,7 @@ $("input#email").blur(function() {
             type: "POST",
             dataType: "html",
             cache: false,
+            timeout: 15000,
             beforeSend: function(){
                 messageBoxTimeout("passwordForm",loadDisplay({
                     span1: "gray", 
@@ -41,8 +42,14 @@ $("input#email").blur(function() {
                 //hide the message box
                 $(".message_box").removeClass("load").addClass("no_disp");
             },
-            error: function(){
-                messageBoxTimeout("passwordForm","Error communicating with server", "error", 5);
+            error: function(e, textStatus){
+                let message = ""
+                if(textStatus == "timeout"){
+                    message = "Connection was timed out due to a slow network. Please try again later"
+                }else{
+                    message = "Error communicating with server"
+                }
+                messageBoxTimeout("passwordForm", message, "error", 5);
             }
         });
     }
@@ -82,6 +89,7 @@ $("form").submit(function(e){
         data: $(this).serialize() + "&submit=" + $("button[name=submit]").val(),
         type: $(this).prop("method"),
         dataType: "html",
+        timeout: 15000,
         beforeSend: function(){
             messageBoxTimeout("passwordForm",loadDisplay({
                     size: "vsmall"
@@ -104,6 +112,14 @@ $("form").submit(function(e){
                 //enable inputs and button
                 $("input#password, input#password2, button[name=submit]").prop("disabled", false);
             }
+        },
+        error: (xhr, textStatus) => {
+            let message = ""
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later"
+            }
+
+            alert_box(message, "danger", 10);
         }
     })
 })

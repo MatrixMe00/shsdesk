@@ -9,7 +9,7 @@ $("form").submit(function(e){
         dataType: "html",
         cache: true,
         type: "POST",
-
+        timeout: 15000,
         beforeSend: function(){
             message = "Please wait...";
             message_type = "load";
@@ -56,8 +56,12 @@ $("form").submit(function(e){
             messageBoxTimeout("contactForm",message, message_type, time);
         },
 
-        error: function(){
-            message = "Communication could not be established! Please check your connection and try again later";
+        error: function(xhr, textStatus){
+            let message = "Communication could not be established! Please check your connection and try again later";
+            
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network. Please try again later"
+            }
             message_type = "error";
             time = 5;
 

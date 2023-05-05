@@ -109,6 +109,7 @@ async function trackTransactions(reference = ""){
                 dataType: "text",
                 data: dataString,
                 cache: false,
+                timeout: 15000,
                 success: function(response){
                     if(response.includes("success")){
                         //pass transaction id to admission form
@@ -124,16 +125,22 @@ async function trackTransactions(reference = ""){
                         reference_parsed = true;
                     }
                 },
-                error: function(e){
-                    e = JSON.parse(JSON.stringify(e));
-                    message = e["statusText"];
+                error: function(e, textStatus){
+                    e = JSON.parse(JSON.stringify(e))
+                    message = e["statusText"]
+                    time = 5
+
+                    if(textStatus == "timeout"){
+                        message = "Connection was timed out due to a slow network. Please try again later"
+                        time = 8
+                    }
 
                     //enable only the transaction_id section
                     $("#pay_fullname, #pay_email, #pay_phone").prop("disabled", true);
 
                     $("#pay_reference").prop("disabled", false);
 
-                    messageBoxTimeout("paymentForm",message, "error");
+                    messageBoxTimeout("paymentForm",message, "error", time);
 
                     exit(1);
                 }
@@ -175,6 +182,7 @@ function sendSMS(reference){
         data: dataString,
         type: "POST",
         dataType: "json",
+        timeout: 15000,
         success: function(response){
             response1 = JSON.parse(JSON.stringify(response));
             if(response1["status"] == "success"){
@@ -183,9 +191,14 @@ function sendSMS(reference){
                 alert_box('An sms could not be sent, but payment was successful. Your transaction reference is ' + reference + ". Save this value at a safe place", "warning", 10);
             }
         },
-        error: function(e){
+        error: function(e, textStatus){
             alert_box('An error occured while sending sms, but payment was successful. Your transaction reference is ' + reference + ". Save this value at a safe place", "warning", 15);
-            alert_box(e.responseText, "danger")
+            if(textStatus == "timeout"){
+                alert_box("Connection was timed out due to a slow network. Please try again later", "danger")
+            }else{
+                alert_box(e.responseText, "danger")
+            }
+            
         }
     })
 }
@@ -215,6 +228,7 @@ async function passPaymentToDatabase(reference){
             dataType: "text",
             data: dataString,
             cache: false,
+            timeout: 15000,
             success: function(response){
                 if(response.includes("success")){
                     //pass admin number into admission form
@@ -241,9 +255,12 @@ async function passPaymentToDatabase(reference){
                     alert_box(message, message_type)
                 }
             },
-            error: function(){
+            error: function(xhr, textStatus){
                 message = "Error communicating with server. Validation failed on first try";
 
+                if(textStatus == "timeout"){
+                    message = "Connection was timed out due to a slow network. Please try again later"
+                }
                 //enable only the transaction_id section
                 $("#pay_fullname, #pay_email, #pay_phone").prop("disabled", true);
 
@@ -292,6 +309,7 @@ $("form[name=paymentForm]").submit(function(){
             type: "POST",
             dataType: "text",
             cache: false,
+            timeout: 15000,
             beforeSend: function(){
                 message = loadDisplay({size:"small", animation:"anim-fade anim-swing"});
                 messageType = "load";
@@ -340,8 +358,12 @@ $("form[name=paymentForm]").submit(function(){
                 }
                 messageBoxTimeout(form_name, message, messageType, time);
             },
-            error: function(){
+            error: function(xhr, textStatus){
                 message = "Error communicating with server. Please check your internet connection and try again later";
+                
+                if(textStatus === "timeout"){
+                    message = "Connection was timed out due to a slow network. Please try again later"
+                }
                 messageType = "error";
                 time = 5;
                 messageBoxTimeout(form_name, message, messageType, time);

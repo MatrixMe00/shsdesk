@@ -50,6 +50,7 @@ $(".item-event.sign-return").click(function(){
         dataType: "json",
         type: "POST",
         data: "submit=markReturn&id=" + id,
+        timeout: 15000,
         success: function(text){
             text = JSON.parse(JSON.stringify(text));
 
@@ -66,8 +67,12 @@ $(".item-event.sign-return").click(function(){
                 alert_box("Update was unsuccessful", "danger");
             }
         },
-        error: function(){
-            alert_box("An error occured. Please try again later!", "danger", 8);
+        error: function(xhr, textMessage){
+            if(textMessage == "timeout"){
+                alert_boc("Connection was timed out. Please try again later.", "danger", 8)
+            }else{
+            alert_box("An error occured. Please try again later!", "danger", 8)
+            }
         }
     })
 })
@@ -80,6 +85,7 @@ $("tbody tr").click(function(){
         url: $("form[name=exeatForm]").attr("action"),
         data: "submit=getExeat&id=" + id,
         dataType: "json",
+        timeout: 15000,
         success: function (data){
             data = JSON.parse(JSON.stringify(data));
 
@@ -114,8 +120,12 @@ $("tbody tr").click(function(){
                 alert_box(data["status"], "danger", 10);
             }
         },
-        error: function (){
-            alert_box("An error was encountered. Please try again later", "danger", 10);
+        error: function (xhr, textMessage){
+            if(textMessage === "timeout"){
+                alert_box("Connection was timed out. Please try again later", "danger", 10);
+            }else{
+                alert_box("An error was encountered. Please try again later", "danger", 10);
+            }            
         }
     })
 })

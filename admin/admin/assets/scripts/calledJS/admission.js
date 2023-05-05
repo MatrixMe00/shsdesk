@@ -99,6 +99,7 @@ $("form[name=admissiondetailsForm]").submit(function(e){
         async: false,
         contentType: false,
         processData: false,
+        timeout: 15000,
         beforeSend: function(){
             message = loadDisplay({size: "small"});
             type = "load";
@@ -110,15 +111,21 @@ $("form[name=admissiondetailsForm]").submit(function(e){
             $("form[name=" + $(this).prop("name") + "] .message_box").addClass("no_disp");
             if(text == "success" || text.includes("success")){
                 alert_box("Update was successful!");
-            }else{
+            }else{2
                 alert_box(text, "primary", 8);
             }
         },
-        error: function(){
-            message = "Please check your internet connection and try again";
+        error: function(xhr, textStatus){
+            let message = ""
+            if(textStatus == "timeout"){
+                message = "Connection was timed out due to a slow network connection. Please try again later"
+            }else{
+                message = "Please check your internet connection and try again"
+            }
+            
             type = "error";
 
-            messageBoxTimeout($(this).prop("name"), message, type);
+            messageBoxTimeout($(this).prop("name"), message, type)
         }
     })
 })

@@ -817,19 +817,43 @@
      * @return string Returns the formatted program id
      */
     function formatItemId($subject_id, $prefix){
-        switch (strlen($subject_id)){
-            case 1:
-                $subject_id = "000".$subject_id; break;
-            case 2:
-                $subject_id = "00".$subject_id; break;
-            case 3:
-                $subject_id = "0".$subject_id; break;
-            default:
-                $subject_id = $subject_id;
-        }
+        $subject_id = str_pad($subject_id, 4, "0", STR_PAD_LEFT);
 
         $subject_id = "$prefix $subject_id";
 
         return $subject_id;
+    }
+
+    /**
+     * This function is used to present a greeting message based on the time
+     * @return string a greeting
+     */
+    function showGreeting():string{
+        $time = date("H");
+
+        if($time < 12){
+            $greet = "Good Morning";
+        }elseif($time < 16){
+            $greet = "Good Afternoon";
+        }else{
+            $greet = "Good Evening";
+        }
+
+        return $greet;
+    }
+
+    /**
+     * This function is used to provide an index number for a candidate
+     * @param int $school_id This is the school id of the user logged in
+     * @return string returns a formated index number
+     */
+    function generateIndexNumber(int $school_id):string{
+        global $connect;
+
+        $school_id = str_pad($school_id, 3, "0", STR_PAD_LEFT);
+        $current_year = date("y");
+        $student_number = str_pad(((rand() % 9999) + 1),4,"0",STR_PAD_LEFT);
+        
+        return "$school_id$current_year$student_number";
     }
 ?>
