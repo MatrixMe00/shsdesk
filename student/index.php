@@ -93,7 +93,7 @@
             </div>
             <?php if ($isStudentLogin): ?>
             <div class="btn_label">
-                <button type="submit" name="entry" class="teal sp-lg" title="Proceed to your portal. Currently disabled" disabled value="studentLogin">Enter</button>
+                <button type="submit" name="submit" class="teal sp-lg" title="Proceed to your portal. Currently disabled" disabled value="studentLogin">Enter</button>
             </div>
             <?php else : ?>
             <div class="btn_label">
@@ -103,19 +103,20 @@
         </form>
     </main>
 
-    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
+    <script src="<?= $url ?>/assets/scripts/functions.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/general.min.js?v=<?php echo time()?>" async></script>
     <script>
         $("input[name=<?= $isStudentLogin ? "password":"indexNumber" ?>]").keyup(function(){
             let number_of_characters = $(this).val().length;
 
-            if(number_of_characters >= <?= $isStudentLogin ? 1:6 ?>){
+            if(number_of_characters >= <?= $isStudentLogin ? 3:6 ?>){
                 $("button").prop("disabled",false)
             }else{
                 $("button").prop("disabled",true)
             }
         })
         //admission details button
-        $("button[name=<?= $isStudentLogin ? "entry":"admission" ?>]").click(function(e){
+        $("button[name=<?= $isStudentLogin ? "submit":"admission" ?>]").click(function(e){
             e.preventDefault()
 
             //take index number
@@ -188,11 +189,15 @@
 
                         messageBoxTimeout(message,type,time)
                     }else{
-                        location.href="main.php"
+                        const response = formSubmit($("form"), $("form").find("button[name=submit]"))
+                        
+                        if(typeof response === "boolean"){
+                            messageBoxTimeout("studentForm","Login was successful", "success")
+                            setTimeout(()=>{location.href="./main"},3500)
+                        }else{
+                            messageBoxTimeout("studentForm",response,"error")
+                        }
                     }
-                /*$.ajax({
-                    url: $(this).attr("action"),
-                })*/
                 <?php endif; ?>
             }
         })

@@ -1,0 +1,47 @@
+body{
+    display: flex;
+}
+
+nav{flex: 1 1; position: sticky; top: 0;}
+main{flex: 4 1;}
+
+/* dashboard */
+.d-section, .p-section{
+    padding: 1em;
+}
+
+.p-section{
+    gap: 0.5em;
+}
+
+.p-section > *:first-child{
+    flex: 2 1 250px;
+}
+
+.p-section > *:last-child{
+    flex: 4 1 600px;
+}
+.card-section{justify-content: center;}
+/* end of dashboard */
+
+/* subject tab */
+#subject_table tbody tr:hover{
+    background-color: #eee;
+    cursor: pointer;
+}
+#subject_table tbody tr.yellow:hover{
+    background-color: var(--yellow);
+    cursor: default;
+}
+/* end of subject tab */
+
+@media screen and (max-width: 768px) {
+    body{flex-direction: column;}
+    .d-greeting{text-align: center}
+}
+
+@media screen and (max-width: 480px) {
+    .d-section{
+        padding: 0.1em;
+    }
+}
