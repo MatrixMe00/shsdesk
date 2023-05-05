@@ -42,5 +42,5 @@
             </div>
         </div>
     </div>
-    <input type="hidden" id="active-page" value="<?= is_null($_SESSION["active-page"]) || !isset($_SESSION["active-page"]) ? "dashboard" : $_SESSION["active-page"] ?>">
+    <input type="hidden" id="active-page" value="<?= !isset($_SESSION["active-page"]) ? "dashboard" : $_SESSION["active-page"] ?>">
 </nav>
