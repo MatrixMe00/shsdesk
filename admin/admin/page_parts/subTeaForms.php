@@ -27,6 +27,10 @@
                     <span class="label_title">Course Alias [Short Form]</span>
                     <input type="text" name="course_alias" id="course_alias" placeholder="Course Alias">
                 </label>
+                <label for="course_credit" class="flex-column gap-sm">
+                    <span class="label_title">Course Credit Hours</span>
+                    <input type="text" name="course_credit" id="course_credit" placeholder="Course Credit Hours">
+                </label>
             </div>
 
             <!-- hidden controls -->
@@ -55,6 +59,10 @@
                 <label for="u_course_alias" class="flex-column gap-sm">
                     <span class="label_title">Course Alias [Short Form]</span>
                     <input type="text" name="course_alias" id="u_course_alias" placeholder="Course Alias">
+                </label>
+                <label for="course_credit" class="flex-column gap-sm">
+                    <span class="label_title">Course Credit Hours</span>
+                    <input type="text" name="course_credit" id="course_credit" placeholder="Course Credit Hours">
                 </label>
             </div>
 

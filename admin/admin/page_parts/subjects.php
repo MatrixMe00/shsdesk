@@ -67,6 +67,7 @@
                 <td>Course Name</td>
                 <td>Course Alias</td>
                 <td>Programs Offering</td>
+                <td>Credit Hours</td>
             </thead>
             <tbody>
                 <?php for($counter = 0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses ?>
@@ -75,6 +76,7 @@
                     <td><?= $course["course_name"] ?></td>
                     <td><?= $course["short_form"] ?></td>
                     <td><?= fetchData1("COUNT(*) AS total","program","course_ids LIKE '%".$course["course_id"]."% '")["total"] ?></td>
+                    <td><?= is_null($course["credit_hours"]) ? "Not Set" : $course["credit_hours"] ?></td>
                     <td>
                         <span class="item-event edit" data-item-id="<?= $course["course_id"] ?>">Edit</span>
                         <span class="item-event delete" data-item-id="<?= $course["course_id"] ?>">Delete</span>
@@ -280,6 +282,7 @@
                             $("#updateItem form[name=" + formName + "] input[name=course_name]").val(results["course_name"])
                             $("#updateItem form[name=" + formName + "] input[name=course_alias]").val(results["short_form"])
                             $("#updateItem form[name=" + formName + "] input[name=course_id]").val(results["course_id"])
+                            $("#updateItem form[name=" + formName + "] input[name=course_credit]").val(results["credit_hours"] == null ? 0 : results["credit_hours"])
                         }else{
                             $("#updateItem form[name=" + formName + "] span#teacherID").html($(this_eventBtn).parents("tr").children("td:first-child").html())
                             $("#updateItem form[name=" + formName + "] input[name=teacher_lname]").val(results["lname"])

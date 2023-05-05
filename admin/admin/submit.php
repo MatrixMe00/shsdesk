@@ -893,6 +893,7 @@
         }elseif($submit == "addNewCourse" || $submit == "addNewCourse_ajax"){
             @$course_name = $_GET["course_name"];
             @$course_alias = $_GET["course_alias"];
+            @$course_credit = $_GET["course_credit"];
             @$school_id = intval($_GET["school_id"]);
 
             $message = ""; $status = false; $final = array(); $isFirst = false;
@@ -902,9 +903,9 @@
             }elseif(empty($school_id) || $school_id <= 0){
                 $message = "No school has been selected. Please check and try again";
             }else{
-                $sql = "INSERT INTO courses (school_id, course_name, short_form) VALUES (?,?,?)";
+                $sql = "INSERT INTO courses (school_id, course_name, short_form, credit_hours) VALUES (?,?,?,?)";
                 $stmt = $connect2->prepare($sql);
-                $stmt->bind_param("iss", $school_id, $course_name, $course_alias);
+                $stmt->bind_param("issi", $school_id, $course_name, $course_alias, $course_credit);
 
                 if($stmt->execute()){
                     $message = !empty($course_alias) ? $course_alias : $course_name;
@@ -1114,6 +1115,7 @@
         }elseif($submit == "updateCourse" || $submit == "updateCourse_ajax"){
             @$course_name = $_GET["course_name"];
             @$course_alias = $_GET["course_alias"];
+            @$course_credit = $_GET["course_credit"];
             @$course_id = intval($_GET["course_id"]);
 
             $message = ""; $status = false; $final = array();
@@ -1123,17 +1125,22 @@
             }elseif(empty($course_id) || $course_id <= 0){
                 $message = "No course/subject has been selected. Please check and try again";
             }else{
-                $sql = "UPDATE courses SET course_name=?, short_form=? WHERE course_id=?";
-                $stmt = $connect2->prepare($sql);
-                $stmt->bind_param("ssi", $course_name, $course_alias, $course_id);
+                try{
+                    $sql = "UPDATE courses SET course_name=?, short_form=?, credit_hours=? WHERE course_id=?";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("ssii", $course_name, $course_alias, $course_id, $course_credit);
 
-                if($stmt->execute()){
-                    $message = !empty($course_alias) ? $course_alias : $course_name;
-                    $message .= " has been updated";
-                    $status = true;
-                }else{
-                    $message = !empty($course_alias) ? $course_alias : $course_name;
-                    $message .= " could not be updated";
+                    if($stmt->execute()){
+                        $message = !empty($course_alias) ? $course_alias : $course_name;
+                        $message .= " has been updated";
+                        $status = true;
+                    }else{
+                        $message = !empty($course_alias) ? $course_alias : $course_name;
+                        $message .= " could not be updated";
+                    }
+                }catch(\Throwable $th){
+                    $status = false;
+                    $message = $th->getMessage();
                 }
             }
 
