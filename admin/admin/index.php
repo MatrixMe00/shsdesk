@@ -156,7 +156,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                             <img src="<?php echo $url?>/assets/images/icons/list-outline.svg" alt="students" />
                         </div>
                         <div class="menu_name">
-                            <span>Program List</span>
+                            <span>Classes & Results</span>
                         </div>
                     </div>
                     <?php endif; ?>
