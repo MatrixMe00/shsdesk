@@ -151,7 +151,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                         </div>
                     </div>
                     <?php if(fetchData1("COUNT(*) as total","courses","school_id = $user_school_id")["total"] > 0) : ?>
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/programs.php" name="programs" title="Students List">
+                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/programs.php" name="programs" title="Students List" data-tab="allPrograms">
                         <div class="icon">
                             <img src="<?php echo $url?>/assets/images/icons/list-outline.svg" alt="students" />
                         </div>
