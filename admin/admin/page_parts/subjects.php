@@ -170,7 +170,7 @@
         $("#" + $(this).attr("data-section")).removeClass("no_disp")
 
         if($(this).attr("data-refresh") && $(this).attr("data-refresh") == "true"){
-            location.href = location.href
+            $("#lhs.menu .item.active").click()
         }
     })
 
