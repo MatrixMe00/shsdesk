@@ -5,7 +5,7 @@
     include_once("../../../includes/session.php");
     $courses = fetchData1("*","courses","school_id=$user_school_id", 0);
     $teachers = fetchData1("*","teachers","school_id=$user_school_id", 0);
-    $classes = fetchData1("program_id, program_name, course_ids","program","school_id=$user_school_id", 0);
+    $classes = fetchData1("*","program","school_id=$user_school_id", 0);
     
     switch($form_type) :
         case "course_add":
@@ -139,7 +139,7 @@
                 <?php for($counter=0; $counter < count($classes); $counter++) : $class = $classes[$counter]; ?>
                 <label for="class_id<?= $counter ?>" class="checkbox" data-course-id="<?= $class["course_ids"] ?>">
                     <input type="checkbox" name="class_id" id="class_id<?= $counter ?>" value="<?= $class['program_id'] ?>">
-                    <span class="label_title"><?= empty($class["short_form"]) || is_null($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></span>
+                    <span class="label_title"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></span>
                 </label>
                 <?php endfor; ?>
             </div>

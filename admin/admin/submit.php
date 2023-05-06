@@ -937,6 +937,7 @@
             @$teacher_email = $_GET["teacher_email"];
             @$teacher_phone = $_GET["teacher_phone"];
             @$course_ids = $_GET["course_ids"];
+            @$class_ids = $_GET["class_ids"];
             @$school_id = $_GET["school_id"];
 
             $message = ""; $status = false; $final = array();
@@ -957,23 +958,30 @@
                 $message = "Please assign the teacher at least one course";
             }elseif(empty($school_id)){
                 $message = "No school selected. Please check and try again";
+            }elseif(empty($class_ids)){
+                $message = "Please provide the class(es) this teacher teaches";
             }else{
-                $sql = "INSERT INTO teachers (lname, oname, gender, email, phone_number, school_id, course_id, joinDate)
-                    VALUES (?,?,?,?,?,?,?,NOW())";
-                $stmt = $connect2->prepare($sql);
-                $stmt->bind_param("sssssis", $teacher_lname, $teacher_oname, $teacher_gender, $teacher_email, $teacher_phone, $school_id, $course_ids);
-                if($stmt->execute()){
-                    //insert into login
-                    $teacher_id = fetchData1("teacher_id","teachers","phone_number = '$teacher_phone'");
-                    if($teacher_id != "empty"){
-                        $connect2->query("INSERT INTO teacher_login (user_id) VALUES (".$teacher_id["teacher_id"].")");
-                        $message = "Teacher has been added";
-                        $status = true;
+                try {
+                    $sql = "INSERT INTO teachers (lname, oname, gender, email, phone_number, school_id, course_id, program_ids, joinDate)
+                        VALUES (?,?,?,?,?,?,?,?,NOW())";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("sssssiss", $teacher_lname, $teacher_oname, $teacher_gender, $teacher_email, $teacher_phone, $school_id, $course_ids, $class_ids);
+                    if($stmt->execute()){
+                        //insert into login
+                        $teacher_id = fetchData1("teacher_id","teachers","phone_number = '$teacher_phone'");
+                        if($teacher_id != "empty"){
+                            $connect2->query("INSERT INTO teacher_login (user_id) VALUES (".$teacher_id["teacher_id"].")");
+                            $message = "Teacher has been added";
+                            $status = true;
+                        }else{
+                            $message = "Teacher added, but teacher cannot login. Please contact the administrator for help";
+                        }
                     }else{
-                        $message = "Teacher added, but teacher cannot login. Please contact the administrator for help";
+                        $message = "Teacher could not be added";
                     }
-                }else{
-                    $message = "Teacher could not be added";
+                } catch (\Throwable $th) {
+                    $status = false;
+                    $message = $th->getMessage();
                 }
             }
 
@@ -1170,6 +1178,7 @@
             @$teacher_email = $_GET["teacher_email"];
             @$teacher_phone = $_GET["teacher_phone"];
             @$course_ids = $_GET["course_ids"];
+            @$class_ids = $_GET["class_ids"];
             @$teacher_id = $_GET["teacher_id"];
 
             $message = ""; $status = false; $final = array();
@@ -1190,16 +1199,25 @@
                 $message = "Please assign the teacher at least one course";
             }elseif(empty($teacher_id)){
                 $message = "No teacher selected. Please check and try again";
+            }elseif(empty($class_ids)){
+                $message = "Please provide the class(es) this teacher teaches";
             }else{
-                $sql = "UPDATE teachers SET lname=?, oname=?, gender=?, email=?, phone_number=?, course_id=? WHERE teacher_id=?";
-                $stmt = $connect2->prepare($sql);
-                $stmt->bind_param("ssssssi", $teacher_lname, $teacher_oname, $teacher_gender, $teacher_email, $teacher_phone, $course_ids, $teacher_id);
-                if($stmt->execute()){
-                    $message = "Details for $teacher_lname has been updated";
-                    $status = true;
-                }else{
-                    $message = "Teacher could not be added";
+                try {
+                    $sql = "UPDATE teachers SET lname=?, oname=?, gender=?, email=?, phone_number=?, course_id=?, program_ids=? WHERE teacher_id=?";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("sssssssi", $teacher_lname, $teacher_oname, $teacher_gender, $teacher_email, 
+                        $teacher_phone, $course_ids, $class_ids, $teacher_id);
+                    if($stmt->execute()){
+                        $message = "Details for $teacher_lname has been updated";
+                        $status = true;
+                    }else{
+                        $message = "Teacher could not be added";
+                    }
+                } catch (\Throwable $th) {
+                    $message = $th->getMessage();
+                    $status = false;
                 }
+                
             }
 
             $final = [

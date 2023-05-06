@@ -177,9 +177,10 @@
     $("#courseIDs label input").change(function(){
         let active_value = $(this).prop("checked")
         let check_value = $(this).prop("value")
+        const form = $(this).parents("form")
 
         //get content of course ids
-        let course_ids = $("input[name=course_ids]").val()
+        let course_ids = $(form).find("input[name=course_ids]").val()
         
         if(active_value){
             course_ids = course_ids.concat(check_value," ")
@@ -188,7 +189,25 @@
         }
 
         //push new response into course ids
-        $("input[name=course_ids]").val(course_ids)
+        $(form).find("input[name=course_ids]").val(course_ids)
+    })
+
+    $("#classIDs label input").change(function(){
+        let active_value = $(this).prop("checked")
+        let check_value = $(this).prop("value")
+        const form= $(this).parents("form")
+
+        //get content of course ids
+        let course_ids = $(form).find("input[name=class_ids]").val()
+        
+        if(active_value){
+            course_ids = course_ids.concat(check_value," ")
+        }else{
+            course_ids = course_ids.replace(check_value + " ", '')
+        }
+
+        //push new response into course ids
+        $(form).find("input[name=class_ids]").val(course_ids)
     })
 
     $("form").submit(function(e){
@@ -295,10 +314,19 @@
 
                             $("#updateItem form[name=" + formName + "] input[type=checkbox]").each((index, element)=>{
                                 element_val = $(element).val() + " "
-                                $(element).prop('checked', false)
-                                if(results["course_id"].includes(element_val)){
-                                    $(element).prop('checked', true)
-                                }
+                                checkbox_name = $(element).attr("name").toLowerCase()
+                                
+                                if(checkbox_name == "course_id"){
+                                    $(element).prop('checked', false)
+                                    if(results["course_id"].includes(element_val)){
+                                        $(element).prop('checked', true)
+                                    }
+                                }else if(checkbox_name == "class_id"){
+                                    $(element).prop('checked', false)
+                                    if(results["program_ids"] != null && results["program_ids"].includes(element_val)){
+                                        $(element).prop('checked', true)
+                                    }
+                                }                                
                             })
                         }
 
