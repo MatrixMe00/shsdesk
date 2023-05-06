@@ -856,4 +856,35 @@
         
         return "$school_id$current_year$student_number";
     }
+    
+    /**
+     * 
+     */
+
+    /**
+     * This function would be used to generate tokens for results posted by teachers
+     * @param int $teacher_id This is the id of the teacher
+     * @param int $school_id This is the unique index of the teachers school
+     * @return string returns a unique token
+     */
+    function generateToken($teacher_id, $school_id):string{
+        $token = "";
+    
+        //generate three random values
+        for($i = 1; $i <= 3; $i++){
+            $token .= chr(rand(65,90));
+        }
+    
+        //add teacher id
+        $token .= str_pad(strval($teacher_id), 3, "0", STR_PAD_LEFT);
+    
+        $token = str_shuffle($token);
+    
+        //random characters
+        $token .= chr(rand(65,90)). str_pad($school_id,2,"0",STR_PAD_LEFT);
+        $token = substr(str_shuffle($token.uniqid()), 0, 8);
+        $token .= date("y");
+    
+        return strtolower($token);
+    }
 ?>
