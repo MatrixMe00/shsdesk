@@ -23,7 +23,7 @@
             </h2>
         </div>
         <div class="body">
-            <span>Total Programs</span>
+            <span>Total Classes</span>
         </div>
     </div>
 
@@ -43,28 +43,30 @@
 <section class="flex-column flex-all-center">
     <h1 class="txt-primary">Controls</h1>
     <div class="body btn flex flex-wrap gap-md">
-        <button class="control_btn sp-lg xs-rnd primary" data-section="allPrograms" data-refresh="false" id="viewAll">View All Programs</button>
-        <button class="control_btn sp-lg xs-rnd secondary" data-section="newProgram">Add new Program</button>
+        <button class="control_btn sp-lg xs-rnd primary" data-section="allPrograms" data-refresh="false" id="viewAll">View All Classes</button>
+        <button class="control_btn sp-lg xs-rnd secondary" data-section="newProgram">Add new Class</button>
     </div>
 </section>
 
-<section id="allPrograms" class="sp-xlg-tp section_box">
+<section id="Classerams" class="sp-xlg-tp section_box">
     <?php if(is_array($programs)) : ?>
     <div class="head">
-        <h2 class="txt-al-c">Your Programs</h2>
+        <h2 class="txt-al-c">Your Classes</h2>
     </div>
     <div class="body">
         <table>
             <thead>
-                <td>Program ID</td>
-                <td>Program Name</td>
-                <td>Program Course Count</td>
+                <td>Class ID</td>
+                <td>Class Name</td>
+                <td>Alias Name</td>
+                <td>Class Course Count</td>
             </thead>
             <tbody>
                 <?php for($counter = 0; $counter < (isset($programs[0]) ? count($programs) : 1); $counter++) : $program = isset($programs[0]) ? $programs[$counter] : $programs ?>
                 <tr>
                     <td><?= formatItemId($program["program_id"], "PID") ?></td>
                     <td><?= $program["program_name"] ?></td>
+                    <td><?= is_null($program["short_form"]) ? "Not Set" : $program["short_form"] ?></td>
                     <td><?= count(explode(" ", $program["course_ids"])) - 1 ?></td>
                     <td>
                         <span class="item-event edit" data-item-id="<?= $program["program_id"] ?>">Edit</span>
@@ -188,6 +190,7 @@
                                 $(element).prop('checked', true)
                             }
                         })
+                        $("#updateProgram input[name=short_form]").val(results["short_form"])
                         $("#updateProgram input[name=course_ids]").val(results["course_ids"])  
                     }else{
                         alert(results)

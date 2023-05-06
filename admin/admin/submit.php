@@ -990,6 +990,7 @@
             @$program_name = $_GET["program_name"];
             @$school_id = $_GET["school_id"];
             @$course_ids = $_GET["course_ids"];
+            @$short_form = $_GET["short_form"];
             
             if(empty($program_name)){
                 $message = "Please provide the name of the program";
@@ -998,15 +999,20 @@
             }elseif(empty($course_ids)){
                 $message = "Please select the courses/subjects held in this program";
             }else{
-                $sql = "INSERT INTO program (school_id, program_name, course_ids) VALUES (?,?,?)";
-                $stmt = $connect2->prepare($sql);
-                $stmt->bind_param("iss", $school_id, $program_name, $course_ids);
+                try {
+                    $sql = "INSERT INTO program (school_id, program_name, short_form, course_ids) VALUES (?,?,?,?)";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("isss", $school_id, $program_name, $short_form, $course_ids);
 
-                if($stmt->execute()){
-                    $message = "The program has been saved.";
-                    $status = true;
-                }else{
-                    $message = "The program could not be saved. Please try again.";
+                    if($stmt->execute()){
+                        $message = "The program has been saved.";
+                        $status = true;
+                    }else{
+                        $message = "The program could not be saved. Please try again.";
+                    }
+                } catch (\Throwable $th) {
+                    $message = $th->getMessage();
+                    $status = false;
                 }
             }
 
@@ -1061,24 +1067,30 @@
             @$program_name = $_GET["program_name"];
             @$program_id = $_GET["program_id"];
             @$course_ids = $_GET["course_ids"];
+            @$short_form = $_GET["short_form"];
             
             if(empty($program_id) || intval($program_id) < 0){
-                $message = "Program could not be selected";
+                $message = "Class could not be selected. Please refresh the page and try again";
             }elseif(empty($program_name)){
-                $message = "Please provide the name of the program";
+                $message = "Please provide the name of the class";
             }elseif(empty($course_ids)){
-                $message = "Please select the courses/subjects held in this program";
+                $message = "Please select the courses/subjects held in this class";
             }else{
-                $sql = "UPDATE program SET program_name=?, course_ids=? WHERE program_id=?";
-                $stmt = $connect2->prepare($sql);
-                $stmt->bind_param("ssi", $program_name, $course_ids, $program_id);
+                try {
+                    $sql = "UPDATE program SET program_name=?, short_form=?, course_ids=? WHERE program_id=?";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("sssi", $program_name, $short_form, $course_ids, $program_id);
 
-                if($stmt->execute()){
-                    $message = "The program has been updated";
-                    $status = true;
-                }else{
-                    $message = "The program could not be saved. Please try again.";
-                }
+                    if($stmt->execute()){
+                        $message = "The program has been updated";
+                        $status = true;
+                    }else{
+                        $message = "The program could not be saved. Please try again.";
+                    }
+                } catch (\Throwable $th) {
+                    $status = false;
+                    $message = $th->getMessage();
+                }                
             }
 
             $final = [
