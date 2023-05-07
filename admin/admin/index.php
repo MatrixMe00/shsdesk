@@ -125,7 +125,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     </div>
 
     <div style="transition: unset !important; max-width: 250px; width: 100%; cursor: move" 
-        class="absolute lt-shade sp-med top-right light sm-lg-t sm-xlg-r" id="admin_mode">
+        class="absolute dark lt-shade sp-med top-right light sm-lg-t sm-xlg-r" id="admin_mode">
         <p class="txt-al-c txt-fs" style="cursor: pointer" id="admin_head_title">Change Interface Mode</p>
         <select name="admin_mode_select" style="cursor: default" class="p-med sp-med wmin-unset w-full no_disp" id="admin_mode_select">
             <option value="admission"<?= $_SESSION["admin_mode"] == "admission" ? " selected" : "" ?>>Admission</option>
@@ -172,6 +172,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             $("#admin_head_title").click(function(){
                 $(this).siblings("select, p").toggleClass("no_disp")
                 $(this).toggleClass("sm-med-b")
+                $(this).parent().toggleClass("dark")
             })
 
             $("#admin_mode select").change(function(){
