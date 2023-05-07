@@ -8,7 +8,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     include_once("../../../includes/session.php");
 
     //set nav_point session
-    $_SESSION["nav_point"] = "House";
+    $_SESSION["nav_point"] = "house";
     }
 
     //check if current school is a day school

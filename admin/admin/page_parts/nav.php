@@ -101,7 +101,7 @@
         "House_allocation" => [
             0 => [
                 "item_class"=> "",
-                "name" => "houses",
+                "name" => "allocation",
                 "title" => "House Allocation",
                 "data-url" => "/admin/admin/page_parts/allocation.php",
                 "imgSrc" => "/assets/images/icons/home-outline.svg",
@@ -142,7 +142,7 @@
             "item_class"=> "",
             "name" => "payment",
             "title" => "Payments",
-            "data-url" => "/admin/admin/page_parts/trans.php",
+            "data-url" => "/admin/trans.php",
             "imgSrc" => "/assets/images/icons/cash-outline.svg",
             "imgAlt" => "payment",
             "menu_class" => "",

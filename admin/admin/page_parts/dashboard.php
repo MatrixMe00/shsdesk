@@ -2,7 +2,7 @@
     $price = fetchData("price","roles","id=".$user_details["role"])["price"];
 
     //set nav_point session
-    $_SESSION["nav_point"] = "Dashboard";
+    $_SESSION["nav_point"] = "dashboard";
 ?>
 <section class="section_container">
     <div class="content blue">

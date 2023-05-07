@@ -8,7 +8,7 @@
         include_once("../../../includes/session.php");
     
         //set nav_point session
-        $_SESSION["nav_point"] = "student";
+        $_SESSION["nav_point"] = "allocation";
     }
 ?>
 <section class="section_container">

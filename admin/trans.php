@@ -1,6 +1,6 @@
 <?php include_once("../includes/session.php");
 
-    $_SESSION["nav_point"] = "Payments";
+    $_SESSION["nav_point"] = "payment";
 ?>
 <head>
     <style>

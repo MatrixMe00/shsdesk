@@ -9,7 +9,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     include_once("../../../includes/session.php");
 
     //set nav_point session
-    $_SESSION["nav_point"] = "CSSPS";
+    $_SESSION["nav_point"] = "cssps";
     }
 ?>
 <section class="section_container">
