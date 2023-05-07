@@ -50,6 +50,11 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     $user_school_id = $user_details['school_id'];
     $user_role = getRole($user_details['role']);
     $user_email = $user_details['email'];
+
+    //check for admission mode and results mode
+    if(!isset($_SESSION["admin_mode"])){
+        $_SESSION["admin_mode"] = "admission";
+    }
 }elseif(isset($_SESSION["student_id"]) && !is_null($_SESSION["student_id"])){
     $student = fetchData1("*","students_table","indexNumber='".$_SESSION["student_id"]."'");
     

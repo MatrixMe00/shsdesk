@@ -1,5 +1,8 @@
 <?php
     //depending on where the page is being called from
+
+use function Composer\Autoload\includeFile;
+
     $this_url = $_SERVER["REQUEST_URI"];
 
     if(strpos($this_url, "shsdesk")){
@@ -88,176 +91,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                     <span><?php echo $status ?></span>
                 </div>
             </div>
-            <div id="middle">
-                <!--Dashboard-->
-                <div class="menu">
-                    <div class="item active" name="Dashboard" title="Dashboard" data-url="<?php echo $url?>/admin/admin/page_parts/dashboard.php">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/speedometer-outline.svg" alt="Dashboard" />
-                        </div>
-                        <div class="menu_name">
-                            <span>Dashboard</span>
-                        </div>
-                    </div>
-                    <div class="item relative" name="Notification" title="Notification" data-url="<?php echo $url?>/admin/admin/page_parts/notification.php">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/notifications-circle-outline.svg" alt="notification" />
-                        </div>
-                        <div class="menu_name relative">
-                            <span>Notification</span>
-                        </div>
-                        <?php 
-                            //count notifications
-                            $total = 0;
-
-                            //unread notifications
-                            $result = $connect->query("SELECT *
-                                FROM notification
-                                WHERE (Read_by NOT LIKE '%$user_username%' AND Audience='all')
-                                OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')
-                                ORDER BY ID DESC");
-                            $total += $result->num_rows;
-
-                            //new replies
-                            $result = $connect->query("SELECT DISTINCT n.* 
-                                FROM notification n JOIN reply r 
-                                ON n.ID = r.Comment_id 
-                                WHERE r.Read_by NOT LIKE '%$user_username%'
-                                AND n.Read_by LIKE '%$user_username%'
-                                ORDER BY ID DESC");
-                            $total += $result->num_rows;
-
-                            if($total > 0){
-                        ?>
-                        <div class="news_number absolute danger flex flex-center-align flex-center-content">
-                            <span><?php echo $total;?></span>
-                        </div>
-                        <?php }?>
-                    </div>
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/all_students.php" name="students" title="Students List">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/people-outline.svg" alt="students" />
-                        </div>
-                        <div class="menu_name">
-                            <span>Students List</span>
-                        </div>
-                    </div>
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/subjects.php" name="subjects" title="Students List" data-tab="courses">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/book-outline.svg" alt="students" />
-                        </div>
-                        <div class="menu_name">
-                            <span>Subjects and Teachers</span>
-                        </div>
-                    </div>
-                    <?php if(fetchData1("COUNT(*) as total","courses","school_id = $user_school_id")["total"] > 0) : ?>
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/programs.php" name="programs" title="Students List" data-tab="allPrograms">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/list-outline.svg" alt="students" />
-                        </div>
-                        <div class="menu_name">
-                            <span>Classes & Results</span>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                </div>
-                
-                <!--Management of students-->
-                <div class="menu">
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/cssps.php" name="CSSPS" title="CSSPS List">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/people-outline.svg" alt="cssps" />
-                        </div>
-                        <div class="menu_name">
-                            <span>CSSPS List</span>
-                        </div>
-                    </div>
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/enrol.php" name="Enrol" title="Enrolment Data">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/enter.png" alt="Enrol" />
-                        </div>
-                        <div class="menu_name">
-                            <span>Enrolment Data</span>
-                        </div>
-                    </div>
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/houses.php" name="House" title="House and Bed Declarations">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/bed-outline.svg" alt="Placement" />
-                        </div>
-                        <div class="menu_name">
-                            <span>House and Bed Declarations</span>
-                        </div>
-                    </div>
-                </div>
-    
-                <!--House allocation-->
-                <div class="menu">
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/allocation.php" name="student" title="House Allocation">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/home-outline.svg" alt="Home" />
-                        </div>
-                        <div class="menu_name">
-                            <span>House Allocation</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!--Admission and Exeat-->
-                <div class="menu">
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/admission.php" name="admission" title="School Details">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="" />
-                        </div>
-                        <div class="menu_name">
-                            <span>School Details</span>
-                        </div>
-                    </div>
-                    <div class="item" data-url="<?php echo $url?>/admin/admin/page_parts/exeat.php" name="exeat" title="Exeat">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/exit-outline.svg" alt="exeat">
-                        </div>
-                        <div class="menu_name">
-                            <span>Exeat</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="foot">
-                <div class="menu">
-                    <div class="item" data-url="<?php echo $url?>/admin/trans.php" name="Payments" title="Payments">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/cash-outline.svg" alt="payment" />
-                        </div>
-                        <div class="menu_name">
-                            <span>Payments</span>
-                        </div>
-                    </div>
-                    <div class="item" name="account" title="Account Update" data-url="<?php echo $url?>/admin/admin/page_parts/person.php">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="" />
-                        </div>
-                        <div class="menu_name">
-                            <span>Account Update [Personal]</span>
-                        </div>
-                    </div>
-                    <div class="item" name="password" title="Change Password" data-url="<?php echo $url?>/admin/admin/page_parts/change_password.php">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/key-outline.svg" alt="" />
-                        </div>
-                        <div class="menu_name">
-                            <span>Change Password</span>
-                        </div>
-                    </div>
-                    <div class="item" id="logout" title="Logout">
-                        <div class="icon">
-                            <img src="<?php echo $url?>/assets/images/icons/logout.png" alt="" />
-                        </div>
-                        <div class="menu_name">
-                            <span>Logout</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <?php include_once("page_parts/nav.php"); ?>
         </div>
     </nav>
     <section id="rhs">
@@ -300,7 +134,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                     else
                         echo $_SESSION["nav_point"];
                 }else{
-                    echo "Dashboard";
+                    echo "dashboard";
                 }
                 ?>";
             $("div[name=" + nav_point + "]").click();
