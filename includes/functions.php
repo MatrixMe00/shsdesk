@@ -454,18 +454,23 @@
             $sql .= " LIMIT $limit";
         }
         
-        $query = $connect->query($sql);
+        try {
+            $query = $connect->query($sql);
 
-        if($query->num_rows > 0){
-            if($query->num_rows == 1){
-                $result = $query->fetch_assoc();
+            if($query->num_rows > 0){
+                if($query->num_rows == 1){
+                    $result = $query->fetch_assoc();
+                }else{
+                    $result = $query->fetch_all(MYSQLI_ASSOC);
+                }
+                    
             }else{
-                $result = $query->fetch_all(MYSQLI_ASSOC);
-            }
-                
-        }else{
-            $result = "empty";
-        }       
+                $result = "empty";
+            } 
+        } catch (\Throwable $th) {
+            $result = $th->getMessage();
+            echo $result;
+        }
 
         return $result;
     }
@@ -496,18 +501,24 @@
             $sql .= " LIMIT $limit";
         }
         
-        $query = $connect2->query($sql);
+        try {
+            $query = $connect2->query($sql);
 
-        if($query->num_rows > 0){
-            if($query->num_rows == 1){
-                $result = $query->fetch_assoc();
+            if($query->num_rows > 0){
+                if($query->num_rows == 1){
+                    $result = $query->fetch_assoc();
+                }else{
+                    $result = $query->fetch_all(MYSQLI_ASSOC);
+                }
+                    
             }else{
-                $result = $query->fetch_all(MYSQLI_ASSOC);
-            }
-                
-        }else{
-            $result = "empty";
-        }       
+                $result = "empty";
+            }    
+        } catch (\Throwable $th) {
+            $result = $th->getMessage();
+            echo $result;
+        }
+           
 
         return $result;
     }
