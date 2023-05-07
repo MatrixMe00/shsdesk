@@ -718,3 +718,80 @@ function removeAlert(id, time){
         }, time*1000);
     }    
 }
+
+/**
+ * This function is used to handle drag of an html element
+ * @param {any} element This is the element to be worked on
+ */
+function dragElement(element){
+    var dragging = false
+    var x, y, dx, dy
+    var $element = $(element)
+
+    //take initial width and height
+    const width = $element.width()
+
+    $element.css({
+        width: width
+    })
+
+    $element.mousedown(function(e) {
+        dragging = true
+        x = e.pageX
+        y = e.pageY
+        dx = x - $element.offset().left
+        dy = y - $element.offset().top
+    })
+
+    $(document).mousemove(function(e) {
+        if (dragging) {
+            $element.css({
+                left: e.pageX - dx,
+                top: e.pageY - dy
+            })
+        }
+    })
+
+    $(document).mouseup(function(e) {
+        dragging = false
+    })
+}
+
+/**
+ * This function is used to handle drag of an html element with touch
+ * @param {any} element This is the element to be worked on
+ */
+function touchDragElement(element) {
+    var dragging = false;
+    var x, y, dx, dy;
+    var $element = $(element);
+  
+    //take initial width and height
+    const width = $element.width();
+  
+    $element.css({
+      width: width
+    });
+  
+    $element.on('touchstart', function(e) {
+      dragging = true;
+      x = e.originalEvent.touches[0].pageX;
+      y = e.originalEvent.touches[0].pageY;
+      dx = x - $element.offset().left;
+      dy = y - $element.offset().top;
+    });
+  
+    $(document).on('touchmove', function(e) {
+      if (dragging) {
+        $element.css({
+          left: e.originalEvent.touches[0].pageX - dx,
+          top: e.originalEvent.touches[0].pageY - dy
+        });
+      }
+    });
+  
+    $(document).on('touchend', function(e) {
+      dragging = false;
+    });
+  }
+  

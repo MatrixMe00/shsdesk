@@ -1,6 +1,5 @@
 <?php 
-    @$admin_mode = $_SESSION["admin_mode"];
-    $admin_mode = "records";
+    $admin_mode = $_SESSION["admin_mode"];
     $navMiddle = [
         "Dashboard" => [
             0 => [
@@ -165,7 +164,7 @@
             "item_class"=> "",
             "name" => "password",
             "title" => "Change Password",
-            "data-url" => "/admin/admin/page_parts/.php",
+            "data-url" => "/admin/admin/page_parts/change_password.php",
             "imgSrc" => "/assets/images/icons/key-outline.svg",
             "imgAlt" => "password",
             "menu_class" => "",
@@ -174,9 +173,10 @@
         ],
         3 => [
             "item_class"=> "",
-            "name" => "logout",
+            "item_id" => "logout",
+            "name" => "",
             "title" => "Logout",
-            "data-url" => "/admin/admin/page_parts/logout.php",
+            "data-url" => "",
             "imgSrc" => "/assets/images/icons/logout.png",
             "imgAlt" => "logout",
             "menu_class" => "",
@@ -184,20 +184,6 @@
             "admin_mode" => "admission records"
         ]
     ];
-
-    
-
-    // => [
-    //     "item_class"=> "",
-    //     "name" => "",
-    //     "title" => "",
-    //     "data-url" => "/admin/admin/page_parts/.php",
-    //     "imgSrc" => "/assets/images/icons/-outline.svg",
-    //     "imgAlt" => "",
-    //     "menu_class" => "",
-    //     "display_title" => "",
-    //     "admin_mode" => ""
-    // ]
 ?>
 
 <div id="middle">
@@ -208,7 +194,18 @@
             if(str_contains($item["admin_mode"], $admin_mode)) :
                 if(isset($item["item_child"]) && $item["item_child"] === true) :
         ?>
-        <div class="item <?= $item["item_class"]?>" name="<?= $item["name"] ?>" title="<?= $item["title"] ?>" data-url="<?= $url.$item["data-url"] ?>">
+        <div class="item<?= !empty($item["item_class"]) ? " ".$item["item_class"] : ""?>" 
+            <?php if(!empty($item["name"])) : ?>
+            name="<?= $item["name"] ?>" 
+            <?php endif; ?>
+
+            title="<?= $item["title"] ?>" 
+
+            <?php if(!empty($item["data-url"])) : ?>
+            data-url="<?= $url.$item["data-url"] ?>"
+            <?php endif; ?>
+
+            <?= isset($item["item_id"]) ? "id='".$item["item_id"]."'" : "" ?>>
             <div class="icon">
                 <img src="<?= $url.$item["imgSrc"] ?>" alt="<?= $item["imgAlt"] ?>">
             </div>
@@ -247,8 +244,19 @@
         </div>
         <?php endif; ?>
 
-        <?php elseif((isset($item["if-condition"]) && $item["if-condition"] === true) && eval($item["condition"])) : ?>
-        <div class="item <?= $item["item_class"]?>" name="<?= $item["name"] ?>" title="<?= $item["title"] ?>" data-url="<?= $url.$item["data-url"] ?>">
+        <?php elseif((isset($item["if-condition"]) && $item["if-condition"] === true) && $item["condition"]) : ?>
+        <div class="item<?= !empty($item["item_class"]) ? " ".$item["item_class"] : ""?>" 
+            <?php if(!empty($item["name"])) : ?>
+            name="<?= $item["name"] ?>" 
+            <?php endif; ?>
+
+            title="<?= $item["title"] ?>" 
+
+            <?php if(!empty($item["data-url"])) : ?>
+            data-url="<?= $url.$item["data-url"] ?>"
+            <?php endif; ?>
+
+            <?= isset($item["item_id"]) ? "id='".$item["item_id"]."'" : "" ?>>
             <div class="icon">
                 <img src="<?= $url.$item["imgSrc"] ?>" alt="<?= $item["imgAlt"] ?>">
             </div>
@@ -258,7 +266,18 @@
         </div>
 
         <?php else : ?>
-        <div class="item <?= $item["item_class"]?>" name="<?= $item["name"] ?>" title="<?= $item["title"] ?>" data-url="<?= $url.$item["data-url"] ?>">
+        <div class="item<?= !empty($item["item_class"]) ? " ".$item["item_class"] : ""?>" 
+            <?php if(!empty($item["name"])) : ?>
+            name="<?= $item["name"] ?>" 
+            <?php endif; ?>
+
+            title="<?= $item["title"] ?>" 
+
+            <?php if(!empty($item["data-url"])) : ?>
+            data-url="<?= $url.$item["data-url"] ?>"
+            <?php endif; ?>
+
+            <?= isset($item["item_id"]) ? "id='".$item["item_id"]."'" : "" ?>>
             <div class="icon">
                 <img src="<?= $url.$item["imgSrc"] ?>" alt="<?= $item["imgAlt"] ?>">
             </div>
@@ -279,7 +298,18 @@
     <?php foreach($navFoot as $item) : 
         if(str_contains($item["admin_mode"], $admin_mode)) :
     ?>
-        <div class="item <?= $item["item_class"]?>" name="<?= $item["name"] ?>" title="<?= $item["title"] ?>" data-url="<?= $url.$item["data-url"] ?>">
+        <div class="item<?= !empty($item["item_class"]) ? " ".$item["item_class"] : ""?>" 
+            <?php if(!empty($item["name"])) : ?>
+            name="<?= $item["name"] ?>" 
+            <?php endif; ?>
+
+            title="<?= $item["title"] ?>" 
+
+            <?php if(!empty($item["data-url"])) : ?>
+            data-url="<?= $url.$item["data-url"] ?>"
+            <?php endif; ?>
+
+            <?= isset($item["item_id"]) ? "id='".$item["item_id"]."'" : "" ?>>
             <div class="icon">
                 <img src="<?= $url.$item["imgSrc"] ?>" alt="<?= $item["imgAlt"] ?>">
             </div>

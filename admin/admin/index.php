@@ -90,6 +90,9 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                 <div class="status">
                     <span><?php echo $status ?></span>
                 </div>
+                <div class="admin_mode">
+                    <span class="txt-fs"><?= "[".ucwords($_SESSION["admin_mode"])." Mode]" ?></span>
+                </div>
             </div>
             <?php include_once("page_parts/nav.php"); ?>
         </div>
@@ -121,12 +124,25 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
         </div>
     </div>
 
+    <div style="transition: unset !important; max-width: 250px; width: 100%; cursor: move" 
+        class="absolute lt-shade sp-med top-right light sm-lg-t sm-xlg-r" id="admin_mode">
+        <p class="txt-al-c txt-fs" style="cursor: pointer" id="admin_head_title">Change Interface Mode</p>
+        <select name="admin_mode_select" style="cursor: default" class="p-med sp-med wmin-unset w-full no_disp" id="admin_mode_select">
+            <option value="admission"<?= $_SESSION["admin_mode"] == "admission" ? " selected" : "" ?>>Admission</option>
+            <option value="records"<?= $_SESSION["admin_mode"] == "records" ? " selected" : "" ?>>Records</option>
+        </select>
+        <p class="txt-fs2 sm-med-t txt-al-c no_disp">This box can be dragged</p>
+    </div>
+
     <script src="<?php echo $url?>/admin/assets/scripts/index.min.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/assets/scripts/admissionForm.min.js?v=<?php echo time(); ?>"></script>
     <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
     
     <script>
         $(document).ready(function() {
+            dragElement($("#admin_mode"))
+            touchDragElement($("#admin_mode"))
+
             nav_point = "<?php
                 if((isset($_GET["nav_point"]) && $_GET["nav_point"] != null) || (isset($_SESSION["nav_point"]) && !empty($_SESSION["nav_point"]))){
                     if(isset($_GET["nav_point"]))
@@ -152,6 +168,41 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             <?php if($nav_light == "dark"){?>
             $("nav *").css("color","white");
             <?php } ?>
+            
+            $("#admin_head_title").click(function(){
+                $(this).siblings("select, p").toggleClass("no_disp")
+                $(this).toggleClass("sm-med-b")
+            })
+
+            $("#admin_mode select").change(function(){
+                const val = $(this).val()
+
+                $.ajax({
+                    url: "admin/submit.php",
+                    data: {
+                        submit: "change_admin_mode", admin_mode: val
+                    },
+                    timeout: 5000,
+                    success: function(response){
+                        if(response === "true"){
+                            alert_box("Mode changed to " + val, "teal")
+
+                            setTimeout(()=>{
+                                location.reload()
+                            },1000)
+                        }else{
+                            alert_box(response, "warning color-dark")
+                        }
+                    },
+                    error: function(xhr, textStatus){
+                        if(textStatus === "timeout"){
+                            alert_box("Connection was timed out. Please check your internet connection", "danger", 7)
+                        }else{
+                            alert_box(xhr.responseText)
+                        }
+                    }
+                })
+            })
         })
     </script>
     <?php }

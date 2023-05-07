@@ -894,6 +894,23 @@ img{
 .w-fluid, .w-fluid-child > *{
     width: 100%;
 }
+.wmax, .wmax-child > *{
+    width: -moz-max-content;
+    width: max-content;
+}
+.wmin, .wmin-child > *{
+    width: -moz-min-content;
+    width: min-content;
+}
+.wmin-unset, .wmin-unset-child > *{
+    min-width: unset !important;
+}
+.w-unset, .w-unset-child > *{
+    width: unset !important;
+}
+.wmax-unset, .wmax-unset-child > *{
+    max-width: unset !important;
+}
 
 .hmax, .hmax-child > *{
     height: -moz-max-content;
@@ -902,6 +919,9 @@ img{
 .hmin, .hmin-child > *{
     height: -moz-min-content;
     height: min-content;
+}
+.hmin-unset, .hmin-unset-child > *{
+    min-height: unset !important;
 }
 .h-unset, .h-unset-child > *{
     height: unset !important;

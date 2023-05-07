@@ -13,6 +13,18 @@
 
     //retrieve programs
     $programs = fetchData1("*","program","school_id=$user_school_id", 0);
+    $resultPending = fetchData1(
+        "r.record_id, r.result_token, r.submission_date, t.lname, t.oname, p.program_name, p.short_form",
+        "recordapproval r JOIN program p ON p.program_id = r.program_id
+        JOIN teachers t ON t.teacher_id = r.teacher_id",
+        "r.school_id=$user_school_id AND r.result_status='pending' ORDER BY r.submission_date DESC", 0
+    );
+    $resultAttended = fetchData1(
+        "r.record_id, r.result_token, r.result_status, r.submission_date, t.lname, t.oname, p.program_name, p.short_form",
+        "recordapproval r JOIN program p ON p.program_id = r.program_id
+        JOIN teachers t ON t.teacher_id = r.teacher_id",
+        "r.school_id=$user_school_id AND r.result_status != 'pending' ORDER BY r.submission_date DESC", 0
+    );
 ?>
 
 <section class="section_container">
@@ -27,17 +39,16 @@
         </div>
     </div>
 
-    <!-- <div class="content purple">
+    <div class="content <?= $resultPending == "empty" ? "green" : "red" ?>">
         <div class="head">
             <h2>
-                <?php
-                ?>
+                <?= is_array($resultPending) ? (isset($resultPending[0]) ? count($resultPending) : 1) : 0; ?>
             </h2>
         </div>
         <div class="body">
-            <span>Second Years</span>
+            <span>Pending Result Approvals</span>
         </div>
-    </div> -->
+    </div>
 </section>
 
 <section class="flex-column flex-all-center">
@@ -45,10 +56,12 @@
     <div class="body btn flex flex-wrap gap-md">
         <button class="control_btn sp-lg xs-rnd primary" data-section="allPrograms" data-refresh="false" id="viewAll">View All Classes</button>
         <button class="control_btn sp-lg xs-rnd secondary" data-section="newProgram">Add new Class</button>
+        <button class="control_btn sp-lg xs-rnd yellow color-dark" data-section="pendingResults">Pending results</button>
+        <button class="control_btn sp-lg xs-rnd teal" data-section="reviewedResults">Reviewed results</button>
     </div>
 </section>
 
-<section id="Classerams" class="sp-xlg-tp section_box">
+<section id="allPrograms" class="sp-xlg-tp section_box">
     <?php if(is_array($programs)) : ?>
     <div class="head">
         <h2 class="txt-al-c">Your Classes</h2>
@@ -82,6 +95,81 @@
     <?php endif; ?>
 </section>
 
+<section id="pendingResults" class="section_box no_disp">
+    <?php
+        if(is_array($resultPending)) :
+    ?>
+    <table class="relative">
+        <thead>
+            <td>No.</td>
+            <td>Class</td>
+            <td>Teacher</td>
+            <td>Submission Date</td>
+        </thead>
+        <tbody>
+        <?php for($counter = 0; $counter < (isset($resultPending[0]) ? count($resultPending) : 1); $counter++) : $result = isset($resultPending[0]) ? $resultPending[$counter] : $resultPending ?>
+            <tr>
+                <td><?= ($counter + 1) ?></td>
+                <td><?= is_null($result["short_form"]) ? $result["program_name"] : $result["short_form"] ?></td>
+                <td><?= $result["lname"]." ".$result["oname"] ?></td>
+                <td><?= date("m d, Y H:i:s", strtotime($result["submission_date"])) ?></td>
+                <td>
+                    <span class="item-event approve" data-item-id="<?= $result["record_id"] ?>" data-item-token="<?= $result["result_token"] ?>">Approve</span>
+                    <span class="item-event reject" data-item-id="<?= $result["record_id"] ?>" data-item-token="<?= $result["result_token"] ?>">Reject</span>
+                </td>
+            </tr>
+            <?php $counter++; endfor; ?>
+        </tbody>
+        <tfoot>
+            <td colspan="5" class="res_stat">Status: </td>
+        </tfoot>
+    </table>
+    <?php else : ?>
+    <div class="empty txt-al-c p-xxlg p-med">
+        <p class="border b-secondary">There are no pending results requiring approval yet</p>
+    </div>
+    <?php endif; ?>
+</section>
+
+<section id="reviewedResults" class="section_box no_disp">
+<?php
+        if(is_array($resultAttended)) :
+    ?>
+    <table class="relative">
+        <thead>
+            <td>No.</td>
+            <td>Class</td>
+            <td>Teacher</td>
+            <td>Submission Date</td>
+        </thead>
+        <tbody>
+            <?php for($counter = 0; $counter < (isset($resultAttended[0]) ? count($resultAttended) : 1); $counter++) : $result = isset($resultAttended[0]) ? $resultAttended[$counter] : $resultAttended ?>
+            <tr <?= $result["result_status"] === "rejected" ? 'class="red"' : '' ?>>
+                <td><?= ($counter+1) ?></td>
+                <td><?= is_null($result["short_form"]) ? $result["program_name"] : $result["short_form"] ?></td>
+                <td><?= $result["lname"]." ".$result["oname"] ?></td>
+                <td><?= date("m d, Y H:i:s", strtotime($result["submission_date"])) ?></td>
+                <td>
+                    <?php if($result["result_status"] === "rejected") : ?>
+                    <span class="item-event approve" data-item-id="<?= $result["record_id"] ?>" data-item-token="<?= $result["result_token"] ?>">Approve</span>
+                    <?php else : ?>
+                    <span class="item-event reject" data-item-id="<?= $result["record_id"] ?>" data-item-token="<?= $result["result_token"] ?>">Reject</span>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php endfor; ?>
+        </tbody>
+        <tfoot>
+            <td colspan="5" class="res_stat">Status: </td>
+        </tfoot>
+    </table>
+    <?php else : ?>
+    <div class="empty txt-al-c p-xxlg p-med">
+        <p class="border b-secondary">There are no reviewed results yet</p>
+    </div>
+    <?php endif; ?>
+</section>
+
 <section id="newProgram" class="sp-xlg-tp section_box no_disp">
     <?php require "$url/admin/admin/page_parts/subTeaForms.php?form_type=addProgram&school_id=$user_school_id" ?>
 </section>
@@ -99,7 +187,12 @@
 </div>
 
 <script>
+    current_section = $("#lhs .item.active[data-tab]").attr("data-tab")
     ajaxCall = null
+
+    $(document).ready(function(){
+        $(".control_btn[data-section=" + current_section + "]").click()
+    })
 
     $("#courseIDs label input").change(function(){
         let active_value = $(this).prop("checked")
@@ -144,9 +237,10 @@
 
     //direct displays to the control buttons
     $(".control_btn").click(function(){
-        let section = $(this).attr("data-section")
+        const section = $(this).attr("data-section")
 
         $(".section_box:not(.no_disp)").addClass("no_disp")
+        $("#lhs .item.active").attr("data-tab", section)
         $("#" + $(this).attr("data-section")).removeClass("no_disp")
 
         if($(this).attr("data-refresh") && $(this).attr("data-refresh") === "true"){
@@ -166,6 +260,7 @@
                     program_id: item_id,
                     submit: "getProgram"
                 },
+                timeout: 15000,
                 beforeSend: function(){
                     $("#updateLoader").toggleClass("no_disp flex")
                     $("#updateProgram #getLoader").html(loadDisplay({
@@ -196,8 +291,18 @@
                         alert(results)
                     }
                 },
-                error: function(e){
-                    alert(e)
+                error: function(xhr, textStatus){
+                    let message = ""
+
+                    if(textStatus === "timeout"){
+                        message = "Connection was timed out due to a slow network. Please check your internet connection and try again"
+                    }else if(textStatus === "parsererror"){
+                        message = "Status: Data returned cannot be parsed. Please try again later else contact admin for help"
+                    }else{
+                        message = "Status: " + xhr.responseText
+                    }
+
+                    alert_box(message, "warning color-dark", 10)
                 }
             })
             
@@ -214,6 +319,52 @@
             $("#delete_form input[name=column_name]").val("program_id")
 
             $(this).parents("tr").addClass("remove_marker");
+        }else if($(this).hasClass("approve") || $(this).hasClass("reject")){
+            const item_status = $(this).hasClass("approve") ? "accepted" : "rejected"
+            const item_token = $(this).attr("data-item-token")
+            const table_foot = $(this).parents("table").find("tfoot")
+            const this_row = $(this).parents("tr")
+            
+            $.ajax({
+                url: $("#updateProgram form").attr("action"),
+                data: {
+                    record_id: item_id, record_token: item_token,
+                    record_status: item_status, submit: "result_status_change"
+                },
+                type: "POST",
+                dataType: "json",
+                timeout: 15000,
+                cache: false,
+                beforeSend: function(){
+                    $(table_foot).addClass("sticky top secondary w-full")
+                    $(table_foot).find(".res_stat").html("Status: Updating...")
+                },
+                success: function(response){
+                    $(table_foot).removeClass("sticky top secondary w-full")
+
+                    if(typeof response["status"] && response['status'] === true){
+                        $(this_row).remove()
+                        $(table_foot).find(".res_stat").html("The record was " + response["rec_stat"])
+                        
+                        //refresh this page
+                        $("#lhs .item.active").click()
+                    }else{
+                        $(table_foot).find(".res_stat").html(response["message"])
+                    }
+                },
+                error: function(xhr, textStatus){
+                    let message = ""
+                    if(textStatus === "timeout"){
+                        message = "Status: Connection was timed out. Please check your network connection and try again"
+                    }else if(textStatus === "parsererror"){
+                        message = "Status: Data returned cannot be parsed. Please try again later else contact admin for help"
+                    }else{
+                        message = "Status: " + xhr.responseText
+                    }
+                    
+                    $(table_foot).find(".res_stat").html(message)
+                }
+            })
         }
     })
 

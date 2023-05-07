@@ -1227,6 +1227,53 @@
 
             header("Content-Type: application/json");
             echo json_encode($final);
+        }elseif($submit === "result_status_change" || $submit === "result_status_change_ajax"){
+            @$record_id = $_POST["record_id"];
+            @$record_status = $_POST["record_status"];
+            @$record_token = $_POST["record_token"];
+            $message = ""; $status = false; $response = array();
+            
+            if(empty($record_id) || is_null($record_id)){
+                $message = "Procedure cannot continue without a specified record";
+            }elseif(empty($result_status) || is_null($result_status)){
+                $message = "Process was broken, cannot determine the status of this record";
+            }elseif(empty($result_token) || is_null($result_token)){
+                $message = "This record is considered broken or invalid. Please contact the admin for help";
+            }else{
+                try{
+                    $sql = "UPDATE recordapproval SET result_status=? WHERE record_id=?";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("si",$record_status, $record_id);
+
+                    if($stmt->execute()){
+                        $status = false;
+                        $message = "success";
+                    }else{
+                        $message = "The selected record could not be updated. Please try again at a later time";
+                    }
+                }catch(\Throwable $th){
+                    $message = $th->getMessage();
+                    $status = false;
+                }                
+            }
+
+            $response = [
+                "message" => $message,
+                "status" => $status,
+                "rec_stat" => $record_status ?? false
+            ];
+
+            header("Content-Type: application/json");
+            echo json_encode($response);
+        }elseif($submit === "change_admin_mode"){
+            if(!isset($_GET["admin_mode"]) || is_null($_GET["admin_mode"]) || empty($_GET["admin_mode"])){
+                $message = "No mode has been selected";
+            }else{
+                $_SESSION["admin_mode"] = $_GET["admin_mode"];
+                $message = "true";
+            }
+
+            echo $message;
         }
     }else{
         echo "no-submission";
