@@ -12,7 +12,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     $_SESSION["nav_point"] = "admission";
     }
 ?>
-
+    <?php if($_SESSION["admin_mode"] == "admission") : ?>
     <form action="<?php echo $url?>/admin/admin/submit.php" method="post" name="admissiondetailsForm">
         <div class="body">
             <div class="message_box no_disp">
@@ -210,7 +210,152 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
             </p>
         </div>
     </form>
+    <?php else: ?>
+    <section class="section_container">
+        <form action="<?= "$url/admin/admin/submit.php" ?>" method="GET" class="w-full sm-med color-dark" method="post" name="recordsForm">
+            <div class="body">
+                <div class="message_box no_disp">
+                    <span class="message">Here is a test message</span>
+                    <div class="close"><span>&cross;</span></div>
+                </div>
+                <?php 
+                    $school_result = fetchData("school_result","admissiondetails","schoolID=$user_school_id")["school_result"] ?? "";
+                    $result_types = [
+                        0 => [
+                            "value"=> "",
+                            "title"=> "Select a Result Type"
+                        ],
+                        1 => [
+                            "value"=> "wassce",
+                            "title"=> "WASSCE Only"
+                        ],
+                        2 => [
+                            "value"=> "ctvet",
+                            "title"=> "CTVET Only"
+                        ],
+                        3 => [
+                            "value"=> "both",
+                            "title"=> "Both"
+                        ]
+                    ]
+                ?>
+                <label for="school_result" class="flex-column gap-sm">
+                    <span class="label_title">Provide the type of result the school uses</span>
+                    <select name="school_result" id="school_result">
+                        <?php foreach($result_types as $type): ?>
+                        <option value="<?= $type["value"] ?>" <?= $school_result === $type["value"] ? "selected" : "" ?>><?= $type["title"] ?></option>
+                        <?php endforeach; ?>
+                    </select>    
+                </label>
+                <input type="hidden" name="school_id" value="<?= $user_school_id ?>">
+                <label for="submit" class="btn sp-unset sm-auto w-full w-full-child wmax-xs p-lg">
+                    <button type="submit" name="submit" id="submit" value="update_result_type" class="teal xs-rnd">Update</button>
+                </label>
+            </div>
+        </form>
+    </section>
+    <?php 
+        $wassce = [
+            ["range"=>"80 - 100", "grade"=>"A1"],
+            ["range"=>"70 - 79", "grade"=>"B2"],
+            ["range"=>"65 - 69", "grade"=>"C3"],
+            ["range"=>"60 - 64", "grade"=>"C4"],
+            ["range"=>"55 - 59", "grade"=>"C5"],
+            ["range"=>"50 - 54", "grade"=>"C6"],
+            ["range"=>"45 - 49", "grade"=>"D7"],
+            ["range"=>"40 - 44", "grade"=>"E8"],
+            ["range"=>"0 - 39", "grade"=>"F9"]
+        ];
+        $ctvet = [
+            ["range"=>"80 - 100", "grade"=>"D"],
+            ["range"=>"60 - 79", "grade"=>"C"],
+            ["range"=>"40 - 59", "grade"=>"P"],
+            ["range"=>"0 - 39", "grade"=>"F"]
+        ]
+    ?>
+    
+    <section class="section_container grade_table" id="empty">
+        <p class="color-dark sp-xxlg-tp sp-lg-lr">You have not specified the type of results for your school yet</p>
+    </section>
 
+    <section class="section_container both grade_table" id="wassce">
+        <h3 class="txt-al-c color-dark sm-med-t">Wassce Grade Points</h3>
+        <table class="color-dark">
+            <thead>
+                <td>Grade Range</td>
+                <td>Grade</td>
+            </thead>
+
+            <tbody>
+                <?php foreach($wassce as $grade): ?>
+                <tr>
+                    <td><?= $grade["range"] ?></td>
+                    <td><?= $grade["grade"] ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section_container both grade_table" id="ctvet">
+        <h3 class="txt-al-c color-dark sm-med-t">CTVET Grade Points</h3>
+        <table class="color-dark">
+            <thead>
+                <td>Grade Range</td>
+                <td>Grade</td>
+            </thead>
+
+            <tbody>
+                <?php foreach($ctvet as $grade): ?>
+                <tr>
+                    <td><?= $grade["range"] ?></td>
+                    <td><?= $grade["grade"] ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </section>
+    <?php endif; ?>
+
+    <script>
+        $("select#school_result").change(function(){
+            const val = $(this).val() === "" ? "empty" : $(this).val()
+            $(".section_container.grade_table").addClass("no_disp")
+
+            if(val != "both")
+                $(".section_container#" + val).removeClass("no_disp")
+            else
+                $(".section_container.both").removeClass("no_disp")
+        })
+
+        $(document).ready(function(){
+            $("select#school_result").change()
+        })
+
+        $("form[name=recordsForm]").submit(function(){
+            records = $(this).serialize() + "&submit=" + $(this).find("button[name=submit]").val()
+            $.ajax({
+                url: "admin/submit.php",
+                data: records,
+                timeout: 5000,
+                beforeSend: function(){
+                    messageBoxTimeout("recordsForm","Updating...", "load",0)
+                },
+                success: function(response){
+                    if(response == true){
+                        messageBoxTimeout("recordsForm","Update complete", "success")
+                    }else{
+                        messageBoxTimeout("recordsForm",response,"error",8)
+                    }
+                },
+                error: function(xhr, textStatus){
+                    if(textStatus == "timeout"){
+                        messageBoxTimeout("recordsForm","Connection was timed out. Please check your network and try again", "error", 0)
+                    }
+                }
+            })
+        })
+    </script>
     <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>

@@ -1274,6 +1274,30 @@
             }
 
             echo $message;
+        }elseif($submit === "update_result_type"){
+            $school_result = $_GET["school_result"] ?? null;
+            @$school_id = $_GET["school_id"];
+
+            if(empty($school_result) || is_null($school_result)){
+                $message = "Please select the type of result to proceed";
+            }elseif(empty($school_id) || is_null(intval($school_id)) || is_null($school_id)){
+                $message = "Seems your school was not selected";
+            }else{
+                try{
+                    $sql = "UPDATE admissiondetails SET school_result=? WHERE schoolID=?";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("si", $school_result, $school_id);
+                    if($stmt->execute()){
+                        $message = true;
+                    }else{
+                        $message = "Update failed due to a database server error. Please try again later";
+                    }
+                }catch(\Throwable $th){
+                    $message = $th->getMessage();
+                }
+            }
+            
+            echo $message;
         }
     }else{
         echo "no-submission";
