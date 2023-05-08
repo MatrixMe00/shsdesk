@@ -104,6 +104,27 @@
         }elseif(empty($student_index)){
             $message = "No index number provided. Please check if you are logged in to continue";
         }else{
+            try {
+                $sql = "SELECT * FROM results WHERE indexNumber=? AND school_id=? AND course_id=?";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("sii", $student_index, $school_id, $course_id);
+                $stmt->execute();
+
+                $results = $stmt->get_result();
+                if($results === false){
+                    $message = "Results could not be pulled in this query. Please try again";
+                }elseif($results->num_rows > 0){
+                    //mark as the most successful response value
+                    $error = false;
+                    $message = $results->fetch_all(MYSQLI_ASSOC);
+                }else{
+                    $message = "No results were found. Please speak with your administrator for help.";
+                }
+            } catch (\Throwable $th) {
+                $error = true;
+                $message = $th->getMessage();
+            }
+            
             
         }
 
