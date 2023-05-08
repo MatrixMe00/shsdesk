@@ -55,9 +55,9 @@
     <h1 class="txt-primary">Controls</h1>
     <div class="body btn flex flex-wrap gap-md">
         <button class="control_btn sp-lg xs-rnd primary" data-section="allPrograms" data-refresh="false" id="viewAll">View All Classes</button>
-        <button class="control_btn sp-lg xs-rnd secondary" data-section="newProgram">Add new Class</button>
-        <button class="control_btn sp-lg xs-rnd yellow color-dark" data-section="pendingResults">Pending results</button>
-        <button class="control_btn sp-lg xs-rnd teal" data-section="reviewedResults">Reviewed results</button>
+        <button class="control_btn sp-lg xs-rnd plain secondary" data-section="newProgram">Add new Class</button>
+        <button class="control_btn sp-lg xs-rnd plain yellow color-dark" data-section="pendingResults">Pending results</button>
+        <button class="control_btn sp-lg xs-rnd plain teal" data-section="reviewedResults">Reviewed results</button>
     </div>
 </section>
 
@@ -242,6 +242,9 @@
         $(".section_box:not(.no_disp)").addClass("no_disp")
         $("#lhs .item.active").attr("data-tab", section)
         $("#" + $(this).attr("data-section")).removeClass("no_disp")
+
+        $(".control_btn:not(.plain)").addClass("plain")
+        $(this).removeClass("plain")
 
         if($(this).attr("data-refresh") && $(this).attr("data-refresh") === "true"){
             $("#lhs.menu .item.active").click()
