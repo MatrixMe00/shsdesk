@@ -6,25 +6,25 @@
             <div class="joint gap-sm">
                 <label for="indexNumber" class="flex flex-column">
                     <span class="label_title">Index Number</span>
-                    <input type="text" name="indexNumber" id="indexNumber" value="0123456789" placeholder="Index Number" readonly>
+                    <input type="text" name="indexNumber" id="indexNumber" value="<?= $student["indexNumber"] ?>" placeholder="Index Number" readonly>
                 </label>
                 <label for="lname" class="flex flex-column">
                     <span class="label_title">Lastname</span>
-                    <input type="text" name="lname" id="lname" value="Lastname" placeholder="Lastname" readonly>
+                    <input type="text" name="lname" id="lname" value="<?= $student["Lastname"] ?>" placeholder="Lastname" readonly>
                 </label>
                 <label for="oname" class="flex flex-column">
                     <span class="label_title">Othername(s)</span>
-                    <input type="text" name="oname" id="oname" value="Firstname Othername(s)" placeholder="Othername(s)" readonly>
+                    <input type="text" name="oname" id="oname" value="<?= $student["Othernames"] ?>" placeholder="Othername(s)" readonly>
                 </label>
             </div>
             <div class="joint gap-sm">
                 <label for="email" class="flex flex-column">
                     <span class="label_title">Email</span>
-                    <input type="email" name="email" id="email" value="email@email.com" placeholder="Email">
+                    <input type="email" name="email" id="email" value="<?= $student["Email"] ?>" placeholder="Email">
                 </label>
                 <label for="phoneNumber" class="flex flex-column">
                     <span class="label_title">Phone Number</span>
-                    <input type="tel" name="phoneNumber" class="tel" id="phoneNumber" value="0213456789" placeholder="Othername(s)">
+                    <input type="tel" name="phoneNumber" class="tel" id="phoneNumber" value="" placeholder="Phone Number">
                 </label>
             </div>
             <label class="btn w-full">
@@ -94,5 +94,10 @@
         }
 
         $("#active_access, #nonactive_access").toggleClass("no_disp")
+    })
+
+    $("form").submit(function(e){
+        e.preventDefault()
+        alert($(this).serialize())
     })
 </script>

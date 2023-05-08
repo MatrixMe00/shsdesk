@@ -2,15 +2,40 @@
 <section class="flex d-section flex-wrap gap-sm p-lg card-section">
     <div class="card v-card gap-lg primary sm-rnd flex-wrap">
         <span class="self-align-start">Total Subjects</span>
-        <span class="txt-fl3 txt-bold self-align-end">10</span>
+        <span class="txt-fl3 txt-bold self-align-end"><?php 
+            if(!is_null($student["program_id"])){
+                $course_ids = fetchData1("course_ids","program","program_id=".intval($student["program_id"]));
+                if($course_ids == "empty"){
+                    echo "<span class='txt-fl2'>No courses assigned</span>";
+                }else{
+                    $course_ids = explode(" ", $course_ids["course_ids"]);
+                    array_pop($course_ids);
+                    echo count($course_ids);
+                }
+            }else{
+                echo "<span class='txt-fl2'>No class assigned</span>";
+            }
+        ?></span>
     </div>
-    <div class="card v-card gap-lg purple sm-rnd flex-wrap">
+    <!-- <div class="card v-card gap-lg purple sm-rnd flex-wrap">
         <span class="self-align-start">Total Core Subjects</span>
         <span class="txt-fl3 txt-bold self-align-end">4</span>
-    </div>
+    </div> -->
     <div class="card v-card gap-lg orange sm-rnd flex-wrap">
-        <span class="self-align-start">Total Program subjects</span>
-        <span class="txt-fl3 txt-bold self-align-end">6</span>
+        <span class="self-align-start">Total Program Teachers</span>
+        <span class="txt-fl3 txt-bold self-align-end"><?php 
+            if(!is_null($student["program_id"])){
+                $teacher_ids = fetchData1("COUNT(teacher_id) as total", "teachers", "program_ids LIKE '%".intval($student["program_id"])." %'");
+                if($teacher_ids == "empty"){
+                    echo "<span class='txt-fl2'>No courses assigned</span>";
+                }else{
+                    echo $teacher_ids["total"];
+                }
+            }else{
+                echo "<span class='txt-fl2'>No class assigned</span>";
+            }
+            
+        ?></span>
     </div>
 </section>
 
@@ -22,27 +47,60 @@
         <thead>
             <td>ID</td>
             <td>Subject</td>
+            <td>Subject Alias</td>
             <td>Teacher</td>
             <td>Credit Hours</td>
         </thead>
         <tbody>
             <?php 
-                $course_ids = fetchData1("program_id,course_ids","program","LOWER(program_name)='".strtolower($student["programme"])."'");
-                if($course_ids == "empty") :
+                $programData = fetchData1("program_id,course_ids","program","program_id=".intval($student["program_id"]));
+                if($programData == "empty") :
             ?>
             <tr class="empty">
-                <td colspan="4" class="txt-al-c sp-xxlg-tp">Your program has not been uploaded yet. Please contact your school administrator for aid.</td>
+                <td colspan="5" class="txt-al-c sp-xxlg-tp">Your program has not been uploaded yet. Please contact your school administrator for aid.</td>
             </tr>
             <?php else :
-                $course_ids = explode(" ", $course_ids);
+                $course_ids = explode(" ", $programData["course_ids"]);
+                //remove the last element which is a space
+                array_pop($course_ids);
+
+                $teacher_ors = "(";
+                foreach($course_ids as $id){
+                    $teacher_ors .= "t.course_id LIKE '%$id %'";
+
+                    if($id != end($course_ids)){
+                        $teacher_ors .= " OR ";
+                    }
+                }
+                $teacher_ors .= ")";
+
+                $sql = "SELECT c.course_id, c.course_name, c.short_form, c.credit_hours, t.lname, t.oname
+                    FROM courses c JOIN teachers t ON c.school_id = t.school_id
+                    WHERE INSTR('".$programData["course_ids"]."', CONCAT(c.course_id, ' ')) > 0 AND $teacher_ors
+                    AND t.program_ids LIKE '%".$programData["program_id"]." %'";
+                $subjects = $connect2->query($sql);
+                if($subjects->num_rows > 0) :
+                    $counter = 1;
+                    while($subject = $subjects->fetch_assoc()) :
             ?>
-            <tr data-course-id="1" data-school-id="<?= $student["school_id"] ?>">
-                <td>1</td>
-                <td>Mathematics</td>
-                <td>Teacher 1</td>
-                <td>3</td>
+            <tr data-course-id="<?= $subject["course_id"] ?>" data-school-id="<?= $student["school_id"] ?>">
+                <td><?= $counter++ ?></td>
+                <td><?= $subject["course_name"] ?></td>
+                <td><?= $subject["short_form"] ?></td>
+                <td><?= $subject["lname"]." ".@$subject["oname"] ?></td>
+                <td><?= is_null($subject["credit_hours"]) ? "Not Set" : $subject["credit_hours"] ?></td>
             </tr>
-            <?php endif; ?>
+            <?php 
+                    endwhile;
+                else :
+            ?>
+                <tr class="empty">
+                    <td colspan="5" class="txt-al-c sp-xxlg">No subjects have been added to this program yet</td>
+                </tr>
+            <?php
+                endif;
+                endif; 
+            ?>
         </tbody>
     </table>
 </section>
@@ -155,70 +213,75 @@
             const school_id = $(this).attr("data-school-id")
             const student_index = $("input#student_index").val()
 
-            $.ajax({
-                url: "submit.php",
-                dataType: "json",
-                data: {
-                    cid: course_id, sid: school_id, stud_index: student_index, 
-                    submit: "getCourseData"
-                },
-                timeout: 15000,
-                beforeSend: function(){
-                    const appends = [".","..","..."]
-                    let count = 0
+            if(parseInt(course_id) > 0){
+                $.ajax({
+                    url: "submit.php",
+                    dataType: "json",
+                    data: {
+                        cid: course_id, sid: school_id, stud_index: student_index, 
+                        submit: "getCourseData"
+                    },
+                    timeout: 15000,
+                    beforeSend: function(){
+                        const appends = [".","..","..."]
+                        let count = 0
 
-                    loading = setInterval(()=>{
-                        if(count < appends.length){
-                            $("#subject_name").html("Processing" + appends[count])
-                            ++count
-                        }else{
-                            count = 0
-                        }
-                    }, 500)
-
-                    $("#stat_message").addClass("no_disp")
-                },
-                success: function(response){
-                    clearInterval(loading)
-                    $("#subject_name").html("")
-
-                    response = JSON.parse(JSON.stringify(response))
-
-                    if(typeof response["error"]){
-                        if(response["error"] === true){
-                            $("#subject_name").html(": No Data")
-                            $("#stat_message").removeClass("no_disp").html(response["message"])
-                        }else{
-                            $("#subject_name").html(" for " + subject)
-
-                            //generate the graph
-                            if(typeof response["message"][0]["exam_type"] == "string" && response["message"].length > 1){
-                                generateChart(response["message"])
+                        loading = setInterval(()=>{
+                            if(count < appends.length){
+                                $("#subject_name").html("Processing" + appends[count])
+                                ++count
                             }else{
-                                generateChart(response["message"], "pie")
+                                count = 0
                             }
+                        }, 500)
 
-                            //hide stat message and show chart
-                            $("#stat_message").addClass("no_disp")
-                            $("canvas#stats").removeClass("no_disp")
+                        $("#stat_message").addClass("no_disp")
+                    },
+                    success: function(response){
+                        clearInterval(loading)
+                        $("#subject_name").html("")
+
+                        response = JSON.parse(JSON.stringify(response))
+
+                        if(typeof response["error"]){
+                            if(response["error"] === true){
+                                $("#subject_name").html(": No Data")
+                                $("#stat_message").removeClass("no_disp").html(response["message"])
+                            }else{
+                                $("#subject_name").html(" for " + subject)
+
+                                //generate the graph
+                                if(typeof response["message"][0]["exam_type"] == "string" && response["message"].length > 1){
+                                    generateChart(response["message"])
+                                }else{
+                                    generateChart(response["message"], "pie")
+                                }
+
+                                //hide stat message and show chart
+                                $("#stat_message").addClass("no_disp")
+                                $("canvas#stats").removeClass("no_disp")
+                            }
+                        }else{
+                            $("#stat_message").removeClass("no_disp").html("An invalid reponse was received.")
                         }
-                    }else{
-                        $("#stat_message").removeClass("no_disp").html("An invalid reponse was received.")
-                    }
-                },
-                error: function(xhr, textStatus, errorThrown){
-                    clearInterval(loading)
-                    $("#subject_name").html("")
-                    let message = ''
+                    },
+                    error: function(xhr, textStatus, errorThrown){
+                        clearInterval(loading)
+                        $("#subject_name").html("")
+                        let message = ''
 
-                    if(textStatus == "timeout"){
-                        message = "Connection was timed out due to a slow network. Please try again later"
-                    }else{
-                        message = JSON.stringify(xhr)
+                        if(textStatus == "timeout"){
+                            message = "Connection was timed out due to a slow network. Please try again later"
+                        }else{
+                            message = JSON.stringify(xhr)
+                        }
+                        $("#stat_message").removeClass("no_disp").html(message,"danger",8)
                     }
-                    $("#stat_message").removeClass("no_disp").html(message,"danger",8)
-                }
-            })
+                })
+            }else{
+                //abort processing
+                $(this).removeClass("yellow")
+            }
         }
     })
 </script>

@@ -148,25 +148,34 @@
                 case "wassce":
                     if(mark >= 80){
                         grade = "A1"
-                    }else if(mark >= 75){
-                        grade = "B2"
                     }else if(mark >= 70){
-                        grade = "B3"
-                    }else if(mark >= 67){
-                        grade = "C4"
+                        grade = "B2"
                     }else if(mark >= 65){
-                        grade = "C5"
+                        grade = "B3"
                     }else if(mark >= 60){
-                        grade = "C6"
+                        grade = "C4"
                     }else if(mark >= 55){
-                        grade = "D7"
+                        grade = "C5"
                     }else if(mark >= 50){
+                        grade = "C6"
+                    }else if(mark >= 45){
+                        grade = "D7"
+                    }else if(mark >= 40){
                         grade = "E8"
                     }else{
                         grade = "F9"
                     }
                     break
-                case "":
+                case "ctvet":
+                    if(mark >= 80){
+                        grade = "D"
+                    }else if(mark >= 60){
+                        grade = "C"
+                    }else if(mark >= 40){
+                        grade = "P"
+                    }else{
+                        grade = "F"
+                    }
                     break
             }
 

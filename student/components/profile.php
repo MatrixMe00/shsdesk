@@ -2,48 +2,51 @@
 <section class="p-section flex-wrap flex p-lg flex-align-start">
     <div id="lhs" class="lt-shade flex-all-center flex-column gap-lg">
         <div class="name txt-al-c">
-            <h2 class="txt-fm">Student Name</h2>
-            <p class="txt-fs">@0123456789</p>
+            <h2 class="txt-fm"><?= $student["Lastname"]." ".$student["Othernames"] ?></h2>
+            <p class="txt-fs">@<?= $student["indexNumber"] ?></p>
         </div>
         <div>
             <div class="border w-auto sp-med rnd txt-al-c">
                 <img src="<?= $url ?>/assets/images/icons/person-outline.svg" class="icon-xsm" alt="">
             </div>
             <div class="btn w-full sm-med-t">
-                <button class="w-full sp-med cyan">Change Profile Image</button>
+                <button class="w-full sp-med cyan" disabled>Change Profile Image</button>
             </div>
         </div>        
     </div>
     <div id="rhs" class="lt-shade">
         <h1>Edit Profile</h1>
-        <form action="" class="flex flex-column gap-sm">
+        <form action="<?= $url ?>/submit.php" method="POST" class="flex flex-column gap-sm">
             <div class="joint gap-sm">
                 <label for="lname" class="flex flex-column">
                     <span class="label_title">Lastname</span>
-                    <input type="text" name="lname" id="lname" value="Lastname" 
+                    <input type="text" name="lname" id="lname" value="<?= $student["Lastname"] ?>" 
                         placeholder="Lastname"  readonly>
                 </label>
                 <label for="oname" class="flex flex-column">
                     <span class="label_title">Othername(s)</span>
-                    <input type="text" name="oname" id="oname" value="Othername(s)" 
+                    <input type="text" name="oname" id="oname" value="<?= $student["Othernames"] ?>" 
                         placeholder="Othername(s)" readonly>
                 </label>
                 <label for="indexNumber" class="flex flex-column">
                     <span class="label_title">Index Number</span>
-                    <input type="text" name="indexNumber" id="indexNumber" value="0123456789" 
+                    <input type="text" name="indexNumber" id="indexNumber" value="<?= $student["indexNumber"] ?>" 
                         placeholder="indexNumber" readonly>
                 </label>
                 <label for="programme" class="flex flex-column">
                     <span class="label_title">Course Program</span>
-                    <input type="text" name="programme" id="programme" placeholder="Course Program" value="Course Name" readonly>
+                    <input type="text" name="programme" id="programme" placeholder="Course Program" value="<?= $student["programme"] ?>" readonly>
                 </label>
                 <label for="residence" class="flex flex-column">
                     <span class="label_title">Residential Status</span>
-                    <input type="text" name="residence" id="residence" placeholder="Residential Status" value="Boarder" readonly>
+                    <input type="text" name="residence" id="residence" placeholder="Residential Status" value="<?= $student["boardingStatus"] ?>" readonly>
                 </label>
                 <label for="house" class="flex flex-column">
                     <span class="label_title">House Name</span>
-                    <input type="text" name="house" id="house" placeholder="House Name" value="House Name" readonly>
+                    <input type="text" name="house" id="house" placeholder="House Name" value="<?php
+                        $house = fetchData("title","houses","id=".$student["houseID"]);
+                        echo is_array($house) ? $house["title"] : "Undefined";
+                    ?>" readonly>
                 </label>
             </div>
             <hr class="sm-xlg-tp" />
@@ -58,7 +61,7 @@
                 </label>
                 <label for="primary_contact" class="flex flex-column">
                     <span class="label_title">Contact of Guardian</span>
-                    <input type="tel" name="primary_contact" id="primary_contact" placeholder="Guardian Phone Number">
+                    <input type="tel" name="primary_contact" id="primary_contact" placeholder="Guardian Phone Number" value="<?= $student["guardianContact"] ?>">
                 </label>
                 <label for="secondary_contact" class="flex flex-column">
                     <span class="label_title">Contact of Guardian 2 [optional]</span>
@@ -71,3 +74,10 @@
         </form>
     </div>
 </section>
+
+<script>
+    $("form").submit(function(e){
+        e.preventDefault()
+        alert($(this).serialize())
+    })
+</script>

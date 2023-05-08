@@ -2,11 +2,32 @@
 <section class="flex d-section flex-wrap gap-sm p-lg card-section">
             <div class="card v-card gap-lg indigo sm-rnd flex-wrap">
                 <span class="self-align-start">Number of Subjects</span>
-                <span class="txt-fl3 txt-bold self-align-end" id="subject_number">10</span>
+                <span class="txt-fl3 txt-bold self-align-end" id="subject_number"><?php 
+                    if(!is_null($student["program_id"])){
+                        $course_ids = fetchData1("course_ids","program","program_id=".intval($student["program_id"]));
+                        if($course_ids == "empty"){
+                            echo "<span class='txt-fl2'>No courses assigned</span>";
+                        }else{
+                            $course_ids = explode(" ", $course_ids["course_ids"]);
+                            array_pop($course_ids);
+                            echo count($course_ids);
+                        }
+                    }else{
+                        echo "<span class='txt-fl2'>No class assigned</span>";
+                    }
+                ?></span>
             </div>
             <div class="card v-card gap-lg orange sm-rnd flex-wrap">
                 <span class="self-align-start">Average Score</span>
-                <span class="txt-fl3 txt-bold self-align-end"><span id="avg_score">78.8</span>%</span>
+                <span class="txt-fl3 txt-bold self-align-end"><span id="avg_score"><?php 
+                    $average = fetchData1("AVG(mark) as Mark","results","indexNumber=".$student["indexNumber"]);
+                    if($average == "empty"){
+                        $average = 0;
+                    }else{
+                        $average = $average["Mark"] ?? 0;
+                    }
+                    echo round($average,1);
+                ?></span>%</span>
             </div>
             <div class="card v-card gap-lg secondary sm-rnd flex-wrap">
                 <span class="self-align-start">Average Grade</span>
