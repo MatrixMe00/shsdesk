@@ -93,7 +93,7 @@
 
 <section class="sp-xlg-tp hmax-unset-child section_box no_disp" id="add_course">
     <div class="body">
-    <?php require "$url/admin/admin/page_parts/subTeaForms.php?form_type=course_add&school_id=$user_school_id" ?>
+    <?php eval("?>".file_get_contents("$url/admin/admin/page_parts/subTeaForms.php?form_type=course_add&school_id=$user_school_id")) ?>
     </div>
 </section>
 
@@ -133,7 +133,7 @@
 
 <section class="sp-xlg-tp hmax-unset-child section_box no_disp" id="add_teacher">
     <div class="body">
-    <?php require "$url/admin/admin/page_parts/subTeaForms.php?form_type=teacher_add&school_id=$user_school_id" ?>
+    <?php eval("?>".file_get_contents("$url/admin/admin/page_parts/subTeaForms.php?form_type=teacher_add&school_id=$user_school_id")) ?>
     </div>
 </section>
 <?php endif; ?>
@@ -147,8 +147,8 @@
         <div id="getLoader"></div>
         <span class="item-event" id="cancelUpdate" style="color: white; margin-top: 10px; padding-left: 10px; text-align: center">Cancel</span>
     </div>
-    <?php require "$url/admin/admin/page_parts/subTeaForms.php?form_type=course_update&school_id=$user_school_id" ?>
-    <?php require "$url/admin/admin/page_parts/subTeaForms.php?form_type=teacher_update&school_id=$user_school_id" ?>
+    <?php eval("?>".file_get_contents("$url/admin/admin/page_parts/subTeaForms.php?form_type=course_update&school_id=$user_school_id")) ?>
+    <?php eval("?>".file_get_contents("$url/admin/admin/page_parts/subTeaForms.php?form_type=teacher_update&school_id=$user_school_id")) ?>
 </div>
 
 <script>
