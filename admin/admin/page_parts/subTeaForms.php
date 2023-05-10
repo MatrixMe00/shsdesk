@@ -123,7 +123,7 @@
             </label>
             
             <div class="joint" id="courseIDs">
-                <?php for($counter=0; $counter < count($courses); $counter++) : $course = $courses[$counter]; ?>
+                <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
                 <label for="course_id<?= $counter ?>" class="checkbox">
                     <input type="checkbox" name="course_id" id="course_id<?= $counter ?>" value="<?= $course['course_id'] ?>">
                     <span class="label_title"><?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?></span>
@@ -136,7 +136,7 @@
             </label>
             
             <div class="joint" id="classIDs">
-                <?php for($counter=0; $counter < count($classes); $counter++) : $class = $classes[$counter]; ?>
+                <?php for($counter=0; $counter < (isset($classes[0]) ? count($classes) : 1); $counter++) : $class = isset($classes[0]) ? $classes[$counter] : $classes; ?>
                 <label for="class_id<?= $counter ?>" class="checkbox" data-course-id="<?= $class["course_ids"] ?>">
                     <input type="checkbox" name="class_id" id="class_id<?= $counter ?>" value="<?= $class['program_id'] ?>">
                     <span class="label_title"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></span>
@@ -196,7 +196,7 @@
             </label>
             
             <div class="joint" id="courseIDs">
-                <?php for($counter=0; $counter < count($courses); $counter++) : $course = $courses[$counter]; ?>
+            <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
                 <label for="u_course_id<?= $counter ?>" class="checkbox">
                     <input type="checkbox" name="course_id" id="u_course_id<?= $counter ?>" value="<?= $course['course_id'] ?>">
                     <span class="label_title"><?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?></span>
@@ -209,7 +209,7 @@
             </label>
             
             <div class="joint" id="classIDs">
-                <?php for($counter=0; $counter < count($classes); $counter++) : $class = $classes[$counter]; ?>
+                <?php for($counter=0; $counter < (isset($classes[0]) ? count($classes) : 1); $counter++) : $class = isset($classes[0]) ? $classes[$counter] : $classes; ?>
                 <label for="u_class_id<?= $counter ?>" class="checkbox" data-course-id="<?= $class["course_ids"] ?>">
                     <input type="checkbox" name="class_id" id="u_class_id<?= $counter ?>" value="<?= $class['program_id'] ?>">
                     <span class="label_title"><?= empty($class["short_form"]) || is_null($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></span>
@@ -260,7 +260,7 @@
             <?php $courses = fetchData1("*","courses","school_id=$user_school_id", 0); 
                 if(is_array($courses)) : ?>
             <div class="joint" id="courseIDs">
-                <?php for($counter=0; $counter < count($courses); $counter++) : $course = $courses[$counter]; ?>
+            <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
                 <label for="course_id<?= $counter ?>" class="checkbox">
                     <input type="checkbox" name="course_id" id="course_id<?= $counter ?>" value="<?= $course['course_id'] ?>">
                     <span class="label_title"><?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?></span>
