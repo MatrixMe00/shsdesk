@@ -32,7 +32,7 @@ $(".item").click(function(){
             type: "GET",
             cache: false,
             dataType: "html",
-            timeout: 15000,
+            timeout: 8000,
             beforeSend: function(){
                 element = "<div class=\"relative\" style=\"height: " + rhs_height + "px\">" + 
                             loadDisplay({
@@ -86,7 +86,7 @@ $("#yes_no_form").submit(function(){
         data: $(this).serialize(),
         type: "get",
         dataType: "text",
-        timeout: 15000,
+        timeout: 8000,
         success: function(text){
             if(text == "update-success"){
                 $("#lhs .menu .item.active").click();

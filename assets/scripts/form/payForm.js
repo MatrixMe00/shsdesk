@@ -109,7 +109,7 @@ async function trackTransactions(reference = ""){
                 dataType: "text",
                 data: dataString,
                 cache: false,
-                timeout: 15000,
+                timeout: 8000,
                 success: function(response){
                     if(response.includes("success")){
                         //pass transaction id to admission form
@@ -182,7 +182,7 @@ function sendSMS(reference){
         data: dataString,
         type: "POST",
         dataType: "json",
-        timeout: 15000,
+        timeout: 8000,
         success: function(response){
             response1 = JSON.parse(JSON.stringify(response));
             if(response1["status"] == "success"){
@@ -228,7 +228,7 @@ async function passPaymentToDatabase(reference){
             dataType: "text",
             data: dataString,
             cache: false,
-            timeout: 15000,
+            timeout: 8000,
             success: function(response){
                 if(response.includes("success")){
                     //pass admin number into admission form
@@ -309,7 +309,7 @@ $("form[name=paymentForm]").submit(function(){
             type: "POST",
             dataType: "text",
             cache: false,
-            timeout: 15000,
+            timeout: 8000,
             beforeSend: function(){
                 message = loadDisplay({size:"small", animation:"anim-fade anim-swing"});
                 messageType = "load";

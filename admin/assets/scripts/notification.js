@@ -154,7 +154,7 @@ $(".reply_tab label[for=submit] button[name=submit]").click(function(){
             type: $(parent).attr("method"),
             dataType: "json",
             async: false,
-            timeout: 15000,
+            timeout: 8000,
             beforeSend: function(){
                 //disable the reply input
                 $(parent).children("label[for=reply]").children("input[name=reply]").prop("disabled",true);
@@ -321,7 +321,7 @@ $(".notif_box.unread").mouseleave(function(){
             type: "get",
             dataType: "text",
             async: true,
-            timeout: 15000,
+            timeout: 8000,
             success: function (text){
                 if(text == "success"){
                     //mark as read box

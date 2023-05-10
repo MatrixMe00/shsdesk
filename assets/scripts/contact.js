@@ -9,7 +9,7 @@ $("form").submit(function(e){
         dataType: "html",
         cache: true,
         type: "POST",
-        timeout: 15000,
+        timeout: 8000,
         beforeSend: function(){
             message = "Please wait...";
             message_type = "load";

@@ -183,7 +183,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                     data: {
                         submit: "change_admin_mode", admin_mode: val
                     },
-                    timeout: 5000,
+                    timeout: 8000,
                     success: function(response){
                         if(response === "true"){
                             alert_box("Mode changed to " + val, "teal")

@@ -55,7 +55,7 @@ $(".tabs .tab_btn").click(function(){
     $.ajax({
         url: "superadmin/submit.php",
         data: "submit=fetchEdit&school_id=" + school_id + "&content_box=" + content_box,
-        timeout: 15000,
+        timeout: 8000,
         beforeSend: function(){
             //show loader if there is no content
             htm = $("#edit_modal .content .content_box." + content_box).html();

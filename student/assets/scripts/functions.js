@@ -174,7 +174,7 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
        async: false,
        contentType: false,
        processData: false,
-       timeout: 15000,
+       timeout: 8000,
        beforeSend: function(){
            if(messageBox){
                message = loadDisplay({size: "small"});
@@ -248,7 +248,7 @@ async function jsonFileUpload(file_element, form_element, submit_element, messag
        async: false,
        contentType: false,
        processData: false,
-       timeout: 15000,
+       timeout: 8000,
        beforeSend: function(){
            if(messageBox){
                message = loadDisplay({size: "small"});
@@ -339,7 +339,7 @@ function formSubmit(form_element, submit_element, messageBox = true){
        dataType: "text",
        cache: false,
        async: false,
-       timeout: 15000,
+       timeout: 8000,
        beforeSend: function(){
            if(messageBox){
                message = loadDisplay({size: "small"});
@@ -425,7 +425,7 @@ async function jsonFormSubmit(form_element, submit_element, messageBox = true){
        method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
        dataType: "json",
        cache: false,
-       timeout: 15000,
+       timeout: 8000,
        beforeSend: function(){
            if(messageBox){
                message = loadDisplay({size: "small"});

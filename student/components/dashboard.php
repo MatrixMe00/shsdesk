@@ -245,7 +245,7 @@
                     },
                     dataType: "json",
                     type: "get",
-                    timeout: 15000,
+                    timeout: 8000,
                     beforeSend: function(){
                         $("canvas, #exam_data").addClass("no_disp")
                         $("#canvas_status").removeClass("no_disp").html("Fetching results, please wait...")

@@ -337,7 +337,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
             $.ajax({
                 url: "admin/submit.php",
                 data: records,
-                timeout: 5000,
+                timeout: 8000,
                 beforeSend: function(){
                     messageBoxTimeout("recordsForm","Updating...", "load",0)
                 },

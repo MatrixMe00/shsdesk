@@ -360,7 +360,7 @@ $("button[name=continue]").click(function(){
         dataType: "json",
         cache: true,
         async: false,
-        timeout: 15000,
+        timeout: 8000,
         beforeSend: function(){
             $("#view1 .para_message").html("Checking index number, please wait...");
             alert_box("Retrieving CSSPS data...", "secondary", 2);
@@ -565,7 +565,7 @@ $("form[name=admissionForm]").submit(function(e){
         dataType: "text",
         cache: false,
         async: false,
-        timeout: 15000,
+        timeout: 8000,
         beforeSend: function(){
             message = loadDisplay({size: "small"});
             type = "load";
@@ -747,7 +747,7 @@ $("label[for=print_summary] button").click(function(){
         },
         type: "POST",
         cache: true,
-        timeout: 15000,
+        timeout: 8000,
         success: function(data){
             alert_box("Your document is ready", "primary");
             alert_box(data,"secondary");

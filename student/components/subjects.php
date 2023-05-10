@@ -221,7 +221,7 @@
                         cid: course_id, sid: school_id, stud_index: student_index, 
                         submit: "getCourseData"
                     },
-                    timeout: 15000,
+                    timeout: 8000,
                     beforeSend: function(){
                         const appends = [".","..","..."]
                         let count = 0

@@ -263,7 +263,7 @@
                     program_id: item_id,
                     submit: "getProgram"
                 },
-                timeout: 15000,
+                timeout: 8000,
                 beforeSend: function(){
                     $("#updateLoader").toggleClass("no_disp flex")
                     $("#updateProgram #getLoader").html(loadDisplay({
@@ -336,7 +336,7 @@
                 },
                 type: "POST",
                 dataType: "json",
-                timeout: 15000,
+                timeout: 8000,
                 cache: false,
                 beforeSend: function(){
                     $(table_foot).addClass("sticky top secondary w-full")
