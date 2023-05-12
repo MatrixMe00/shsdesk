@@ -908,37 +908,25 @@
         $grade = "";
     
         switch($exam_type) {
+            case NULL:
             case "wassce":
-                if($mark >= 80) {
-                    $grade = "A1";
-                } elseif($mark >= 70) {
-                    $grade = "B2";
-                } elseif($mark >= 65) {
-                    $grade = "B3";
-                } elseif($mark >= 60) {
-                    $grade = "C4";
-                } elseif($mark >= 55) {
-                    $grade = "C5";
-                } elseif($mark >= 50) {
-                    $grade = "C6";
-                } elseif($mark >= 45) {
-                    $grade = "D7";
-                } elseif($mark >= 40) {
-                    $grade = "E8";
-                } else {
-                    $grade = "F9";
-                }
+                if($mark >= 80) {$grade = "A1";}
+                elseif($mark >= 70) {$grade = "B2";}
+                elseif($mark >= 65) {$grade = "B3";}
+                elseif($mark >= 60) {$grade = "C4";}
+                elseif($mark >= 55) {$grade = "C5";}
+                elseif($mark >= 50) {$grade = "C6";}
+                elseif($mark >= 45) {$grade = "D7";}
+                elseif($mark >= 40) {$grade = "E8";}
+                else {$grade = "F9";}
+                
                 break;
             case "ctvet":
-                if($mark >= 80) {
-                    $grade = "D";
-                } elseif($mark >= 60) {
-                    $grade = "C";
-                } elseif($mark >= 40) {
-                    $grade = "P";
-                } else {
-                    $grade = "F";
-                }
+                if($mark >= 80) {$grade = "D";}
+                elseif($mark >= 60) {$grade = "C";}
+                elseif($mark >= 40) {$grade = "P";}
+                else {$grade = "F";}
+                
                 break;
         }
     

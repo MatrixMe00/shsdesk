@@ -565,3 +565,100 @@ function selectChartColors(chartType, dataCount = 0){
 
     return colors
 }
+
+/**
+ * This function is used to give a student a result grade
+ * @param {number} mark This is the mark to be graded
+ * @param {string} exam_type This is the type of exams to be graded with
+ * @return {string} returns the grade
+ */
+function giveGrade(mark, exam_type="wassce"){
+    let grade = ""
+
+    switch(exam_type){
+        case "wassce":
+            if(mark >= 80){grade = "A1"}
+            else if(mark >= 70){grade = "B2"}
+            else if(mark >= 65){grade = "B3"}
+            else if(mark >= 60){grade = "C4"}
+            else if(mark >= 55){grade = "C5"}
+            else if(mark >= 50){grade = "C6"}
+            else if(mark >= 45){grade = "D7"}
+            else if(mark >= 40){grade = "E8"}
+            else {grade = "F9"}
+            
+            break
+        case "ctvet":
+            if(mark >= 80){grade = "D"}
+            else if(mark >= 60){grade = "C"}
+            else if(mark >= 40){grade = "P"}
+            else {grade = "F"}
+            
+            break
+    }
+
+    return grade
+}
+
+/**
+ * This function checks if a string is in json format or not
+ * @param {Object} jsonData This is the data to be checked
+ * @returns 
+ */
+function isJSON(jsonData){
+    let isJson = false
+    try {
+        const jsonObj = JSON.parse(JSON.stringify(jsonData));
+        isJson = true
+    } catch (e) {
+        isJson = false
+    }
+
+    return isJson
+}
+  
+
+/**
+ * This function is used to fill a table with data
+ * @typedef {Object} TableOptions
+ * @property {string} table_id This is the id of the table or element which will receive the filling
+ * @property {any[]} result_data This is the array of data to be checked
+ * @property {boolean} first_countable This asks if the first section is a js countable column or not
+ * @property {boolean} has_mark This checks if the table has a mark
+ * @property {number} mark_index This is the initial index of the mark so it is added automatically [not in array format]
+ * @property {string} mark_result_type This is the type of grade that should be used for the marks
+ * @param {TableOptions} tableOptions The table's options
+ */
+function fillTable({table_id, result_data, first_countable=true, has_mark, mark_index, mark_result_type="wassce"}){
+    const tbody = $("#" + table_id).find("tbody")
+    $(tbody).html("")
+    const isArray = typeof result_data[0] === "object" ? true : false
+    let reduceMarkIndex = false
+
+    if(isArray !== null && isArray){
+        const keys = Object.keys(result_data[0])
+
+        for(i = 0; i < result_data.length; i++){
+            tr = "<tr>"
+
+            if(first_countable){
+                tr += "<td>" + (i+1) + "</td>"
+
+                if(mark_index && !reduceMarkIndex) {--mark_index; reduceMarkIndex = true}
+            }
+
+            for(j = 0; j < keys.length; j++){
+                if(has_mark && (mark_index - 1) == j){
+                    tr += "<td>" + giveGrade(result_data[i][keys[j]], mark_result_type) + "</td>"
+                }
+                tr += "<td>" + result_data[i][keys[j]] + "</td>"
+            }
+
+            tr += "</tr>"
+
+            $(tbody).append(tr)
+        }
+    }else{
+        alert_box("Table cannot be populated because there are no keys to generate for a table", "warning color-black", 10)
+    }
+}
