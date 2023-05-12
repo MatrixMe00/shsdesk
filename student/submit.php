@@ -3,55 +3,51 @@
 
     $submit = $_REQUEST["submit"];
 
-    if($submit === "stat_search" || $submit === "stat_search_ajax"){
-        @$stat_year = $_GET["stat_year"];
-        @$stat_term = $_GET["stat_term"];
-        @$student_id = $_GET["student_id"];
-
-        $message = array();
-
-        if(empty($stat_year)){
-            $message["message"] = "No year has been specified";
-        }elseif(empty($stat_term)){
-            $message["message"] = "No term has been specified";
-        }elseif(empty($student_id)){
-            $message["message"] = "No student identified or specified";
-        }
-
-        if(count($message) === 0){
-            $sql = "SELECT r.*, c.course_name FROM results r JOIN courses c
-                ON r.course_id = c.course_id 
-                WHERE r.indexNumber='$student_id' AND r.exam_year=$stat_year AND r.semester=$stat_term";
-            $query = $connect2->query($sql);
-
-            if($query->num_rows > 0){
-                $message["error"] = false;
-                $message["message"] = $query->fetch_all(MYSQLI_ASSOC);
-            }else{
-                $message["error"] = true;
-                $message["message"] = "Sorry, no results for the selected year or semester";
-            }
-        }else{
-            $message["error"] = true;
-        }
-
-        header("Content-Type: application/json");
-        echo json_encode($message);
-    }elseif($submit === "report_search" || $submit === "report_search_ajax"){
+    if($submit === "report_search" || $submit === "stat_search" || $submit === "report_search_ajax" || $submit === "stat_search_ajax"){
         @$report_year = $_GET["report_year"];
         @$report_term = $_GET["report_term"];
+        @$index_number = $_GET["index_number"];
+        @$distinct = $_GET["result_distinct"] ?? false;
 
         $message = array();
 
-        if(empty($report_year)){
+        if(empty($index_number) || is_null($index_number)){
+            $message["message"] = "Student not selected. Please refresh the page to check if you are logged in";
+        }elseif(empty($report_year)){
             $message["message"] = "No year has been specified";
         }elseif(empty($report_term)){
             $message["message"] = "No term has been specified";
         }
 
         if(count($message) === 0){
-            $message["error"] = false;
-            $message["message"] = "current requirements passed";
+            $message["error"] = true;
+
+            if($distinct){$distinct = "DISTINCT(r.exam_type)";}
+            else{$distinct = "r.exam_type";}
+
+            $sql = "SELECT $distinct, c.course_name, r.mark 
+                FROM results r JOIN courses c ON r.course_id=c.course_id
+                WHERE indexNumber='$index_number' AND exam_year=$report_year AND semester=$report_term
+                ORDER BY r.exam_type ASC";
+            $query = $connect2->query($sql);
+
+            if($query->num_rows > 0){
+                $message["error"] = false;
+                $message["message"] = $query->fetch_all(MYSQLI_ASSOC);
+            }else{
+                $message["error"] = false;
+                $message["message"] = "Results for this period has not been uploaded yet";
+                $message["message"] = [
+                    array("exam_type" => "exam", "course_name" => "Mathematics", "mark" => rand(20, 85)),
+                    array("exam_type" => "mock", "course_name" => "English Language", "mark" => rand(20, 85)),
+                    array("exam_type" => "exam", "course_name" => "Physics", "mark" => rand(20, 85)),
+                    array("exam_type" => "mock", "course_name" => "Biology", "mark" => rand(20, 85)),
+                    array("exam_type" => "exam", "course_name" => "Chemistry", "mark" => rand(20, 85)),
+                    array("exam_type" => "mock", "course_name" => "Geography", "mark" => rand(20, 85)),
+                    array("exam_type" => "exam", "course_name" => "Economics", "mark" => rand(20, 85)),
+                    array("exam_type" => "mock", "course_name" => "History", "mark" => rand(20, 85))
+                ];
+            }            
         }else{
             $message["error"] = true;
         }

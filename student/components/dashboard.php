@@ -141,64 +141,6 @@
             }
         }
 
-        function giveGrade(mark, exam_type="wassce"){
-            let grade = ""
-
-            switch(exam_type){
-                case "wassce":
-                    if(mark >= 80){
-                        grade = "A1"
-                    }else if(mark >= 70){
-                        grade = "B2"
-                    }else if(mark >= 65){
-                        grade = "B3"
-                    }else if(mark >= 60){
-                        grade = "C4"
-                    }else if(mark >= 55){
-                        grade = "C5"
-                    }else if(mark >= 50){
-                        grade = "C6"
-                    }else if(mark >= 45){
-                        grade = "D7"
-                    }else if(mark >= 40){
-                        grade = "E8"
-                    }else{
-                        grade = "F9"
-                    }
-                    break
-                case "ctvet":
-                    if(mark >= 80){
-                        grade = "D"
-                    }else if(mark >= 60){
-                        grade = "C"
-                    }else if(mark >= 40){
-                        grade = "P"
-                    }else{
-                        grade = "F"
-                    }
-                    break
-            }
-
-            return grade
-        }
-
-        function fillTable(table_id, result_data){
-            const tbody = $("#" + table_id).find("tbody")
-            $(tbody).html("")
-
-            for(i = 0; i < result_data.length; i++){
-                tr = "<tr>"
-                tr += "<td>" + (i+1) + "</td>" +
-                      "<td>" + result_data[i]["exam_type"] + "</td>" +
-                      "<td>" + result_data[i]["course_name"] + "</td>" + 
-                      "<td>" + giveGrade(result_data[i]["mark"]) + "</td>" +
-                      "<td>" + result_data[i]["mark"] + "</td>"
-                tr += "</tr>"
-
-                $(tbody).append(tr)
-            }
-        }
-
         $("select#chart_type").change(function(){
             let chart_type = $(this).val();
             var graph_colors = selectChartColors(chart_type, 5)
@@ -240,8 +182,8 @@
                 $.ajax({
                     url: "submit.php",
                     data: {
-                        stat_year: year, stat_term: term, submit: $(this).attr("value"),
-                        student_id: indexNumber
+                        report_year: year, report_term: term, submit: $(this).attr("value"),
+                        index_number: indexNumber, result_distinct: true
                     },
                     dataType: "json",
                     type: "get",
@@ -266,7 +208,11 @@
                             console.log(response["message"])
                             $("select#chart_type").change()
                             
-                            fillTable("exam_data",response["message"])
+                            fillTable({
+                                table_id: "exam_data",result_data: response["message"],
+                                has_mark: true, mark_index: 4
+                            }
+                            )
                         }else{
                             $("#canvas_status").html(response["message"])
                         }

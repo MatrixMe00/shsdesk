@@ -1,1 +1,4 @@
-<?php include_once("../../includes/session.php") ?>
+<?php 
+    include_once("../../includes/session.php");
+    $mainRoot = "../../";
+?>
