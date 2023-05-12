@@ -235,7 +235,7 @@
 <?php break; case "addProgram" : ?>
     <form action="<?= $url ?>/admin/admin/submit.php" name="addProgramForm" class="wmax-md w-full sm-auto" method="GET">
         <div class="head">
-            <h2>Add a new program</h2>
+            <h2>Add a new Class</h2>
         </div>
         <div class="message_box no_disp">
             <span class="message"></span>
@@ -257,8 +257,7 @@
                 <p>Select the courses taught in this program</p>
             </label>
 
-            <?php $courses = fetchData1("*","courses","school_id=$user_school_id", 0); 
-                if(is_array($courses)) : ?>
+            <?php if(is_array($courses)) : ?>
             <div class="joint" id="courseIDs">
             <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
                 <label for="course_id<?= $counter ?>" class="checkbox">
@@ -307,10 +306,9 @@
                 <p>Select the courses taught in this program</p>
             </label>
 
-            <?php $courses = fetchData1("*","courses","school_id=$user_school_id", 0); 
-                if(is_array($courses)) : ?>
+            <?php if(is_array($courses)) : ?>
             <div class="joint" id="courseIDs">
-                <?php for($counter=0; $counter < count($courses); $counter++) : $course = $courses[$counter]; ?>
+                <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
                 <label for="u_course_id<?= $counter ?>" class="checkbox">
                     <input type="checkbox" name="course_id" id="u_course_id<?= $counter ?>" value="<?= $course['course_id'] ?>">
                     <span class="label_title"><?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?></span>
