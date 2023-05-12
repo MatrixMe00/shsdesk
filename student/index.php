@@ -11,7 +11,7 @@
 <html lang="en">
 <head>
     <?php include_once($rootPath."/blocks/generalHead.php")?>
-    
+
     <title><?= $isStudentLogin ? "SHSDesk | Student Login":"Student Portal" ?></title>
 
     <?php if($isStudentLogin) : ?>
@@ -103,8 +103,8 @@
         </form>
     </main>
 
-    <script src="<?= $url ?>/assets/scripts/functions.js"></script>
-    <script src="<?php echo $url?>/assets/scripts/general.min.js?v=<?php echo time()?>" async></script>
+    <script src="<?= $url ?>/assets/scripts/functions.min.js"></script>
+    <script src="<?php echo $url?>/assets/scripts/<?= $isStudentLogin ? "" : "form/" ?>general.min.js?v=<?php echo time()?>" async></script>
     <script>
         $("input[name=<?= $isStudentLogin ? "password":"indexNumber" ?>]").keyup(function(){
             let number_of_characters = $(this).val().length;
@@ -121,7 +121,7 @@
 
             //take index number
             indexNumber = $("input#indexNumber").val();
-
+            
             if(indexNumber == null || indexNumber == ""){
                 messageBoxTimeout("studentForm", "No index number provided. Please provide an index number", "error");
             }else if(indexNumber.length < 5){
