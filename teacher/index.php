@@ -56,12 +56,12 @@
                     This is the SHSDesk teachers portal. You can access your admission details using the admission button
                     or use the Enter button to proceed into your portal
                 </p>
-                <label for="teacherID">
+                <label for="teacher_id">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="username_logo">
                     </span>
-                    <input type="text" name="teacherID" id="teacherID" class="text_input" placeholder="Your Teacher ID" autocomplete="off"
-                    title="Enter your id number" value="<?php echo md5("Password@1")?>">
+                    <input type="text" name="teacher_id" id="teacher_id" class="text_input" placeholder="Your Teacher ID" autocomplete="off"
+                    title="Enter your id number" value="">
                 </label>
                 <label for="password" class="no_disp">
                     <span class="label_image">
@@ -75,42 +75,120 @@
                 </label>
             </div>
             <div class="foot">
-                <div class="flex btn m-sm-lr">
-                    <button name="submit" type="submit" class="plain-r primary" data-step="1">Proceed</button>
+                <div class="flex flex-wrap btn_label gap-sm">
+                    <button name="submit" type="submit" class="plain-r primary" data-step="1" value="user_login">Proceed</button>
                     <button name="reset" type="reset" class="no_disp plain-r orange">Cancel</button>
                 </div>
             </div>
         </form>
     </main>
 
-    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
+    <script src="<?php echo $url?>/assets/scripts/general.min.js?v=<?php echo time()?>" async></script>
+    <script src="<?= $url ?>/assets/scripts/functions.min.js"></script>
     <script>
         $("button[name=submit]").click(function(){
-            id = $("input[name=teacherID]").val();
+            id = $("input[name=teacher_id]").val();
             step = $(this).attr("data-step");
             form_name = "teacherForm";
 
             if(parseInt(step) == 1){
-                if($("input[name=teacherID]").val() === ""){
+                if($("input[name=teacher_id]").val() === ""){
                     messageBoxTimeout(form_name, "Your teacher ID is required to continue", "error");
                     return;
                 }
-                //disable editing for the id section
-                $("label[for=teacherID] input").attr("disabled", true);
 
-                //show the password field and the reset button
-                $("label[for=password], button[name=reset]").removeClass("no_disp");
+                $.ajax({
+                    url: "./submit.php",
+                    data: {
+                        submit: "user_login", teacher_id: id, step: 1
+                    },
+                    type: "GET",
+                    timeout: 8000,
+                    beforeSend: function(){
+                        //disable editing for the id section
+                        $("label[for=teacher_id] input").attr("readonly", true)
+                        messageBoxTimeout(form_name, "Checking id...", "load", 0)
+                    },
+                    success: function(response){
+                        if(typeof response === "object"){
+                            if(response["error"] === true){
+                                messageBoxTimeout(form_name, response["message"], "error")
+                                $("label[for=teacher_id] input").attr("readonly", false);
+                            }else{
+                                messageBoxTimeout(form_name, "User was found", "success")
+                                //show the password field and the reset button
+                                $("label[for=password], button[name=reset]").removeClass("no_disp");
 
-                //indicate that it should move to the next step
-                $(this).attr("data-step","2");
-                $("a[name=forget-link]").attr("data-step","2");
+                                //indicate that it should move to the next step
+                                $("button[name=submit]").attr("data-step","2");
+                                $("a[name=forget-link]").attr("data-step","2");
 
-                //change html content of forget link
-                $("a[name=forget-link]").html("Forgot your password?");
+                                //change html content of forget link
+                                $("a[name=forget-link]").html("Forgot your password?");
 
-                $(this).html("Login");
+                                $(this).html("Login");
+                            }
+                        }else{
+                            messageBoxTimeout(form_name,response,"error")
+                            $("label[for=teacher_id] input").attr("readonly", false);
+                        }
+                    },
+                    error: function(xhr, textStatus){
+                        let message = ""
+
+                        if(textStatus === "timeout"){
+                            message = "Connection was timed out. Please check your network connection and try again"
+                        }else{
+                            message = xhr.responseText
+                        }
+
+                        alert_box(message,"error")
+
+                        $("label[for=teacher_id] input").attr("readonly", false);
+                    }
+                })
             }else if(parseInt(step) == 2){
-                alert_box("Submission will be done at this step", "light");
+                const password = $("input#password").val()
+                $.ajax({
+                    url: "./submit.php",
+                    data: {
+                        submit: "user_login", teacher_id: id, step: 2, password: password
+                    },
+                    type: "POST",
+                    timeout: 8000,
+                    beforeSend: function(){
+                        //disable editing for the id section
+                        $("label[for=password] input").attr("readonly", true);
+                        messageBoxTimeout(form_name, "Checking password...", "load", 0)
+                    },
+                    success: function(response){
+                        if(typeof response === "object"){
+                            if(response["error"] === true){
+                                messageBoxTimeout(form_name, response["message"], "error")
+                                $("label[for=password] input").attr("readonly", false);
+                            }else{
+                                messageBoxTimeout(form_name, "Login was successful", "success")
+                            }
+                        }else{
+                            console.log(response);
+                            messageBoxTimeout(form_name,response,"error")
+                            $("label[for=password] input").attr("readonly", false);
+
+                        }
+                    },
+                    error: function(xhr, textStatus){
+                        let message = ""
+
+                        if(textStatus === "timeout"){
+                            message = "Connection was timed out. Please check your network connection and try again"
+                        }else{
+                            message = xhr.responseText
+                        }
+
+                        alert_box(message,"error")
+                        $("label[for=password] input").attr("readonly", false);
+                    }
+                })
             }
             
         })
@@ -126,7 +204,7 @@
             $("a[name=forget-link]").html("Forgot your account?");
 
             //enable editing for the id section
-            $("label[for=teacherID] input").attr("disabled", false);
+            $("label[for=teacher_id] input").attr("disabled", false);
 
             //hide password and reset button
             $("label[for=password], button[name=reset]").addClass("no_disp");
