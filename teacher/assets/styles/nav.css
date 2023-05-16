@@ -10,6 +10,8 @@ nav{
     flex-direction: column;
     gap: 2rem;
     background-color: var(--light);
+    position: sticky;
+    top: 0;
 }
 
 nav .head .name{

@@ -87,9 +87,9 @@
     <script src="<?= $url ?>/assets/scripts/functions.min.js"></script>
     <script>
         $("button[name=submit]").click(function(){
-            id = $("input[name=teacher_id]").val();
-            step = $(this).attr("data-step");
-            form_name = "teacherForm";
+            id = $("input[name=teacher_id]").val()
+            step = $(this).attr("data-step")
+            form_name = "teacherForm"
 
             if(parseInt(step) == 1){
                 if($("input[name=teacher_id]").val() === ""){

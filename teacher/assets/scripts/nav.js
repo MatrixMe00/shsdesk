@@ -21,18 +21,25 @@ $(".tab:not(.logout)").click(function(){
     $.ajax({
         url: $(this).attr("data-href"),
         dataType: "html",
+        type: "GET",
         timeout: 8000,
         beforeSend: function(){
             $("main").html("Loading page content...")
         },
-        success: function(data){
-            $("main").html(data)
+        success: function(data, textStatus){
+            if(data){
+                $("main").html(data)
+            }else{
+                $("main").html("An empty or broken page has been received. Please contact the admin for help")
+            }
         },
         error: (xhr, textStatus)=>{
             let message = ""
 
             if(textStatus === "timeout"){
                 message = "Connection was timed out due to a slow network. Please try again later"
+            }else{
+                message = "Undefined error encountered. Please try again later"
             }
 
             alert_box(message,"danger",8)

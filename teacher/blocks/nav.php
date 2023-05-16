@@ -1,48 +1,40 @@
-<nav class="sp-xlg-tp">
-        <div id="logo">
-            <div id="name">
-                <span id="first">SHS</span>
-                <span id="last">Desk</span>
+<nav id="lhs">
+    <div class="head">
+        <div class="txt-al-c white sp-med">
+            <img src="assets/images/icons/person-outline.svg" class="rect-xxsm" alt="">
+        </div>
+        <h3 class="flex-all-center flex-column gap-sm">
+            <span>Teacher Name</span>
+            <span id="active_access" class="no_disp txt-fs">[ABCD1234 Active]</span>
+            <span id="nonactive_access" class="txt-fs">[Username]</span>
+        </h3>
+    </div>
+    <div class="nav_links">
+        <div id="ham">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="buttons">
+            <div data-href="<?= "$url/components/dashboard.php" ?>" class="tab primary active" data-document-title="<?= /*$teacher["lname"]*/ "Lastname" ?> Dashboard"
+                data-active="dashboard">
+                <span>Dashboard</span>
+            </div>
+            <div data-href="" class="tab logout">
+                <span>Logout</span>
+            </div>
+            <div data-href="<?= "$url/components/classes.php" ?>" class="tab" data-document-title="<?= /*$teacher["lname"]*/ "Lastname" ?> Classes"
+                data-active="classes">
+                <span>My Classes</span>
+            </div>
+            <div id="my_report" data-href="<?= "$url/components/results.php" ?>" class="tab" data-document-title="<?= /*$teacher["lname"]*/ "Lastname" ?> Results"
+                data-active="results">
+                <span>Student Results</span>
+            </div>
+            <div data-href="<?= "$url/components/profile.php" ?>" class="tab" data-document-title="<?= /*$teacher["lname"]*/ "Lastname" ?> Profile" data-active="profile">
+                <span>My Profile</span>
             </div>
         </div>
-        <?php 
-            $links = array();
-            $ur = $_SERVER["REQUEST_URI"];
-
-            if(strpos($ur, "shsdesk")){
-                $links = array(
-                    [ "url" => "/", "name" => "Home"],
-                    [ "url" => "/pages/about.php", "name" => "About"],
-                    [ "url" => "/pages/school.php", "name" => "Schools"],
-                    // [ "url" => "/pages/faq.php", "name" => "FAQ"],
-                    [ "url" => "/pages/contact.php", "name" => "Contact"]
-                );
-            }else{
-                $links = array(
-                    [ "url" => "/", "name" => "Home"],
-                    [ "url" => "/about", "name" => "About"],
-                    [ "url" => "/school", "name" => "Schools"],
-                    // [ "url" => "/faq", "name" => "FAQ"],
-                    [ "url" => "/contact", "name" => "Contact"]
-                );
-            }
-            
-        ?>
-        <div id="buttons">
-            <?php foreach($links as $link) : ?>
-            <a href="<?php echo $url.$link["url"]?>" class="button">
-                <span><?= $link["name"] ?></span>
-            </a>
-            <?php endforeach; ?>
-            <a href="<?php echo $url?>/student/" class="button">
-                <span>Student Menu</span>
-            </a>
-        </div>
-        <div id="ham_button">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    </nav>
-    <?php $show = false ?>
-
+    </div>
+    <input type="hidden" id="active-page" value="<?= !isset($_SESSION["active-page"]) ? "dashboard" : $_SESSION["active-page"] ?>">
+</nav>

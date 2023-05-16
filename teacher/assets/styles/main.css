@@ -1,8 +1,9 @@
 body{
     display: flex;
+    gap: 1rem;
 }
 
-nav{flex: 1 1; position: sticky; top: 0;}
+nav{flex: 1 1; position: sticky; left: 0;}
 main{flex: 4 1;}
 
 /* dashboard */
@@ -21,8 +22,74 @@ main{flex: 4 1;}
 .p-section > *:last-child{
     flex: 4 1 600px;
 }
+
+#cur_time{
+    letter-spacing: 0.15em;
+    font-family: 'Courier New', Courier, monospace;
+}
 .card-section{justify-content: center;}
+
+#my_classes{
+    flex: 3 1 540px;
+}
+
+#my_classes .body > *{
+    flex: 1 1 280px;
+}
+#best_students{
+    flex: 2 1 320px;
+}
 /* end of dashboard */
+
+/*window editing*/
+.window{
+    display: flex;
+    flex-direction: column;
+    height: max-content;
+}
+.window .mini span, .window .mini-o span,
+.window .maxi span{
+    width: 10px;
+    display: block;
+    border: 1px solid;
+}
+
+.window .controls{
+    display: flex;
+    gap: 0.65rem;
+    align-items: center;
+}
+.window .maxi span{
+    height: 10px;
+}
+/*window editing*/
+
+/* classes tab */
+@media screen and (max-width: 868px){
+    #classes .card{
+        flex-grow: .9;
+        margin: auto
+    }
+
+    @media screen and (max-width: 520px){
+        #classes .card{
+            margin: initial !important;
+        }
+    }
+}
+
+#single_class .back:hover{
+    text-decoration: underline;
+    padding-left: 0.25rem;
+    cursor: pointer;
+}
+
+#single_class > .head{
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: thin solid lightgrey;
+}
+/* end of classes tab */
 
 /* subject tab */
 #subject_table tbody tr:hover{

@@ -1,0 +1,21 @@
+<?php include_once("../includes/session.php") ?><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/styles/general.min.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="assets/styles/main.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="assets/styles/nav.css?v=<?= time() ?>">
+    <script src="assets/scripts/jquery/compressed_jquery.js"></script>
+    <title>Document</title>
+</head>
+<body class="flex">
+    <?php include_once("blocks/nav.php") ?>
+    <main id="rhs" class="sp-med">
+    </main>
+
+    <script src="assets/scripts/functions.min.js?v=<?php echo time()?>"></script>
+    <script src="assets/scripts/nav.min.js?v=<?= time() ?>"></script>
+</body>
+</html>
