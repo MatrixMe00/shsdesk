@@ -2,8 +2,8 @@
 <section class="p-section flex-wrap flex p-lg flex-align-start">
     <div id="lhs" class="lt-shade flex-all-center flex-column gap-lg">
         <div class="name txt-al-c">
-            <h2 class="txt-fm">Lastname Othername</h2>
-            <p class="txt-fs">@username</p>
+            <h2 class="txt-fm"><?= $teacher["lname"]." ".$teacher["oname"] ?></h2>
+            <p class="txt-fs">@<?= $teacher["user_username"] ?></p>
         </div>
         <div>
             <div class="border w-auto sp-med rnd txt-al-c">
@@ -20,44 +20,44 @@
             <div class="joint gap-sm">
                 <label for="lname" class="flex flex-column">
                     <span class="label_title">Lastname</span>
-                    <input type="text" name="lname" id="lname" value="<?= "" ?>" 
-                        placeholder="Lastname"  readonly>
+                    <input type="text" name="lname" id="lname" value="<?= $teacher["lname"] ?>" 
+                        placeholder="Lastname" readonly>
                 </label>
                 <label for="oname" class="flex flex-column">
                     <span class="label_title">Othername(s)</span>
-                    <input type="text" name="oname" id="oname" value="<?= "" ?>" 
+                    <input type="text" name="oname" id="oname" value="<?= $teacher["oname"] ?>" 
                         placeholder="Othername(s)" readonly>
                 </label>
                 <label for="teacher_id" class="flex flex-column">
                     <span class="label_title">Teacher ID</span>
-                    <input type="text" name="teacher_id" id="teacher_id" value="<?= "" ?>" 
+                    <input type="text" name="teacher_id" id="teacher_id" value="<?= formatItemId($teacher["teacher_id"],"TID") ?>" 
                         placeholder="Teacher ID" readonly>
                 </label>
                 <label for="gender" class="flex flex-column">
                     <span class="label_title">Gender</span>
                     <select name="gender" id="gender" class="white" disabled>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
+                        <option value="male" <?= strtolower($teacher["gender"]) == "male" ? "selected" : "" ?>>Male</option>
+                        <option value="female" <?= strtolower($teacher["gender"]) == "female" ? "selected" : "" ?>>Female</option>
                     </select>
-                </label>
-                <label for="residence" class="flex flex-column">
-                    <span class="label_title">Residential Status</span>
-                    <input type="text" name="residence" id="residence" placeholder="Residential Status" value="<?= "" ?>" readonly>
                 </label>
             </div>
             <hr class="sm-xlg-tp" />
             <div class="joint gap-sm">
                 <label for="email" class="flex flex-column">
                     <span class="label_title">Email</span>
-                    <input type="email" name="email" id="email" placeholder="Email" id="email">
+                    <input type="email" name="email" id="email" placeholder="Email" id="email" value="<?= $teacher["email"] ?>">
+                </label>
+                <label for="username" class="flex flex-column">
+                    <span class="label_title">Username</span>
+                    <input type="email" name="username" id="username" placeholder="Username" value="<?= $teacher["user_username"] ?>">
                 </label>
                 <label for="password" class="flex flex-column">
                     <span class="label_title">Password</span>
                     <input type="password" name="password" id="password" placeholder="Password">
                 </label>
                 <label for="primary_contact" class="flex flex-column">
-                    <span class="label_title">Contact Number</span>
-                    <input type="tel" name="primary_contact" id="primary_contact" placeholder="Contact Number" value="<?= "" ?>">
+                    <span class="label_title">Phone Number</span>
+                    <input type="tel" name="primary_contact" id="primary_contact" placeholder="Contact Number" value="<?= $teacher["phone_number"] ?>">
                 </label>
             </div>
             <div class="btn w-full sm-unset-lr sm-xlg-t">
