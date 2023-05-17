@@ -29,6 +29,6 @@ if($user_details["new_user"] == 0 && isset($_SESSION["login_id"])){
 session_destroy();
 
 //move to index page
-header("location:$url/admin");
+header("location:$url");
 
 ?>
