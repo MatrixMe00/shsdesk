@@ -63,7 +63,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
         exit();
     }
 }elseif(isset($_SESSION["teacher_id"]) && !is_null($_SESSION["teacher_id"])){
-    $teacher = fetchData1("*","teachers","teacher_id=".$_SESSION["teacher_id"]);
+    $teacher = fetchData1("t.*, l.user_username","teachers t JOIN teacher_login l ON t.teacher_id=l.user_id","teacher_id=".$_SESSION["teacher_id"]);
 
     if(!is_array($teacher)){
         echo "Your account could not be found or was just deleted. Please contact your admin for help";
