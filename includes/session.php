@@ -62,6 +62,13 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
         echo "Sorry, the account was not found. Contact the administrator for help.";
         exit();
     }
+}elseif(isset($_SESSION["teacher_id"]) && !is_null($_SESSION["teacher_id"])){
+    $teacher = fetchData1("*","teachers","teacher_id=".$_SESSION["teacher_id"]);
+
+    if(!is_array($teacher)){
+        echo "Your account could not be found or was just deleted. Please contact your admin for help";
+        exit(1);
+    }
 }else{
     $user_role = "guest";
 }

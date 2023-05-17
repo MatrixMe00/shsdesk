@@ -276,7 +276,9 @@ async function jsonFileUpload(file_element, form_element, submit_element, messag
            }
            type = "error";
 
-           messageBoxTimeout(form_element.prop("name"), message, type);
+           if(messageBox){
+            messageBoxTimeout(form_element.prop("name"), message, type)
+           }
        }
    })
 
@@ -379,7 +381,7 @@ function formSubmit(form_element, submit_element, messageBox = true){
 * @param {any} submit_element This takes the submit element of the form
 * @param {boolean} messageBox This tests if there is a message box
 * 
-* @return {boolean|array} returns a boolean value or an array
+* @return {Promise<boolean|array>} returns a boolean value or an array
 */
 async function jsonFormSubmit(form_element, submit_element, messageBox = true){
    //submit value
@@ -457,7 +459,9 @@ async function jsonFormSubmit(form_element, submit_element, messageBox = true){
                 message = "Connection was timed out due to a slow network. Please try again later"
            }
 
-           messageBoxTimeout(form_element.prop("name"), message, type, 0);
+           if(messageBox){
+               messageBoxTimeout(form_element.prop("name"), message, type, 0)
+           }
        }
    })
 

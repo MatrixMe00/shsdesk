@@ -168,6 +168,7 @@
                                 $("label[for=password] input").attr("readonly", false);
                             }else{
                                 messageBoxTimeout(form_name, "Login was successful", "success")
+                                location.href = "./main"
                             }
                         }else{
                             console.log(response);
@@ -204,7 +205,7 @@
             $("a[name=forget-link]").html("Forgot your account?");
 
             //enable editing for the id section
-            $("label[for=teacher_id] input").attr("disabled", false);
+            $("label[for=teacher_id] input").attr("readonly", false);
 
             //hide password and reset button
             $("label[for=password], button[name=reset]").addClass("no_disp");
