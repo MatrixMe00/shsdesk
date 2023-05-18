@@ -996,18 +996,24 @@
                                                 $message = "Class and subject is not properly separated. Process discontinued ".count($part);
                                             }
                                         }else{
-                                            $message = "$part has no |";
+                                            $message = "An invalid split format was rejected";
+                                            break;
                                         }
                                     }else{
-                                        $message = "Part is empty";
+                                        $message = "An empty detail was rejected";
+                                        break;
                                     }
                                 }
                             }else{
                                 $message = "Invalid class and subject format projected. Process terminated";
                             }
                             
-                            $message = "Teacher has been added";
-                            $status = true;
+                            if(empty($message) || is_null($message)){
+                                $message = "Teacher has been added";
+                                $status = true;
+                            }else{
+                                $status = false;
+                            }                            
                         }else{
                             $message = "Teacher added, but teacher cannot login. Please contact the administrator for help";
                         }
@@ -1149,12 +1155,19 @@
             $item_id = $_REQUEST["item_id"];
             $item_table = $_REQUEST["item_table"];
             $item_table_col = $_REQUEST["item_table_col"];
+            $isTeacher = $_REQUEST["isTeacher"] ?? null;
             
             $item_id = intval($item_id) ? $item_id : "'$item_id'";
             $sql = "SELECT * FROM $item_table WHERE $item_table_col=$item_id";
             
             if($result = $connect2->query($sql)){
                 $message = $result->fetch_all(MYSQLI_ASSOC);
+                if($isTeacher){
+                    $message[0]["course_id"] = stringifyClassIDs(fetchData1("program_id, course_id", "teacher_classes","teacher_id={$message[0]['teacher_id']}",0));
+                    $message[0]["course_names"] = stringifyClassNames(fetchData1("p.program_name, p.short_form as short_p, c.course_name, c.short_form as short_c",
+                    "teacher_classes t JOIN program p ON t.program_id = p.program_id JOIN courses c ON c.course_id=t.course_id",
+                    "t.teacher_id={$message[0]['teacher_id']}", 0));
+                }
                 $status = true;
             }else{
                 $message = "Data could not be retrieved";
@@ -1234,17 +1247,73 @@
                 $message = "Please assign the teacher at least one course";
             }elseif(empty($teacher_id)){
                 $message = "No teacher selected. Please check and try again";
-            }elseif(empty($class_ids)){
-                $message = "Please provide the class(es) this teacher teaches";
             }else{
                 try {
-                    $sql = "UPDATE teachers SET lname=?, oname=?, gender=?, email=?, phone_number=?, course_id=?, program_ids=? WHERE teacher_id=?";
+                    $sql = "UPDATE teachers SET lname=?, oname=?, gender=?, email=?, phone_number=? WHERE teacher_id=?";
                     $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("sssssssi", $teacher_lname, $teacher_oname, $teacher_gender, $teacher_email, 
-                        $teacher_phone, $course_ids, $class_ids, $teacher_id);
+                    $stmt->bind_param("sssssi", $teacher_lname, $teacher_oname, $teacher_gender, $teacher_email, 
+                        $teacher_phone, $teacher_id);
                     if($stmt->execute()){
-                        $message = "Details for $teacher_lname has been updated";
-                        $status = true;
+                        //delete details about teacher's class from db
+                        if($connect2->query("DELETE FROM teacher_classes WHERE teacher_id=$teacher_id")){
+                            //insert into login
+                            if(!is_null($teacher_id) && !empty($teacher_id)){                                
+                                $parts = explode(' ', $course_ids);
+                                if(is_array($parts)){
+                                    if(end($parts) === ""){
+                                        array_pop($parts);
+                                    }
+                                    foreach($parts as $part){
+                                        $part = trim($part,"[]");
+                                        if(!empty($part)){
+                                            if(strpos($part,'|') !== false){
+                                                $part = explode("|",$part);
+                                                if(is_array($part) && count($part) == 2){
+                                                    $pid = $part[0];
+                                                    $cid = $part[1];
+
+                                                    // sql syntax would go here
+                                                    $detailsExist = fetchData1("COUNT(teacher_id) as total","teacher_classes","teacher_id=$teacher_id AND program_id=$pid AND course_id=$cid")["total"];
+                                                    if(intval($detailsExist) < 1){
+                                                        $sql = "INSERT INTO teacher_classes (teacher_id, program_id, course_id) VALUES (?,?,?)";
+                                                        $stmt = $connect2->prepare($sql);
+                                                        $stmt->bind_param("iii", $teacher_id, $pid, $cid);
+
+                                                        $stmt->execute();
+                                                    }                                    
+                                                }else{
+                                                    $message = "Class and subject is not properly separated. Process discontinued ".count($part);
+                                                }
+                                            }else{
+                                                $message = "An invalid split format was rejected";
+                                                break;
+                                            }
+                                        }else{
+                                            $message = "An empty detail was rejected";
+                                            break;
+                                        }
+                                    }
+                                }else{
+                                    $message = "Invalid class and subject format projected. Process terminated";
+                                }
+                                
+                                if(empty($message)){
+                                    $message = "Teacher has been added";
+                                    $status = true;
+                                }else{
+                                    $status = false;
+                                }
+                            }else{
+                                $message = "Teacher's unique identity missing. Please refresh your page and try again";
+                            }
+                        }
+                        
+                        if(empty($message) || is_null($message)){
+                            $message = "Details for $teacher_lname has been updated";
+                            $status = true;
+                        }else{
+                            $status = false;
+                        }                        
                     }else{
                         $message = "Teacher could not be added";
                     }

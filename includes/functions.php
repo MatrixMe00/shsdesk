@@ -939,5 +939,44 @@
     
         return $grade;
     }
-    
+
+    /**
+     * This function is for the records model to retrive the data of the classes and records of the teacher
+     * @param array $arrayData This is the data of array which holds the program id n course id
+     * @return string returns a string which compiles all arrays into one string in the format [pid|cid] 
+     */
+    function stringifyClassIDs($arrayData){
+        $newString = "";
+        if(!is_array($arrayData[0])){
+            return "wrong array data";
+        }else{
+            foreach($arrayData as $data){
+                $newString .= "[{$data['program_id']}|{$data['course_id']}] ";
+            }
+        }
+
+        return $newString;
+    }
+
+    /**
+     * This function is for the records model to retrive the data of the classes and records of the teacher
+     * @param array $arrayData This is the data of array which holds the program strings n course strings
+     * @return string returns a string which compiles all arrays into one string in the format [pid|cid] 
+     */
+    function stringifyClassNames($arrayData){
+        $newString = "";
+        if(!is_array($arrayData[0])){
+            return "wrong array data";
+        }else{
+            foreach($arrayData as $data){
+                $newString .= "[";
+                $newString .= empty($data["short_p"]) ? $data["program_name"] : $data["short_p"];
+                $newString .= "|";
+                $newString .= empty($data["short_c"]) ? $data["course_name"] : $data["short_c"];
+                $newString .= "],";
+            }
+        }
+
+        return $newString;
+    }
 ?>

@@ -285,6 +285,7 @@
         const table = $(this).parents("section").attr("data-table")
         const table_col = $(this).parents("section").attr("data-table-col")
         const this_eventBtn = $(this)
+        let isTeacher = false
 
         if($(this).hasClass("edit")){
             let formName = ""
@@ -293,6 +294,7 @@
                 formName = "updateCourseForm"
             }else if(table == "teachers"){
                 formName = "updateTeacherForm"
+                isTeacher = true
             }
             
             $("#updateItem form").addClass("no_disp")
@@ -304,8 +306,10 @@
                     item_id: item_id,
                     item_table: table,
                     item_table_col: table_col,
-                    submit: "getItem"
+                    submit: "getItem",
+                    isTeacher: isTeacher
                 },
+                timeout: 8000,
                 beforeSend: function(){
                     $("#updateLoader").addClass("flex").removeClass("no_disp")
                     $("#updateItem #getLoader").html(loadDisplay({
@@ -337,22 +341,44 @@
                             $("#updateItem form[name=" + formName + "] input[name=teacher_email]").val(results["email"])
                             $("#updateItem form[name=" + formName + "] input[name=teacher_id]").val(results["teacher_id"])
 
-                            $("#updateItem form[name=" + formName + "] input[type=checkbox]").each((index, element)=>{
-                                element_val = $(element).val() + " "
-                                checkbox_name = $(element).attr("name").toLowerCase()
+                            //parse data into table
+                            let course_ids = results["course_id"].split(" ")
+                            let course_names = results["course_names"].split(",")
+                            const tbody = $("#updateItem form table tbody")
+
+                            course_ids.pop()
+                            course_names.pop()
+
+                            if(course_ids.length !== course_names.length){
+                                alert_box("Invalid identities presented for classes and subjects", "danger")
+                            }else{
+                                //clean arrays
+                                $(course_ids).each(function(index, value) {
+                                    var cleanedValue = value.replace(/^\[|\]$/g, "");
+                                    course_ids[index] = cleanedValue;
+                                });
+                                $(course_names).each(function(index, value) {
+                                    var cleanedValue = value.replace(/^\[|\]$/g, "");
+                                    course_names[index] = cleanedValue;
+                                });
                                 
-                                if(checkbox_name == "course_id"){
-                                    $(element).prop('checked', false)
-                                    if(results["course_id"].includes(element_val)){
-                                        $(element).prop('checked', true)
-                                    }
-                                }else if(checkbox_name == "class_id"){
-                                    $(element).prop('checked', false)
-                                    if(results["program_ids"] != null && results["program_ids"].includes(element_val)){
-                                        $(element).prop('checked', true)
-                                    }
-                                }                                
-                            })
+                                for(var i = 0; i < course_ids.length; i++){
+                                    let ids = course_ids[i].split("|")
+                                    let names = course_names[i].split("|")
+
+                                    let tr = "<tr>"
+                                        tr += "<td>" + ids[0] + "</td>"
+                                        tr += "<td>" + names[0] + "</td>"
+                                        tr += "<td>" + ids[1] + "</td>"
+                                        tr += "<td>" + names[1] + "</td>"
+                                        tr += "<td><span class='item-event' onclick='removeRow($(this))'>Remove</span></td>"
+                                    tr += "</tr>"
+
+                                    $(tbody).append(tr)
+                                }
+                            }
+
+                            $("#updateItem table tbody");
                         }
 
                         $("#updateItem form[name="+ formName + "]").removeClass("no_disp")
@@ -362,7 +388,14 @@
 
                 },
                 error: function(e){
-                    alert(e)
+                    let message = ""
+                    if(e.responseText === "timeout"){
+                        message = "Connection was timed out. Please check your network and try again";
+                    }else{
+                        message = e.responseText
+                    }
+
+                    alert_box(message,"light",10)
                 }
             })
             
@@ -403,6 +436,12 @@
                 //get content of course ids
                 let course_ids = $(form).find("input[name=course_ids]").val()
 
+                //reset course_ids
+                if(course_ids === "wrong array data"){
+                    $(form).find("input[name=course_ids]").val()
+                    course_ids = ""
+                }
+
                 if(course_ids.includes(dat)){
                     alert_box("Teacher has been assigned this detail already, " + selectedSubject["option"] + " at " + selectedClasses[i]["option_name"])
                 }else{
@@ -411,7 +450,7 @@
                         tr += "<td>" + selectedClasses[i]["option_name"] +"</td>"
                         tr += "<td>" + formatItemId(selectedSubject["value"], "SID") + "</td>"
                         tr += "<td>" + selectedSubject["option"] + "</td>"
-                        tr += "<td>" + "<span class='item-event remove_td' onclick='removeRow($(this))'>Remove</span>" + "</td>"
+                        tr += "<td>" + "<span class='item-event' onclick='removeRow($(this))'>Remove</span>" + "</td>"
                     tr += "</tr>"
 
                     $(table).find("tbody").append(tr)
@@ -420,8 +459,6 @@
                     $(form).find("input[name=course_ids]").val(course_ids + dat)
                 }
             }
-
-            
 
             //reset fields
             $(class_select).prop("selectedIndex", -1)
@@ -450,7 +487,12 @@
         if(ajaxCall){
             ajaxCall.abort()
         }
+        
+        $("#updateItem").addClass("no_disp")
+    })
 
+    $("#updateItem button[name=cancel]").click(function(){
+        $("#updateItem table tbody").html("")
         $("#updateItem").addClass("no_disp")
     })
 </script>

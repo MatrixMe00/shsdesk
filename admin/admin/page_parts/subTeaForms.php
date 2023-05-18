@@ -170,7 +170,7 @@
         </div>
     </form>
 <?php break; case "teacher_update" : ?>
-    <form action="<?= $url ?>/admin/admin/submit.php" name="updateTeacherForm" class="wmax-md" method="GET">
+    <form action="<?= $url ?>/admin/admin/submit.php" name="updateTeacherForm" class="wmax-md relative" method="GET">
         <div class="head">
             <h2>Update Teacher <span id="teacherID"></span></h2>
         </div>
