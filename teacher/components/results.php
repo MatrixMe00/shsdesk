@@ -1,14 +1,31 @@
-<?php include_once("compSession.php"); $_SESSION["active-page"] = "results" ?>
-<input type="hidden" name="result_type" id="result_type" value="wassce">
+<?php 
+    include_once("compSession.php"); 
+    $_SESSION["active-page"] = "results";
+
+    //useful variables in this page
+    $course_ids = explode(" ", $teacher["course_id"]);
+    $program_ids = explode(" ", $teacher["program_ids"]);
+    $result_type = fetchData("school_result","admissiondetails","schoolID=".$teacher["school_id"])["school_result"];
+?>
+<input type="hidden" name="result_type" id="result_type" value="<?= $result_type ?>">
 <section class="d-section lt-shade">
+    <div class="head txt-al-c sm-med-b m-sm-b">
+        <h2>Draw out Class List</h2>
+        <p>Please select a class list to draw out</p>
+    </div>
     <form action="" class="flex w-full flex-column gap-sm">
         <div class="joint gap-sm">
             <label for="class">
                 <select class="w-full sp-xlg" name="class" id="class">
                     <option value="">Select Class</option>
-                    <option value="">Classname 1</option>
-                    <option value="">Classname 2</option>
-                    <option value="">Classname 3</option>
+                    <?php 
+                        $classes = implode(" ", $program_ids);
+                        $sql = "SELECT program_id, program_name FROM program WHERE '$classes' LIKE CONCAT('%', program_id, ' ', '%')";
+                        $query = $connect2->query($sql);
+                        while($class=$query->fetch_assoc()) :
+                    ?>
+                    <option value="<?= $class["program_id"] ?>"><?= $class["program_name"] ?></option>
+                    <?php endwhile; ?>
                 </select>
             </label>
             <label for="year">
@@ -21,15 +38,14 @@
             </label>
             <label for="semester">
                 <select class="w-full sp-xlg" name="semester" id="semester">
-                    <option value="">Select Year</option>
-                    <option value="">Term 1</option>
-                    <option value="">Term 2</option>
-                    <option value="">Term 3</option>
+                    <option value="">Select Semester</option>
+                    <option value="">Semester 1</option>
+                    <option value="">Semester 2</option>
                 </select>
             </label>
         </div>
         <div class="btn wmax-xs w-full sm-auto">
-            <button class="primary sm-rnd sp-xlg w-full" name="submit" value="search_class">Submit</button>
+            <button class="primary sm-rnd sp-xlg w-full" name="submit" value="search_class">Draw Out</button>
         </div>
     </form>
 </section>
@@ -57,24 +73,24 @@
         </thead>
         <tbody>
             <tr class="p-lg">
-                <td>0123456789</td>
-                <td>Lastname Othernames</td>
+                <td>0167423589</td>
+                <td>Thierry Henry</td>
                 <td contenteditable="true" class="white class_score" data-max="40">0</td>
                 <td contenteditable="true" class="white exam_score" data-max="60">0</td>
                 <td class="total_score">0</td>
                 <td class="grade">F9</td>
             </tr>
             <tr class="p-lg">
-                <td>0123456789</td>
-                <td>Lastname Othernames</td>
+                <td>0169713236</td>
+                <td>Adaklu Mamaga</td>
                 <td contenteditable="true" class="white class_score" data-max="40">0</td>
                 <td contenteditable="true" class="white exam_score" data-max="60">0</td>
                 <td class="total_score">0</td>
                 <td class="grade">F9</td>
             </tr>
             <tr class="p-lg">
-                <td>0123456789</td>
-                <td>Lastname Othernames</td>
+                <td>0314758965</td>
+                <td>Martial Anthony</td>
                 <td contenteditable="true" class="white class_score" data-max="40">0</td>
                 <td contenteditable="true" class="white exam_score" data-max="60">0</td>
                 <td class="total_score">0</td>
@@ -85,6 +101,7 @@
             <tr>
                 <td colspan="6" class="btn p-lg">
                     <button class="green">Submit Results</button>
+                    <button class="teal">Download Student List</button>
                     <button class="reset_table red">Reset Table</button>
                 </td>
             </tr>
@@ -127,5 +144,17 @@
     $(".reset_table").click(function(){
         $("#result_slip").find(".class_score, .exam_score").html("0")
         $("#result_slip").find(".class_score").blur()
+    })
+
+    $("#search").keyup(function(){
+        const searchText = $(this).val().toLowerCase()
+        $("table#result_slip tbody tr").each(function(){
+            const rowData = $(this).text().toLowerCase()
+            if(rowData.indexOf(searchText) === -1){
+                $(this).hide()
+            }else{
+                $(this).show()
+            }
+        })
     })
 </script>

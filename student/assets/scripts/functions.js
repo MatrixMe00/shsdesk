@@ -666,3 +666,23 @@ function fillTable({table_id, result_data, first_countable=true, has_mark, mark_
         alert_box("Table cannot be populated because there are no keys to generate for a table", "warning color-black", 10)
     }
 }
+
+/**
+ * The function is used to format the id of a program into the form PID XXXX
+ * @param string|int $subject_id This is the id to be converted
+ * @param string $prefix The prefix is used to provide the pre-text of the identifier
+ * @param bool $reverse This tells if it should convert the item id to integer
+ * @return string|int Returns the formatted program id (string or int)
+ */
+function formatItemId(subject_id, prefix, reverse = false) {
+    if (!reverse) {
+        subject_id = subject_id.toString().padStart(4, "0");
+        subject_id = `${prefix} ${subject_id}`;
+    } else {
+        subject_id = subject_id.toUpperCase();
+        subject_id = subject_id.replace(prefix, "").replace(" ", "");
+        subject_id = parseInt(subject_id);
+    }
+  
+    return subject_id;
+}

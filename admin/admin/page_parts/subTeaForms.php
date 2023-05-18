@@ -117,38 +117,53 @@
                     <input type="text" name="teacher_email" id="teacher_email" placeholder="Teacher's Email">
                 </label>
             </div>
-
-            <label for="">
-                <p>Select the courses taught by this teacher</p>
-            </label>
             
-            <div class="joint" id="courseIDs">
-                <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
-                <label for="course_id<?= $counter ?>" class="checkbox">
-                    <input type="checkbox" name="course_id" id="course_id<?= $counter ?>" value="<?= $course['course_id'] ?>">
-                    <span class="label_title"><?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?></span>
+            <div class="joint gap-sm" id="teacher_program">
+                <label for="class_id" class="w-full flex-column">
+                    <span class="label_title">Select the class taught</span>
+                    <select name="class_id" id="class_id" multiple>
+                        <option value="" disabled selected>Select a class</option>
+                        <?php for($counter=0; $counter < (isset($classes[0]) ? count($classes) : 1); $counter++) : $class = isset($classes[0]) ? $classes[$counter] : $classes; ?>
+                        <option value="<?= $class['program_id'] ?>"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></option>
+                        <?php endfor; ?>
+                    </select>
+                    <span class="item-event info">Hold down the control key to select multiple classes</span>
                 </label>
-                <?php endfor; ?>
+            
+                <label for="course_id" class="w-full flex-column">
+                    <span class="label_title">Select the subject taught</span>
+                    <select name="course_id" id="course_id">
+                        <option value="" disabled selected>Select the subject</option>
+                        <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
+                        <option value="<?= $course['course_id'] ?>">
+                            <?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?>
+                        </option>
+                        <?php endfor; ?>
+                    </select>
+                </label>
             </div>
 
-            <label for="">
-                <p>Select the classes taught by this teacher</p>
-            </label>
-            
-            <div class="joint" id="classIDs">
-                <?php for($counter=0; $counter < (isset($classes[0]) ? count($classes) : 1); $counter++) : $class = isset($classes[0]) ? $classes[$counter] : $classes; ?>
-                <label for="class_id<?= $counter ?>" class="checkbox" data-course-id="<?= $class["course_ids"] ?>">
-                    <input type="checkbox" name="class_id" id="class_id<?= $counter ?>" value="<?= $class['program_id'] ?>">
-                    <span class="label_title"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></span>
-                </label>
-                <?php endfor; ?>
+            <div class="btn">
+                <button type="button" class="light add_detail">Add Detail</button>
             </div>
 
             <!-- hidden controls -->
             <input type="hidden" name="school_id" value="<?= $user_school_id ?>">
-            <input type="hidden" name="course_ids" value="">
-            <input type="hidden" name="class_ids" value="">
+            <input type="hidden" name="course_ids" placeholder="Course Ids" value="">
             
+            <label for="">
+                <table class="full" id="class_sub_table" name="class_sub_table">
+                    <thead>
+                        <td>Class ID</td>
+                        <td>Class Name</td>
+                        <td>Subject ID</td>
+                        <td>Subject Name</td>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </label>
+
             <div class="btn w-full">
                 <button class="primary sp-lg w-full" name="submit" value="addNewTeacher" type="submit">Add Teacher</button>
             </div>
@@ -190,38 +205,53 @@
                     <input type="text" name="teacher_email" id="u_teacher_email" placeholder="Teacher's Email">
                 </label>
             </div>
-
-            <label for="">
-                <p>Select the courses taught by this teacher</p>
-            </label>
             
-            <div class="joint" id="courseIDs">
-            <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
-                <label for="u_course_id<?= $counter ?>" class="checkbox">
-                    <input type="checkbox" name="course_id" id="u_course_id<?= $counter ?>" value="<?= $course['course_id'] ?>">
-                    <span class="label_title"><?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?></span>
+            <div class="joint gap-sm" id="u_teacher_program">
+                <label for="u_class_id" class="w-full flex-column">
+                    <span class="label_title">Select the class taught</span>
+                    <select name="class_id" id="u_class_id" multiple>
+                        <option value="" disabled selected>Select a class</option>
+                        <?php for($counter=0; $counter < (isset($classes[0]) ? count($classes) : 1); $counter++) : $class = isset($classes[0]) ? $classes[$counter] : $classes; ?>
+                        <option value="<?= $class['program_id'] ?>"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></option>
+                        <?php endfor; ?>
+                    </select>
+                    <span class="item-event info">Hold down the control key to select multiple classes</span>
                 </label>
-                <?php endfor; ?>
+            
+                <label for="u_course_id" class="w-full flex-column">
+                    <span class="label_title">Select the subject taught</span>
+                    <select name="course_id" id="u_course_id">
+                        <option value="" disabled selected>Select the subject</option>
+                        <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
+                        <option value="<?= $course['course_id'] ?>">
+                            <?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?>
+                        </option>
+                        <?php endfor; ?>
+                    </select>
+                </label>
             </div>
 
-            <label for="">
-                <p>Select the classes taught by this teacher</p>
-            </label>
-            
-            <div class="joint" id="classIDs">
-                <?php for($counter=0; $counter < (isset($classes[0]) ? count($classes) : 1); $counter++) : $class = isset($classes[0]) ? $classes[$counter] : $classes; ?>
-                <label for="u_class_id<?= $counter ?>" class="checkbox" data-course-id="<?= $class["course_ids"] ?>">
-                    <input type="checkbox" name="class_id" id="u_class_id<?= $counter ?>" value="<?= $class['program_id'] ?>">
-                    <span class="label_title"><?= empty($class["short_form"]) || is_null($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></span>
-                </label>
-                <?php endfor; ?>
+            <div class="btn">
+                <button type="button" class="light add_detail">Add Detail</button>
             </div>
 
             <!-- hidden controls -->
             <input type="hidden" name="teacher_id" value="">
             <input type="hidden" name="course_ids" value="">
-            <input type="hidden" name="class_ids" value="">
             
+            <label for="">
+                <table class="full" id="u_class_sub_table" name="class_sub_table">
+                    <thead>
+                        <td>Class ID</td>
+                        <td>Class Name</td>
+                        <td>Subject ID</td>
+                        <td>Subject Name</td>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </label>
+
             <div class="flex flex-wrap w-full gap-sm flex-eq wmax-xs sm-auto">
                 <label for="submit" class="btn w-full sm-unset sp-unset">
                     <button type="submit" name="submit" class="primary w-fluid sp-med xs-rnd" value="updateTeacher">Update</button>

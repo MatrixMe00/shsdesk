@@ -931,53 +931,88 @@
             header("Content-Type: application/json");
             echo json_encode($final);
         }elseif($submit == "addNewTeacher" || $submit == "addNewTeacher_ajax"){
-            @$teacher_lname = $_GET["teacher_lname"];
-            @$teacher_oname = $_GET["teacher_oname"];
-            @$teacher_gender = $_GET["teacher_gender"];
-            @$teacher_email = $_GET["teacher_email"];
-            @$teacher_phone = $_GET["teacher_phone"];
-            @$course_ids = $_GET["course_ids"];
-            @$class_ids = $_GET["class_ids"];
-            @$school_id = $_GET["school_id"];
+            @$teacher_lname = $_GET["teacher_lname"] ?? null;
+            @$teacher_oname = $_GET["teacher_oname"] ?? null;
+            @$teacher_gender = $_GET["teacher_gender"] ?? null;
+            @$teacher_email = $_GET["teacher_email"] ?? null;
+            @$teacher_phone = $_GET["teacher_phone"] ?? null;
+            @$course_ids = $_GET["course_ids"] ?? null;
+            @$school_id = $_GET["school_id"] ?? null;
 
             $message = ""; $status = false; $final = array();
-
+            
             if(empty($teacher_lname)){
                 $message = "Please provide the lastname of the teacher";
-            }elseif(empty($teacher_oname)){
+            }elseif(empty($teacher_oname) || is_null($teacher_oname)){
                 $message = "Please provide the othername(s) of the teacher";
-            }elseif(empty($teacher_gender)){
+            }elseif(empty($teacher_gender) || is_null($teacher_gender)){
                 $message = "Please select the gender of the teacher";
-            }elseif(empty($teacher_phone)){
+            }elseif(empty($teacher_phone) || is_null($teacher_phone)){
                 $message = "Please provide a phone number";
             }elseif(strlen($teacher_phone) < 10){
                 $message = "Please enter a valid phone number";
-            }elseif(empty($teacher_email)){
+            }elseif(empty($teacher_email) || is_null($teacher_email)){
                 $message = "Please provide an email";
-            }elseif(empty($course_ids)){
-                $message = "Please assign the teacher at least one course";
-            }elseif(empty($school_id)){
+            }elseif(empty($course_ids) || is_null($course_ids)){
+                $message = "Please assign the teacher at least one course and a class";
+            }elseif(empty($school_id) || is_null($school_id)){
                 $message = "No school selected. Please check and try again";
-            }elseif(empty($class_ids)){
-                $message = "Please provide the class(es) this teacher teaches";
             }else{
                 try {
-                    $sql = "INSERT INTO teachers (lname, oname, gender, email, phone_number, school_id, course_id, program_ids, joinDate)
-                        VALUES (?,?,?,?,?,?,?,?,NOW())";
+                    $sql = "INSERT INTO teachers (lname, oname, gender, email, phone_number, school_id, joinDate)
+                        VALUES (?,?,?,?,?,?,NOW())";
                     $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("sssssiss", $teacher_lname, $teacher_oname, $teacher_gender, $teacher_email, $teacher_phone, $school_id, $course_ids, $class_ids);
+                    $stmt->bind_param("sssssi", $teacher_lname, $teacher_oname, $teacher_gender, $teacher_email, $teacher_phone, $school_id);
                     if($stmt->execute()){
                         //insert into login
-                        $teacher_id = fetchData1("teacher_id","teachers","phone_number = '$teacher_phone'");
-                        if($teacher_id != "empty"){
-                            $connect2->query("INSERT INTO teacher_login (user_id) VALUES (".$teacher_id["teacher_id"].")");
+                        $teacher_id = $stmt->insert_id;
+                        if(!is_null($teacher_id) && !empty($teacher_id)){
+                            $connect2->query("INSERT INTO teacher_login (user_id) VALUES ($teacher_id)");
+                            
+                            $parts = explode(' ', $course_ids);
+                            if(is_array($parts)){
+                                if(end($parts) === ""){
+                                    array_pop($parts);
+                                }
+                                foreach($parts as $part){
+                                    $part = trim($part,"[]");
+                                    if(!empty($part)){
+                                        if(strpos($part,'|') !== false){
+                                            $part = explode("|",$part);
+                                            if(is_array($part) && count($part) == 2){
+                                                $pid = $part[0];
+                                                $cid = $part[1];
+
+                                                // sql syntax would go here
+                                                $detailsExist = fetchData1("COUNT(teacher_id) as total","teacher_classes","teacher_id=$teacher_id AND program_id=$pid AND course_id=$cid")["total"];
+                                                if(intval($detailsExist) < 1){
+                                                    $sql = "INSERT INTO teacher_classes (teacher_id, program_id, course_id) VALUES (?,?,?)";
+                                                    $stmt = $connect2->prepare($sql);
+                                                    $stmt->bind_param("iii", $teacher_id, $pid, $cid);
+
+                                                    $stmt->execute();
+                                                }                                    
+                                            }else{
+                                                $message = "Class and subject is not properly separated. Process discontinued ".count($part);
+                                            }
+                                        }else{
+                                            $message = "$part has no |";
+                                        }
+                                    }else{
+                                        $message = "Part is empty";
+                                    }
+                                }
+                            }else{
+                                $message = "Invalid class and subject format projected. Process terminated";
+                            }
+                            
                             $message = "Teacher has been added";
                             $status = true;
                         }else{
                             $message = "Teacher added, but teacher cannot login. Please contact the administrator for help";
                         }
                     }else{
-                        $message = "Teacher could not be added";
+                        $message = "Teacher could not be added on first step";
                     }
                 } catch (\Throwable $th) {
                     $status = false;
