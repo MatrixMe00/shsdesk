@@ -947,12 +947,14 @@
      */
     function stringifyClassIDs($arrayData){
         $newString = "";
-        if(!is_array($arrayData[0])){
-            return "wrong array data";
-        }else{
+        if(is_array($arrayData) && !array_key_exists(0,$arrayData)){
+            $newString .= "[{$arrayData['program_id']}|{$arrayData['course_id']}] ";
+        }else if(is_array($arrayData[0])){
             foreach($arrayData as $data){
                 $newString .= "[{$data['program_id']}|{$data['course_id']}] ";
             }
+        }else{
+            return "wrong array data";
         }
 
         return $newString;
@@ -965,9 +967,13 @@
      */
     function stringifyClassNames($arrayData){
         $newString = "";
-        if(!is_array($arrayData[0])){
-            return "wrong array data";
-        }else{
+        if(is_array($arrayData) && !array_key_exists(0,$arrayData)){
+            $newString .= "[";
+            $newString .= empty($arrayData["short_p"]) ? $arrayData["program_name"] : $arrayData["short_p"];
+            $newString .= "|";
+            $newString .= empty($arrayData["short_c"]) ? $arrayData["course_name"] : $arrayData["short_c"];
+            $newString .= "],";
+        }elseif(is_array($arrayData[0])){
             foreach($arrayData as $data){
                 $newString .= "[";
                 $newString .= empty($data["short_p"]) ? $data["program_name"] : $data["short_p"];
@@ -975,6 +981,8 @@
                 $newString .= empty($data["short_c"]) ? $data["course_name"] : $data["short_c"];
                 $newString .= "],";
             }
+        }else{
+            return "wrong array data";
         }
 
         return $newString;

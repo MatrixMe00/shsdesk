@@ -108,7 +108,8 @@
             <thead>
                 <td>Teacher ID</td>
                 <td>Teacher Name</td>
-                <td>Courses Teaching (Number)</td>
+                <td>Classes Teaching (No.)</td>
+                <td>Subjects Teaching (No.)</td>
             </thead>
             <tbody>
                 <?php 
@@ -116,7 +117,8 @@
                 <tr>
                    <td><?= formatItemId($teacher["teacher_id"], "TID") ?></td>
                     <td><?= strtoupper($teacher["lname"])." ".ucwords($teacher["oname"]) ?></td>
-                    <td><?= count(explode(" ",$teacher["course_id"])) - 1 ?></td>
+                    <td><?= fetchData1("COUNT(DISTINCT program_id) as total","teacher_classes","teacher_id={$teacher['teacher_id']}")["total"] ?></td>
+                    <td><?= fetchData1("COUNT(DISTINCT course_id) as total","teacher_classes","teacher_id={$teacher['teacher_id']}")["total"] ?></td>
                     <td>
                         <span class="item-event edit" data-item-id="<?= $teacher["teacher_id"] ?>">Edit</span>
                         <span class="item-event delete" data-item-id="<?= $teacher["teacher_id"] ?>">Delete</span>

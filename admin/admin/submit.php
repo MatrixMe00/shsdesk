@@ -984,14 +984,17 @@
                                                 $cid = $part[1];
 
                                                 // sql syntax would go here
-                                                $detailsExist = fetchData1("COUNT(teacher_id) as total","teacher_classes","teacher_id=$teacher_id AND program_id=$pid AND course_id=$cid")["total"];
-                                                if(intval($detailsExist) < 1){
-                                                    $sql = "INSERT INTO teacher_classes (teacher_id, program_id, course_id) VALUES (?,?,?)";
+                                                $detailsExist = fetchData1("COUNT(c.teacher_id) as total, c.course_id, t.lname","teacher_classes c JOIN teachers t ON t.teacher_id=c.teacher_id","c.school_id=$user_school_id AND c.program_id=$pid AND c.course_id=$cid");
+                                                if(intval($detailsExist["total"]) < 1){
+                                                    $sql = "INSERT INTO teacher_classes (school_id, teacher_id, program_id, course_id) VALUES (?,?,?,?)";
                                                     $stmt = $connect2->prepare($sql);
-                                                    $stmt->bind_param("iii", $teacher_id, $pid, $cid);
+                                                    $stmt->bind_param("iiii", $user_school_id, $teacher_id, $pid, $cid);
 
                                                     $stmt->execute();
-                                                }                                    
+                                                }else{
+                                                    $message = $detailsExist["lname"]." already handles ".formatItemId($detailsExist["course_id"],"CID");
+                                                }
+
                                             }else{
                                                 $message = "Class and subject is not properly separated. Process discontinued ".count($part);
                                             }
@@ -1274,14 +1277,16 @@
                                                     $cid = $part[1];
 
                                                     // sql syntax would go here
-                                                    $detailsExist = fetchData1("COUNT(teacher_id) as total","teacher_classes","teacher_id=$teacher_id AND program_id=$pid AND course_id=$cid")["total"];
-                                                    if(intval($detailsExist) < 1){
-                                                        $sql = "INSERT INTO teacher_classes (teacher_id, program_id, course_id) VALUES (?,?,?)";
+                                                    $detailsExist = fetchData1("COUNT(c.teacher_id) as total, c.course_id, t.lname","teacher_classes c JOIN teachers t ON t.teacher_id=c.teacher_id","c.school_id=$user_school_id AND c.program_id=$pid AND c.course_id=$cid");
+                                                    if(intval($detailsExist["total"]) < 1){
+                                                        $sql = "INSERT INTO teacher_classes (school_id, teacher_id, program_id, course_id) VALUES (?,?,?,?)";
                                                         $stmt = $connect2->prepare($sql);
-                                                        $stmt->bind_param("iii", $teacher_id, $pid, $cid);
+                                                        $stmt->bind_param("iiii", $user_school_id, $teacher_id, $pid, $cid);
 
                                                         $stmt->execute();
-                                                    }                                    
+                                                    }else{
+                                                        $message = $detailsExist["lname"]." already handles ".formatItemId($detailsExist["course_id"],"CID");
+                                                    }
                                                 }else{
                                                     $message = "Class and subject is not properly separated. Process discontinued ".count($part);
                                                 }
