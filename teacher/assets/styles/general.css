@@ -610,6 +610,11 @@ img{
     right: 0;
 }
 
+.form_modal_box form{
+    max-height: 90vh !important;
+    overflow: auto;
+}
+
 /*banners*/
 [class*="banner"]{
     background-position: center;
