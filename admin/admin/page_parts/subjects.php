@@ -285,7 +285,7 @@
         const table = $(this).parents("section").attr("data-table")
         const table_col = $(this).parents("section").attr("data-table-col")
         const this_eventBtn = $(this)
-        let isTeacher = false
+        let is_teacher = false
 
         if($(this).hasClass("edit")){
             let formName = ""
@@ -294,7 +294,7 @@
                 formName = "updateCourseForm"
             }else if(table == "teachers"){
                 formName = "updateTeacherForm"
-                isTeacher = true
+                is_teacher = true
             }
             
             $("#updateItem form").addClass("no_disp")
@@ -307,7 +307,7 @@
                     item_table: table,
                     item_table_col: table_col,
                     submit: "getItem",
-                    isTeacher: isTeacher
+                    isTeacher: is_teacher
                 },
                 timeout: 8000,
                 beforeSend: function(){

@@ -1162,12 +1162,13 @@
             
             if($result = $connect2->query($sql)){
                 $message = $result->fetch_all(MYSQLI_ASSOC);
-                if($isTeacher){
+                if($isTeacher === true || strtolower($isTeacher) === "true"){
                     $message[0]["course_id"] = stringifyClassIDs(fetchData1("program_id, course_id", "teacher_classes","teacher_id={$message[0]['teacher_id']}",0));
                     $message[0]["course_names"] = stringifyClassNames(fetchData1("p.program_name, p.short_form as short_p, c.course_name, c.short_form as short_c",
                     "teacher_classes t JOIN program p ON t.program_id = p.program_id JOIN courses c ON c.course_id=t.course_id",
                     "t.teacher_id={$message[0]['teacher_id']}", 0));
                 }
+                
                 $status = true;
             }else{
                 $message = "Data could not be retrieved";
