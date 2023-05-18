@@ -367,9 +367,9 @@
                                     let names = course_names[i].split("|")
 
                                     let tr = "<tr>"
-                                        tr += "<td>" + ids[0] + "</td>"
+                                        tr += "<td>" + formatItemId(ids[0],"CID") + "</td>"
                                         tr += "<td>" + names[0] + "</td>"
-                                        tr += "<td>" + ids[1] + "</td>"
+                                        tr += "<td>" + formatItemId(ids[1], "SID") + "</td>"
                                         tr += "<td>" + names[1] + "</td>"
                                         tr += "<td><span class='item-event' onclick='removeRow($(this))'>Remove</span></td>"
                                     tr += "</tr>"
