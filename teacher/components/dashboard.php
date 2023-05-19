@@ -2,9 +2,7 @@
     include_once("compSession.php"); 
     $_SESSION["active-page"] = "dashboard";
 
-    //useful variables in this page
-    $course_ids = explode(" ", $teacher["course_id"]);
-    $program_ids = explode(" ", $teacher["program_ids"]);
+    //variable to use within the script
     $result_type = fetchData("school_result","admissiondetails","schoolID=".$teacher["school_id"])["school_result"];
 ?>
 <section class="d-section lt-shade">
@@ -29,10 +27,9 @@
         <span class="txt-fl3 txt-bold">
             <?php             
                 $sql = "SELECT COUNT(s.indexNumber) AS total
-                    FROM students_table s
-                    JOIN program p ON s.program_id = p.program_id
-                    JOIN teachers t ON p.school_id = t.school_id
-                    WHERE CONCAT(p.program_id, ' ') IN (" . implode(' ', $program_ids) . ")";
+                    FROM students_table s JOIN teacher_classes t ON s.school_id=t.school_id
+                    WHERE t.teacher_id={$teacher['teacher_id']} AND s.program_id=t.program_id
+                    ";
                 $query = $connect2->query($sql);
                 echo $query->fetch_assoc()["total"];
             ?>
@@ -40,7 +37,7 @@
     </div>
     <div class="card v-card gap-lg orange p-med sm-rnd flex-wrap">
         <span class="">Class Count</span>
-        <span class="txt-fl3 txt-bold"><?= count($program_ids)-1 ?></span>
+        <span class="txt-fl3 txt-bold"><?= fetchData1("COUNT(DISTINCT program_id) as total","teacher_classes","teacher_id={$teacher['teacher_id']}")["total"] ?></span>
     </div>
 </section>
 
@@ -61,10 +58,10 @@
         </div>
         <div class="body flex flex-wrap m-sm">
             <?php 
-                $sql = "SELECT p.program_id, p.program_name, p.short_form as short_p, c.course_name, c.course_id, c.short_form as short_c
-                    FROM courses c
-                    JOIN program p ON p.school_id = c.school_id
-                    WHERE ('".implode(' ',$course_ids)."' LIKE CONCAT('%',c.course_id, ' ', '%')) AND ('".implode(" ",$program_ids)."' LIKE CONCAT('%',p.program_id, ' ', '%'))";
+                $sql = "SELECT c.course_id, c.course_name, p.program_id, p.program_name, c.short_form as short_c, p.short_form as short_p
+                    FROM teacher_classes t JOIN courses c ON t.course_id=c.course_id
+                    JOIN program p ON t.program_id=p.program_id
+                    WHERE t.teacher_id={$teacher['teacher_id']}";
                 $query = $connect2->query($sql);
                 if($query->num_rows > 0) : 
                     while($class = $query->fetch_assoc()) :
@@ -72,10 +69,10 @@
             ?>
             <div class="sp-med w-full lt-shade">
                 <div class="top txt-fl sm-med-b">
-                    <span><?= $class["program_name"] ?> - <?= $class["course_name"] ?></span>
+                    <span><?= $class["short_p"] ?? $class["program_name"] ?> - <?= $class["short_c"] ?? $class["course_name"] ?></span>
                 </div>
                 <div class="middle flex flex-column">
-                    <span><?= fetchData1("COUNT(indexNumber) as total","students_table","program_id=".$class["program_id"])["total"] ?> Students</span>
+                    <span>Student Count: <?= fetchData1("COUNT(indexNumber) as total","students_table","program_id=".$class["program_id"])["total"] ?></span>
                     <span>Average Grade: <?php 
                         $average = fetchData1("AVG(mark) as averageMark","results","course_id=".$class["course_id"]." AND teacher_id=".$teacher["teacher_id"])["averageMark"];
                         echo giveGrade($average, $result_type)
@@ -108,10 +105,10 @@
         <div class="body flex flex-wrap txt-al-c m-sm">
             <?php 
                 $sql = "SELECT CONCAT(s.Lastname, ' ', s.Othernames) as student_name, p.program_name, AVG(r.mark) as averageMark
-                    FROM students_table s JOIN results r ON s.indexNumber=r.indexNumber
+                    FROM results r JOIN students_table s ON s.indexNumber=r.indexNumber
                     JOIN program p ON p.program_id=s.program_id
-                    JOIN teachers t ON t.school_id=p.school_id
-                    WHERE '".implode(" ",$program_ids)."' LIKE CONCAT('%',s.program_id,' ','%')
+                    JOIN teacher_classes t ON t.program_id=p.program_id
+                    WHERE t.teacher_id={$teacher['teacher_id']} AND p.program_id=t.program_id
                     GROUP BY s.indexNumber ORDER BY averageMark DESC LIMIT 5
                 ";
                 $query = $connect2->query($sql);
