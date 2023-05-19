@@ -24,7 +24,8 @@ CREATE TABLE `courses` (
  `short_form` varchar(50) DEFAULT NULL,
  `credit_hours` int(11) DEFAULT NULL,
  PRIMARY KEY (`course_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `exeat` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `indexNumber` varchar(20) NOT NULL,
@@ -50,7 +51,7 @@ CREATE TABLE `program` (
  `short_form` varchar(30) DEFAULT NULL,
  `course_ids` varchar(255) NOT NULL,
  PRIMARY KEY (`program_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `recordapproval` (
  `record_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -113,13 +114,11 @@ CREATE TABLE `teachers` (
  `email` varchar(45) NOT NULL,
  `phone_number` varchar(16) NOT NULL,
  `school_id` int(11) NOT NULL,
- `course_id` varchar(100) DEFAULT NULL,
- `program_ids` varchar(150) DEFAULT NULL,
  `status` tinyint(4) NOT NULL DEFAULT 1,
  `joinDate` datetime NOT NULL,
  PRIMARY KEY (`teacher_id`),
  UNIQUE KEY `phone_number` (`phone_number`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `teacher_classes` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
