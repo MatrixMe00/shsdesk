@@ -99,6 +99,7 @@ function pageChange(index = 0, c_index = 0, program_name=""){
     $("#page_title, #classes, #single_class").toggleClass("no_disp")
     $("#classes").toggleClass("flex")
     $("span#single_class_name").html("")
+    $("#class_list_table tbody").html(insertEmptyTableLabel("Make a search on your class year to proceed", columns))
     
     if(index > 0){
         $("span#single_class_name").html(program_name + " " + formatItemId(c_index, "CID"))

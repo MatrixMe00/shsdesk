@@ -209,27 +209,6 @@
                         $status = true;
                     }else{
                         $message = "No student data to be seen here. Please have a record approved to continue";
-                        $message = array(
-                            array(
-                                "indexNumber" => "001",
-                                "studentName" => "John",
-                                "gender" => "Male",
-                                "mark" => 85.5
-                            ),
-                            array(
-                                "indexNumber" => "002",
-                                "studentName" => "Jane",
-                                "gender" => "Female",
-                                "mark" => 92.0
-                            ),
-                            array(
-                                "indexNumber" => "003",
-                                "studentName" => "Mike",
-                                "gender" => "Male",
-                                "mark" => 78.9
-                            )
-                        );
-                        $status = true;
                     }
                 }
 
