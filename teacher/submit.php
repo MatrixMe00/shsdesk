@@ -178,6 +178,69 @@
                 header("Content-Type: application/json");
                 echo json_encode($response);
                 break;
+            case "search_class_list":
+                $program_id = $_GET["program_id"] ?? null;
+                $program_year = $_GET["program_year"] ?? null;
+                $course_id = $_GET["course_id"] ?? null;
+
+                if(empty($program_id) || is_null($program_id)){
+                    $message = "Class could not be taken. Please check and try again";
+                }elseif(empty($program_year) || is_null($program_year)){
+                    $message = "Please specify the class' year to continue";
+                }elseif(empty($course_id) || is_null($course_id)){
+                    $message = "The course could not be specified. Process terminated";
+                }elseif(empty($teacher["teacher_id"]) || is_null($teacher["teacher_id"])){
+                    $message = "Your session has expired. Please refresh the page to confirm and try again";
+                }else{
+                    $teacher_id = $teacher["teacher_id"];
+
+                    $sql = "SELECT s.indexNumber, s.Lastname, s.Othernames, s.gender, AVG(r.mark)
+                        FROM students_table s JOIN results r ON r.school_id = s.school_id
+                        WHERE r.teacher_id=$teacher_id AND s.studentYear=$program_year AND s.program_id=$program_id AND r.course_id=$course_id AND r.accept_status=1
+                        GROUP BY s.indexNumber
+                    ";
+                    $query = $connect2->query($sql);
+
+                    if($query->num_rows > 1){
+                        $message = $query->fetch_all(MYSQLI_ASSOC);
+                        $status = true;
+                    }elseif($query->num_rows == 1){
+                        $message[0] = $query->fetch_all(MYSQLI_ASSOC);
+                        $status = true;
+                    }else{
+                        $message = "No student data to be seen here. Please have a record approved to continue";
+                        $message = array(
+                            array(
+                                "indexNumber" => "001",
+                                "studentName" => "John",
+                                "gender" => "Male",
+                                "mark" => 85.5
+                            ),
+                            array(
+                                "indexNumber" => "002",
+                                "studentName" => "Jane",
+                                "gender" => "Female",
+                                "mark" => 92.0
+                            ),
+                            array(
+                                "indexNumber" => "003",
+                                "studentName" => "Mike",
+                                "gender" => "Male",
+                                "mark" => 78.9
+                            )
+                        );
+                        $status = true;
+                    }
+                }
+
+                $response = [
+                    "status"=> $status ?? false,
+                    "message" => $message
+                ];
+
+                header("Content-Type: application/json");
+                echo json_encode($response);
+                break;
             default:
                 echo "cant find what you want";
         }

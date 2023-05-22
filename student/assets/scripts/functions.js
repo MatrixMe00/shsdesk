@@ -633,7 +633,7 @@ function isJSON(jsonData){
  * @property {string} mark_result_type This is the type of grade that should be used for the marks
  * @param {TableOptions} tableOptions The table's options
  */
-function fillTable({table_id, result_data, first_countable=true, has_mark, mark_index, mark_result_type="wassce"}){
+function fillTable({table_id, result_data, first_countable=true, has_mark, mark_index, mark_first=false, mark_result_type="wassce"}){
     const tbody = $("#" + table_id).find("tbody")
     $(tbody).html("")
     const isArray = typeof result_data[0] === "object" ? true : false
@@ -652,10 +652,16 @@ function fillTable({table_id, result_data, first_countable=true, has_mark, mark_
             }
 
             for(j = 0; j < keys.length; j++){
-                if(has_mark && (mark_index - 1) == j){
+                if((has_mark && (mark_index - 1) == j) && mark_first === false){
                     tr += "<td>" + giveGrade(result_data[i][keys[j]], mark_result_type) + "</td>"
                 }
+
                 tr += "<td>" + result_data[i][keys[j]] + "</td>"
+
+                if((has_mark && (mark_index - 1) == j) && mark_first === true){
+                    tr += "<td>" + giveGrade(result_data[i][keys[j]], mark_result_type) + "</td>"
+                    alert_box("grade last")
+                }
             }
 
             tr += "</tr>"
