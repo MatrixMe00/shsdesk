@@ -29,6 +29,7 @@
                 $sql = "SELECT COUNT(s.indexNumber) AS total
                     FROM students_table s JOIN teacher_classes t ON s.school_id=t.school_id
                     WHERE t.teacher_id={$teacher['teacher_id']} AND s.program_id=t.program_id
+                    GROUP BY t.program_id
                     ";
                 $query = $connect2->query($sql);
                 echo $query->fetch_assoc()["total"];
@@ -108,7 +109,7 @@
                     FROM results r JOIN students_table s ON s.indexNumber=r.indexNumber
                     JOIN program p ON p.program_id=s.program_id
                     JOIN teacher_classes t ON t.program_id=p.program_id
-                    WHERE t.teacher_id={$teacher['teacher_id']} AND p.program_id=t.program_id
+                    WHERE r.teacher_id={$teacher['teacher_id']} AND p.program_id=t.program_id
                     GROUP BY s.indexNumber ORDER BY averageMark DESC LIMIT 5
                 ";
                 $query = $connect2->query($sql);
@@ -121,7 +122,7 @@
                     <span class="txt-fs">- <?= $student["program_name"] ?> -</span>
                 </div>
                 <div class="middle txt-fs">
-                    <span>Grade <?= giveGrade($student["averageMark"], $result_type) ?> [<?= $student["averageMark"] ?>%]</span>
+                    <span>Grade <?= giveGrade(round($student["averageMark"],2), $result_type) ?> [<?= round($student["averageMark"],2) ?>%]</span>
                 </div>
             </div>
             <?php endwhile; else: ?>
