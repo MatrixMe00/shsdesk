@@ -610,7 +610,7 @@ img{
     right: 0;
 }
 
-.form_modal_box form{
+.form_modal_box form, .form_modal_box .form{
     max-height: 90vh !important;
     overflow: auto;
 }
@@ -1561,10 +1561,10 @@ td{
 /* forms */
 /* form general */
 form, .form{padding: 0.5em;}
-form .label.flex-column label{
+form .label.flex-column label, .form .label.flex-column label{
     width: inherit; margin: unset;
 }
-form .label.no_disp{display: none;}
+form .label.no_disp, .form .label.no_disp{display: none;}
 /* end of form general */
 
 /* form images */
@@ -1606,7 +1606,7 @@ input[list], input[list]:hover, input[list]:focus{
 /* end of form elements */
 
 /* form buttons */
-form.txt-label .btn{
+form.txt-label .btn, .form.txt-label .btn{
     flex: 0; width: 100%; align-self: flex-end;
 }
 
@@ -1617,16 +1617,16 @@ form.inline-form, .form.inline-form{
 form.fluid > *, .form.fluid > *{width: 100%;}
 
 /* form labels */
-form.txt-label label{
+form.txt-label label, .form.txt-label label{
     display: flex; flex-direction: column; flex: 1 1 280px; width: 100%;
 }
 
-form.inline-form label{width: 100%;}
-form.txt-label .label-title{
+form.inline-form label, .form.inline-form label{width: 100%;}
+form.txt-label .label-title, .form.txt-label .label-title{
     font-size: small; color: var(--black3);
 }
 
-form.txt-label{
+form.txt-label, .form.txt-label{
     display: flex; flex-wrap: wrap;
 }
 
@@ -1685,7 +1685,7 @@ form .joint.textarea > *, .form .joint.textarea > *{
     flex: 1 1 500px;
 }
 
-form .joint > *, form .joint > *{
+form .joint > *, .form .joint > *{
     flex: 1 1 280px;
 }
 /*end of form*/
@@ -2041,7 +2041,7 @@ form .joint > *, form .joint > *{
         width: auto;
     }
 
-    form label.btn{
+    form label.btn, .form label.btn{
         /* width: 80vw; */
         display: flex;
         align-items: center;
