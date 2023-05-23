@@ -54,15 +54,14 @@ CREATE TABLE `program` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `recordapproval` (
- `record_id` int(11) NOT NULL AUTO_INCREMENT,
+ `result_token` varchar(15) NOT NULL,
  `school_id` int(11) NOT NULL,
  `teacher_id` int(11) NOT NULL,
  `program_id` int(11) NOT NULL,
- `result_token` varchar(15) NOT NULL,
+ `course_id` int(11) NOT NULL,
  `result_status` enum('pending','accepted','rejected') NOT NULL DEFAULT 'pending',
  `submission_date` datetime NOT NULL,
- PRIMARY KEY (`record_id`),
- UNIQUE KEY `result_token` (`result_token`)
+ PRIMARY KEY (`result_token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `record_cleaning` (
