@@ -178,6 +178,7 @@
                 header("Content-Type: application/json");
                 echo json_encode($response);
                 break;
+
             case "search_class_list":
                 $program_id = $_GET["program_id"] ?? null;
                 $program_year = $_GET["program_year"] ?? null;
@@ -194,18 +195,21 @@
                 }else{
                     $teacher_id = $teacher["teacher_id"];
 
-                    $sql = "SELECT s.indexNumber, s.Lastname, s.Othernames, s.gender, AVG(r.mark)
+                    $sql = "SELECT s.indexNumber, CONCAT(s.Lastname, ' ', s.Othernames) AS fullname, s.gender, ROUND(AVG(r.mark), 2)
                         FROM students_table s JOIN results r ON r.school_id = s.school_id
-                        WHERE r.teacher_id=$teacher_id AND s.studentYear=$program_year AND s.program_id=$program_id AND r.course_id=$course_id AND r.accept_status=1
+                        WHERE r.teacher_id=$teacher_id AND s.studentYear=$program_year AND s.program_id=$program_id AND r.course_id=$course_id
                         GROUP BY s.indexNumber
                     ";
                     $query = $connect2->query($sql);
 
-                    if($query->num_rows > 1){
+                    if($query->num_rows > 0){
                         $message = $query->fetch_all(MYSQLI_ASSOC);
-                        $status = true;
-                    }elseif($query->num_rows == 1){
-                        $message[0] = $query->fetch_all(MYSQLI_ASSOC);
+
+                        if(array_key_exists("indexNumber", $message)){
+                            $message_n = $message;
+                            $message = null;
+                            $message[0] = $message_n;
+                        }
                         $status = true;
                     }else{
                         $message = "No student data to be seen here. Please have a record approved to continue";
@@ -220,6 +224,102 @@
                 header("Content-Type: application/json");
                 echo json_encode($response);
                 break;
+
+            case "search_class":
+                $class = $_GET["class"] ?? null;
+                $year = $_GET["year"] ?? null;
+
+                if(empty($class) || is_null($class)){
+                    $message = "No class has been selected. Please select a class to continue";
+                }elseif(empty($year) || is_null($year)){
+                    $message = "Please select the current year of the program";
+                }else{
+                    $message = fetchData1("indexNumber, Lastname, Othernames", "students_table","program_id=$class AND studentYear=$year",0);
+                    if(!is_array($message)){
+                        $message = "No results to be displayed for this search. Data not yet uploaded";
+                    }else{
+                        if(array_key_exists("indexNumber", $message)){
+                            $message_n = $message;
+                            $message = null;
+                            $message[0] = $message_n;
+                        }
+                        $status = true;
+                    }
+                }
+
+                $response = array("status"=>$status??false, "message"=>$message);
+                header("Content-Type: application/json");
+                echo json_encode($response);
+                break;
+
+            case "getToken":
+                if(empty($teacher) || is_null($teacher) || !is_array($teacher)){
+                    $message = "An error occured with your current session. Data is lost. Please restore session and try again.";
+                }else{
+                    $message = generateToken($teacher["teacher_id"], $teacher["school_id"]);
+                    $error = false;
+                }
+
+                $response = array("error"=>$error??true, "data"=>$message);
+                header("Content-Type: application/json");
+                echo json_encode($response);
+                break;
+
+            case "submit_result":
+                $student_index = $_POST["student_index"] ?? null;
+                $mark = $_POST["mark"] ?? null;
+                $class_mark = $_POST["class_mark"] ?? null;
+                $exam_mark = $_POST["exam_mark"] ?? null;
+                $result_token = $_POST["result_token"] ?? null;
+                $course_id = $_POST["course_id"] ?? null;
+                $exam_year = $_POST["exam_year"] ?? null;
+                $semester = $_POST["semester"] ?? null;
+                $isFinal = $_POST["isFinal"] ?? false;
+                $program_id = $_POST["program_id"] ?? null;
+
+                if(empty($student_index) || is_null($student_index) ||
+                    empty($result_token) || is_null($course_id) || 
+                    empty($course_id) || is_null($result_token) || 
+                    empty($semester) || is_null($semester) || 
+                    empty($program_id) || is_null($program_id)){
+                    $message = "false";
+                }elseif(!isset($_POST["mark"], $_POST["class_mark"], $_POST["exam_mark"])){
+                    $message  = "false";
+                }elseif(is_null($exam_year) || is_null($semester)){
+                    $message = "false";
+                }else{
+                    $isInserted = fetchData1("COUNT(indexNumber) as total","results",
+                        "indexNumber='$student_index' AND course_id=$course_id AND exam_year=$exam_year AND semester=$semester")["total"];
+                    if(intval($isInserted) > 0){
+                        $message = "Results already exist";
+                    }else{
+                        $sql = "INSERT INTO results (indexNumber, school_id, course_id, exam_type, class_mark, exam_mark, mark, result_token, teacher_id, exam_year, semester, date) VALUES (?,?,?,'Exam',?,?,?,?,?,?,?, NOW())";
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param("siidddsiii",$student_index, $teacher["school_id"], $course_id, $class_mark, $exam_mark, $mark, $result_token, $teacher["teacher_id"], $exam_year, $semester);
+
+                        if($stmt->execute()){
+                            $message = "true";
+                        }else{
+                            $message = "Error inserting result";
+                        }
+
+                        if($isFinal == "true" || $isFinal === true){
+                            $sql = "INSERT INTO recordapproval (school_id, teacher_id, program_id, course_id, result_token, submission_date) 
+                            VALUES ({$teacher["school_id"]}, {$teacher["teacher_id"]}, $program_id, $course_id, '$result_token', NOW())";
+                            
+                            if($connect2->query($sql)){
+                                $message = "true";
+                            }else{
+                                $message = "Results could not be compiled for approval";
+                            }
+                        }
+                    }
+                }
+
+                echo $message;
+
+                break;
+
             default:
                 echo "cant find what you want";
         }
