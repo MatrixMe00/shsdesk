@@ -17,20 +17,11 @@
             }
         ?></span>
     </div>
-    <!-- <div class="card v-card gap-lg purple sm-rnd flex-wrap">
-        <span class="self-align-start">Total Core Subjects</span>
-        <span class="txt-fl3 txt-bold self-align-end">4</span>
-    </div> -->
     <div class="card v-card gap-lg orange sm-rnd flex-wrap">
         <span class="self-align-start">Total Program Teachers</span>
         <span class="txt-fl3 txt-bold self-align-end"><?php 
             if(!is_null($student["program_id"])){
-                $teacher_ids = fetchData1("COUNT(teacher_id) as total", "teachers", "program_ids LIKE '%".intval($student["program_id"])." %'");
-                if($teacher_ids == "empty"){
-                    echo "<span class='txt-fl2'>No courses assigned</span>";
-                }else{
-                    echo $teacher_ids["total"];
-                }
+                echo fetchData1("COUNT(DISTINCT teacher_id) as total","teacher_classes","program_id={$student['program_id']}")["total"];
             }else{
                 echo "<span class='txt-fl2'>No class assigned</span>";
             }
@@ -62,23 +53,15 @@
             <?php else :
                 $course_ids = explode(" ", $programData["course_ids"]);
                 //remove the last element which is a space
-                array_pop($course_ids);
+                if(end($course_ids) == "")
+                    array_pop($course_ids);
 
-                $teacher_ors = "(";
-                foreach($course_ids as $id){
-                    $teacher_ors .= "t.course_id LIKE '%$id %'";
-
-                    if($id != end($course_ids)){
-                        $teacher_ors .= " OR ";
-                    }
-                }
-                $teacher_ors .= ")";
-
-                $sql = "SELECT c.course_id, c.course_name, c.short_form, c.credit_hours, t.lname, t.oname
-                    FROM courses c JOIN teachers t ON c.school_id = t.school_id
-                    WHERE INSTR('".$programData["course_ids"]."', CONCAT(c.course_id, ' ')) > 0 AND $teacher_ors
-                    AND t.program_ids LIKE '%".$programData["program_id"]." %'";
-                $subjects = $connect2->query($sql);
+                    $sql = "SELECT t.lname, t.oname, tc.course_id, c.course_name, c.short_form, c.credit_hours
+                        FROM teacher_classes tc JOIN teachers t ON tc.teacher_id=t.teacher_id JOIN courses c
+                        ON tc.course_id = c.course_id
+                        WHERE tc.program_id={$student['program_id']}
+                    ";
+                    $subjects = $connect2->query($sql);
                 if($subjects->num_rows > 0) :
                     $counter = 1;
                     while($subject = $subjects->fetch_assoc()) :
