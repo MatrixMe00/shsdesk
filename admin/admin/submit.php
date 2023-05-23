@@ -1338,26 +1338,34 @@
             header("Content-Type: application/json");
             echo json_encode($final);
         }elseif($submit === "result_status_change" || $submit === "result_status_change_ajax"){
-            @$record_id = $_POST["record_id"];
             @$record_status = $_POST["record_status"];
             @$record_token = $_POST["record_token"];
             $message = ""; $status = false; $response = array();
             
-            if(empty($record_id) || is_null($record_id)){
-                $message = "Procedure cannot continue without a specified record";
-            }elseif(empty($result_status) || is_null($result_status)){
+            if(empty($record_status) || is_null($record_status)){
                 $message = "Process was broken, cannot determine the status of this record";
-            }elseif(empty($result_token) || is_null($result_token)){
-                $message = "This record is considered broken or invalid. Please contact the admin for help";
+            }elseif(empty($record_token) || is_null($record_token)){
+                $message = "This record is considered broken or invalid: Token error. Please contact the admin for help";
             }else{
                 try{
-                    $sql = "UPDATE recordapproval SET result_status=? WHERE record_id=?";
+                    $sql = "UPDATE recordapproval SET result_status=? WHERE result_token=?";
                     $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("si",$record_status, $record_id);
+                    $stmt->bind_param("si",$record_status, $record_token);
 
                     if($stmt->execute()){
-                        $status = false;
-                        $message = "success";
+                        if($record_status === "accepted"){
+                            //mark student records as completed
+                            $sql = "UPDATE results SET accept_status=1 WHERE result_token='$record_token'";
+                            if($connect2->query($sql)){
+                                $status = true;
+                                $message = "success";
+                            }else{
+                                $message = "Students could not be approved successfully";
+                            }
+                        }else{
+                            $status = true;
+                            $message = "success";
+                        }                        
                     }else{
                         $message = "The selected record could not be updated. Please try again at a later time";
                     }
