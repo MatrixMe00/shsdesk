@@ -124,7 +124,7 @@ if($result->num_rows == 1){
                         // }
 
 //count number of houses of the school
-$sql = "SELECT id, maleHeadPerRoom, maleTotalRooms, femaleHeadPerRoom, femaleTotalRooms
+/*$sql = "SELECT id, maleHeadPerRoom, maleTotalRooms, femaleHeadPerRoom, femaleTotalRooms
 FROM houses
 WHERE schoolID = $shs_placed AND (gender = '$ad_gender' OR gender='Both')";
 $result = $connect->query($sql);
@@ -164,7 +164,7 @@ foreach ($house as $row=>$val){
 //fetch student details for entry from cssps
 $student_details = fetchData("*", "cssps", "indexNumber='$ad_index'");
 
-}
+}*/
 
 /*function setHouse($ad_gender, $shs_placed, $ad_index, $house){
     global $connect;
@@ -243,7 +243,7 @@ $student_details = fetchData("*", "cssps", "indexNumber='$ad_index'");
     return $next_room;
 }*/
 
-$room = setHouse($ad_gender,$shs_placed,$house, "boarder");
+/*$room = setHouse($ad_gender,$shs_placed,$house, "boarder");
 
 if(is_null($room)){
     echo "A null value was returned";
@@ -251,7 +251,7 @@ if(is_null($room)){
     echo "room $room was provided";
 }else{
     echo "A new room has to be provided";
-}
+}*/
 
 // echo getTotalMoney(3,3);
 /*$_REQUEST['submit'] = "exeat_request";
@@ -263,4 +263,39 @@ $exeat_type = "external";
 echo remakeNumber("027 928 4896", true);*/
 
 // echo preg_match("/^[0-9]{10,}$/", "1234512asd3451234");
+
+$data = [
+    [
+        "program_name" => "Program 1",
+        "short_p" => "P1",
+        "course_name" => "Course 1",
+        "short_c" => ""
+    ],
+    [
+        "program_name" => "Program 2",
+        "short_p" => "P2",
+        "course_name" => "Course 2",
+        "short_c" => "C2"
+    ],
+    [
+        "program_name" => "Program 3",
+        "short_p" => "",
+        "course_name" => "Course 3",
+        "short_c" => "C3"
+    ],
+    [
+        "program_name" => "Program 4",
+        "short_p" => "P4",
+        "course_name" => "Course 4",
+        "short_c" => "C4"
+    ]
+];
+
+$message[0]["teacher_id"] = 2;
+
+$data = fetchData1("p.program_name, p.short_form as short_p, c.course_name, c.short_form as short_c",
+"teacher_classes t JOIN program p ON t.program_id = p.program_id JOIN courses c ON c.course_id=t.course_id",
+"t.teacher_id={$message[0]['teacher_id']}", 0);
+
+echo stringifyClassNames($data);
 ?>
