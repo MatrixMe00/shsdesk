@@ -78,6 +78,8 @@ CREATE TABLE `results` (
  `school_id` int(11) NOT NULL,
  `course_id` int(11) NOT NULL,
  `exam_type` enum('Test','Exam','Mock') NOT NULL,
+ `class_mark` decimal(10,2) NOT NULL DEFAULT 0.00,
+ `exam_mark` decimal(10,2) NOT NULL DEFAULT 0.00,
  `mark` decimal(10,2) NOT NULL,
  `result_token` varchar(15) NOT NULL,
  `teacher_id` int(11) NOT NULL,
