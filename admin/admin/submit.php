@@ -98,30 +98,32 @@
             //variable to hold messages
             $message = "";
 
-            if(empty($student_index)){
+            if(empty($student_index) || is_null($student_index)){
                 $message = "index-number-empty";
-            }elseif(empty($lname)){
+            }elseif(empty($lname) || is_null($lname)){
                 $message = "lastname-empty";
-            }elseif(empty($oname)){
+            }elseif(empty($oname) || is_null($oname)){
                 $message = "no-other-name";
-            }elseif(empty($gender)){
+            }elseif(empty($gender) || is_null($gender)){
                 $message = "gender-not-set";
-            }elseif(empty($boarding_status)){
+            }elseif(empty($boarding_status) || is_null($boarding_status)){
                 $message = "boarding-status-not-set";
-            }elseif(empty($student_course)){
+            }elseif(empty($student_course) || is_null($student_course)){
                 $message = "no-student-program-set";
-            }elseif(empty($aggregate)){
+            }elseif(empty($aggregate) || is_null($aggregate)){
                 $message = "no-aggregate-set";
             }elseif(intval($aggregate) < 6 || intval($aggregate) > 81){
                 $message = "aggregate-wrong";
-            }elseif(empty($track_id)){
+            }elseif(empty($track_id) || is_null($track_id)){
                 $message = "no-track-id";
+            }elseif(empty($school_id) || is_null($school_id)){
+                $message = "no-school-id";
             }else{
                 //format date
                 $dob = date("Y-m-d", strtotime($dob));
 
                 //verify if index number is unavailable
-                $valid = fetchData("*","cssps","indexNumber='$student_index'");
+                $valid = fetchData("indexNumber","cssps","indexNumber='$student_index'");
 
                 if($valid == "empty"){
                     //insert data into CSSPS table
@@ -131,6 +133,75 @@
                     $stmt = $connect->prepare($sql);
                     $stmt->bind_param("ssssssisssi",$student_index,$lname,$oname,$gender,$boarding_status,$student_course,
                         $aggregate,$jhs,$dob,$track_id,$school_id);
+                    $stmt->execute();
+
+                    $message = "success";
+                }else{
+                    $message = "data-exist";
+                }
+            }
+
+            echo $message;
+        }elseif($submit == "adminAddStudent1" || $submit == "adminAddStudent1_ajax"){
+            $student_index = $_REQUEST["student_index"] ?? null;
+            $lname = ucwords($_REQUEST["lname"]) ?? null;
+            $oname = ucwords($_REQUEST["oname"]) ?? null;
+            $gender = ucfirst($_REQUEST["gender"]) ?? null;
+            $boarding_status = ucfirst($_REQUEST["boarding_status"]) ?? null;
+            $house = $_REQUEST["house"] ?? null;
+            $student_course = ucwords($_REQUEST["student_course"]) ?? null;
+            $guardian_contact = $_REQUEST["guardian_contact"] ?? null;
+            $student_year = $_REQUEST["student_year"] ?? null;
+            $program_id = $_REQUEST["program_id"] ?? null;
+            $school_id = $user_school_id;
+
+            //variable to hold messages
+            $message = "";
+
+            if(is_null($student_index)){
+                $message = "no-index";
+            }elseif(!empty($student_index) && strlen($student_index) < 6){
+                $message = "student-index-short";
+            }elseif(!empty($student_index) && strlen($student_index) > 13){
+                $message = "student-index-long";
+            }elseif(empty($lname) || is_null($lname)){
+                $message = "lastname-empty";
+            }elseif(empty($oname) || is_null($oname)){
+                $message = "no-other-name";
+            }elseif(empty($gender) | is_null($gender)){
+                $message = "gender-not-set";
+            }elseif(empty($boarding_status) || is_null($boarding_status)){
+                $message = "boarding-status-not-set";
+            }elseif(empty($house) || is_null($house)){
+                $message = "no-house-id";
+            }elseif(empty($student_course) || is_null($student_course)){
+                $message = "no-student-program-set";
+            }elseif(empty($program_id) || is_null($program_id)){
+                $message = "no-program-id";
+            }elseif(empty($student_year) || is_null($student_year)){
+                $message = "no-student-year";
+            }elseif(empty($school_id) || is_null($school_id)){
+                $message = "no-school-id";
+            }else{
+                //verify if index number is unavailable
+                if($student_index == ""){
+                    do{
+                        $student_index = generateIndexNumber($school_id);
+                        $original_index = false;
+                        
+                        $valid = fetchData1("indexNumber", "students_table","indexNumber='$student_index'");
+                    }while($valid != "empty");
+                }else{
+                    $original_inde = true;
+                    $valid = fetchData1("indexNumber","students_table","indexNumber='$student_index'");
+                }
+                
+                if($valid == "empty"){
+                    //insert data into students table
+                    $sql = "INSERT INTO students_table (indexNumber,Lastname,Othernames,Gender, houseID, school_id, studentYear, guardianContact, programme, program_id, boardingStatus)
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("ssssiiissis",$student_index,$lname,$oname,$gender,$house,$school_id,$student_year,$guardian_contact,$student_course, $program_id,$boarding_status);
                     $stmt->execute();
 
                     $message = "success";

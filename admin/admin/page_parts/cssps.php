@@ -117,7 +117,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 
                 if($res->num_rows > 0){
             ?>
-            <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
+            <div class="form search sm-med-tp" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
                 <div class="flex flex-center-align">
                     <label for="search" style="width: 80%">
                         <input type="search" name="search" data-max-break-point="<?= fetchData("COUNT(indexNumber) as total","cssps","schoolID=$user_school_id")["total"] ?>"
@@ -125,7 +125,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                          autocomplete="off" style="border: 1px solid lightgrey;" data-search-value="register">
                     </label>
                     <label for="row_display">
-                        <input type="number" name="row_display" id="row_display" class="light" value="10" max="100" min="5">
+                        <input type="number" placeholder="Number of rows per view" name="row_display" id="row_display" class="light" value="10" max="100" min="5">
                     </label>
                 </div>
             </div>
@@ -208,7 +208,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 
                 if($res->num_rows > 0){
             ?>
-            <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
+            <div class="form search sm-med-tp" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
                 <div class="flex flex-center-align">
                     <label for="search" style="width: 80%">
                         <input type="search" name="search" data-max-break-point="<?= fetchData("COUNT(indexNumber) as total","cssps","schoolID=$user_school_id")["total"] ?>"
@@ -216,7 +216,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                          autocomplete="off" style="border: 1px solid lightgrey;" data-search-value="unregister">
                     </label>
                     <label for="row_display">
-                        <input type="number" name="row_display" id="row_display" class="light" value="10" max="100" min="5">
+                        <input type="number" placeholder="Number of rows per view" name="row_display" id="row_display" class="light" value="10" max="100" min="5">
                     </label>
                 </div>
             </div>
@@ -320,6 +320,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 
     $("input[name=row_display]").change(function(){
         myval = $(this).val();
+        $(this).val(myval);
         $(this).parents(".display").children("#content").children(".head").children(".btn").children("button").attr("data-break-point", myval);
         $(this).parents(".display").find(".navs").children("span").attr("data-break-point", myval);
         $(this).parents(".display").children("#content").children(".head").children(".btn").children("button").click();

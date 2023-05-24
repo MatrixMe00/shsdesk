@@ -87,8 +87,25 @@ $("form[name=adminAddStudent]").submit(function(event){
             message = "Please provide student's track id";
         }else if(response == "data-exist"){
             message = "Index number already exists in database. Please enter another one";
+        }else if(response == "no-house-id"){
+            message = "Please select a house for the student";
+        }else if(response == "no-track-id"){
+            message = "Please provide student's track id";
+        }else if(response == "no-program-id"){
+            message = "Please select the class of the student";
+        }else if(response == "no-student-year"){
+            message = "Please select the year of the student";
+        }else if(response == "no-index"){
+            message = "Index number could not be verified in the request";
+        }else if(response == "no-school-id"){
+            message = "Your school could not be validated in the request. Please refresh the page and try again";
+        }else if(response == "student-index-short"){
+            message = "Your index number has less than 6 characters";
+        }else if(response == "student-index-long"){
+            message = "Your index number has more than 13 characters";
         }else{
-            message = "An unknown error has occured. Please try again later";
+            // message = "An unknown error has occured. Please try again later";
+            message = response;
         }
     }
 

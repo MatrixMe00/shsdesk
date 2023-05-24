@@ -16,13 +16,7 @@
     <div class="content purple">
         <div class="head">
             <h2>
-                <?php
-                $head_total = 0;
-                $res = $connect2->query("SELECT indexNumber FROM students_table WHERE school_id = $user_school_id AND studentYear=1");
-
-                echo $res->num_rows;
-                $head_total += $res->num_rows;
-                ?>
+                <?= fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id AND studentYear=1")["total"] ?>
             </h2>
         </div>
         <div class="body">
@@ -33,12 +27,7 @@
     <div class="content purple">
         <div class="head">
             <h2>
-                <?php
-                $res = $connect2->query("SELECT indexNumber FROM students_table WHERE school_id = $user_school_id AND studentYear=2");
-
-                echo $res->num_rows;
-                $head_total += $res->num_rows;
-                ?>
+                <?= fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id AND studentYear=2")["total"] ?>
             </h2>
         </div>
         <div class="body">
@@ -49,12 +38,7 @@
     <div class="content purple">
         <div class="head">
             <h2>
-                <?php
-                $res = $connect2->query("SELECT indexNumber FROM students_table WHERE school_id = $user_school_id AND studentYear=3");
-
-                echo $res->num_rows;
-                $head_total += $res->num_rows;
-                ?>
+                <?= fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id AND studentYear=3")["total"] ?>
             </h2>
         </div>
         <div class="body">
@@ -65,9 +49,7 @@
     <div class="content secondary">
         <div class="head">
             <h2>
-                <?php
-                echo $head_total;
-                ?>
+                <?= fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id")["total"] ?>
             </h2>
         </div>
         <div class="body">
@@ -86,9 +68,9 @@
 <section>
     <div id="action">
         <div class="head">
-            <h2>Student Controls</h2>
+            <h3>Student Controls</h3>
         </div>
-        <div class="body flex flex-wrap wrap-h btn w-auto-child w-full gap-sm wrap-half p-med flex-eq">
+        <div class="body flex-all-center flex-wrap btn w-fit-child w-full gap-sm p-med">
                 <button onclick="$('#modal').removeClass('no_disp')" class="cyan">Add New Student</button>
             <?php if($user_details["role"] != 2 && ($user_details["role"] <= 5 || str_contains(strtolower(getRole($user_details["role"])), "admin"))){?>
                 <button onclick="$('#lhs .menu .item.active').click()" class="secondary">Refresh</button>
@@ -124,7 +106,13 @@
             </div>
         </div>
     </div>
-    <div class="body">
+    <div class="form sm-lg-tp">
+            <label for="search" class="flex-column gap-sm">
+                <span class="title_label">Search for any data in the table below</span>
+                <input type="search" name="search" id="search" placeholder="Type your search here...">
+            </label>
+        </div>
+    <div class="body">        
         <?php $i=1; while($i <= 3) : ?>
         <div id="year<?= $i ?>" class="year">
             <table class="full">
@@ -150,7 +138,7 @@
                         <td class="house"><?php echo fetchData("title", "houses", "id=".$row["houseID"])["title"]?></td>
                         <td class="board_stat"><?php echo $row["boardingStatus"]?></td>
                         <td>
-                            <span class="item-event edit studs">Edit</span>
+                            <span class="item-event edit studs">View</span>
                             <span class="item-event delete studs">Delete</span>
                         </td>
                     </tr>
@@ -197,7 +185,7 @@
 </div>
 
 <div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-    <?php @include_once($rootPath."/admin/admin/page_parts/newStudent.php")?>
+    <?php eval("?>".file_get_contents($url."/admin/admin/page_parts/newStudent.php?db2=true&sid=$user_school_id"))?>
 </div>
 
 <div id="updateStudent" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
@@ -205,7 +193,7 @@
 </div>
 
 <script src="<?php echo $url?>/admin/admin/assets/scripts/placement.min.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.min.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/table.min.js?v=<?php echo time()?>" async></script>
 <script>

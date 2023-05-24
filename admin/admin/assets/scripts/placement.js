@@ -105,9 +105,8 @@ $("label[for=search] input[name=search]").focus(function(){
 //reset to state before search
 $("label[for=search] input[name=search]").blur(function(){
     if($(this).val() === ""){
-        def_ault = $(this).parents(".table_section").find("input[name=row_display]").val()
+        def_ault = 10
         table_foot = $(this).parents(".table_section").find("table").children("tfoot");
-        alert_box($(table_foot).html())
 
         //pass default values into needful elements
         $(this).parents(".table_section").find(".navs").children("span").attr("data-break-point", def_ault)
@@ -123,36 +122,27 @@ $("label[for=search] input[name=search]").blur(function(){
 $("label[for=search] input[name=search]").keyup(function(){
     search_value = $(this).val();
 
-    table_foot = $(this).parents("#content").children(".body").children("table").children("tfoot");
-    table_body = $(this).parents("#content").children(".body").children("table").children("tbody");
+    table_foot = $(this).parents("#content").find("tfoot");
+    table_body = $(this).parents("#content").find("tbody");
 
     //grab portion for displaying result counts
     td = $(table_foot).children("tr").children("td.result");
 
-    if(search_value == ""){
-        $(td).html("");
-        $(table_foot).children("tr").children("td:first-child").attr("hidden", false);
-    }else{
-        $(table_foot).children("tr").children("td:first-child").attr("hidden", true);
-        //covert search value to lower case
-        search_value = search_value.toLowerCase();
-
-        //get parent table row
-        tr = $(this).parents(".form, .head").siblings(".body").children("table").children("tbody").children("tr");
-        $(tr).filter(function(){
-            $(this).toggle(
-                $(this).text().toLowerCase().indexOf(search_value) > -1
-            );
-        })
-
-        //count number of visible results
-        tr = $(this).parents(".form, .head").siblings(".body").children("table").children("tbody").children("tr:visible");
-
-        if(tr.length > 0)
-            $(td).html(tr.length + " results returned");
-        else
-            $(td).html("No results were returned");
-
-        $(table_foot).removeClass("no_disp");
-    }
+    //search key control
+    const searchText = $(this).val().toLowerCase()
+    $(table_body).children("tr").each(function(){
+        const rowData = $(this).text().toLowerCase()
+        if(rowData.indexOf(searchText) === -1){
+            $(this).hide()
+        }else{
+            $(this).show()
+        }
+    })
+    
+    //count number of visible results
+    tr = $(this).parents(".form, .head").siblings(".body").children("table").children("tbody").children("tr:visible");
+    if(tr.length > 0)
+        $(td).html(tr.length + " results returned");
+    else
+        $(td).html("No results were returned");
 })

@@ -67,7 +67,7 @@
         if($res->num_rows > 0){
     ?>
     <div class="head">
-        <div class="form search" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
+        <div class="form search sm-med-tp" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
             <div class="flex flex-center-align">
                 <label for="search" style="width: 80%">
                     <input type="search" name="search" data-max-break-point="<?= fetchData("COUNT(indexNumber) as total","cssps","schoolID=$user_school_id")["total"] ?>"
@@ -166,6 +166,7 @@
 
     $("input[name=row_display]").change(function(){
         myval = $(this).val();
+        $(this).val(myval);
         $(this).parents("#content").children(".head").children(".btn").children("button").attr("data-break-point", myval);
         $(this).parents("#content").find(".navs").children("span").attr("data-break-point", myval);
         $(this).parents("#content").children(".head").children(".btn").children("button").click();
