@@ -2,7 +2,7 @@
     $admin_mode = $_SESSION["admin_mode"];
     $navMiddle = [
         "Dashboard" => [
-            0 => [
+            [
                 "item_class"=> "active",
                 "name" => "dashboard",
                 "title" => "Dashboard",
@@ -13,7 +13,7 @@
                 "display_title" => "Dashboard",
                 "admin_mode" => "admission"
             ],
-            1 => [
+            [
                 "item_class"=> "relative",
                 "name" => "notification",
                 "title" => "Notification",
@@ -25,7 +25,7 @@
                 "admin_mode" => "admission",
                 "item_child" => true
             ],
-            2 => [
+            [
                 "item_class"=> "",
                 "name" => "students",
                 "title" => "Students List",
@@ -34,9 +34,9 @@
                 "imgAlt" => "students",
                 "menu_class" => "",
                 "display_title" => "Students List",
-                "admin_mode" => "admission records"
+                "admin_mode" => " records"
             ],
-            3 => [
+            [
                 "item_class"=> "",
                 "name" => "subjects",
                 "title" => "Subjects & Teachers",
@@ -48,7 +48,7 @@
                 "admin_mode" => "records",
                 "data-tab" => "courses"
             ],
-            4 => [
+            [
                 "item_class"=> "",
                 "name" => "programs",
                 "title" => "Classes & Results",
@@ -64,7 +64,7 @@
             ]
         ],
         "Management_of_students" => [
-            0 => [
+            [
                 "item_class"=> "",
                 "name" => "cssps",
                 "title" => "CSSPS List",
@@ -75,7 +75,7 @@
                 "display_title" => "CSSPS List",
                 "admin_mode" => "admission"
             ],
-            1 => [
+            [
                 "item_class"=> "",
                 "name" => "enrol",
                 "title" => "Enrolment Data",
@@ -86,7 +86,7 @@
                 "display_title" => "Enrolment Data",
                 "admin_mode" => "admission"
             ],
-            2 => [
+            [
                 "item_class"=> "",
                 "name" => "house",
                 "title" => "House and Bed Declarations",
@@ -99,7 +99,7 @@
             ]
         ],
         "House_allocation" => [
-            0 => [
+            [
                 "item_class"=> "",
                 "name" => "allocation",
                 "title" => "House Allocation",
@@ -109,10 +109,32 @@
                 "menu_class" => "",
                 "display_title" => "House Allocation",
                 "admin_mode" => "admission"
+            ],
+            [
+                "item_class"=> "",
+                "name" => "announcement",
+                "title" => "Announcements",
+                "data-url" => "/admin/admin/page_parts/announcement.php",
+                "imgSrc" => "/assets/images/icons/notifications-circle-outline.svg",
+                "imgAlt" => "announcement",
+                "menu_class" => "",
+                "display_title" => "Announcements",
+                "admin_mode" => "records"
+            ],
+            [
+                "item_class"=> "",
+                "name" => "sms",
+                "title" => "Messaging",
+                "data-url" => "/admin/admin/page_parts/messaging.php",
+                "imgSrc" => "/assets/images/icons/megaphone-outline.svg",
+                "imgAlt" => "message",
+                "menu_class" => "",
+                "display_title" => "SMS Messaging",
+                "admin_mode" => "records"
             ]
         ],
         "Admission_and_Exeat" => [
-            0 => [
+            [
                 "item_class"=> "",
                 "name" => "admission",
                 "title" => "School Details",
@@ -123,7 +145,7 @@
                 "display_title" => "School Details",
                 "admin_mode" => "admission records"
             ],
-            1 => [
+            [
                 "item_class"=> "",
                 "name" => "exeat",
                 "title" => "Exeat",
@@ -138,7 +160,7 @@
     ];
 
     $navFoot = [
-        0 => [
+        [
             "item_class"=> "",
             "name" => "payment",
             "title" => "Payments",
@@ -149,7 +171,7 @@
             "display_title" => "Payments",
             "admin_mode" => "admission"
         ],
-        1 => [
+        [
             "item_class"=> "",
             "name" => "account",
             "title" => "Account Update",
@@ -160,7 +182,7 @@
             "display_title" => "Account Update [Personal]",
             "admin_mode" => "admission records"
         ],
-        2 => [
+        [
             "item_class"=> "",
             "name" => "password",
             "title" => "Change Password",
@@ -171,7 +193,7 @@
             "display_title" => "Change Password",
             "admin_mode" => "admission records"
         ],
-        3 => [
+        [
             "item_class"=> "",
             "item_id" => "logout",
             "name" => "",
