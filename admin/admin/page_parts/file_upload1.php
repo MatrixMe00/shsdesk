@@ -1,4 +1,5 @@
-<form action="<?php echo $url?>/read_excel.php" name="importForm" enctype="multipart/form-data" method="POST">
+<form action="<?php echo $url?>/read_excel.php" name="importForm" enctype="multipart/form-data" method="POST"
+    class="wmax-md sm-sm">
         <div class="head" style="padding: 0 1em 0.5rem">
             <h5>NB:</h5>
             <ol>
@@ -8,6 +9,15 @@
                 <li>Make sure you have uploaded all your houses and their required details</li>
                 <li>If you do not have the default spreadsheet file for upload, please click <a href="<?php echo $url?>/admin/admin/assets/files/default files/students_template.xlsx">
                 this link</a> to download</li>
+                <li>If you do not have the index number of the student, please leave that field blank</li>
+                <li>Index Numbers should not be less than 10 characters if it is provided</li>
+                <li>The name of the class should tally with the name of the class you provide the system with.
+                    Failure to do this will cause a student not to be provided a class.
+                </li>
+                <li>The class is different from the program name. You can either provide the short form of the clas or the full name of the class.
+                    Eg. You can either provide in the class name section "<em>Science 1</em>" or "<em>Sci 1</em>", but the programme can simply be 
+                    "<u>General Science</u>"
+                </li>
             </ol>
         </div>
         <div class="body">

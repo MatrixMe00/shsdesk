@@ -288,16 +288,16 @@
                                 
                                 switch ($col) {
                                     case 0:
-                                        $indexNumber = $cellValue;
+                                        $indexNumber = empty($cellValue) ? generateIndexNumber($user_school_id) : $cellValue;
                                         break;
                                     case 1:
-                                        $Lastname = formatName($cellValue);
+                                        $Lastname = ucfirst($cellValue);
                                         break;
                                     case 2:
-                                        $Othernames = formatName($cellValue);
+                                        $Othernames = ucwords($cellValue);
                                         break;
                                     case 3:
-                                        $Gender = formatName($cellValue);
+                                        $Gender = ucfirst($cellValue);
                                         break;
                                     case 4:
                                         $studentYear = intval($cellValue);
@@ -305,6 +305,11 @@
                                     case 5:
                                         $house = strtolower($cellValue);
                                         $houseID = fetchData("id","houses","LOWER(title)='$house' AND schoolID=$user_school_id");
+                                        if(is_array($houseID)){
+                                            $houseID = $houseID["id"];
+                                        }else{
+                                            $houseID = 0;
+                                        }
                                         break;
                                     case 6:
                                         $boardingStatus = formatName($cellValue);
@@ -313,7 +318,9 @@
                                         $programme = formatName($cellValue);
                                         break;
                                     case 8:
-                                        $guardianContact = remakeNumber($cellValue, true);
+                                        $program = $cellValue;
+                                        $program_id = fetchData1("program_id","program","school_id=$user_school_id AND (program_name='$program' OR short_form='$program')");
+                                        $program_id = is_array($program_id) ? $program_id["program_id"] : 0;
                                         break;    
                                     default:
                                         "Buffer count is beyond expected input count";
@@ -325,12 +332,12 @@
                             $index = fetchData1("indexNumber","students_table","indexNumber='$indexNumber'");
     
                             if($index == "empty"){
-                                $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, guardianContact, programme, boardingStatus)
+                                $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, programme, program_id, boardingStatus)
                                     VALUES (?,?,?,?,?,?,?,?,?,?)";
                                 $stmt = $connect2->prepare($sql);
                                 $stmt = $connect2->prepare($sql);
-                                $stmt->bind_param("ssssiiisss",$indexNumber, $Lastname, $Othernames, $Gender, $houseID, $user_school_id, $studentYear,
-                                    $guardianContact, $programme, $boardingStatus);
+                                $stmt->bind_param("ssssiiisis",$indexNumber, $Lastname, $Othernames, $Gender, $houseID, $user_school_id, $studentYear,
+                                    $programme, $program_id, $boardingStatus);
                                 if($stmt->execute()){
                                     if($row == $max_row){
                                         echo "success";
