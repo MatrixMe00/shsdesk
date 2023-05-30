@@ -1459,6 +1459,12 @@
                 $message = "No mode has been selected";
             }else{
                 $_SESSION["admin_mode"] = $_GET["admin_mode"];
+
+                if($_GET["admin_mode"] == "admission"){
+                    $_SESSION["nav_point"] = "dashboard";
+                }else{
+                    $_SESSION["nav_point"] = "students";
+                }
                 $message = "true";
             }
 
@@ -1487,6 +1493,47 @@
             }
             
             echo $message;
+        }elseif($submit == "make_announcement" || $submit == "make_announcement_ajax"){
+            //retrieve needed data
+            $title = $_REQUEST["title"];
+            $message = htmlentities($_REQUEST["message"], ENT_QUOTES);
+            $audience = $_REQUEST["audience"];
+
+            //get details from session
+            if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] != null){
+                $school_id = $user_school_id;
+            }else{
+                echo "You are not logged in";
+                exit(1);
+            }
+
+            if($title == "" || $title == null || empty($title)){
+                echo "no-title";
+                exit(1);
+            }elseif($message == "" || $message == null || empty($message)){
+                echo "no-message";
+                exit(1);
+            }elseif($audience != "All" && $audience != "Others"){
+                echo "no-audience-provided";
+                exit(1);
+            }
+
+            $sql = "INSERT INTO announcement (school_id, heading, body, audience, date) VALUES(?,?,?,?,NOW())";
+            $res = $connect2->prepare($sql);
+            $res->bind_param("isss",$school_id, $title, $message, $audience);
+            
+            if($res->execute()){
+                if($submit == "make_announcement"){
+                    //redirect to previous page
+                    $location = $_SERVER["HTTP_REFERER"];
+
+                    header("location: $location");
+                }else{
+                    echo "success";
+                }                
+            }else{
+                echo "error making announcement";
+            }
         }
     }else{
         echo "no-submission";

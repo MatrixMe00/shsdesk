@@ -114,6 +114,8 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                 <input type="hidden" name="sid">
                 <input type="hidden" name="mode">
                 <input type="hidden" name="table">
+                <input type="hidden" name="key_column">
+                <input type="hidden" name="db">
                 <input type="hidden" name="submit" value="yes_no_submit">
             </form>
 

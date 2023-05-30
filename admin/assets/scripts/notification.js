@@ -37,27 +37,6 @@ $(".close_reply").click(function(){
     $(parent).children(".reply_container").children(".reply_box.display_now").removeClass("display_now");
 })
 
-$("#audience_others, #audience_all").change(function(){
-    check = $("#audience_others").prop("checked");
-
-    if(check == true){
-        $("#aud_ot_label").removeClass("no_disp");
-    }else{
-        $("#aud_ot_label").addClass("no_disp");
-    }
-})
-
-//mark radio button when whole label is clicked
-$("label[for=audience]").click(function(){
-    radio = $(this).children("input[type=radio]");
-    check = $(radio).prop("checked");
-
-    if(!check){
-        $(radio).prop("checked", true);
-        $("#audience_others, #audience_all").change();
-    }
-})
-
 $("button[name=cancel]").click(function(){
     fadeOutElement($(this).parents(".form_modal_box"), 0.2);
 })
@@ -257,31 +236,36 @@ $(".reply_tab label[for=submit] button[name=submit]").click(function(){
 
 //when an item event is clicked
 $("span.item-event").click(function(){
-    item_id = $(this).attr("data-item-id");
-    item_event = $(this).attr("data-item-event");
+    const item_id = $(this).attr("data-item-id");
+    let item_event = $(this).attr("data-item-event");
+    let db = 1;
+    let key_column = ""
+    
 
     //check if delete clicked is a notification or reply
-    if($(this).parents(".reply_container")){
+    if($(this).parents(".reply_container").length > 0){
         table = "reply";
-    }else if($(this).parents(".notif_box")){
+    }else if($(this).parents(".notif_box").length > 0){
         table = "notification";
+    }else if($(this).parents(".announcement").length > 0){
+        table = "announcement";
+        db = 2;
     }
     
 
     if(item_event == "edit"){
 
     }else if(item_event == "delete"){
+        if($(this).parents(".announcement")){
+            item_event = "remove_item"
+            key_column = "id"
+        }
+
         //display yes no modal box
         $("#gen_del").removeClass("no_disp");
 
         //message to display
-        // item_header = $(this).parents(".item").children(".top").children(".flex").children(".content_title").children("h4").html();``
         $("#gen_del p#warning_content").html("Do you want to delete this message?");
-
-        //fill form with needed details
-        $("#gen_del input[name=sid]").val(item_id);
-        $("#gen_del input[name=mode]").val(item_event);
-        $("#gen_del input[name=table]").val(table);
     }else if(item_event == "activate" || item_event == "deactivate"){
         //display yes no modal box
         $("#gen_del").removeClass("no_disp");
@@ -290,12 +274,14 @@ $("span.item-event").click(function(){
         item_header = $(this).parents(".item").children(".top").children(".flex").children(".content_title").children("h4").html();
         $("#gen_del p#warning_content").html("Do you want to " + item_event + " block titled \"<b>" + 
         item_header + "</b>\"");
-
-        //fill form with needed details
-        $("#gen_del input[name=sid]").val(item_id);
-        $("#gen_del input[name=mode]").val(item_event);
-        $("#gen_del input[name=table]").val(table);
     }
+
+    //fill form with needed details
+    $("#gen_del input[name=sid]").val(item_id);
+    $("#gen_del input[name=mode]").val(item_event);
+    $("#gen_del input[name=table]").val(table);
+    $("#gen_del input[name=key_column]").val(key_column)
+    $("#gen_del input[name=db]").val(db)
 })
 
 //marking notifications and replies as read upon mouse leave

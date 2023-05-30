@@ -447,7 +447,7 @@
                     SET Active = $activate
                     WHERE id=$sid" or die($connect->error);
             }elseif($mode == "clear_school"){
-                $tables = array("cssps", "enrol_table", "houses","house_allocation", "exeat");
+                $tables = array("cssps", "enrol_table", "houses","house_allocation");
 
                 $sql = "";
 
@@ -465,10 +465,19 @@
                         $sql .= "schoolID=$sid; ";
                     }
                 }
+            }elseif($mode == "remove_item"){
+                $key_column = $_REQUEST["key_column"];
+                $sql = "DELETE FROM $table WHERE $key_column='$sid'";
+            }
+
+            if(isset($_REQUEST["db"]) && $_REQUEST["db"] == 2){
+                $connection = $connect2;
+            }else{
+                $connection = $connect;
             }
             
             //responses
-            if($connect->multi_query($sql) || $connect->query($sql)){
+            if($connection->multi_query($sql) || $connection->query($sql)){
                 if($submit == "yes_no_submit"){
                     //redirect to previous page
                     $location = $_SERVER["HTTP_REFERER"];

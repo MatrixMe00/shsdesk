@@ -149,9 +149,9 @@
         ?>
         <div class="sp-med w-full lt-shade-h">
             <h3 class="top"><?= $message["heading"] ?></h3>
-            <div class="middle sm-med-tp"><?= $message["body"] ?></div>
+            <div class="middle sm-med-tp"><?= html_entity_decode($message["body"]) ?></div>
             <div class="foot">
-                <span class="txt-fs color-dark"><?= date("F d, Y", strtotime($message["date"])) ?></span>
+                <span class="txt-fs color-dark"><?= date("F d, Y H:i:s", strtotime($message["date"])) ?></span>
             </div>
         </div>
         <?php endwhile; else: ?>

@@ -510,11 +510,11 @@
             <div id="#aud">
                 <p style="padding-left: 12px">Select your audience</p>
                 <div class="flex">
-                    <label for="audience" class="radio">
+                    <label for="audience_all" class="radio">
                         <input type="radio" name="audience" id="audience_all" value="All" checked>
                         <span class="label_title">All</span>
                     </label>
-                    <label for="audience" class="radio">
+                    <label for="audience_others" class="radio">
                         <input type="radio" name="audience" id="audience_others" value="Others">
                         <span class="label_title">Others</span>
                     </label>
