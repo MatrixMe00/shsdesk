@@ -543,7 +543,7 @@
             //make formatting here
             for ($i=0; $i < $value_size; $i++) { 
                 //capitalize only first alphabet or any value after a hyphen or dot
-                if($i == 0 || $value[$i-1] == "-" || $value[$i-1] == "."){
+                if($i == 0 || ($i > 0 && $value[$i-1] == "-") || $value[$i-1] == "."){
                     $value[$i] = strtoupper($value[$i]);
                 }else{
                     //make any other value lowercase
