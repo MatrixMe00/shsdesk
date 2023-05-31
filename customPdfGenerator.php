@@ -10,7 +10,7 @@
     $pdf = new \Mpdf\Mpdf();
 
     // $_GET["indexNumber"] = "012006601721";
-    if($_REQUEST["admission_print"] && $_REQUEST["admission_print"] != null){
+    if(isset($_REQUEST["admission_print"]) && $_REQUEST["admission_print"] != null){
         $html = $_REQUEST["html"];
         $index = $_REQUEST["ad_index"];
 
