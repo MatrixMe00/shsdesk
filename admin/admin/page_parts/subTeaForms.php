@@ -284,7 +284,7 @@
             </div>
 
             <label for="">
-                <p>Select the courses taught in this program</p>
+                <p>Select the subjects taught in this program</p>
             </label>
 
             <?php if(is_array($courses)) : ?>
@@ -333,7 +333,7 @@
             </div>
 
             <label for="">
-                <p>Select the courses taught in this program</p>
+                <p>Select the subjects taught in this program</p>
             </label>
 
             <?php if(is_array($courses)) : ?>

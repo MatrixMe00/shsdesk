@@ -44,7 +44,7 @@
         <h1 class="txt-primary">Controls</h1>
     </div>    
     <div class="body control btn flex flex-wrap gap-md">
-        <button class="sp-lg xs-rnd primary" data-refresh="false" data-section="courses">View All Courses</button>
+        <button class="sp-lg xs-rnd primary" data-refresh="false" data-section="courses">View All Subjects</button>
         <?php if(is_array($courses)) :?>
         <button class="sp-lg xs-rnd plain indigo" data-refresh="false" data-section="teachers">View All Teachers</button>
         <?php endif; ?>
@@ -58,21 +58,21 @@
 <section class="section_box sp-xlg-tp hmax-unset-child" id="courses" data-table="courses" data-table-col="course_id">
     <?php if(is_array($courses)) : ?>
     <div class="head">
-        <h1 class="txt-al-c">Courses</h1>
+        <h1 class="txt-al-c">Subjects</h1>
     </div>
     <div class="body">
         <table>
             <thead>
-                <td>Course ID</td>
-                <td>Course Name</td>
-                <td>Course Alias</td>
+                <td>Subject ID</td>
+                <td>Subject Name</td>
+                <td>Subject Alias</td>
                 <td>Programs Offering</td>
                 <td>Credit Hours</td>
             </thead>
             <tbody>
                 <?php for($counter = 0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses ?>
                 <tr>
-                    <td><?= formatItemId($course["course_id"], "CID") ?></td>
+                    <td><?= formatItemId($course["course_id"], "SID") ?></td>
                     <td><?= $course["course_name"] ?></td>
                     <td><?= $course["short_form"] ?></td>
                     <td><?= fetchData1("COUNT(*) AS total","program","course_ids LIKE '%".$course["course_id"]."% '")["total"] ?></td>

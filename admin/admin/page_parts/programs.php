@@ -72,7 +72,7 @@
                 <td>Class ID</td>
                 <td>Class Name</td>
                 <td>Alias Name</td>
-                <td>Class Course Count</td>
+                <td>Class Subject Count</td>
             </thead>
             <tbody>
                 <?php for($counter = 0; $counter < (isset($programs[0]) ? count($programs) : 1); $counter++) : $program = isset($programs[0]) ? $programs[$counter] : $programs ?>
