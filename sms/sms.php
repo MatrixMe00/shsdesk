@@ -11,25 +11,126 @@ if(isset($_REQUEST['submit'])){
     if($submit == 'sendTransaction'){
         $senderId = "SHSDesk";
         $recipients = [$_REQUEST["phone"]];
-        $message = $_REQUEST['message'];
+        $text_message = $_REQUEST['message'];
     }elseif($submit == 'exeat_request' || $submit == 'exeat_request_ajax'){
         $student = fetchData1("lastname, othernames, guardianContact","students_table","indexNumber='$student_index'");
         if(is_array($student)){
             $recipients = [$student["guardianContact"]];
             if(intval(date("H")) < 12){
-                $message = "Good Morning! ";
+                $text_message = "Good Morning! ";
             }elseif(intval(date("H")) < 17){
-                $message = "Good Afternoon! ";
+                $text_message = "Good Afternoon! ";
             }else{
-                $message = "Good Evening! ";
+                $text_message = "Good Evening! ";
             }
-            $message .= "This message is to inform you that your ward, ".$student["lastname"]." ".$student["othername"];
-            $message .= ", has received an ".formatName($exeat_type)." Exeat to $exeat_town";
+            $text_message .= "This message is to inform you that your ward, ".$student["lastname"]." ".$student["othername"];
+            $text_message .= ", has received an ".ucwords($exeat_type)." Exeat to $exeat_town";
             $senderId = fetchData("smsID","admissiondetails","schoolID= $user_school_id");
         }else{
             echo "<script>alert_box('Unrecognized student stored','warning',10)</script>";
             exit(1);
         }
+    }elseif($submit == "send_sms" || $submit == "send_sms_ajax"){
+        if($group == "student"){
+            if($individuals == "all"){
+                $numbers = fetchData1("guardianContact","students_table","school_id=$user_school_id",0);
+            }elseif(strpos($individuals, ",")){
+                $individuals = explode(", ", $individuals);
+                $numbers = [];
+                foreach($individuals as $individual){
+                    $number = fetchData1("guardianContact","students_table","indexNumber='$individual'");
+                    if(is_array($number)){
+                        if(strtolower($number["guardianContact"]) == "null" || is_null($number["guardianContact"]) || empty($number["guardianContact"])){
+                            $_REQUEST["system_message"] = "Process has been stopped because student with index number $individual has no valid contact number";
+                            return;
+                        }else{
+                            array_push($numbers, $number["guardianContact"]);
+                        }
+                    }else{
+                        $_REQUEST["system_message"] = "Student with index number $individual was not found. Process has stopped";
+                        return;
+                    }
+                }
+            }elseif(intval($individuals) == 1 || intval($individuals) == 2 || intval($individuals) == 3){
+                $numbers = fetchData1("guardianContact","students_table","school_id=$user_school_id AND studentYear=$individuals",0);
+            }else{
+                $numbers = fetchData1("guardianContact","students_table","indexNumber='$individuals'");
+            }
+
+            if(is_array($numbers) && array_key_exists(0,$numbers)){
+                $recipients = [];
+                foreach($numbers as $number){
+                    if(is_array($number)){
+                        array_push($recipients, remakeNumber($number["guardianContact"], true, false));
+                    }else{
+                        array_push($recipients, remakeNumber($number, true, false));
+                    }                    
+                }
+            }elseif(is_array($numbers) && array_key_exists("guardianContact", $numbers)){
+                $recipients = [$numbers["guardianContact"]];
+            }else{
+                $_REQUEST["system_message"] = "No recipients were discovered";
+            }
+        }elseif($group == "teacher"){
+            if($individuals == "all"){
+                $numbers = fetchData1("phone_number","teachers","school_id=$user_school_id",0);
+            }elseif(strtolower($individuals) == "male" || strtolower($individuals) == "female"){
+                $numbers = fetchData1("phone_number", "teachers", "school_id=$user_school_id AND gender='$individuals'",0);
+            }elseif(strpos($individuals, ",")){
+                $individuals = explode(", ", $individuals);
+                $numbers = [];
+                foreach($individuals as $individual){
+                    $individual = formatItemId(strtoupper($individual), "TID", true);
+                    $number = fetchData1("phone_number","teachers","teacher_id=$individual");
+                    if(is_array($number)){
+                        if(strtolower($number["phone_number"]) == "null" || is_null($number["phone_number"]) || empty($number["phone_number"])){
+                            $_REQUEST["system_message"] = "Process has been stopped because student with index number ".formatItemId($individual,"TID")." has no valid contact number";
+                            return;
+                        }else{
+                            array_push($numbers, $number["phone_number"]);
+                        }
+                    }else{
+                        $_REQUEST["system_message"] = "Student with index number $individual was not found. Process has stopped";
+                        return;
+                    }
+                }
+            }else{
+                $individuals = formatItemId(strtoupper($individuals), "TID", true);
+                $numbers = fetchData1("phone_number","teachers","teacher_id=$individuals");
+            }
+
+            if(is_array($numbers) && array_key_exists(0,$numbers)){
+                $recipients = [];
+                foreach($numbers as $number){
+                    if(is_array($number)){
+                        array_push($recipients, remakeNumber($number["phone_number"], true, false));
+                    }else{
+                        array_push($recipients, remakeNumber($number, true, false));
+                    }                    
+                }
+            }elseif(is_array($numbers) && array_key_exists("phone_number", $numbers)){
+                $recipients = [remakeNumber($numbers["phone_number"], true, false)];
+            }else{
+                $_REQUEST["system_message"] = "No recipients were discovered";
+            }
+        }
+
+        //set the sender id
+        $senderId = fetchData1("sms_id, status","school_ussds", "school_id=$user_school_id");
+        if(is_array($senderId)){
+            if($senderId["status"] === "approve")
+                $senderId = $senderId["sms_id"];
+            elseif($senderId["status"] === "pending")
+                $_REQUEST["system_message"] = "Your SSID has not been valided yet";
+            else
+                $_REQUEST["system_message"] = "Your SSID was rejected. Please provide a new one and await approval before trying again";
+        }else{
+            $_REQUEST["system_message"] = "You have not set an SMS SSID yet. Please provide one and await approval before trying again";
+        }
+
+        if(!isset($_REQUEST["system_message"]))
+        $_REQUEST["system_message"] = implode(", ",$recipients);
+        return;
     }
 
     foreach ($recipients as $key => $value) {
@@ -37,7 +138,7 @@ if(isset($_REQUEST['submit'])){
         $data = [
             'recipient' => $value,
             'sender_id' => $senderId,
-            'message'   => $message
+            'message'   => $text_message
         ];
     
         curl_setopt_array($ch, [

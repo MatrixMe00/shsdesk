@@ -793,6 +793,9 @@
             //remove any space in it
             $number = str_replace(" ","",$number);
 
+            if(substr($number, 0, 3) == "233"){
+                return $number;
+            }
             //make sure it begins with 0
             if($number[0] != "0" && strlen($number) < 10){
                 $number = "0".$number;
@@ -803,8 +806,10 @@
                 $number = substr_replace($number,"233", 0, 1);
             }
         }else{      //remove +233
-            if(strlen($number) >= 12)
+            if(strlen($number) >= 12 && strpos($number, "+"))
                 $number = str_replace("+233", "0", $number);
+            elseif(strlen($number >= 12))
+                $number = str_replace("233","0", $number);
             
             //insert spaces
             if(strlen($number) < 12){

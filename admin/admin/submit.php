@@ -724,9 +724,7 @@
             $postal_address = formatName($_POST["postal_address"]);
             $head_name = $_POST["head_name"];
             $head_title = $_POST["head_title"];
-            $sms_id = $_POST["sms_id"];
             $reopening = $_POST["reopening"];
-            $announcement = htmlentities($_POST["announcement"]);
             $admission_head = $_POST["admission_head"];
             $admission = htmlentities($_POST["admission"]);
             $autoHousePlace = $_POST["autoHousePlace"];
@@ -743,8 +741,6 @@
                 $message = "School Head Name field is empty";
             }elseif(empty($head_title)){
                 $message = "Please provide the title of the school head";
-            }elseif(empty($sms_id)){
-                $message = "SMS ID field cannot be empty";
             }elseif(empty($reopening)){
                 $message = "No Reopening date provided";
             }elseif(empty($school_id) || !intval($school_id)){
@@ -850,11 +846,10 @@
                     $academic_year = "$prev_year / $next_year";
 
                     //update admission details table
-                    $sql = "UPDATE admissiondetails SET titleOfHead=?, headName=?, smsID=?, admissionYear=?, academicYear=?,
-                    reopeningDate=?, announcement=? WHERE schoolID=?";
+                    $sql = "UPDATE admissiondetails SET titleOfHead=?, headName=?, admissionYear=?, academicYear=?,
+                    reopeningDate=? WHERE schoolID=?";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("sssssssi", $head_title, $head_name, $sms_id, $admission_year, $academic_year, $reopening, $announcement,
-                        $school_id);
+                    $stmt->bind_param("sssssi", $head_title, $head_name, $admission_year, $academic_year, $reopening, $school_id);
                     
                     $stmt->execute();
                     $message = "success";
@@ -1534,6 +1529,47 @@
             }else{
                 echo "error making announcement";
             }
+        }elseif($submit == "send_sms" || $submit == "send_sms_ajax"){
+            $group = $_GET["group"] ?? null;
+            $individuals = $_GET["individuals"] ?? null;
+            $sms_text = $_GET["message"];
+            
+            if(is_null($group) || empty($group)){
+                $message = "Group of recepients not specified";
+            }elseif(is_null($individuals) || empty($individuals)){
+                $message = "Individuals for the message not specified";
+            }elseif(is_null($sms_text) || empty($sms_text)){
+                $message = "Please provide the message text to be sent";
+            }elseif(is_null($user_school_id) || empty($user_school_id)){
+                $message = "Your school could not be specified. Please refresh the page and try again";
+            }else{
+                if(strpos($individuals, ",") !== false){
+                    //check if there is a space after the comma separators
+                    $offset = 0;
+
+                    while($pos = strpos($individuals, ",", $offset)){
+                        if(strpos($individuals, ", ", $offset) === false){
+                            $message = "Please make sure there is a comma and a space after the name of the comma to separate different individual ids";
+                            break;
+                        }
+
+                        $offset = $pos + 1;
+                    }
+                }
+
+                if(empty($message)){
+                    // print_r($_REQUEST); return;
+                    include_once("$rootPath/sms/sms.php");
+                }
+                
+            }
+
+            if(!empty($message)){
+                echo $message;
+            }else{
+                echo $_REQUEST["system_message"];
+                unset($_REQUEST["system_message"]);
+            }            
         }
     }else{
         echo "no-submission";

@@ -33,7 +33,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/user.png" alt="fullname_logo">
                     </span>
-                    <input type="text" name="school_name" id="school_name" class="text_input" placeholder="Name of School" pattern="[a-zA-Z\s]{6,}[\.\-\']{0,}"
+                    <input type="text" name="school_name" id="school_name" class="text_input" placeholder="Name of School" pattern="[a-zA-Z\s.-']{6,}"
                     autocomplete="off" title="Update the name of your school" value="<?php echo $schoolDetail["schoolName"]?>">
                     
                 </label>
@@ -67,14 +67,6 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     </span>
                     <input type="text" name="head_title" id="head_title" class="text_input" placeholder="Title of Head*" autocomplete="off" 
                     title="Enter the title of the head provided above. Eg. Head Master or Head Mistress" value="<?php echo $row["titleOfHead"] ?>">
-                </label>
-                <label for="sms_id">
-                    <span class="label_image">
-                        <img src="<?php echo $url?>/assets/images/icons/chatbox-outline.svg" alt="sms id">
-                    </span>
-                    <input type="text" name="sms_id" id="sms_id" class="text_input" placeholder="SMS Sender ID*" autocomplete="off" 
-                    title="Provide the name to be seen when an sms is sent. It should not exceed 11 characters [including spaces]" 
-                 value="<?php echo $row["smsID"] ?>" maxlength="11">
                 </label>
             </div>
             
@@ -139,15 +131,6 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                         echo $message 
                     ?>
                 </textarea>
-            </label>
-
-            <label for="announcement">
-                <span class="label_image">
-                    <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="announce">
-                </span>
-                <textarea name="announcement" id="announcement" placeholder="Enter an announcement here. This announcement will be displayed to 
-                students in their student portals..." title="Enter an announcement to be displayed when the student wants to 
-                log in or check admission"><?php echo $row["announcement"]?></textarea>
             </label>
 
             <div class="joint flex-wrap">

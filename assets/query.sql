@@ -134,4 +134,12 @@ CREATE TABLE `teacher_login` (
  `user_username` varchar(100) NOT NULL DEFAULT 'New User',
  `user_password` char(32) NOT NULL DEFAULT '44ffe44097bbce02fbaa42734e92ae04',
  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `school_ussds` (
+ `school_id` int(11) NOT NULL,
+ `sms_id` varchar(11) NOT NULL,
+ `status` enum('pending','reject','approve') NOT NULL DEFAULT 'pending',
+ PRIMARY KEY (`school_id`),
+ UNIQUE KEY `sms_id` (`sms_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
