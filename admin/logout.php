@@ -2,7 +2,7 @@
 include_once("../includes/session.php");
 
 //do not do anything if user is logging out as a new user
-if($user_details["new_user"] == 0 && isset($_SESSION["login_id"])){
+if((isset($user_details["new_user"]) && $user_details["new_user"] == 0) && isset($_SESSION["login_id"])){
     //update the login table
     $now = date('Y-m-d H:i:s');
 
