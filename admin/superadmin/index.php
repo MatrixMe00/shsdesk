@@ -101,6 +101,14 @@
                         </div>
                         <?php }?>
                     </div>
+                    <div class="item" name="ussd" title="USSD" data-url="<?php echo $url?>/admin/superadmin/page_parts/ussd.php" data-current-tab="pending">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/chatbox-outline.svg" alt="ussd" />
+                        </div>
+                        <div class="menu_name">
+                            <span>USSD Management</span>
+                        </div>
+                    </div>
                 </div>
     
                 <!--Management-->

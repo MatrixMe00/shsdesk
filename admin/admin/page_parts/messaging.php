@@ -15,18 +15,18 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 <section>
     <div class="wmax-md sm-auto form">
         <div class="head txt-al-c">
-            <h3>School SSID</h3>
+            <h3>School USSD</h3>
         </div>
         <div class="joint flex-align-end">
             <label for="sms_id" class="flex-column w-full" style="flex:1">
-                <span class="label_title">School SSID</span>
-                <input type="text" name="sms_id" id="sms_id" placeholder="Enter your SMS ID here [maximum length is 11]..." maxlength="11" value="<?php 
-                    $ssid = fetchData1("sms_id, status","school_ussds","school_id=$user_school_id");
-                    echo $ssid == "empty" ? "Not Set" : $ssid["sms_id"];
+                <span class="label_title">School USSD</span>
+                <input type="text" name="sms_id" id="sms_id" placeholder="Enter your SMS USSD here [maximum length is 11]..." maxlength="11" value="<?php 
+                    $ussd = fetchData1("sms_id, status","school_ussds","school_id=$user_school_id");
+                    echo $ussd == "empty" ? "Not Set" : $ussd["sms_id"];
                 ?>" readonly>
             </label>
             <label for="" class="btn gap-sm w-full" style="flex:0">
-                <button type="submit" name="submit" value="change_sms_id" class="primary w-full change_sms">Change</button>
+                <button type="submit" name="submit" value="change_sms_id" class="primary w-full change_sms" data-change="0">Change</button>
                 <button type="button" name="reset" class="pink w-full reset_sms no_disp">Reset</button>
             </label>
         </div>
@@ -35,19 +35,19 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 
 <section class="txt-al-c txt-fs p-sm-tp p-med-lr">
     <h3>Notice:</h3>
-    <?php if(is_array($ssid) && $ssid["status"] == "approve") : ?>
+    <?php if(is_array($ussd) && $ussd["status"] == "approve") : ?>
     <p>Please be informed that this page is for sending SMS to persons registered into this system. When specifying individuals, do well to provide their index numbers if they are students, or the teacher id if they are teachers</p>
     <p>Specific individuals should have their index numbers (if they are students) or teacher ids (if they are teachers) specified with comma and space separations for multiple values. Eg. 0000000001, 0000000002</p>
-    <?php elseif(is_array($ssid)): ?>
+    <?php elseif(is_array($ussd)): ?>
     <p>
-        <?php $ssid["status"] == "pending" ? "Your SSID is on pending and would be reveiwed by the admins soon." : "Your SSID was rejected by the admin. This means that your SSID is not unique and an organization or service provider is already using it. Please provide a new SSID unique for this system"; ?>
+        <?= $ussd["status"] == "pending" ? "Your USSD is on pending and would be reveiwed by the admins soon." : "Your USSD was rejected by the admin. This means that your USSD is not unique and an organization or service provider is already using it. Please provide a new USSD unique for this system"; ?>
     </p>
     <?php else: ?>
-    <p>You have not provided an ssid yet. Please provide one to have access to the SMS section of the system.</p>
+    <p>You have not provided a USSD yet. Please provide one to have access to the SMS section of the system.</p>
     <?php endif; ?>
 </section>
 
-<?php if(is_array($ssid) && $ssid["status"] == "approve"): ?>
+<?php if(is_array($ussd) && $ussd["status"] == "approve"): ?>
 <section>
     <p class="txt-al-c sm-med-b">Select Group of Recipients</p>
     <div class="flex-all-center w-full flex-wrap btn gap-md">
@@ -100,26 +100,68 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         var specifc = false
         var group = ""
         var individuals = null
-        const ssid = $("input#sms_id").val()
+        const ussd = $("input#sms_id").val()
 
         $("button.change_sms").click(function(){
-            $("button.reset_sms").removeClass("no_disp")
-            $("input#sms_id").prop("readonly",false).focus().select()
+            const change = parseInt($(this).attr("data-change"))
+
+            if(change){
+                if($("input#sms_id").val() === ""){
+                    alert_box("You cannot set an empty sms id", "danger")
+                }else{
+                    $.ajax({
+                        url: "./admin/submit.php",
+                        data: {submit: "add_update_sms", sms_id: $("input#sms_id").val()},
+                        type: "POST",
+                        timeout: 10000,
+                        beforeSend: function(){
+                            $("button.change_sms").html("Updating...").prop("disabled", true)
+                        },
+                        success: function(response){
+                            if(response == "change-complete"){
+                                alert_box("Your USSD was successfully modified", "success")
+                                $("#lhs .item.active").click()
+                            }else{
+                                alert_box(response, "danger", 7)
+                            }
+                            $("button.change_sms").html("Update").prop("disabled", false)
+                        },
+                        error: function(xhr){
+                            let message = ""
+
+                            if(xhr.statusText == "timeout"){
+                                message = "Error communciating with server due to slow network Please check your connection and try again"
+                            }else{
+                                message = xhr.responseText
+                            }
+
+                            alert_box(message, "danger", 6)
+                            $("button.change_sms").prop("disabled",false).attr("data-change","0").html("Update")
+
+                        }
+                    })
+                }
+            }else{
+                $("button.reset_sms").removeClass("no_disp")
+                $("input#sms_id").prop("readonly",false).focus().select()
+            }
+            
         })
 
         $("input#sms_id").keyup(function(){
-            if($(this).val() === ssid){
-                $("button.change_sms").html("Change")
+            if($(this).val() === ussd){
+                $("button.change_sms").html("Change").attr("data-change","0")
             }else{
-                $("button.change_sms").html("Update")
+                $("button.change_sms").html("Update").attr("data-change","1")
                 $("button.reset_sms").removeClass("no_disp")
             }
         })
 
         $("button.reset_sms").click(function(){
             $(this).addClass("no_disp")
-            $("button.change_sms").html("Change")
-            $("input#sms_id").val(ssid).prop("readonly", true)
+            $("button.change_sms").html("Change").prop("disabled", false)
+            $("input#sms_id").val(ussd).prop("readonly", true)
+            $("button.change_sms").attr("data-change","0")
         })
 
         $("button.group:not(.reset)").click(function(){

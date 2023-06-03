@@ -314,7 +314,7 @@
         $result = $connect->query($sql);
 
         if($result->num_rows > 0){
-            $row = $result->fetch_array();
+            $row = $result->fetch_assoc();
 
             return $row;
         }else{

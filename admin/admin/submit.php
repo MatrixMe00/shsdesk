@@ -1570,6 +1570,38 @@
                 echo $_REQUEST["system_message"];
                 unset($_REQUEST["system_message"]);
             }            
+        }elseif($submit == "add_update_sms" || $submit == "add_update_sms_ajax"){
+            $sms_id = $_POST["sms_id"] ?? null;
+
+            if(is_null($sms_id) || empty($sms_id)){
+                $message = "Please provide your school's ssid to proceed";
+            }elseif(strtolower($sms_id) === "not set"){
+                $message = "USSD not provided. Please provide the school's ssid to continue";
+            }elseif(strlen($sms_id) > 11){
+                $message = "Invalid USSD length. Your SSID can take up to 11 characters";
+            }else{
+                try {
+                    $checkUSSD = fetchData1("sms_id","school_ussds","school_id=$user_school_id");
+                    if(!is_array($checkUSSD)){
+                        $sql = "INSERT INTO school_ussds (school_id, sms_id) VALUES (?,?)";
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param("is", $user_school_id, $sms_id);
+                        $message = "USSD could not be added. Please try again later";
+                    }else{
+                        $sql = "UPDATE school_ussds SET sms_id=?, status='pending' WHERE school_id=?";
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param("si", $sms_id, $user_school_id);
+                        $message = "USSD could not be updated. Please try again later";
+                    }
+
+                    if($stmt->execute()){
+                        $message = "change-complete";
+                    }
+                } catch (\Throwable $th) {
+                    $message = $th->getMessage();
+                }
+            }
+            echo $message;
         }
     }else{
         echo "no-submission";

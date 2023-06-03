@@ -423,6 +423,27 @@
             }else{
                 echo "not-found";
             }
+        }elseif($submit == "update_ussd_status" || $submit == "submit_ussd_status_ajax"){
+            $value = $_GET["value"] ?? null;
+            $school_id = $_GET["school_id"] ?? null;
+
+            if(is_null($value) || empty($value)){
+                $message = "Process was stopped since status could not be determined";
+            }elseif(is_null($school_id) || empty($school_id)){
+                $message = "Process was stopped since target school could not be determined";
+            }else{
+                $sql = "UPDATE school_ussds SET status=? WHERE school_id=?";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("si", $value, $school_id);
+
+                if($stmt->execute()){
+                    $message = "update-success";
+                }else{
+                    $message = "There was an error which occured while changing the status. Please try again later";
+                }
+            }
+
+            echo $message;
         }
     }else{
         echo "no-submission";
