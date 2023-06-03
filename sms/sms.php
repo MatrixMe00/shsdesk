@@ -25,7 +25,7 @@ if(isset($_REQUEST['submit'])){
             }
             $text_message .= "This message is to inform you that your ward, ".$student["lastname"]." ".$student["othername"];
             $text_message .= ", has received an ".ucwords($exeat_type)." Exeat to $exeat_town";
-            $senderId = fetchData("smsID","admissiondetails","schoolID= $user_school_id");
+            $senderId = fetchData("sms_id","school_ssids","school_id= $user_school_id");
         }else{
             echo "<script>alert_box('Unrecognized student stored','warning',10)</script>";
             exit(1);
