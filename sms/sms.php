@@ -1,6 +1,7 @@
 <?php
 if(isset($_REQUEST['submit'])){
     $submit = $_REQUEST['submit'];
+    $jsonFormat = true;
 
     // api endpoint
     $endPoint = 'https://webapp.usmsgh.com/api/sms/send';
@@ -31,6 +32,7 @@ if(isset($_REQUEST['submit'])){
             exit(1);
         }
     }elseif($submit == "send_sms" || $submit == "send_sms_ajax"){
+        $jsonFormat = false;
         if($group == "student"){
             if($individuals == "all"){
                 $numbers = fetchData1("guardianContact","students_table","school_id=$user_school_id",0);
@@ -121,16 +123,33 @@ if(isset($_REQUEST['submit'])){
             if($senderId["status"] === "approve")
                 $senderId = $senderId["sms_id"];
             elseif($senderId["status"] === "pending")
-                $_REQUEST["system_message"] = "Your SSID has not been valided yet";
+                $_REQUEST["system_message"] = "Your USSD has not been validated yet";
             else
-                $_REQUEST["system_message"] = "Your SSID was rejected. Please provide a new one and await approval before trying again";
+                $_REQUEST["system_message"] = "Your USSD was rejected. Please provide a new one and await approval before trying again";
         }else{
-            $_REQUEST["system_message"] = "You have not set an SMS SSID yet. Please provide one and await approval before trying again";
+            $_REQUEST["system_message"] = "You have not set an SMS USSD yet. Please provide one and await approval before trying again";
         }
 
         if(!isset($_REQUEST["system_message"]))
         $_REQUEST["system_message"] = implode(", ",$recipients);
         return;
+    }elseif($submit == "addNewTeacher" || $submit == "addNewTeacher_ajax"){
+        $jsonFormat = false;
+        $recipients = [remakeNumber($teacher_phone)];
+        $text_message = "Hello $teacher_lname, your login details are as follow; username: ".formatItemId($teacher_id, "TID").
+            " password: Password@1. Please go to https://www.teacher.shsdesk.com to access your portal";
+        
+        $senderId = fetchData1("sms_id, status","school_ussds", "school_id=$user_school_id");
+        if(is_array($senderId)){
+            if($senderId["status"] === "approve")
+                $senderId = $senderId["sms_id"];
+            elseif($senderId["status"] === "pending")
+                $_REQUEST["system_message"] = "Your USSD has not been validated yet";
+            else
+                $_REQUEST["system_message"] = "Your USSD was rejected. Please provide a new one and await approval before trying again";
+        }else{
+            $_REQUEST["system_message"] = "Teacher could not receive a message because you do not have an sms USSD yet.";
+        }
     }
 
     foreach ($recipients as $key => $value) {
@@ -157,8 +176,10 @@ if(isset($_REQUEST['submit'])){
         if ($e = curl_error($ch)) {
             echo $e;
         } else {
-            $decoded = json_decode($resp, true);
-            echo json_encode($decoded);
+            if($jsonFormat){
+                $decoded = json_decode($resp, true);
+                echo json_encode($decoded);
+            }            
         }
         curl_close($ch);
     }

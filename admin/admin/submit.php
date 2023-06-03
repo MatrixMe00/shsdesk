@@ -1032,6 +1032,9 @@
                     if($stmt->execute()){
                         //insert into login
                         $teacher_id = $stmt->insert_id;
+
+                        include_once("$rootPath/sms/sms.php");
+
                         if(!is_null($teacher_id) && !empty($teacher_id)){
                             $connect2->query("INSERT INTO teacher_login (user_id) VALUES ($teacher_id)");
                             
@@ -1058,7 +1061,7 @@
 
                                                     $stmt->execute();
                                                 }else{
-                                                    $message = $detailsExist["lname"]." already handles ".formatItemId($detailsExist["course_id"],"CID");
+                                                    $message = "Teacher added, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($detailsExist["course_id"],"CID");
                                                 }
 
                                             }else{
@@ -1082,6 +1085,12 @@
                                 $status = true;
                             }else{
                                 $status = false;
+
+                                //display the message 
+                                if(isset($_REQUEST["system_message"])){
+                                    $message .= ' '.$_REQUEST["system_message"];
+                                    unset($_REQUEST["system_message"]);
+                                }
                             }                            
                         }else{
                             $message = "Teacher added, but teacher cannot login. Please contact the administrator for help";
@@ -1351,7 +1360,7 @@
 
                                                         $stmt->execute();
                                                     }else{
-                                                        $message = $detailsExist["lname"]." already handles ".formatItemId($detailsExist["course_id"],"CID");
+                                                        $message = "Teacher data updated, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($detailsExist["course_id"],"CID");
                                                     }
                                                 }else{
                                                     $message = "Class and subject is not properly separated. Process discontinued ".count($part);
