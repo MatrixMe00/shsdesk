@@ -97,7 +97,6 @@
 <script src="assets/scripts/functions.min.js?v=<?php echo time()?>"></script>
 <script src="assets/scripts/chartJS/chart.min.js"></script>
 <script>
-    var chartElement = null;
     /**
      * demo function to generate single random integer
      * @param {number} limit the maximum number random number
@@ -182,89 +181,98 @@
         chartElement = new Chart(document.getElementById('stats'),config);
     }
 
-    $("#subject_table tbody tr:not(.empty)").click(function(){
-        if(!$(this).hasClass("yellow")){
-            let subject = $(this).children("td:nth-child(2)").html()
-            
-            $("tr.yellow").removeClass("yellow")
-            $(this).addClass("yellow")
+    $(document).ready(function(){
+        var chartElement = null;
 
-            let loading = null
-            
-            //data
-            const course_id = $(this).attr("data-course-id")
-            const school_id = $(this).attr("data-school-id")
-            const student_index = $("input#student_index").val()
+        $("#subject_table tbody tr:not(.empty)").click(function(){
+            if(!$(this).hasClass("yellow")){
+                let subject = $(this).children("td:nth-child(2)").html()
+                
+                $("tr.yellow").removeClass("yellow")
+                $(this).addClass("yellow")
 
-            if(parseInt(course_id) > 0){
-                $.ajax({
-                    url: "submit.php",
-                    dataType: "json",
-                    data: {
-                        cid: course_id, sid: school_id, stud_index: student_index, 
-                        submit: "getCourseData"
-                    },
-                    timeout: 8000,
-                    beforeSend: function(){
-                        const appends = [".","..","..."]
-                        let count = 0
+                let loading = null
+                
+                //data
+                const course_id = $(this).attr("data-course-id")
+                const school_id = $(this).attr("data-school-id")
+                const student_index = $("input#student_index").val()
 
-                        loading = setInterval(()=>{
-                            if(count < appends.length){
-                                $("#subject_name").html("Processing" + appends[count])
-                                ++count
-                            }else{
-                                count = 0
-                            }
-                        }, 500)
+                if(parseInt(course_id) > 0){
+                    $.ajax({
+                        url: "submit.php",
+                        dataType: "json",
+                        data: {
+                            cid: course_id, sid: school_id, stud_index: student_index, 
+                            submit: "getCourseData"
+                        },
+                        timeout: 8000,
+                        beforeSend: function(){
+                            chartElement = null
+                            $("canvas#stats").addClass("no_disp")
 
-                        $("#stat_message").addClass("no_disp")
-                    },
-                    success: function(response){
-                        clearInterval(loading)
-                        $("#subject_name").html("")
+                            const appends = [".","..","..."]
+                            let count = 0
 
-                        response = JSON.parse(JSON.stringify(response))
-
-                        if(typeof response["error"]){
-                            if(response["error"] === true){
-                                $("#subject_name").html(": No Data")
-                                $("#stat_message").removeClass("no_disp").html(response["message"])
-                            }else{
-                                $("#subject_name").html(" for " + subject)
-
-                                //generate the graph
-                                if(typeof response["message"][0]["exam_type"] == "string" && response["message"].length > 1){
-                                    generateChart(response["message"])
+                            loading = setInterval(()=>{
+                                if(count < appends.length){
+                                    $("#subject_name").html("Processing" + appends[count])
+                                    ++count
                                 }else{
-                                    generateChart(response["message"], "pie")
+                                    count = 0
                                 }
+                            }, 500)
 
-                                //hide stat message and show chart
-                                $("#stat_message").addClass("no_disp")
-                                $("canvas#stats").removeClass("no_disp")
+                            $("#stat_message").addClass("no_disp")
+                        },
+                        success: function(response){
+                            clearInterval(loading)
+                            $("#subject_name").html("")
+
+                            response = JSON.parse(JSON.stringify(response))
+
+                            if(typeof response["error"]){
+                                if(response["error"] === true){
+                                    $("#subject_name").html(": No Data")
+                                    $("#stat_message").removeClass("no_disp").html(response["message"])
+                                }else{
+                                    $("#subject_name").html(" for " + subject)
+
+                                    //generate the graph
+                                    if(typeof response["message"][0]["exam_type"] == "string" && response["message"].length > 1){
+                                        generateChart(response["message"])
+                                    }else{
+                                        generateChart(response["message"], "pie")
+                                    }
+
+                                    //hide stat message and show chart
+                                    $("#stat_message").addClass("no_disp")
+                                    $("canvas#stats").removeClass("no_disp")
+                                }
+                            }else{
+                                chartElement = null
+                                $("canvas#stats").addClass("no_disp")
+                                $("#stat_message").removeClass("no_disp").html("An invalid reponse was received.")
                             }
-                        }else{
-                            $("#stat_message").removeClass("no_disp").html("An invalid reponse was received.")
-                        }
-                    },
-                    error: function(xhr, textStatus, errorThrown){
-                        clearInterval(loading)
-                        $("#subject_name").html("")
-                        let message = ''
+                        },
+                        error: function(xhr, textStatus, errorThrown){
+                            clearInterval(loading)
+                            $("#subject_name").html("")
+                            let message = ''
 
-                        if(textStatus == "timeout"){
-                            message = "Connection was timed out due to a slow network. Please try again later"
-                        }else{
-                            message = JSON.stringify(xhr)
+                            if(textStatus == "timeout"){
+                                message = "Connection was timed out due to a slow network. Please try again later"
+                            }else{
+                                message = JSON.stringify(xhr)
+                            }
+                            $("#stat_message").removeClass("no_disp").html(message,"danger",8)
                         }
-                        $("#stat_message").removeClass("no_disp").html(message,"danger",8)
-                    }
-                })
-            }else{
-                //abort processing
-                $(this).removeClass("yellow")
+                    })
+                }else{
+                    //abort processing
+                    $(this).removeClass("yellow")
+                }
             }
-        }
+        })
     })
 </script>
