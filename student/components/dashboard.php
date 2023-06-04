@@ -1,5 +1,5 @@
 <?php include_once "compSession.php"; $_SESSION["active-page"] = "dashboard" ?>
-    <h1 class="txt-fl1 d-greeting sp-xlg-lr"><?= showGreeting()." ".$student["Lastname"].", ".generateIndexNumber(5) ?></h1>
+    <h1 class="txt-fl1 d-greeting sp-xlg-lr"><?= showGreeting()." ".$student["Lastname"].", " ?></h1>
         <section class="flex d-section flex-wrap gap-sm p-lg card-section">
             <div class="card v-card gap-lg purple sm-rnd flex-wrap">
                 <span class="self-align-start">Number of Subjects</span>
