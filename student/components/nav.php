@@ -3,12 +3,12 @@
         <div class="logo">
             <img src="" alt="">
         </div>
-        <h1 class="name">
-            School Name
-        </h1>
+        <h2 class="name txt-al-c">
+            <?= getSchoolDetail($student["school_id"])["schoolName"] ?>
+        </h2>
     </div>
     <h3 class="flex-all-center flex-column gap-sm">
-        <span>Student Name</span>
+        <span><?= $student["Lastname"]." ".$student["Othernames"] ?></span>
         <span id="active_access" class="no_disp txt-fs">[ABCD1234 Active]</span>
         <span id="nonactive_access" class="txt-fs">[No access Code]</span>
     </h3>

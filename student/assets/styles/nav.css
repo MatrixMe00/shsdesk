@@ -65,7 +65,8 @@ nav .head .name{
 /* end of nav bar */
 
 @media screen and (max-width: 768px){
-    nav{height: auto; position: sticky; top: -3.5em;}
+    nav{height: auto; position: sticky; top: -3.7em;}
+    .buttons .logout{width: 28.57%}
     /* nav bar */
     .nav_links > .buttons, nav .head{
         position: absolute;
