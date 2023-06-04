@@ -35,18 +35,8 @@
                 $message["error"] = false;
                 $message["message"] = $query->fetch_all(MYSQLI_ASSOC);
             }else{
-                $message["error"] = false;
+                $message["error"] = true;
                 $message["message"] = "Results for this period has not been uploaded yet";
-                $message["message"] = [
-                    array("exam_type" => "exam", "course_name" => "Mathematics", "mark" => rand(20, 85)),
-                    array("exam_type" => "mock", "course_name" => "English Language", "mark" => rand(20, 85)),
-                    array("exam_type" => "exam", "course_name" => "Physics", "mark" => rand(20, 85)),
-                    array("exam_type" => "mock", "course_name" => "Biology", "mark" => rand(20, 85)),
-                    array("exam_type" => "exam", "course_name" => "Chemistry", "mark" => rand(20, 85)),
-                    array("exam_type" => "mock", "course_name" => "Geography", "mark" => rand(20, 85)),
-                    array("exam_type" => "exam", "course_name" => "Economics", "mark" => rand(20, 85)),
-                    array("exam_type" => "mock", "course_name" => "History", "mark" => rand(20, 85))
-                ];
             }            
         }else{
             $message["error"] = true;
@@ -114,7 +104,7 @@
                     $error = false;
                     $message = $results->fetch_all(MYSQLI_ASSOC);
                 }else{
-                    $message = "No results were found. Please speak with your administrator for help.";
+                    $message = "No uploaded results for this subject were found. Please try again another time";
                 }
             } catch (\Throwable $th) {
                 $error = true;
