@@ -135,7 +135,7 @@ if(isset($_REQUEST['submit'])){
         return;
     }elseif($submit == "addNewTeacher" || $submit == "addNewTeacher_ajax"){
         $jsonFormat = false;
-        $recipients = [remakeNumber($teacher_phone)];
+        $recipients = [remakeNumber($teacher_phone, true, false)];
         $text_message = "Hello $teacher_lname, your login details are as follow; username: ".formatItemId($teacher_id, "TID").
             " password: Password@1. Please go to https://www.teacher.shsdesk.com to access your portal";
         
@@ -150,38 +150,52 @@ if(isset($_REQUEST['submit'])){
         }else{
             $_REQUEST["system_message"] = "Teacher could not receive a message because you do not have an sms USSD yet.";
         }
+    }elseif($submit == "make_payment" || $submit == "make_payment_ajax"){
+        if(!is_null($transaction_id) && !empty($transaction_id)){
+            if($status == false){
+                $text_message = "Your transaction was successful but your transaction reference was not stored. Please contact the admins and give them this referece: $transaction_id";
+            }else{
+                $text_message = "Thank you for your purchase. Your access code is $accessToken, and it is valid through to ".date("M d, Y H:i:s",strtotime($expiryDate));
+            }
+            $senderId = "SHSDesk";
+            $recipients = [remakeNumber($phoneNumber, true, false)];
+        }
     }
 
-    foreach ($recipients as $key => $value) {
-        $ch = curl_init();
-        $data = [
-            'recipient' => $value,
-            'sender_id' => $senderId,
-            'message'   => $text_message
-        ];
-    
-        curl_setopt_array($ch, [
-            CURLOPT_URL            => $endPoint,
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => json_encode($data),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER     => [
-                "accept: application/json",
-                "authorization: Bearer " . $apiToken,
-            ],
-        ]);
-    
-        $resp = curl_exec($ch);
-    
-        if ($e = curl_error($ch)) {
-            echo $e;
-        } else {
-            if($jsonFormat){
-                $decoded = json_decode($resp, true);
-                echo json_encode($decoded);
-            }            
-        }
-        curl_close($ch);
+    try {
+        foreach ($recipients as $key => $value) {
+            $ch = curl_init();
+            $data = [
+                'recipient' => $value,
+                'sender_id' => $senderId,
+                'message'   => $text_message
+            ];
+        
+            curl_setopt_array($ch, [
+                CURLOPT_URL            => $endPoint,
+                CURLOPT_POST           => true,
+                CURLOPT_POSTFIELDS     => json_encode($data),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_HTTPHEADER     => [
+                    "accept: application/json",
+                    "authorization: Bearer " . $apiToken,
+                ],
+            ]);
+        
+            $resp = curl_exec($ch);
+        
+            if ($e = curl_error($ch)) {
+                echo $e;
+            } else {
+                if($jsonFormat){
+                    $decoded = json_decode($resp, true);
+                    echo json_encode($decoded);
+                }            
+            }
+            curl_close($ch);
+        }   
+    } catch (\Throwable $th) {
+        $_SESSION["system_message"] = $th->getMessage();
     }
 }else{
     echo "No submission was received";

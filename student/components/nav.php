@@ -9,8 +9,8 @@
     </div>
     <h3 class="flex-all-center flex-column gap-sm">
         <span><?= $student["Lastname"]." ".$student["Othernames"] ?></span>
-        <span id="active_access" class="no_disp txt-fs">[ABCD1234 Active]</span>
-        <span id="nonactive_access" class="txt-fs">[No access Code]</span>
+        <span class="txt-fs"><?php $code = fetchData1("accessToken","accesstable","indexNumber={$student['indexNumber']}"); 
+            echo $code == "empty" ? "[No access Code]" : "[{$code['accessToken']} Active]" ?></span>
     </h3>
     <div class="nav_links">
         <div id="ham">

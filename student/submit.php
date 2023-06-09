@@ -121,5 +121,72 @@
 
         header("Content-Type: application/json");
         echo json_encode($return);
+    }elseif($submit == "make_payment" || $submit == "make_payment_ajax"){
+        $indexNumber = $_POST["indexNumber"] ?? null;
+        $lname = $_POST["lname"] ?? null;
+        $oname = $_POST["oname"] ?? null;
+        $email = $_POST["email"] ?? null;
+        $phoneNumber = $_POST["phoneNumber"] ?? null;
+        $price = $_POST["price"] ?? null;
+        $school_id = $student["school_id"] ?? null;
+        $transaction_id = $_POST["transaction_id"];
+
+        if(is_null($indexNumber) || empty($indexNumber)){
+            $message = "Please provide an index number";
+        }elseif(is_null($lname) || empty($lname)){
+            $message = "Please provide your lastname";
+        }elseif(is_null($oname) || empty($oname)){
+            $message = "Please provide your thername(s)";
+        }elseif(is_null($email) || empty($email)){
+            $message = "Please provide your email";
+        }elseif(is_null($phoneNumber) || empty($phoneNumber)){
+            $message = "No phone number provided";
+        }elseif(is_null($school_id) || empty($school_id)){
+            $message = "Your school was not defined. Please refresh the page and try again";
+        }elseif(strlen($phoneNumber) != 10){
+            $message = "Phone number provided is of invalid length. Please provide a 10 digit number";
+        }elseif(is_null($price) || empty($price)){
+            $message = "Price has not been provided or set";
+        }else{
+            $purchaseDate = date("Y-m-d H:i:s");
+            $expiryDate = date("Y-m-d 23:59:59",strtotime($purchaseDate." +4 months +1 day"));
+            $price = floatval(explode(" ",$price)[1]);
+            $deduction = number_format($price * (1.95/100), 2);
+            $price -= $deduction;
+
+            $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email) VALUES (?,?,?,?,?,?)";
+            $stmt = $connect2->prepare($sql);
+            $stmt->bind_param("siddss", $transaction_id, $school_id, $price, $deduction, $phoneNumber, $email);
+
+            if($stmt->execute()){
+                do{
+                    $accessToken = generateToken(rand(1,9), $school_id);
+                }while(is_array(fetchData1("accessToken","accesstable","accessToken='$accessToken'")));
+
+                $sql = "INSERT INTO accesstable(indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("ssisss", $indexNumber, $accessToken, $school_id, $purchaseDate, $expiryDate, $transaction_id);
+
+                if($stmt->execute()){
+                    $status = true;
+                    $message = "success";
+                }else{
+                    $status = false;
+                    $message = "Student token was not captured appropriately. Token ID is <b>$accessToken</b>";
+                }
+            }else{
+                $status = false;
+                $message = "Transaction was processed but not stored. Transaction Reference is <b>$transaction_id</b>";
+            }
+
+            include_once("../sms/sms.php");
+
+            if(isset($_SESSION["system_message"]) && $_SESSION["system_message"] != ""){
+                $message = "Details were successful but an sms could not be sent. SMS Error: {$_SESSION['system_message']}";
+            }
+            echo $message;
+        }
+    }else{
+        echo "No submission detail";
     }
 ?>

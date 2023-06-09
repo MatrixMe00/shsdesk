@@ -97,90 +97,6 @@
 <script src="assets/scripts/functions.min.js?v=<?php echo time()?>"></script>
 <script src="assets/scripts/chartJS/chart.min.js"></script>
 <script>
-    /**
-     * demo function to generate single random integer
-     * @param {number} limit the maximum number random number
-     * @returns {number} an integer
-     */
-    function generateRandomInteger(limit = 100, minimum = 0){
-        const returnValue = (parseInt((Math.random() * limit)) % limit) + minimum
-        return returnValue > limit ? limit : returnValue
-    }
-    /**
-     * Demo function for a random data
-     * @param {number} dataCount number of numbers to generate
-     * @param {number} minimum minimum score value
-     * @param {number} maximum maximum score value
-     * @returns random data
-     */
-    function randomData(dataCount, minimum =  0, maximum = 100) {
-        var numbers = []
-
-        while(dataCount-- > 0){
-            var number = -1
-            do{
-                number = generateRandomInteger(maximum)
-            }while(number < minimum)
-            
-            numbers.push(number)
-        }
-
-        return numbers
-    }
-
-    /**
-     * This function is used to bind a year and semester level
-     * @param {string|int} year This is the year value
-     * @param {string |int} term This is the term value
-     * @returns {string} the year and term combination
-     */
-    function yearBind(year, term){
-        return "Year" + year + " T" + term
-    }
-
-    /**
-     * This function will be used to generate a graph
-     * @param {array} arrayData This is the data array to be executed
-     * @param {string} chartType This receives the type of chart to be created
-     * 
-     * @returns a new chart
-     */
-    function generateChart(arrayData, chartType="line"){
-        const chart_type = chartType
-        var graph_colors = selectChartColors(chart_type, 5)
-        var chartLabels = []
-        var chartData = []
-
-        //for testing
-        // var min = generateRandomInteger(50); var max = generateRandomInteger(100, (min+1))
-        // chartLabels = ['Year1 T1', 'Year1 T2', 'Year2 T1', 'Year2 T2', 'Year3 T1']
-        // chartData = randomData(5, min, max)
-        
-        for(var i = 0; i < arrayData.length; i++){
-            chartLabels.push(yearBind(arrayData[i]["exam_year"], arrayData[i]["semester"]))
-            chartData.push(arrayData[i]["mark"])
-        }
-
-        var config = {
-            type: chart_type,
-            data: {
-                labels: chartLabels,
-                datasets: [{
-                    label: 'Subjects',
-                    backgroundColor: graph_colors,
-                    borderColor: graph_colors,
-                    data: chartData
-                }]
-            },
-            options: {}
-        }
-
-        if(chartElement != null){
-            chartElement.destroy()
-        }
-        chartElement = new Chart(document.getElementById('stats'),config);
-    }
-
     $(document).ready(function(){
         var chartElement = null;
 
@@ -231,7 +147,7 @@
 
                             response = JSON.parse(JSON.stringify(response))
 
-                            if(typeof response["error"]){
+                            if(typeof response["error"] == "boolean"){
                                 if(response["error"] === true){
                                     $("#subject_name").html(": No Data")
                                     $("#stat_message").removeClass("no_disp").html(response["message"])
@@ -274,5 +190,89 @@
                 }
             }
         })
+
+        /**
+         * demo function to generate single random integer
+         * @param {number} limit the maximum number random number
+         * @returns {number} an integer
+         */
+        function generateRandomInteger(limit = 100, minimum = 0){
+            const returnValue = (parseInt((Math.random() * limit)) % limit) + minimum
+            return returnValue > limit ? limit : returnValue
+        }
+        /**
+         * Demo function for a random data
+         * @param {number} dataCount number of numbers to generate
+         * @param {number} minimum minimum score value
+         * @param {number} maximum maximum score value
+         * @returns random data
+         */
+        function randomData(dataCount, minimum =  0, maximum = 100) {
+            var numbers = []
+
+            while(dataCount-- > 0){
+                var number = -1
+                do{
+                    number = generateRandomInteger(maximum)
+                }while(number < minimum)
+                
+                numbers.push(number)
+            }
+
+            return numbers
+        }
+
+        /**
+         * This function is used to bind a year and semester level
+         * @param {string|int} year This is the year value
+         * @param {string |int} term This is the term value
+         * @returns {string} the year and term combination
+         */
+        function yearBind(year, term){
+            return "Year" + year + " T" + term
+        }
+
+        /**
+         * This function will be used to generate a graph
+         * @param {array} arrayData This is the data array to be executed
+         * @param {string} chartType This receives the type of chart to be created
+         * 
+         * @returns a new chart
+         */
+        function generateChart(arrayData, chartType="line"){
+            const chart_type = chartType
+            var graph_colors = selectChartColors(chart_type, 5)
+            var chartLabels = []
+            var chartData = []
+
+            //for testing
+            // var min = generateRandomInteger(50); var max = generateRandomInteger(100, (min+1))
+            // chartLabels = ['Year1 T1', 'Year1 T2', 'Year2 T1', 'Year2 T2', 'Year3 T1']
+            // chartData = randomData(5, min, max)
+            
+            for(var i = 0; i < arrayData.length; i++){
+                chartLabels.push(yearBind(arrayData[i]["exam_year"], arrayData[i]["semester"]))
+                chartData.push(arrayData[i]["mark"])
+            }
+
+            var config = {
+                type: chart_type,
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Subjects',
+                        backgroundColor: graph_colors,
+                        borderColor: graph_colors,
+                        data: chartData
+                    }]
+                },
+                options: {}
+            }
+
+            if(chartElement != null){
+                chartElement.destroy()
+            }
+            chartElement = new Chart(document.getElementById('stats'),config);
+        }
     })
 </script>
