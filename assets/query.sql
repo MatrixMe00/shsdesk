@@ -1,9 +1,11 @@
 CREATE TABLE `accesstable` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `indexNumber` varchar(16) NOT NULL,
- `phoneNumber` varchar(16) NOT NULL,
+ `accessToken` varchar(10) NOT NULL,
+ `school_id` int(11) NOT NULL,
  `datePurchased` datetime NOT NULL,
  `expiryDate` datetime NOT NULL,
+ `transactionID` varchar(20) NOT NULL,
  `status` tinyint(1) NOT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -123,11 +125,12 @@ CREATE TABLE `teachers` (
 
 CREATE TABLE `teacher_classes` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
+ `school_id` int(11) NOT NULL,
  `teacher_id` int(11) NOT NULL,
  `program_id` int(11) NOT NULL,
  `course_id` int(11) NOT NULL,
  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `teacher_login` (
  `user_id` int(11) NOT NULL,
@@ -142,4 +145,13 @@ CREATE TABLE `school_ussds` (
  `status` enum('pending','reject','approve') NOT NULL DEFAULT 'pending',
  PRIMARY KEY (`school_id`),
  UNIQUE KEY `sms_id` (`sms_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `transaction` (
+ `transactionID` int(11) NOT NULL,
+ `school_id` int(11) NOT NULL,
+ `price` decimal(10,2) NOT NULL,
+ `deduction` decimal(10,2) NOT NULL,
+ `phoneNumber` char(10) NOT NULL,
+ `email` varchar(60) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

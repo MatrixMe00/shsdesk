@@ -1053,7 +1053,7 @@
                                                 $cid = $part[1];
 
                                                 // sql syntax would go here
-                                                $detailsExist = fetchData1("COUNT(c.teacher_id) as total, c.course_id, t.lname","teacher_classes c JOIN teachers t ON t.teacher_id=c.teacher_id","c.school_id=$user_school_id AND c.program_id=$pid AND c.course_id=$cid");
+                                                $detailsExist = fetchData1("COUNT(teacher_id) AS total","teacher_classes", "school_id=$user_school_id AND program_id=$pid AND course_id=$cid");
                                                 if(intval($detailsExist["total"]) < 1){
                                                     $sql = "INSERT INTO teacher_classes (school_id, teacher_id, program_id, course_id) VALUES (?,?,?,?)";
                                                     $stmt = $connect2->prepare($sql);
@@ -1061,7 +1061,8 @@
 
                                                     $stmt->execute();
                                                 }else{
-                                                    $message = "Teacher added, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($detailsExist["course_id"],"CID");
+                                                    $detailsExist = fetchData1("t.lname, tc.course_id","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.course_id=$cid AND tc.program_id=$pid");
+                                                    $message = "Teacher added, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($detailsExist["course_id"],"SID");
                                                 }
 
                                             }else{
