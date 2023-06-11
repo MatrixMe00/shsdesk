@@ -9,7 +9,7 @@
     </div>
     <h3 class="flex-all-center flex-column gap-sm">
         <span><?= $student["Lastname"]." ".$student["Othernames"] ?></span>
-        <span class="txt-fs"><?php $code = fetchData1("accessToken","accesstable","indexNumber={$student['indexNumber']}"); 
+        <span class="txt-fs"><?php $code = fetchData1("accessToken","accesstable","indexNumber='{$student['indexNumber']}' AND status=1 ORDER BY expiryDate DESC"); 
             echo $code == "empty" ? "[No access Code]" : "[{$code['accessToken']} Active]" ?></span>
     </h3>
     <div class="nav_links">
@@ -30,10 +30,12 @@
                 data-active="subject">
                 <span>My Subjects</span>
             </div>
+            <?php if($code !== "empty"): ?>
             <div id="my_report" data-href="<?= "$url/components/report.php" ?>" class="tab" data-document-title="<?= $student["Lastname"] ?> Reports"
                 data-active="report">
                 <span>My Reports</span>
             </div>
+            <?php endif; ?>
             <div data-href="<?= "$url/components/accessCode.php" ?>" class="tab" data-document-title="Get Access Code" data-active="code">
                 <span>Get Access Code</span>
             </div>
