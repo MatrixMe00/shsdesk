@@ -14,7 +14,7 @@
         $res = $connect->query($sql);
 
         if($res->num_rows > 0){
-            $row = $res->fetch_array();
+            $row = $res->fetch_assoc();
         }else{
             $row = "error";
         }
