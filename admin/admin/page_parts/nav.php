@@ -131,6 +131,17 @@
                 "menu_class" => "",
                 "display_title" => "SMS Messaging",
                 "admin_mode" => "records"
+            ],
+            [
+                "item_class"=> "",
+                "name" => "access",
+                "title" => "Access Code",
+                "data-url" => "/admin/admin/page_parts/accessCode.php",
+                "imgSrc" => "/assets/images/icons/code-outline.svg",
+                "imgAlt" => "accesscode",
+                "menu_class" => "",
+                "display_title" => "Access Code",
+                "admin_mode" => "records"
             ]
         ],
         "Admission_and_Exeat" => [

@@ -3,6 +3,9 @@
 
     if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != NULL){
         $submit = $_REQUEST["submit"];
+        $phoneNumbers = [
+            "024","054","055","025", "020", "050", "027", "057", "026", "056"
+        ];
 
         if($submit == "new_user_update" || $submit == "new_user_update_ajax"){
             $new_username = strip_tags(stripslashes($_REQUEST["new_username"]));
@@ -472,7 +475,6 @@
             }
 
             echo $message;
-            
         }elseif($submit == "fetchHouseDetails"){
             $id = $_REQUEST["id"];
             $result = fetchData("*","houses","id=$id");
@@ -637,8 +639,7 @@
                             <span class=\"item-event edit\">Edit</span>
                             <span class=\"item-event delete\">Delete</span>
                         </td>
-                    </tr>
-    ";
+                    </tr>";
                     }
                 }else{
                     $table_data = "no-result";
@@ -1015,8 +1016,10 @@
                 $message = "Please select the gender of the teacher";
             }elseif(empty($teacher_phone) || is_null($teacher_phone)){
                 $message = "Please provide a phone number";
-            }elseif(strlen($teacher_phone) < 10){
-                $message = "Please enter a valid phone number";
+            }elseif(strlen($teacher_phone) != 10){
+                $message = "Please enter a valid 10 digit phone number";
+            }elseif(array_search(substr($teacher_phone, 0, 3), $phoneNumbers) === false){
+                $message = "Mobile network could not be detected. Please make sure your phone number is valid";
             }elseif(empty($teacher_email) || is_null($teacher_email)){
                 $message = "Please provide an email";
             }elseif(empty($course_ids) || is_null($course_ids)){
@@ -1319,8 +1322,10 @@
                 $message = "Please select the gender of the teacher";
             }elseif(empty($teacher_phone)){
                 $message = "Please provide a phone number";
-            }elseif(strlen($teacher_phone) < 10){
-                $message = "Please enter a valid phone number";
+            }elseif(strlen($teacher_phone) != 10){
+                $message = "Please enter a valid 10 digit phone number";
+            }elseif(array_search(substr($teacher_phone, 0, 3), $phoneNumbers) === false){
+                $message = "Mobile network could not be detected. Please make sure your phone number is valid";
             }elseif(empty($teacher_email)){
                 $message = "Please provide an email";
             }elseif(empty($course_ids)){
@@ -1611,6 +1616,216 @@
                     $message = $th->getMessage();
                 }
             }
+            echo $message;
+        }elseif($submit == "search_name" || $submit == "search_name_ajax"){
+            $keyword = $_GET["keyword"] ?? null;
+            
+            if(is_null($keyword) || empty($keyword)){
+                $status = false; $message = "";
+            }else{
+                $sql = "SELECT Lastname, Othernames, indexNumber FROM students_table WHERE school_id = $user_school_id AND (Lastname LIKE '%$keyword%' OR Othernames LIKE '%$keyword%')";
+                $result = $connect2->query($sql);
+
+                if($result->num_rows > 0){
+                    $status = true;
+                    $message = array();
+
+                    while($row = $result->fetch_assoc()){
+                        array_push($message, $row);
+                    }
+                }else{
+                    $status = true; $message = "no-result";
+                }
+            }
+
+            header("Content-Type: application/json");
+            echo json_encode(["status"=> $status ?? false, "message"=> $message ?? ""]);
+        }elseif($submit == "access_payment" || $submit == "access_payment_ajax"){
+            $transaction_id = $_POST["transaction_id"] ?? null;
+            $phone = $_POST["phone"] ?? null;
+            $email = $_POST["email"] ?? null;
+            $amount = $_POST["amount"] ?? null;
+            $recipients = $_POST["recipients"] ?? null;
+
+            if(is_null($transaction_id) || empty($transaction_id)){
+                $message = "Your transaction reference has not been captured. Process stopped but payment was completed";
+            }elseif(is_null($phone) || empty($phone)){
+                $message = "No phone number presented";
+            }elseif(strlen($phone) != 10){
+                $message = "Invalid phone number length provided. Please provide a valid phone number";
+            }elseif(array_search(substr($phone, 0, 3), $phoneNumbers) === false){
+                $message = "Network operator defined is invalid. Please make sure your number is correct";
+            }elseif(is_null($email) || empty($email)){
+                $message = "Email has not been provided";
+            }elseif(is_null($amount) || empty($amount)){
+                $message = "No amount has been provided";
+            }elseif(floatval($amount) < 0.00){
+                $message = "Invalid amount parsed through. Please provide an amount greater than GHC 0";
+            }elseif(is_null($recipients) || empty($recipients)){
+                $message = "No recipient provided. Please provide the people you are making payment for";
+            }elseif(intval($recipients) && intval($recipients) === 0){
+                $message = "Invalid recipient index provided. Please make sure you have selected a button";
+            }else{
+                $datePurchased = date("Y-m-d H:i:s");
+                $expiryDate = date("Y-m-d 23:59:59",strtotime($datePurchased." +4 months +1 day"));
+                $deduction = number_format($amount * (1.95/100), 2);
+                $amount -= $deduction;
+
+                //insert into transaction table
+                $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email) VALUES (?,?,?,?,?,?)";
+                $insert_stmt = $connect2->prepare($sql);
+                $insert_stmt->bind_param("siddss",$transaction_id, $user_school_id, $amount, $deduction, $phone, $email);
+                
+                if($insert_stmt->execute()){
+                    $transaction_insert = true;
+                }else{
+                    $transaction_insert = false;
+                }
+
+                if((intval($recipients) !== false && intval($recipients) <= 3) || strtolower($recipients) == "all"){
+                    if(strtolower($recipients) == "all"){
+                        $sql = "SELECT indexNumber FROM students_table WHERE school_id=$user_school_id";
+                    }else{
+                        $sql = "SELECT indexNumber FROM students_table WHERE school_id=$user_school_id AND studentYear=$recipients";
+                    }
+                    $query = $connect2->query($sql);
+
+                    if($query->num_rows > 0){
+                        $total = 0;
+                        $fail = 0;
+                        while($row = $query->fetch_assoc()){
+                            //insert individual data where the need be
+                            $isFound = fetchData1("indexNumber, expiryDate","accesstable","indexNumber='{$row['indexNumber']}' ORDER BY datePurchased DESC");
+                            $insertData = false;
+                            if(is_array($isFound)){
+                                if($datePurchased > date("Y-m-d H:i:s", strtotime($isFound["expiryDate"]))){
+                                    $insertData = true;
+                                }
+                            }else{
+                                $insertData = true;
+                            }
+
+                            if($insertData === true){
+                                do{
+                                    $accessToken = generateToken(rand(1,9), $user_school_id);
+                                }while(is_array(fetchData1("accessToken","accesstable","accessToken='$accessToken'")));
+                                $sql = "INSERT INTO accesstable (indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
+                                $stmt = $connect2->prepare($sql);
+                                $stmt->bind_param("ssisss",$row["indexNumber"], $accessToken, $user_school_id, $datePurchased,$expiryDate, $transaction_id);
+
+                                if($stmt->execute()){
+                                    $total++;
+                                }else{
+                                    $fail++;
+                                }
+                                $message = "success";
+                            }else{
+                                continue;
+                            }
+                        }
+                    }
+                }elseif(strpos($recipients, ",") !== false){
+                    //check if there is a space after the comma separators
+                    $offset = 0;
+
+                    while($pos = strpos($recipients, ",", $offset)){
+                        if(strpos($recipients, ", ", $offset) === false){
+                            $message = "Please make sure there is a comma and a space after the name of the comma to separate different individual ids";
+                            break;
+                        }
+
+                        $offset = $pos + 1;
+                    }
+
+                    $total = 0;
+                    $fail = 0;
+
+                    $recipients = explode(", ", $recipients);
+                    foreach($recipients as $recipient){
+                        //insert individual data where the need be
+                        $isFound = fetchData1("indexNumber, expiryDate","accesstable","indexNumber='$recipient' ORDER BY datePurchased DESC");
+                        $insertData = false;
+                        if(is_array($isFound)){
+                            if($datePurchased > date("Y-m-d H:i:s", strtotime($isFound["expiryDate"]))){
+                                $insertData = true;
+                            }
+                        }else{
+                            $insertData = true;
+                        }
+
+                        if($insertData === true){
+                            do{
+                                $accessToken = generateToken(rand(1,9), $user_school_id);
+                            }while(is_array(fetchData1("accessToken","accesstable","accessToken='$accessToken'")));
+                            $sql = "INSERT INTO accesstable (indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
+                            $stmt = $connect2->prepare($sql);
+                            $stmt->bind_param("ssisss",$recipient, $accessToken, $user_school_id, $datePurchased,$expiryDate, $transaction_id);
+
+                            if($stmt->execute()){
+                                $total++;
+                            }else{
+                                $fail++;
+                            }
+                            $message = "success";
+                        }else{
+                            continue;
+                        }
+                    }
+                }
+            }
+            $response = [
+                "message" => $message ?? "No entry was made",
+                "success" => $total,
+                "fail" => $fail,
+                "trans_insert" => $transaction_insert
+            ];
+
+            header("Content-Type: application/json");
+
+            echo json_encode($response);
+        }elseif($submit == "access_check" || $submit == "access_check_ajax"){
+            $fullname = $_REQUEST["fullname"] ?? null;
+            $phone = $_REQUEST["phone"] ?? null;
+            $email = $_REQUEST["email"] ?? null;
+            $amount = $_REQUEST["amount"] ?? null;
+            $recipients = $_REQUEST["recipients"] ?? null;
+
+            if(is_null($fullname) || empty($fullname)){
+                $message = "Your fullname has not been specified";
+            }elseif(is_null($phone) || empty($phone)){
+                $message = "No phone number presented";
+            }elseif(strlen($phone) != 10){
+                $message = "Invalid phone number length provided. Please provide a valid phone number";
+            }elseif(array_search(substr($phone, 0, 3), $phoneNumbers) === false){
+                $message = "Network operator defined is invalid. Please make sure your number is correct";
+            }elseif(is_null($email) || empty($email)){
+                $message = "Email has not been provided";
+            }elseif(is_null($amount) || empty($amount)){
+                $message = "No amount has been provided";
+            }elseif(floatval($amount) < 0.00){
+                $message = "Invalid amount parsed through. Please provide an amount greater than GHC 0";
+            }elseif(is_null($recipients) || empty($recipients)){
+                $message = "No recipient provided. Please provide the people you are making payment for";
+            }elseif(intval($recipients) && intval($recipients) === 0){
+                $message = "Invalid recipient index provided. Please make sure you have selected a button | $recipients";
+            }elseif(strpos($recipients, ",") !== false){
+                //check if there is a space after the comma separators
+                $offset = 0;
+
+                while($pos = strpos($recipients, ",", $offset)){
+                    if(strpos($recipients, ", ", $offset) === false){
+                        $message = "Please make sure there is a comma and a space after the name of the comma to separate different individuals";
+                        break;
+                    }else{
+                        $message = "success";
+                    }
+
+                    $offset = $pos + 1;
+                }
+            }else{
+                $message = "success";
+            }
+
             echo $message;
         }
     }else{
