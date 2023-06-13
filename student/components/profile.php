@@ -16,7 +16,7 @@
     </div>
     <div id="rhs" class="lt-shade">
         <h1>Edit Profile</h1>
-        <form action="<?= $url ?>/submit.php" method="POST" class="flex flex-column gap-sm">
+        <form action="<?= $url ?>/submit.php" method="POST" class="flex flex-column gap-sm" name="profileForm">
             <div class="joint gap-sm">
                 <label for="lname" class="flex flex-column">
                     <span class="label_title">Lastname</span>
@@ -53,31 +53,42 @@
             <div class="joint gap-sm">
                 <label for="email" class="flex flex-column">
                     <span class="label_title">Email [optional]</span>
-                    <input type="email" name="email" id="email" placeholder="Email" id="email">
+                    <input type="email" name="email" id="email" placeholder="Email" id="email" value="<?= $student["Email"] ?>">
                 </label>
-                <label for="password" class="flex flex-column">
-                    <span class="label_title">Password</span>
-                    <input type="password" name="password" id="password" placeholder="Password">
+                <label for="username" class="flex flex-column">
+                    <span class="label_title">Username [optional]</span>
+                    <input type="text" name="username" id="username" placeholder="Username" value="<?= $student["username"] ?>">
+                </label>
+                <label for="password_o" class="flex flex-column">
+                    <span class="label_title">Current Password</span>
+                    <input type="password" name="password_o" id="password_o" placeholder="Current Password">
+                </label>
+                <label for="password_n" class="flex flex-column">
+                    <span class="label_title">New Password</span>
+                    <input type="password" name="password_n" id="password_n" placeholder="New Password">
                 </label>
                 <label for="primary_contact" class="flex flex-column">
                     <span class="label_title">Contact of Guardian</span>
-                    <input type="tel" name="primary_contact" id="primary_contact" placeholder="Guardian Phone Number" value="<?= $student["guardianContact"] ?>">
-                </label>
-                <label for="secondary_contact" class="flex flex-column">
-                    <span class="label_title">Contact of Guardian 2 [optional]</span>
-                    <input type="tel" name="secondary_contact" id="secondary_contact" placeholder="Guardian Phone Number 2">
+                    <input type="tel" name="primary_contact" id="primary_contact" placeholder="Guardian Phone Number" value="<?= remakeNumber($student["guardianContact"], false, false) ?>"
+                        minlength="10" maxlength="10">
                 </label>
             </div>
             <div class="btn w-full sm-unset-lr sm-xlg-t">
-                <button class="primary sp-lg w-full">Update</button>
+                <button class="primary sp-lg w-full" name="submit" value="update_profile">Update</button>
             </div>
         </form>
     </div>
 </section>
 
 <script>
-    $("form").submit(function(e){
+    $("form").submit(async function(e){
         e.preventDefault()
-        alert($(this).serialize())
+        const response = await formSubmit($(this), $(this).find("button[name=submit]"), false)
+        if(response === true){
+            alert_box("Changes have been effected")
+            $("#lhs .item.active").click()
+        }else{
+            alert_box(response, "danger", 5)
+        }
     })
 </script>

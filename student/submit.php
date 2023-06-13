@@ -2,6 +2,9 @@
     include_once("../includes/session.php");
 
     $submit = $_REQUEST["submit"];
+    $phoneNumbers = [
+        "023", "024","054","055","025", "059", "020", "050", "027", "057", "026", "056"
+    ];
 
     if($submit === "report_search" || $submit === "stat_search" || $submit === "report_search_ajax" || $submit === "stat_search_ajax"){
         @$report_year = $_GET["report_year"];
@@ -186,6 +189,65 @@
             }
             echo $message;
         }
+    }elseif($submit == "update_profile" || $submit == "update_profile_ajax"){
+        $lname = $_POST["lname"] ?? null;
+        $oname = $_POST["oname"] ?? null;
+        $indexNumber = $_POST["indexNumber"] ?? null;
+        $programme = $_POST["programme"] ?? null;
+        $residence = $_POST["residence"] ?? null;
+        $email = $_POST["email"] ?? null;
+        $password_o = $_POST["password_o"] ?? null;
+        $password_n = $_POST["password_n"] ?? null;
+        $primary_contact = $_POST["primary_contact"] ?? null;
+        $username = $_POST["username"] ?? null;
+
+        if(is_null($lname) || empty($lname)){
+            $message = "Please provide your last name";
+        }elseif(is_null($oname) || empty($oname)){
+            $message = "Please provude at least your first name";
+        }elseif(is_null($indexNumber) || empty($indexNumber)){
+            $message = "Please provide your index number";
+        }elseif(is_null($programme) || empty($programme)){
+            $message = "Your programme has not been set. Please do";
+        }elseif(is_null($residence) || empty($residence)){
+            $message = "Your place of residence cannot be empty";
+        }elseif((is_null($password_o) || empty($password_o)) && md5("Password@1") == $student["password"]){
+            $message = "Please change your current password";
+        }elseif(is_null($primary_contact) || empty($primary_contact)){
+            $message = "Please provide the contact number for your guardian";
+        }elseif(strlen(remakeNumber($primary_contact, false, false)) != 10){
+            $message = "Invalid Phone number provided";
+        }elseif(array_search(substr($primary_contact, 0, 3), $phoneNumbers) === false){
+            $message = "Network operator defined is invalid. Please make sure your number is correct";
+        }else{
+            if((!is_null($password_o) && !empty($password_o)) || (!is_null($password_n) && !empty($password_n))){
+                if(is_null($password_n) || empty($password_n)){
+                    $message = "Please provide your new password";
+                }elseif(MD5($password_o) !== $student["password"]){
+                    $message = "Your old password is incorrect";
+                }elseif(MD5($password_n) === $student["password"]){
+                    $message = "You cannot use your current password as a new password";
+                }else{
+                    $password_n = md5($password_n);
+                }
+            }else{
+                $password_n = $student["password"];
+            }
+
+            if(empty($message)){
+                $primary_contact = remakeNumber($primary_contact, false, false);
+                $sql = "UPDATE students_table SET Email=?,username=?,password=?, guardianContact=? WHERE indexNumber=?";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("sssss",$email, $username, $password_n, $primary_contact, $indexNumber);
+                if($stmt->execute()){
+                    $message = "success";
+                }else{
+                    $message = "An error occured when updating";
+                }
+            }
+        }
+
+        echo $message;
     }else{
         echo "No submission detail";
     }
