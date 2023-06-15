@@ -14,9 +14,9 @@
     //retrieve programs
     $programs = fetchData1("*","program","school_id=$user_school_id", 0);
     $resultPending = fetchData1(
-        "r.result_token, r.submission_date, t.lname, t.oname, p.program_name, p.short_form",
+        "r.result_token, r.submission_date, t.lname, t.oname, p.program_name, p.short_form, c.course_name, c.short_form as short_form_c",
         "recordapproval r JOIN program p ON p.program_id = r.program_id
-        JOIN teachers t ON t.teacher_id = r.teacher_id",
+        JOIN teachers t ON t.teacher_id = r.teacher_id JOIN courses c ON c.course_id=r.course_id",
         "r.school_id=$user_school_id AND r.result_status='pending' ORDER BY r.submission_date DESC", 0
     );
     $resultAttended = fetchData1(
@@ -103,14 +103,16 @@
         <thead>
             <td>No.</td>
             <td>Class</td>
+            <td>Subject</td>
             <td>Teacher</td>
             <td>Submission Date</td>
         </thead>
         <tbody>
-        <?php for($counter = 0; $counter < (isset($resultPending[0]) ? count($resultPending) : 1); $counter++) : $result = isset($resultPending[0]) ? $resultPending[$counter] : $resultPending ?>
+        <?php for($counter = 0; $counter < (array_key_exists(0,$resultPending) ? count($resultPending) : 1); $counter++) : $result = array_key_exists(0,$resultPending) ? $resultPending[$counter] : $resultPending ?>
             <tr>
                 <td><?= ($counter + 1) ?></td>
-                <td><?= is_null($result["short_form"]) ? $result["program_name"] : $result["short_form"] ?></td>
+                <td><?= empty($result["short_form"]) ? $result["program_name"] : $result["short_form"] ?></td>
+                <td><?= empty($result["short_form_c"]) ? $result["course_name"] : $result["short_form_c"] ?></td>
                 <td><?= $result["lname"]." ".$result["oname"] ?></td>
                 <td><?= date("M d, Y H:i:s", strtotime($result["submission_date"])) ?></td>
                 <td>
@@ -118,7 +120,7 @@
                     <span class="item-event reject" data-item-id="<?= $result["result_token"] ?>">Reject</span>
                 </td>
             </tr>
-            <?php $counter++; endfor; ?>
+            <?php endfor; ?>
         </tbody>
         <tfoot>
             <td colspan="5" class="res_stat">Status: </td>
