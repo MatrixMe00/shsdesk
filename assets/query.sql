@@ -78,6 +78,7 @@ CREATE TABLE `results` (
  `indexNumber` varchar(16) NOT NULL,
  `school_id` int(11) NOT NULL,
  `course_id` int(11) NOT NULL,
+ `program_id` int(11) NOT NULL,
  `exam_type` enum('Test','Exam','Mock') NOT NULL,
  `class_mark` decimal(10,2) NOT NULL DEFAULT 0.00,
  `exam_mark` decimal(10,2) NOT NULL DEFAULT 0.00,
@@ -89,7 +90,7 @@ CREATE TABLE `results` (
  `accept_status` tinyint(1) NOT NULL DEFAULT 0,
  `date` datetime NOT NULL,
  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `students_table` (
  `indexNumber` varchar(25) NOT NULL,
