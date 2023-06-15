@@ -692,3 +692,69 @@ function formatItemId(subject_id, prefix, reverse = false) {
   
     return subject_id;
 }
+
+/**
+ * This function is used to bind a year and semester level
+ * @param {string|int} year This is the year value
+ * @param {string |int} term This is the term value
+ * @returns {string} the year and term combination
+ */
+function yearBind(year, term){
+    return "Year" + year + " S" + term
+}
+
+/**
+ * This function will be used to generate a graph
+ * @param {array} arrayData This is the data array to be executed
+ * @param {string} chartType This receives the type of chart to be created
+ * @param {string} mainLabel This is the label for the chart
+ * @param {string} chartID This is the id of the canvas element
+ * 
+ * @returns a new chart
+ */
+function generateChart(chartElement, {arrayData, chartID, chartType = "line", mainLabel = "Subjects", isMarks = true}) {
+    const chart_type = chartType;
+    var graph_colors = selectChartColors(chart_type, 5);
+    var chartLabels = [];
+    var chartData = [];
+  
+    if (isMarks) {
+      for (var i = 0; i < arrayData.length; i++) {
+        chartLabels.push(yearBind(arrayData[i]["exam_year"], arrayData[i]["semester"]));
+        chartData.push(arrayData[i]["mark"]);
+      }
+    } else {
+      chartData = ["Data Label"];
+    }
+  
+    var config = {
+      type: chart_type,
+      data: {
+        labels: chartLabels,
+        datasets: [
+          {
+            label: mainLabel,
+            backgroundColor: graph_colors,
+            borderColor: graph_colors,
+            data: chartData,
+          },
+        ],
+      },
+      options: {},
+    };
+  
+    if (chartElement != null) {
+      // Check if the chart already exists
+      var existingChart = Chart.instances[chartElement.id];
+      console.log(existingChart)
+      if (existingChart) {
+        // If the chart exists, destroy it before reusing the canvas element
+        existingChart.destroy()
+      }
+    }
+  
+    chartElement = new Chart(document.getElementById(chartID), config);
+
+    return chartElement;
+  }
+  

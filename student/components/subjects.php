@@ -124,7 +124,6 @@
                         },
                         timeout: 8000,
                         beforeSend: function(){
-                            chartElement = null
                             $("canvas#stats").addClass("no_disp")
 
                             const appends = [".","..","..."]
@@ -156,9 +155,9 @@
 
                                     //generate the graph
                                     if(typeof response["message"][0]["exam_type"] == "string" && response["message"].length > 1){
-                                        generateChart(response["message"])
+                                        chartElement = generateChart(chartElement, {arrayData: response["message"], chartID: "stats"})
                                     }else{
-                                        generateChart(response["message"], "pie")
+                                        chartElement = generateChart(chartElement, {arrayData: response["message"], chartType:"pie", chartID: "stats"})
                                     }
 
                                     //hide stat message and show chart
@@ -166,7 +165,6 @@
                                     $("canvas#stats").removeClass("no_disp")
                                 }
                             }else{
-                                chartElement = null
                                 $("canvas#stats").addClass("no_disp")
                                 $("#stat_message").removeClass("no_disp").html("An invalid reponse was received.")
                             }
@@ -220,59 +218,6 @@
             }
 
             return numbers
-        }
-
-        /**
-         * This function is used to bind a year and semester level
-         * @param {string|int} year This is the year value
-         * @param {string |int} term This is the term value
-         * @returns {string} the year and term combination
-         */
-        function yearBind(year, term){
-            return "Year" + year + " T" + term
-        }
-
-        /**
-         * This function will be used to generate a graph
-         * @param {array} arrayData This is the data array to be executed
-         * @param {string} chartType This receives the type of chart to be created
-         * 
-         * @returns a new chart
-         */
-        function generateChart(arrayData, chartType="line"){
-            const chart_type = chartType
-            var graph_colors = selectChartColors(chart_type, 5)
-            var chartLabels = []
-            var chartData = []
-
-            //for testing
-            // var min = generateRandomInteger(50); var max = generateRandomInteger(100, (min+1))
-            // chartLabels = ['Year1 T1', 'Year1 T2', 'Year2 T1', 'Year2 T2', 'Year3 T1']
-            // chartData = randomData(5, min, max)
-            
-            for(var i = 0; i < arrayData.length; i++){
-                chartLabels.push(yearBind(arrayData[i]["exam_year"], arrayData[i]["semester"]))
-                chartData.push(arrayData[i]["mark"])
-            }
-
-            var config = {
-                type: chart_type,
-                data: {
-                    labels: chartLabels,
-                    datasets: [{
-                        label: 'Subjects',
-                        backgroundColor: graph_colors,
-                        borderColor: graph_colors,
-                        data: chartData
-                    }]
-                },
-                options: {}
-            }
-
-            if(chartElement != null){
-                chartElement.destroy()
-            }
-            chartElement = new Chart(document.getElementById('stats'),config);
         }
     })
 </script>

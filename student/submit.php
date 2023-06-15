@@ -28,8 +28,13 @@
             if($distinct){$distinct = "DISTINCT(r.exam_type)";}
             else{$distinct = "r.exam_type";}
 
-            $sql = "SELECT $distinct, c.course_name, r.mark 
-                FROM results r JOIN courses c ON r.course_id=c.course_id
+            if($submit == "report_search" || $submit == "report_search_ajax"){
+                $sql = "SELECT $distinct, c.course_name, r.class_mark, r.exam_mark, r.mark ";
+            }else{
+                $sql = "SELECT $distinct, c.course_name, r.mark ";
+            }
+
+            $sql .= "FROM results r JOIN courses c ON r.course_id=c.course_id
                 WHERE indexNumber='$index_number' AND exam_year=$report_year AND semester=$report_term
                 ORDER BY r.exam_type ASC";
             $query = $connect2->query($sql);
