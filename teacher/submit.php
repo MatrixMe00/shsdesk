@@ -293,9 +293,9 @@
                     if(intval($isInserted) > 0){
                         $message = "Results already exist";
                     }else{
-                        $sql = "INSERT INTO results (indexNumber, school_id, course_id, exam_type, class_mark, exam_mark, mark, result_token, teacher_id, exam_year, semester, date) VALUES (?,?,?,'Exam',?,?,?,?,?,?,?, NOW())";
+                        $sql = "INSERT INTO results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, result_token, teacher_id, exam_year, semester, date) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?, NOW())";
                         $stmt = $connect2->prepare($sql);
-                        $stmt->bind_param("siidddsiii",$student_index, $teacher["school_id"], $course_id, $class_mark, $exam_mark, $mark, $result_token, $teacher["teacher_id"], $exam_year, $semester);
+                        $stmt->bind_param("siiidddsiii",$student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, $mark, $result_token, $teacher["teacher_id"], $exam_year, $semester);
 
                         if($stmt->execute()){
                             $message = "true";
