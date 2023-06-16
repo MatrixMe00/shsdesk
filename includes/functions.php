@@ -871,8 +871,6 @@
      * @return string returns a formated index number
      */
     function generateIndexNumber(int $school_id):string{
-        global $connect;
-
         $school_id = str_pad($school_id, 3, "0", STR_PAD_LEFT);
         $current_year = date("y");
         $student_number = str_pad(((rand() % 9999) + 1),4,"0",STR_PAD_LEFT);
@@ -991,5 +989,147 @@
         }
 
         return $newString;
+    }
+
+    /**
+     * This function converts integers into positions
+     * @param int $number This is the number to be converted
+     * @return string returns the converted number as a string
+     */
+    function positionFormat($number):string{
+        $number = intval($number);
+        $suffix = "";
+
+        switch($number % 10){
+            case 1: $suffix = "st"; break;
+            case 2: $suffix = "nd"; break;
+            case 3: $suffix = "rd"; break;
+            default: $suffix = "th";
+        }
+
+        return "$number$suffix";
+    }
+
+    /**
+     * This function would be used to check the overall position of a student
+     * @param string $index_number This takes the index number which has its position to be found
+     * @param int $year This takes the year been searched for
+     * @param int $semester This takes the semester to which the exams was held
+     * @param string $exam_type This is an optional parameter which checks the type of exam
+     * 
+     * @return string returns the position in a string form
+     */
+    function getStudentPosition($index_number, $year, $semester, $exam_type="exam"):string{
+        global $connect2;
+
+        //make sure student exists
+        $studentData = fetchData1("school_id, program_id", "students_table", "indexNumber='$index_number'");
+        if($studentData === "empty"){
+            return "no-student";
+        }else{
+            $sql = "SELECT SUM(mark) as totalMark, indexNumber 
+                FROM results 
+                WHERE school_id={$studentData['school_id']} AND exam_year=$year AND semester=$semester 
+                    AND exam_type='$exam_type' AND accept_status=1 AND program_id='{$studentData['program_id']}'
+                GROUP BY indexNumber
+                ORDER BY totalMark DESC";
+            $results = $connect2->query($sql);
+
+            if($results->num_rows > 0){
+                $position = 0;
+                while($row = $results->fetch_assoc()){
+                    ++$position;
+
+                    if($row["indexNumber"] === $index_number){
+                        break;
+                    }
+                }
+
+                return positionFormat($position);   
+            }else{
+                return "no-results";
+            }
+        }
+    }
+
+    /**
+     * This function would be used to check for a student's position in a specific subject
+     * @param string $index_number This is the index number of the student
+     * @param int $course_id This receives the id of the course
+     * @param int $year This is the year of the exam
+     * @param int $semester This is the semester of the exam
+     * @param string $exam_type This is the type of the exam
+     * 
+     * @return string returns the position of the student in that subject
+     */
+    function getSubjectPosition($index_number, $course_id, $year, $semester, $exam_type="exam"):string{
+        global $connect2;
+
+        //make sure student exists
+        $studentData = fetchData1("school_id, program_id", "students_table", "indexNumber='$index_number'");
+        if($studentData === "empty"){
+            return "no-student";
+        }else{
+            $sql = "SELECT SUM(mark) as totalMark, indexNumber 
+                FROM results 
+                WHERE school_id={$studentData['school_id']} AND exam_year=$year AND semester=$semester 
+                    AND exam_type='$exam_type' AND course_id=$course_id AND program_id={$studentData['program_id']}
+                    AND accept_status=1
+                GROUP BY indexNumber
+                ORDER BY totalMark DESC";
+            $results = $connect2->query($sql);
+
+            if($results->num_rows > 0){
+                $position = 0;
+                while($row = $results->fetch_assoc()){
+                    ++$position;
+
+                    if($row["indexNumber"] === $index_number){
+                        break;
+                    }
+                }
+
+                return positionFormat($position);   
+            }else{
+                return "no-results";
+            }
+        }
+    }
+
+    /**
+     * This function is used to generate the academic year for a selected period
+     * @param string $date This takes the date of which academic calendar is presented
+     * @return string the academic year
+     */
+    function getAcademicYear($date){
+        //providing a value according to a calculated algorithm
+        $this_year = date("Y", strtotime($date));
+
+        //get the academic year
+        $prev_year = null;
+        $next_year = null;
+        $this_date = date("Y-m-d", strtotime($date));
+
+        if($this_date < date("$this_year-09-01")){
+            $prev_year = intval($this_year) - 1;
+            $next_year = intval($this_year);
+        }else{
+            $prev_year = intval($this_year);
+            $next_year = intval($this_year) + 1;
+        }
+
+        return "$prev_year / $next_year";
+    }
+
+    /**
+     * This function would be used to get the admission year of a user
+     * @param int $student_year This is the current year of the student
+     * @param int $intended_year This is the year to present the academic year on
+     * @return int the expected year
+     */
+    function getYear($student_year, $intended_year){
+        $init_year = intval(date("Y")) - $student_year;
+
+        return $init_year + $intended_year;
     }
 ?>

@@ -2,8 +2,8 @@ body{
     display: flex;
 }
 
-nav{flex: 1 1; position: sticky; top: 0;}
-main{flex: 4 1;}
+nav{flex: 1 1 auto; position: sticky; top: 0;}
+main{flex: 4 1 auto;}
 
 /* dashboard */
 .d-section, .p-section{

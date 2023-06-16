@@ -724,7 +724,10 @@ function generateChart(chartElement, {arrayData, chartID, chartType = "line", ma
         chartData.push(arrayData[i]["mark"]);
       }
     } else {
-      chartData = ["Data Label"];
+      for(var i = 0; i < arrayData.length; i++) {
+        chartLabels.push(arrayData[i]["course_name"])
+        chartData.push(arrayData[i]["mark"])
+      }
     }
   
     var config = {
