@@ -154,7 +154,7 @@
                                     $("#subject_name").html(" for " + subject)
 
                                     //generate the graph
-                                    if(typeof response["message"][0]["exam_type"] == "string" && response["message"].length > 1){
+                                    if(typeof response["message"][0]["exam_type"] == "string" && response["message"].length > 2){
                                         chartElement = generateChart(chartElement, {arrayData: response["message"], chartID: "stats"})
                                     }else{
                                         chartElement = generateChart(chartElement, {arrayData: response["message"], chartType:"pie", chartID: "stats"})
