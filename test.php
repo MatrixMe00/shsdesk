@@ -264,7 +264,7 @@ echo remakeNumber("027 928 4896", true);*/
 
 // echo preg_match("/^[0-9]{10,}$/", "1234512asd3451234");
 
-$data = [
+/*$data = [
     [
         "program_name" => "Program 1",
         "short_p" => "P1",
@@ -297,5 +297,10 @@ $data = fetchData1("p.program_name, p.short_form as short_p, c.course_name, c.sh
 "teacher_classes t JOIN program p ON t.program_id = p.program_id JOIN courses c ON c.course_id=t.course_id",
 "t.teacher_id={$message[0]['teacher_id']}", 0);
 
-echo stringifyClassNames($data);
+echo stringifyClassNames($data);*/
+
+// echo getStudentPosition("0012345621", 1, 1)
+$date = date("2021-09-06"); $semester = 1;
+echo getAcademicYear($date, $semester);
+
 ?>
