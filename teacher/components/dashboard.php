@@ -26,13 +26,14 @@
         <span class="">Students</span>
         <span class="txt-fl3 txt-bold">
             <?php             
-                $sql = "SELECT COUNT(s.indexNumber) AS total
-                    FROM students_table s JOIN teacher_classes t ON s.school_id=t.school_id
-                    WHERE t.teacher_id={$teacher['teacher_id']} AND s.program_id=t.program_id
-                    GROUP BY t.program_id
-                    ";
-                $query = $connect2->query($sql);
-                echo $query->fetch_assoc()["total"];
+                $total_students = 0;
+                $classes = fetchData1("DISTINCT(program_id)","teacher_classes","teacher_id={$teacher['teacher_id']}", 0);
+                if(is_array($classes)){
+                    foreach($classes as $class){
+                        $total_students += intval(fetchData1("COUNT(indexNumber) as total","students_table", "program_id={$class['program_id']}")["total"]);
+                    }
+                }
+                echo $total_students;
             ?>
         </span>
     </div>
