@@ -7,8 +7,9 @@
 <section class="d-section sp-xxlg-tp txt-al-c lt-shade">
     <p>You cannot purchase an access code yet. Please contact your school admin or try again at another time</p>
 </section>
-<?php else: 
-if(!is_array($accessCode)) : ?>
+<?php else: ?>
+<input type="hidden" name="unit_price" id="unit_price" value="<?= $schoolHasApproved["access_price"] ?>">
+<?php if(!is_array($accessCode)) : ?>
 <section class="d-section txt-al-c">
     <h1 class="sm-lg-b">Purchase your Access Code</h1>
     <form action="<?= "$url/submit.php" ?>" class="wmax-md gap-med txt-al-l w-full sm-auto-lr lt-shade-h" method="POST" name="payForm">

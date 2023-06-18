@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    const cust_amount = 5;
+    const cust_amount = $("input#unit_price").val();
 
     $("input#price").val("GHC " + cust_amount.toFixed(2))
 
