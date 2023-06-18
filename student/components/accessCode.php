@@ -1,5 +1,13 @@
 <?php require_once "compSession.php"; $_SESSION["active-page"] = "code" ?>
-<?php $accessCode = fetchData1("*","accesstable","indexNumber={$student['indexNumber']} ORDER BY expiryDate DESC");
+<?php 
+    $accessCode = fetchData1("*","accesstable","indexNumber={$student['indexNumber']} ORDER BY expiryDate DESC");
+    $schoolHasApproved = fetchData1("access_price","accesspay","school_id={$student['school_id']} AND active=1");
+    if($schoolHasApproved == "empty"):
+?>
+<section class="d-section sp-xxlg-tp txt-al-c lt-shade">
+    <p>You cannot purchase an access code yet. Please contact your school admin or try again at another time</p>
+</section>
+<?php else: 
 if(!is_array($accessCode)) : ?>
 <section class="d-section txt-al-c">
     <h1 class="sm-lg-b">Purchase your Access Code</h1>
@@ -76,7 +84,7 @@ if(!is_array($accessCode)) : ?>
         </div>
     </form>
 </section>
-<?php endif; ?>
+<?php endif; endif; ?>
 
 <script src="https://js.paystack.co/v1/inline.js" defer></script>
 <script src="<?= "$url/assets/scripts/accessCode.js?v=".time() ?>"></script>
