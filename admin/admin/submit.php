@@ -1827,6 +1827,58 @@
             }
 
             echo $message;
+        }elseif($submit=="change_access" || $submit=="change_access_ajax"){
+            $default_price = $_POST["default_price"] ?? null;
+            $school_price = $_POST["school_price"] ?? null;
+            $total_price = $_POST["total_price"] ?? null;
+
+            if(is_null($default_price) || empty($default_price)){
+                $message = "Default price has not been provided";
+            }elseif(is_null($school_price) || empty($school_price)){
+                $message = "School Price has not been provided";
+            }elseif(is_null($total_price) || empty($total_price)){
+                $message = "The total cost was not provided";
+            }elseif(strpos(strtolower($default_price), "ghc ") === false){
+                $message = "Default price format is invalid";
+            }elseif(strpos(strtolower($school_price), "ghc ") === false){
+                $message = "School price format is invalid";
+            }elseif(strpos(strtolower($total_price), "ghc ") === false){
+                $message = "Total price format is invalid";
+            }else{
+                //split into actual values
+                $default_price = floatval(explode("ghc ", strtolower($default_price))[1]);
+                $school_price = floatval(explode("ghc ", strtolower($school_price))[1]);
+                $total_price = floatval(explode("ghc ", strtolower($total_price))[1]);
+
+                if($default_price != 6){
+                    $message = "The default value has been tempered with. Please ensure you have provided the right value";
+                }elseif($school_price > 4.0){
+                    $message = "Your profit per individual cannot exceed GHC 4.00";
+                }elseif($total_price > 10.0){
+                    $message = "Your total price cannot exceed GHC 10.00";
+                }elseif($total_price != ($default_price + $school_price)){
+                    $message = "Your total price does not add up to the sum of default price and school profit";
+                }else{
+                    $priceExists = fetchData1("access_price","accesspay","school_id=$user_school_id");
+                    if($priceExists == "empty"){
+                        $sql = "INSERT INTO accesspay (school_id, access_price, active) VALUES (?,?,1)";
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param("id",$user_school_id, $total_price);
+                    }else{
+                        $sql = "UPDATE accesspay SET access_price=? WHERE school_id=?";
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param("di",$total_price, $user_school_id);
+                    }
+
+                    if($stmt->execute()){
+                        $message = "success";
+                    }else{
+                        $message = "An error occured while applying updates. Please try again";
+                    }
+                }
+            }
+
+            echo $message;
         }
     }else{
         echo "no-submission";

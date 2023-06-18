@@ -17,10 +17,58 @@ function addToList(element){
 }
 
 $(document).ready(function(){
-    const unit_price = 5;
+    //variables for setting up access price
+    const unit_price = 6;
+    let school_price = parseFloat($("input#school_price").val())
+    const school_max_price = 4;
+
+    //variables for making bulk payment
     let cust_amount = 0;
     let recipient = "";
     let recipient_number = 0;
+
+    //hide all btn_sections
+    $(".btn_section").addClass("no_disp")
+
+    //default price allocation for access price set up
+    $("input#default_price").val("GHC " + unit_price.toFixed(2))
+    $("input#school_price").val("GHC " + school_price.toFixed(2))
+    $("input#total_price").val("GHC " + (unit_price + school_price).toFixed(2))
+    $("#default_price_text").text("GHC " + unit_price.toFixed(2))
+
+    $("#main_view button").click(function(){
+        const section = $(this).attr("data-main-section")
+        $("#main_view button").addClass("plain-r")
+        $(this).removeClass("plain-r")
+
+        //make toggle on sections
+        $("section.btn_section").addClass("no_disp")
+        $("section.btn_section." + section).removeClass("no_disp")
+    })
+
+    $("input#school_price").on({
+        focus: function(){
+            $("input#school_price").select()
+        },
+        blur: function(){
+            const price_value = $("input#school_price").val()
+
+            if(/^-?\d*\.?\d+$/.test(price_value)){
+                if(parseFloat(price_value) <= school_max_price){
+                    school_price = parseFloat(price_value)
+                    $("input#school_price").val("GHC " + school_price.toFixed(2))
+                    const total_price = unit_price + school_price
+                    $("input#total_price").val("GHC " + total_price.toFixed(2))
+                }else{
+                    const message = "Your maximum profit can not go beyond GHC " + school_max_price.toFixed(2)
+                    $("input#school_price").val("GHC 0.00")
+                    alert_box(message, "danger")
+                }                
+            }else{
+                alert_box("Only numbers are required in the input field", "danger")
+            }
+        }
+    })
     
     $(".btn-item").click(function(){
         if($(this).hasClass("plain-r")){
@@ -264,6 +312,18 @@ $(document).ready(function(){
             alert_box("Please provide a valid 10 digit value for your phone number", "danger", 7)
         }else{
             payWithPaystack(form)
+        }
+    })
+
+    $("form[name=accessPriceForm]").submit(function(e){
+        e.preventDefault()
+        const response = formSubmit($(this), $(this).find("button[name=submit]", false));
+        
+        if(response === true){
+            alert_box("Update was successful", "success");
+            $("#lhs .item.active").click()
+        }else{
+            alert_box(response, "danger", 7)
         }
     })
 })

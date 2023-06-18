@@ -12,17 +12,27 @@
     }
 ?>
 
-<section class="p-xlg-tp p-med-lr">
+<section id="main_view" class="sp-xlg-tp sp-med-lr txt-al-c">
+    <p>Please select an option to proceed</p>
+    <div class="btn sm-auto p-lg m-med">
+        <button class="plain-r primary" data-main-section="set-up">Set Up Access Code Price</button>
+        <button class="plain-r primary" data-main-section="bulk-purchase">Purchase Bulk Access Code</button>
+    </div>
+</section>
+
+<section class="p-xlg-tp p-med-lr btn_section bulk-purchase">
     <p class="txt-al-c not_specify">
         In this view, you would be able to make a bulk purchase of access codes for your students.
-        Please select the options below to make the purchase
+        Please select the options below to make the purchase. 
+        Please note that you are only charged by the default price of 
+        <strong id="default_price_text"></strong> per individual
     </p>
     <p class="txt-al-c specify primary no_disp">
         When specifying individual students, separate the names with a comma and a space. <br> Eg. Student1, Student2, etc
     </p>
 </section>
 
-<section class="sp-xlg-tp">
+<section class="sp-xlg-tp btn_section bulk-purchase">
     <h3 class="txt-al-c sm-lg-b">Select which category of students you are buying for</h3>
     <div class="btn flex flex-wrap gap-sm sm-auto">
         <button class="plain-r primary btn-item" data-id="1" data-count="<?= fetchData1("COUNT(indexNumber) AS total","students_table","school_id=$user_school_id AND studentYear=1")["total"] ?>">Year 1 Only</button>
@@ -38,7 +48,7 @@
     </label>
 </section>
 
-<section>
+<section class="btn_section bulk-purchase">
     <form action="<?= "$url/admin/admin/submit.php" ?>" name="payForm" method="post">
         <div class="head">
             <h2>Payment Information</h2>
@@ -74,6 +84,47 @@
         
         <div class="btn w-full wmax-sm sm-auto p-lg">
             <button class="primary w-full" name="submit" value="access_check">Make Payment</button>
+        </div>
+    </form>
+</section>
+
+<section class="p-sm-tp p-med-lr txt-al-c btn_section set-up">
+    <p>Use this view to set up the charge of your access code.</p>
+    <p> Please note that the system automatically charges <b>GHC 6.00</b>, and any additions you make will be addressed to you
+        if students should make payments only through the system. You cannot add more than <b>GHC 4.00</b> to the actual price
+    </p>
+</section>
+
+<section class="btn_section set-up">
+    <form action="<?= "$url/admin/admin/submit.php" ?>" name="accessPriceForm" method="post">
+        <div class="head">
+            <h2>Access Code Update</h2>
+        </div><?php 
+            //get user data on price
+            $default_price = 6;
+            $price = fetchData1("access_price","accesspay","school_id=$user_school_id");
+            $price = $price == "empty" ? 0 : floatval($price["access_price"] - $default_price);
+        ?>
+        <div class="body">
+            <div class="joint">
+                <label for="default_price" class="flex-column gap-sm">
+                    <span class="label_title">Default Price</span>
+                    <input type="text" name="default_price" id="default_price" placeholder="The default charged price" readonly value="">
+                </label>
+                <label for="school_price" class="flex-column gap-sm">
+                    <span class="label_title">Your Price</span>
+                    <input type="text" name="school_price" id="school_price" placeholder="Only cash values should be entered. Eg: 1.02" value="<?= $price ?>">
+                </label>
+                <label for="total_price" class="flex-column gap-sm">
+                    <span class="label_title">Total price</span>
+                    <input type="text" name="total_price" id="total_price" placeholder="The total price" value="" readonly>
+                </label>
+                <input type="hidden" name="school_name" value="<?= getSchoolDetail($user_school_id)["schoolName"] ?>">
+            </div>
+        </div>
+        
+        <div class="btn w-full wmax-sm sm-auto p-lg">
+            <button class="primary w-full" name="submit" value="change_access">Update Access Payment</button>
         </div>
     </form>
 </section>
