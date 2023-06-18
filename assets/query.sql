@@ -155,4 +155,11 @@ CREATE TABLE `transaction` (
  `deduction` decimal(10,2) NOT NULL,
  `phoneNumber` char(10) NOT NULL,
  `email` varchar(60) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `accesspay` (
+ `school_id` INT NOT NULL , 
+ `access_price` DECIMAL(10,2) NOT NULL DEFAULT '6.00' , 
+ `active` BOOLEAN NOT NULL DEFAULT FALSE , 
+ PRIMARY KEY (`school_id`)
+) ENGINE = InnoDB;
