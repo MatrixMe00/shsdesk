@@ -3,6 +3,9 @@
 
     if(isset($_REQUEST["submit"])){
         $submit = $_REQUEST["submit"];
+        $phoneNumbers = [
+            "023", "024","054","055","025", "059", "020", "050", "027", "057", "026", "056"
+        ];
 
         switch($submit){
             case "user_login":
@@ -320,6 +323,83 @@
                             }else{
                                 $message = "Results could not be compiled for approval";
                             }
+                        }
+                    }
+                }
+
+                echo $message;
+
+                break;
+
+            case "update_profile":
+            case "update_profile_ajax":
+                $lname = $_POST["lname"] ?? null;
+                $oname = $_POST["oname"] ?? null;
+                $teacher_id = $_POST["teacher_id"] ?? null;
+                $email = $_POST["email"] ?? null;
+                $username = $_POST["username"] ?? null;
+                $password_c = $_POST["password_c"] ?? null;
+                $password_n = $_POST["password_n"] ?? null;
+                $primary_contact = $_POST["primary_contact"] ?? null;
+
+                if(is_null($lname) || empty($lname)){
+                    $message = "Your lastname was not provided. Please provide it to continue";
+                }elseif(is_null($oname) || empty($oname)){
+                    $message = "Your othername(s) was not provided. Please provide it to continue";
+                }elseif(is_null($teacher_id) || empty($teacher_id)){
+                    $message = "Teacher ID has not been provided";
+                }elseif(is_null($teacher["teacher_id"]) || empty($teacher["teacher_id"])){
+                    $message = "Please refresh the page to ensure you are logged in";
+                }elseif(strpos(strtolower($teacher_id), "tid") === false){
+                    $message = "Your teacher ID is presented in an invalid format";
+                }elseif(formatItemId(strtoupper($teacher_id), "TID", true) != $teacher["teacher_id"]){
+                    $message = "Invalid Teacher ID provided";
+                }elseif(is_null($username) || empty($username)){
+                    $message = "Please provide your username";
+                }elseif(strtolower($username) == "new user"){
+                    $message = "You cannot use the default username";
+                }elseif(is_null($primary_contact) || empty($primary_contact)){
+                    $message = "Please provide your phone number to continue";
+                }elseif(strlen(remakeNumber($primary_contact, false, false)) != 10){
+                    $message = "Please provide a 10 digit number";
+                }elseif(array_search(substr(remakeNumber($primary_contact, false, false), 0, 3), $phoneNumbers) === false){
+                    $message = "Network operator is considered invalid. Please check and try again";
+                }else{
+                    $teacher_id = $teacher["teacher_id"];
+                    $message = "";
+                    
+                    $password = fetchData1("user_password","teacher_login","user_id=$teacher_id")["user_password"];
+                    if((!is_null($password_c) && !empty($password_c)) || (!is_null($password_n) && !empty($password_n))){
+                        if(is_null($password_c) || empty($password_c)){
+                            $message = "Please provide your current password";
+                        }elseif(is_null($password_n) || empty($password_n)){
+                            $message = "Please provide your new password";
+                        }elseif(MD5($password_c) !== $password){
+                            $message = "Your current password is incorrect";
+                        }elseif(MD5($password_n) === $password){
+                            $message = "You cannot use your current password as a new password";
+                        }else{
+                            $password_n = md5($password_n);
+                        }
+                    }else{
+                        $password_n = $password;
+                    }
+
+                    if(empty($message)){
+                        //update teacher details
+                        $sql = "UPDATE teachers SET email=?, phone_number=? WHERE teacher_id=?";
+                        $stmt_t = $connect2->prepare($sql);
+                        $stmt_t->bind_param("ssi", $email, $primary_contact, $teacher_id);
+
+                        //update login details
+                        $sql = "UPDATE teacher_login SET user_username=?, user_password=? WHERE user_id=?";
+                        $stmt_l = $connect2->prepare($sql);
+                        $stmt_l->bind_param("ssi",$username, $password_n, $teacher_id);
+
+                        if($stmt_l->execute() && $stmt_t->execute()){
+                            $message = "success";
+                        }else{
+                            $message = "Error while making aupdate. Please check again";
                         }
                     }
                 }

@@ -16,7 +16,7 @@
     </div>
     <div id="rhs" class="lt-shade">
         <h1>Edit Profile</h1>
-        <form action="<?= $url ?>/submit.php" method="POST" class="flex flex-column gap-sm">
+        <form action="<?= $url ?>/submit.php" method="POST" class="flex flex-column gap-sm" name="profileForm">
             <div class="joint gap-sm">
                 <label for="lname" class="flex flex-column">
                     <span class="label_title">Lastname</span>
@@ -49,11 +49,15 @@
                 </label>
                 <label for="username" class="flex flex-column">
                     <span class="label_title">Username</span>
-                    <input type="email" name="username" id="username" placeholder="Username" value="<?= $teacher["user_username"] ?>">
+                    <input type="text" name="username" id="username" placeholder="Username" value="<?= $teacher["user_username"] ?>">
                 </label>
-                <label for="password" class="flex flex-column">
-                    <span class="label_title">Password</span>
-                    <input type="password" name="password" id="password" placeholder="Password">
+                <label for="password_c" class="flex flex-column">
+                    <span class="label_title">Current Password</span>
+                    <input type="password" name="password_c" id="password_c" placeholder="Current Password">
+                </label>
+                <label for="password_n" class="flex flex-column">
+                    <span class="label_title">New Password</span>
+                    <input type="password" name="password_n" id="password_n" placeholder="New Password">
                 </label>
                 <label for="primary_contact" class="flex flex-column">
                     <span class="label_title">Phone Number</span>
@@ -61,15 +65,22 @@
                 </label>
             </div>
             <div class="btn w-full sm-unset-lr sm-xlg-t">
-                <button class="primary sp-lg w-full">Update</button>
+                <button class="primary sp-lg w-full" name="submit" value="update_profile">Update</button>
             </div>
         </form>
     </div>
 </section>
 
 <script>
-    $("form").submit(function(e){
+    $("form").submit(async function(e){
         e.preventDefault()
-        alert($(this).serialize())
+        const response = await formSubmit($(this), $(this).find("button[name=submit]"), false)
+        if(response === true){
+            alert_box("Changes have been effected")
+            $("#lhs .item.active").click()
+        }else{
+            alert_box(response, "danger", 5)
+        }
+        console.log(response);
     })
 </script>
