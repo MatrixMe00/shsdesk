@@ -149,12 +149,14 @@ CREATE TABLE `school_ussds` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `transaction` (
- `transactionID` int(11) NOT NULL,
+ `transactionID` varchar(30) NOT NULL,
  `school_id` int(11) NOT NULL,
  `price` decimal(10,2) NOT NULL,
  `deduction` decimal(10,2) NOT NULL,
+ `pay_type` enum('single','bulk') NOT NULL DEFAULT 'single',
  `phoneNumber` char(10) NOT NULL,
- `email` varchar(60) NOT NULL
+ `email` varchar(60) NOT NULL,
+ PRIMARY KEY (`transactionID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `accesspay` (
