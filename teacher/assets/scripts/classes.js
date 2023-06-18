@@ -33,19 +33,22 @@ $("button[name=data_search]").click(function(){
 })
 
 //search for a selected program and program year
-$(".form button[name=list_search]").click(function(){
+$(".form-element button[name=list_search]").click(function(){
     if($("#class_year").val() !== ""){
         $(this).addClass("no_disp")
         $("button[name=data_search], button[name=reset]").removeClass("no_disp")
 
         const index = $(this).attr("data-pid")
-        const c_index = $(this).attr("data-cid")
+        const c_index = $("select#course_id").val()
+        const semester = $("select#exam_semester").val()
+        const date_period = $("select#result_year").val()
+        const p_year = $("#class_year").val()
 
         $.ajax({
             url: "./submit.php",
             data: {
-                submit: "search_class_list", program_id: index, program_year: $("#class_year").val(),
-                course_id: c_index
+                submit: "search_class_list", program_id: index, program_year: p_year,
+                course_id: c_index, sem:semester, period: date_period
             },
             timeout: 8000,
             beforeSend: function(){
@@ -83,7 +86,7 @@ $(".form button[name=list_search]").click(function(){
 })
 
 //function to reset the form control
-$(".form button[name=reset]").click(function(){
+$(".form-element button[name=reset]").click(function(){
     $("#class_year").prop("selectedIndex", 0)
     $("button[name=data_search], button[name=reset]").addClass("no_disp")
     $("button[name=list_search]").removeClass("no_disp")
@@ -95,16 +98,28 @@ $(".form button[name=reset]").click(function(){
 })
 
 //function to change the page from main view to single view and vice versa
-function pageChange(index = 0, c_index = 0, program_name=""){
-    $("#page_title, #classes, #single_class").toggleClass("no_disp")
-    $("#classes").toggleClass("flex")
+function pageChange(index = 0, program_name=""){
+    $("#page_title, #classes, #single_class, #cards-section").toggleClass("no_disp")
+    $("#classes, #cards-section").toggleClass("flex")
     $("span#single_class_name").html("")
     $("#class_list_table tbody").html(insertEmptyTableLabel("Make a search on your class year to proceed", columns))
     
     if(index > 0){
-        $("span#single_class_name").html(program_name + " " + formatItemId(c_index, "CID"))
-        $(".form button[name=list_search]").attr("data-cid", c_index)
-        $(".form button[name=list_search]").attr("data-pid", index)
+        $("span#single_class_name").html(program_name + " | " + formatItemId(index, "PID"))
+        $(".form-element button[name=list_search]").attr("data-pid", index)
+        $("#single_class select").prop("selectedIndex",0)
+        $("select#course_id option").each((index_l, element)=>{
+            var pid = parseInt($(element).attr("data-pid"))
+            
+            if(index === pid){
+                $(element).removeClass("no_disp")
+            }else{
+                $(element).addClass("no_disp")
+            }
+        })
+    }else{
+        $("button[name=list_search]").removeClass("no_disp")
+        $("button[name=data_search], button[name=reset]").addClass("no_disp")
     }
 }
 
@@ -119,4 +134,9 @@ $("#search").keyup(function(){
             $(this).show()
         }
     })
+})
+
+$(".form-element select").change(function(){
+    $("button[name=list_search]").removeClass("no_disp")
+    $("button[name=data_search]").addClass("no_disp")
 })

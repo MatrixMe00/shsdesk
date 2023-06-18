@@ -183,21 +183,29 @@
                 $program_id = $_GET["program_id"] ?? null;
                 $program_year = $_GET["program_year"] ?? null;
                 $course_id = $_GET["course_id"] ?? null;
+                $program_year = $_GET["program_year"] ?? null;
+                $semester = $_GET["sem"] ?? null;
+                $year_period = $_GET["period"] ?? null;
 
                 if(empty($program_id) || is_null($program_id)){
                     $message = "Class could not be taken. Please check and try again";
+                }elseif(empty($year_period) || is_null($year_period)){
+                    $message = "Please select the academic year to search through";
                 }elseif(empty($program_year) || is_null($program_year)){
                     $message = "Please specify the class' year to continue";
                 }elseif(empty($course_id) || is_null($course_id)){
                     $message = "The course could not be specified. Process terminated";
+                }elseif(empty($semester) || is_null($semester)){
+                    $message = "Please provide the specific semester";
                 }elseif(empty($teacher["teacher_id"]) || is_null($teacher["teacher_id"])){
                     $message = "Your session has expired. Please refresh the page to confirm and try again";
                 }else{
                     $teacher_id = $teacher["teacher_id"];
 
-                    $sql = "SELECT s.indexNumber, CONCAT(s.Lastname, ' ', s.Othernames) AS fullname, s.gender, ROUND(AVG(r.mark), 2)
-                        FROM students_table s JOIN results r ON r.school_id = s.school_id
+                    $sql = "SELECT s.indexNumber, CONCAT(s.Lastname, ' ', s.Othernames) AS fullname, s.gender, ROUND(r.mark, 1)
+                        FROM results r JOIN students_table s ON r.indexNumber = s.indexNumber
                         WHERE r.teacher_id=$teacher_id AND s.studentYear=$program_year AND s.program_id=$program_id AND r.course_id=$course_id
+                            AND r.semester=$semester AND YEAR(date) = $year_period
                         GROUP BY s.indexNumber
                     ";
                     $query = $connect2->query($sql);

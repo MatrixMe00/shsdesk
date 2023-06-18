@@ -435,8 +435,7 @@
      * @param string $where Receives a where clause command
      * @param int $limit Number of rows to deliver. Default is 1. Use 0 to fetch everything
      * 
-     * @return string returns a string of data or error
-     * @return array returns an array of data
+     * @return string|array returns a(n) array|string of data or error
      */
     function fetchData(string $columns, string $table, string $where, int $limit = 1){
         global $connect;
@@ -483,8 +482,7 @@
      * @param string $where Receives a where clause command
      * @param int $limit Number of rows to deliver. Default is 1. Use 0 to fetch everything
      * 
-     * @return string returns a string of data or error
-     * @return array returns an array of data
+     * @return string|array returns a(n) array|string of data or error
      */
     function fetchData1(string $columns, string $table, string $where, int $limit = 1){
         global $connect2;
@@ -1131,5 +1129,19 @@
         $init_year = intval(date("Y")) - $student_year;
 
         return $init_year + $intended_year;
+    }
+
+    /**
+     * This function is going to be used to convert arrays with a common key to numeric keys
+     * @param array $array This is the array to be converted
+     * @return array an index array profile
+     */
+    function numericIndexArray($array):array{
+        $newArray = array_map(function($item){
+            $key = array_keys($item);
+            return $item[$key[0]];
+        }, $array);
+
+        return $newArray;
     }
 ?>
