@@ -1041,6 +1041,7 @@
                         if(!is_null($teacher_id) && !empty($teacher_id)){
                             $connect2->query("INSERT INTO teacher_login (user_id) VALUES ($teacher_id)");
                             
+                            //teacher courses and classes are in the format [program_id|course_id] [program_id|course_id]
                             $parts = explode(' ', $course_ids);
                             if(is_array($parts)){
                                 if(end($parts) === ""){
@@ -1066,10 +1067,12 @@
                                                 }else{
                                                     $detailsExist = fetchData1("t.lname, tc.course_id","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.course_id=$cid AND tc.program_id=$pid");
                                                     $message = "Teacher added, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($detailsExist["course_id"],"SID");
+                                                    break;
                                                 }
 
                                             }else{
-                                                $message = "Class and subject is not properly separated. Process discontinued ".count($part);
+                                                $message = "Class and subject is not properly separated. Process discontinued";
+                                                break;
                                             }
                                         }else{
                                             $message = "An invalid split format was rejected";
@@ -1084,7 +1087,7 @@
                                 $message = "Invalid class and subject format projected. Process terminated";
                             }
                             
-                            if(empty($message) || is_null($message)){
+                            if(empty($message)){
                                 $message = "Teacher has been added";
                                 $status = true;
                             }else{
@@ -1092,8 +1095,10 @@
 
                                 //display the message 
                                 if(isset($_REQUEST["system_message"])){
-                                    $message .= ' '.$_REQUEST["system_message"];
-                                    unset($_REQUEST["system_message"]);
+                                    if(strtolower($message) != "teacher has been added"){
+                                        $sms_message = $_REQUEST["system_message"];
+                                        unset($_REQUEST["system_message"]);
+                                    }                                    
                                 }
                             }                            
                         }else{
@@ -1110,7 +1115,8 @@
 
             $final = [
                 "message" => $message,
-                "status" => $status
+                "status" => $status,
+                "sms-message" => $sms_message ?? "no-message"
             ];
 
             header("Content-Type: application/json");
@@ -1367,9 +1373,11 @@
                                                         $stmt->execute();
                                                     }else{
                                                         $message = "Teacher data updated, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($detailsExist["course_id"],"CID");
+                                                        break;
                                                     }
                                                 }else{
-                                                    $message = "Class and subject is not properly separated. Process discontinued ".count($part);
+                                                    $message = "Class and subject is not properly separated. Process discontinued";
+                                                    break;
                                                 }
                                             }else{
                                                 $message = "An invalid split format was rejected";

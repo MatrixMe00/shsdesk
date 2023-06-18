@@ -83,6 +83,10 @@ $("form").submit(function(e){
             
             messageBoxTimeout($(this).prop("name"), return_data["message"], return_data["status"] ? "success" : "error")
 
+            if(return_data["sms-message"] && return_data["sms-message"] != "no-message"){
+                alert_box(return_data["sms-message"],"danger")
+            }
+
             if(return_data["status"] === true || return_data["status"] === "true"){
                 if(!formName.includes("update")){
                     setTimeout(()=> {

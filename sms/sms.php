@@ -185,7 +185,11 @@ if(isset($_REQUEST['submit'])){
             $resp = curl_exec($ch);
         
             if ($e = curl_error($ch)) {
-                echo $e;
+                if($jsonFormat){
+                    echo $e;
+                }else{
+                    $_SESSION["system_message"] = $e;
+                }
             } else {
                 if($jsonFormat){
                     $decoded = json_decode($resp, true);
