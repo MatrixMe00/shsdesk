@@ -144,81 +144,93 @@ function toFormData(form){
 */
 
 async function fileUpload(file_element, form_element, submit_element, messageBox = true){
-   formData = new FormData();
-
-   //preparing file and submit values
-   file = $(file_element).prop("files")[0];
-   file_name = $(file_element).attr("name");
-   submit_value = $(submit_element).prop("value");
-
-   //strip form data into array form and attain total data
-   form_data = $(form_element).serializeArray();
-   formData = toFormData(form_data)
-
-   //append name and value of file
-   formData.append(file_name, file);
-
-   //append submit if not found
-   if(!$(form_element).serialize().includes("&submit=")){
-       formData.append("submit", submit_value + "_ajax");
-   }
-
-   response = null;
-   
-   $.ajax({
-       url: $(form_element).attr("action"),
-       data: formData,
-       method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
-       dataType: "text",
-       cache: false,
-       async: false,
-       contentType: false,
-       processData: false,
-       timeout: 8000,
-       beforeSend: function(){
-           if(messageBox){
-               message = loadDisplay({size: "small"});
-               type = "load";
-               time = 0;
-
-               messageBoxTimeout(form_element.prop("name"), message, type, time);
-           }            
-       },
-       success: function(text){
-           $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
-           if(text == "success"){
-               response = true;
-           }else{
-               response = text;
-           }
-       },
-       error: function(er, textStatus){
-           message = JSON.parse(JSON.stringify(er));
-           if(textStatus === "timeout"){
-                message = "Connection was timed out due to a slow network. Please try again later"
-           }
-           type = "error";
-
-           messageBoxTimeout(form_element.prop("name"), message, type);
-       }
-   })
-
-   return response;
-}
-
-/**
-* This function will be used to parse any file type into the database
-* 
-* @param {string} file_element This takes the element name of the file
-* @param {string} form_element This takes a specified form element
-* @param {string} submit_element This takes the name of the submit button
-* @param {boolean} messageBox This tests if there is a message box
-* 
-* @return {boolean|array} Returns a boolean value or an array
-*/
-
-async function jsonFileUpload(file_element, form_element, submit_element, messageBox = true){
     formData = new FormData();
+ 
+     if(!$(form_element).attr("name")){
+         alert_box("Your form has no attribute name", "danger")
+         return false
+     }
+ 
+    //preparing file and submit values
+    file = $(file_element).prop("files")[0];
+    file_name = $(file_element).attr("name");
+    submit_value = $(submit_element).prop("value");
+ 
+    //strip form data into array form and attain total data
+    form_data = $(form_element).serializeArray();
+    formData = toFormData(form_data)
+ 
+    //append name and value of file
+    formData.append(file_name, file);
+ 
+    //append submit if not found
+    if(!$(form_element).serialize().includes("&submit=")){
+        formData.append("submit", submit_value + "_ajax");
+    }
+ 
+    response = null;
+    
+    $.ajax({
+        url: $(form_element).attr("action"),
+        data: formData,
+        method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
+        dataType: "text",
+        cache: false,
+        async: false,
+        contentType: false,
+        processData: false,
+        timeout: 8000,
+        beforeSend: function(){
+            if(messageBox){
+                message = loadDisplay({size: "small"});
+                type = "load";
+                time = 0;
+ 
+                messageBoxTimeout(form_element.prop("name"), message, type, time);
+            }            
+        },
+        success: function(text){
+            if(messageBox){
+                 $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+            }
+            if(text == "success"){
+                response = true;
+            }else{
+                response = text;
+            }
+        },
+        error: function(er, textStatus){
+            message = JSON.parse(JSON.stringify(er));
+            if(textStatus === "timeout"){
+                 message = "Connection was timed out due to a slow network. Please try again later"
+            }
+            type = "error";
+ 
+            messageBoxTimeout(form_element.prop("name"), message, type);
+        }
+    })
+ 
+    return response;
+ }
+ 
+ /**
+ * This function will be used to parse any file type into the database
+ * 
+ * @param {string} file_element This takes the element name of the file
+ * @param {string} form_element This takes a specified form element
+ * @param {string} submit_element This takes the name of the submit button
+ * @param {boolean} messageBox This tests if there is a message box
+ * 
+ * @return {boolean|array} Returns a boolean value or an array
+ */
+ 
+ async function jsonFileUpload(file_element, form_element, submit_element, messageBox = true){
+    formData = new FormData();
+ 
+     if(!$(form_element).attr("name")){
+         alert_box("Your form has no attribute name", "danger")
+         return false
+     }
  
     //preparing file and submit values
     file = $(file_element).prop("files")[0];
@@ -259,7 +271,9 @@ async function jsonFileUpload(file_element, form_element, submit_element, messag
             }            
         },
         success: function(text){
-            $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+            if(messageBox){
+                 $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+            }
             text = JSON.parse(JSON.stringify(text));
  
             if(text["status"] == "success" || text["status"].includes("success")){
@@ -284,107 +298,122 @@ async function jsonFileUpload(file_element, form_element, submit_element, messag
  
     return response;
  }
-
-/**
-* This function will be used to send textual information from forms
-* 
-* @param {any} form_element This takes the form element object
-* @param {any} submit_element This takes the submit element of the form
-* @param {boolean} messageBox This tests if there is a message box
-* 
-* @return {boolean|string} returns a boolean value or a string
-*/
-function formSubmit(form_element, submit_element, messageBox = true){
-   // formData = new FormData();
-
-   //submit value
-   submit = $(submit_element).val();
-
-   //strip form data into array form and attain total data
-   form_data = $(form_element).serializeArray();
-   split_lenght = form_data.length;
-
-   //variable to hold all user data
-   formData = "";
-
-   //loop and fill form data
-   counter = 0;
-   while(counter < split_lenght){
-       //grab each array data
-       new_data = form_data[counter];
-
-       key = new_data["name"];
-       value = new_data["value"];
-
-       //append to form data
-       if(formData != ""){
-           formData += "&" + key + "=" + value;
-       }else{
-           formData = key + "=" + value;
-       }
-
-       //move to next data
-       counter++;
-   }
-
-   //append submit if not found
-   if(!$(form_element).serialize().includes("&submit=")){
-       formData += "&submit=" + submit + "_ajax";
-   }
-
-   response = null;
-   
-   $.ajax({
-       url: $(form_element).attr("action"),
-       data: formData,
-       method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
-       dataType: "text",
-       cache: false,
-       async: false,
-       timeout: 8000,
-       beforeSend: function(){
-           if(messageBox){
-               message = loadDisplay({size: "small"});
-               type = "load";
-               time = 0;
-
-               messageBoxTimeout(form_element.prop("name"), message, type, time);
-           }
-       },
-       success: function(text){
-           $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
-           if(text == "success" || text.includes("success")){
-               response = true;
-           }else{
-               response = text;
-           }
-       },
-       error: function(xhr, textStatus){
-           message = "Please check your internet connection and try again";
-           type = "error";
-
-           if(textStatus == "timeout"){
-            message = "Connection was timed out due to a slow network. Please try again later"
-           }
-
-           messageBoxTimeout(form_element.prop("name"), message, type);
-       }
-   })
-
-   return response;
-}
-
-/**
-* This function will be used to send textual information from forms
-* 
-* @param {any} form_element This takes the form element object
-* @param {any} submit_element This takes the submit element of the form
-* @param {boolean} messageBox This tests if there is a message box
-* 
-* @return {Promise<boolean|array>} returns a boolean value or an array
-*/
-async function jsonFormSubmit(form_element, submit_element, messageBox = true){
+ 
+ /**
+ * This function will be used to send textual information from forms
+ * 
+ * @param {any} form_element This takes the form element object
+ * @param {any} submit_element This takes the submit element of the form
+ * @param {boolean} messageBox This tests if there is a message box
+ * 
+ * @return {boolean|string} returns a boolean value or a string
+ */
+ function formSubmit(form_element, submit_element, messageBox = true){
+    // formData = new FormData();
+ 
+    if(!$(form_element).attr("name")){
+         alert_box("Your form has no attribute name", "danger")
+         return false
+    }
+ 
     //submit value
+    submit = $(submit_element).val();
+ 
+    //strip form data into array form and attain total data
+    form_data = $(form_element).serializeArray();
+    split_lenght = form_data.length;
+ 
+    //variable to hold all user data
+    formData = "";
+ 
+    //loop and fill form data
+    counter = 0;
+    while(counter < split_lenght){
+        //grab each array data
+        new_data = form_data[counter];
+ 
+        key = new_data["name"];
+        value = new_data["value"];
+ 
+        //append to form data
+        if(formData != ""){
+            formData += "&" + key + "=" + value;
+        }else{
+            formData = key + "=" + value;
+        }
+ 
+        //move to next data
+        counter++;
+    }
+ 
+    //append submit if not found
+    if(!$(form_element).serialize().includes("&submit=")){
+        formData += "&submit=" + submit + "_ajax";
+    }
+ 
+    response = null;
+    
+    $.ajax({
+        url: $(form_element).attr("action"),
+        data: formData,
+        method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
+        dataType: "text",
+        cache: false,
+        async: false,
+        timeout: 8000,
+        beforeSend: function(){
+            if(messageBox){
+                message = loadDisplay({size: "small"});
+                type = "load";
+                time = 0;
+ 
+                messageBoxTimeout(form_element.prop("name"), message, type, time);
+            }
+        },
+        success: function(text){
+            if(messageBox){
+                 $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+            }
+            if(text == "success" || text.includes("success")){
+                response = true;
+            }else{
+                response = text;
+            }
+        },
+        error: function(xhr, textStatus){
+            message = "Please check your internet connection and try again";
+            type = "error";
+ 
+            if(textStatus == "timeout"){
+             message = "Connection was timed out due to a slow network. Please try again later"
+            }
+ 
+            if(messageBox){
+             messageBoxTimeout(form_element.prop("name"), message, type);
+            }else{
+             return message;
+            }
+        }
+    })
+ 
+    return response;
+ }
+ 
+ /**
+ * This function will be used to send textual information from forms
+ * 
+ * @param {any} form_element This takes the form element object
+ * @param {any} submit_element This takes the submit element of the form
+ * @param {boolean} messageBox This tests if there is a message box
+ * 
+ * @return {Promise<boolean|array>} returns a boolean value or an array
+ */
+ async function jsonFormSubmit(form_element, submit_element, messageBox = true){
+     if(!$(form_element).attr("name")){
+         alert_box("Your form has no attribute name", "danger")
+         return false
+    }
+     //submit value
     submit = $(submit_element).val();
  
     //strip form data into array form and attain total data
@@ -438,7 +467,9 @@ async function jsonFormSubmit(form_element, submit_element, messageBox = true){
             }
         },
         success: function(text){
-            $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+            if(messageBox){
+                 $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+            }
             text = JSON.parse(JSON.stringify(text));
             
             if(typeof text["status"] === "boolean"){
@@ -461,6 +492,8 @@ async function jsonFormSubmit(form_element, submit_element, messageBox = true){
  
             if(messageBox){
                 messageBoxTimeout(form_element.prop("name"), message, type, 0)
+            }else{
+                 alert_box(message, "danger")
             }
         }
     })

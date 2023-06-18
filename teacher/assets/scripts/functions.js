@@ -146,6 +146,11 @@ function toFormData(form){
 async function fileUpload(file_element, form_element, submit_element, messageBox = true){
    formData = new FormData();
 
+    if(!$(form_element).attr("name")){
+        alert_box("Your form has no attribute name", "danger")
+        return false
+    }
+
    //preparing file and submit values
    file = $(file_element).prop("files")[0];
    file_name = $(file_element).attr("name");
@@ -185,7 +190,9 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
            }            
        },
        success: function(text){
-           $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+           if(messageBox){
+                $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+           }
            if(text == "success"){
                response = true;
            }else{
@@ -219,6 +226,11 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
 
 async function jsonFileUpload(file_element, form_element, submit_element, messageBox = true){
    formData = new FormData();
+
+    if(!$(form_element).attr("name")){
+        alert_box("Your form has no attribute name", "danger")
+        return false
+    }
 
    //preparing file and submit values
    file = $(file_element).prop("files")[0];
@@ -259,7 +271,9 @@ async function jsonFileUpload(file_element, form_element, submit_element, messag
            }            
        },
        success: function(text){
-           $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+           if(messageBox){
+                $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+           }
            text = JSON.parse(JSON.stringify(text));
 
            if(text["status"] == "success" || text["status"].includes("success")){
@@ -295,7 +309,9 @@ async function jsonFileUpload(file_element, form_element, submit_element, messag
 * @return {boolean|string} returns a boolean value or a string
 */
 function formSubmit(form_element, submit_element, messageBox = true){
-   // formData = new FormData();
+   if(!$(form_element).attr("name")){
+        return "Your form has no attribute name"
+   }
 
    //submit value
    submit = $(submit_element).val();
@@ -352,7 +368,9 @@ function formSubmit(form_element, submit_element, messageBox = true){
            }
        },
        success: function(text){
-           $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+           if(messageBox){
+                $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+           }
            if(text == "success" || text.includes("success")){
                response = true;
            }else{
@@ -367,7 +385,11 @@ function formSubmit(form_element, submit_element, messageBox = true){
             message = "Connection was timed out due to a slow network. Please try again later"
            }
 
-           messageBoxTimeout(form_element.prop("name"), message, type);
+           if(messageBox){
+            messageBoxTimeout(form_element.prop("name"), message, type);
+           }else{
+            return message;
+           }
        }
    })
 
@@ -384,7 +406,11 @@ function formSubmit(form_element, submit_element, messageBox = true){
 * @return {Promise<boolean|array>} returns a boolean value or an array
 */
 async function jsonFormSubmit(form_element, submit_element, messageBox = true){
-   //submit value
+    if(!$(form_element).attr("name")){
+        alert_box("Your form has no attribute name", "danger")
+        return false
+   }
+    //submit value
    submit = $(submit_element).val();
 
    //strip form data into array form and attain total data
@@ -438,7 +464,9 @@ async function jsonFormSubmit(form_element, submit_element, messageBox = true){
            }
        },
        success: function(text){
-           $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+           if(messageBox){
+                $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+           }
            text = JSON.parse(JSON.stringify(text));
            
            if(typeof text["status"] === "boolean"){
@@ -461,6 +489,8 @@ async function jsonFormSubmit(form_element, submit_element, messageBox = true){
 
            if(messageBox){
                messageBoxTimeout(form_element.prop("name"), message, type, 0)
+           }else{
+                alert_box(message, "danger")
            }
        }
    })
