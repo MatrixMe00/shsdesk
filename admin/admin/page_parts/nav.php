@@ -166,6 +166,17 @@
                 "menu_class" => "",
                 "display_title" => "Exeat",
                 "admin_mode" => "records"
+            ],
+            [
+                "item_class"=> "",
+                "name" => "documents",
+                "title" => "Document Templates",
+                "data-url" => "/admin/admin/page_parts/documents.php",
+                "imgSrc" => "/assets/images/icons/documents-outline.svg",
+                "imgAlt" => "exeat",
+                "menu_class" => "",
+                "display_title" => "My Document Templates",
+                "admin_mode" => "records"
             ]
         ]
     ];
