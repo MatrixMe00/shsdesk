@@ -15,17 +15,21 @@
 
                 if(is_null($teacher_id) || empty($teacher_id)){
                     $message = "Teacher ID not found. Please provide one";
-                }elseif(!str_contains(strtoupper($teacher_id),"TID")){
+                }elseif(intval($teacher_id)){
                     $message = "Teacher ID is invalid or has the wrong format";
                 }elseif(is_null($step) || empty($step)){
                     $message = "Process has broken down. Location of processing couldn't be established";
+                }elseif(strtolower($teacher_id) == "new user"){
+                    $message = "Your username is incorrect or invalid";
                 }else{
-                    $teacher_id = formatItemId($teacher_id, "TID", true);
+                    if(str_contains($teacher_id, "tid")){
+                        $teacher_id = formatItemId($teacher_id, "TID", true);
+                    }
 
                     if($step == 1){
-                        $sql = "SELECT user_username FROM teacher_login WHERE user_id=?";
+                        $sql = "SELECT user_username FROM teacher_login WHERE (user_id=? OR user_username=?)";
                         $stmt = $connect2->prepare($sql);
-                        $stmt->bind_param("i", $teacher_id);
+                        $stmt->bind_param("is", $teacher_id, $teacher_id);
                         if($stmt->execute()){
                             $result = $stmt->get_result();
 
@@ -45,9 +49,9 @@
                             $message = "Please provide a password";
                         }else{
                             $sql = "SELECT t.teacher_id FROM teacher_login l JOIN teachers t ON l.user_id=t.teacher_id
-                                WHERE l.user_id=? AND l.user_password=?";
+                                WHERE (l.user_id=? OR l.user_username=?) AND l.user_password=?";
                             $stmt = $connect2->prepare($sql);
-                            $stmt->bind_param("is", $teacher_id, $password);
+                            $stmt->bind_param("iss", $teacher_id, $teacher_id, $password);
                             if($stmt->execute()){
                                 $result = $stmt->get_result();
 
