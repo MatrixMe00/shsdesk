@@ -48,7 +48,7 @@
         <?php if(is_array($courses)) :?>
         <button class="sp-lg xs-rnd plain indigo" data-refresh="false" data-section="teachers">View All Teachers</button>
         <?php endif; ?>
-        <button class="sp-lg xs-rnd plain dark" data-section="add_course">Add new Course</button>
+        <button class="sp-lg xs-rnd plain dark" data-section="add_course">Add new Subject</button>
         <?php if (is_array($courses)) : ?>
         <button class="sp-lg xs-rnd plain cyan" data-section="add_teacher">Add new Teacher</button>
         <?php endif; ?>

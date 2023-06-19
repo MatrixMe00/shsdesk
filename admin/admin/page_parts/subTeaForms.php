@@ -12,7 +12,7 @@
 ?>
     <form action="<?= $url ?>/admin/admin/submit.php" name="addCourseForm" method="GET">
         <div class="head">
-            <h2>Add a New Course</h2>
+            <h2>Add a New Subject</h2>
         </div>
         <div class="message_box no_disp sticky top">
             <span class="message"></span>
@@ -21,12 +21,12 @@
         <div class="body">
             <div class="joint gap-sm">
                 <label for="course_name" class="flex-column gap-sm">
-                    <span class="label_title">Course Name</span>
-                    <input type="text" name="course_name" id="course_name" placeholder="Course Name">
+                    <span class="label_title">Subject Name</span>
+                    <input type="text" name="course_name" id="course_name" placeholder="Subject Name">
                 </label>
                 <label for="course_alias" class="flex-column gap-sm">
-                    <span class="label_title">Course Alias [Short Form]</span>
-                    <input type="text" name="course_alias" id="course_alias" placeholder="Course Alias">
+                    <span class="label_title">Subject Alias [Short Form]</span>
+                    <input type="text" name="course_alias" id="course_alias" placeholder="Subject Alias">
                 </label>
                 <label for="course_credit" class="flex-column gap-sm">
                     <span class="label_title">Course Credit Hours</span>
@@ -54,12 +54,12 @@
         <div class="body">
             <div class="joint gap-sm">
                 <label for="u_course_name" class="flex-column gap-sm">
-                    <span class="label_title">Course Name</span>
-                    <input type="text" name="course_name" id="u_course_name" placeholder="Course Name">
+                    <span class="label_title">Subject Name</span>
+                    <input type="text" name="course_name" id="u_course_name" placeholder="Subject Name">
                 </label>
                 <label for="u_course_alias" class="flex-column gap-sm">
-                    <span class="label_title">Course Alias [Short Form]</span>
-                    <input type="text" name="course_alias" id="u_course_alias" placeholder="Course Alias">
+                    <span class="label_title">Subject Alias [Short Form]</span>
+                    <input type="text" name="course_alias" id="u_course_alias" placeholder="Subject Alias">
                 </label>
                 <label for="u_course_credit" class="flex-column gap-sm">
                     <span class="label_title">Course Credit Hours</span>
