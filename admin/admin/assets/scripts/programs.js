@@ -178,6 +178,58 @@ $(".item-event").click(function(){
                 $(table_foot).find(".res_stat").html(message)
             }
         })
+    }else if($(this).hasClass("view")){
+        $("#view_results").removeClass("no_disp")
+        const parent = $(this).parents("tr")
+        const p_class = $(parent).find("td:nth-child(2)").html()
+        const p_subject = $(parent).find("td:nth-child(3)").html()
+        const p_year = $(this).attr("data-p-year")
+        const p_sem = $(this).attr("data-p-sem")
+
+        $("#view_results table tfoot #year_sem").html("Class Year: " + p_year + " | Class Sem: " + p_sem)
+        $("#view_results #topic").html(p_subject + " results for " + p_class)
+
+        $.ajax({
+            url: "./admin/submit.php",
+            data: {submit: "view_results", token_id: item_id},
+            timeout: 10000,
+            beforeSend: function(){
+                const tr = "<tr class='empty'><td colspan='6'>Fetching results, please wait...</td></tr>"
+                $("#view_results table tbody").html(tr)
+            },
+            success: function(response){
+                response = JSON.parse(JSON.stringify(response))
+                $("#view_results table tbody").html("")
+
+                if(response["error"] === true){
+                    const tr_error = "<tr class='empty'><td colspan='6'>" + response["message"] + "</td></tr>"
+                    $("#view_results table tbody").html(tr_error);
+                }else{
+                    for(var i=0; i < response["message"].length; i++){
+                        const data = response["message"][i];
+                        const tr = "<tr>" +
+                                        "<td>" +  data["indexNumber"] + "</td>" +
+                                        "<td>" +  data["fullname"] + "</td>" + 
+                                        "<td>" +  data["class_mark"] + "</td>" + 
+                                        "<td>" +  data["exam_mark"] + "</td>" + 
+                                        "<td>" +  data["mark"] + "</td>" + 
+                                        "<td>" +  data["grade"] + "</td>" + 
+                                   "</tr>";
+                        $("#view_results table tbody").append(tr);
+                    }
+                    // $("#view_results table")
+                }
+            },
+            error: function(xhr){
+                let message = xhr.responseText
+
+                if(xhr.textStatus == "timeout"){
+                    message = "Server communication was halted due to slow network. Please check your network and try again"
+                }
+
+                alert_box(message, "danger", 7)
+            }
+        })
     }
 })
 

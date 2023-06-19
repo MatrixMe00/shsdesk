@@ -1887,6 +1887,40 @@
             }
 
             echo $message;
+        }elseif($submit == "view_results" || $submit == "view_results_ajax"){
+            $token_id = $_GET["token_id"] ?? null;
+            
+            if(is_null($token_id) || empty($token_id)){
+                $message = "No token id provided";
+            }else{
+                $sql = "SELECT r.indexNumber, r.class_mark, r.exam_mark, r.mark, (CONCAT(s.Lastname,' ',s.Othernames)) AS fullname
+                    FROM results r JOIN students_table s ON r.indexNumber = s.indexNumber
+                    WHERE r.result_token='$token_id'";
+                $results = $connect2->query($sql);
+
+                if($results->num_rows > 0){
+                    $exam_type = fetchData("school_result","admissiondetails","schoolID=$user_school_id")["school_result"];
+                    if(empty($exam_type) || is_null($exam_type)){
+                        $message = "Your results type has not been revised. Please revise it to get grade marks";
+                    }else{
+                        $counter = 0;
+                    
+                        while($row = $results->fetch_assoc()){
+                            $message[$counter] = $row;
+                            $message[$counter]["grade"] = giveGrade($row["mark"],$exam_type);
+                            $counter++;
+                        }
+                        $error = false;
+                    }
+                }else{
+                    $message = "No results were found for this token";
+                }
+            }
+
+            $response = ["error"=>$error ?? true, "message"=>$message];
+            header("Content-Type: application/json");
+            
+            echo json_encode($response);
         }
     }else{
         echo "no-submission";
