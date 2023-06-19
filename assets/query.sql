@@ -165,3 +165,15 @@ CREATE TABLE `accesspay` (
  `active` BOOLEAN NOT NULL DEFAULT FALSE , 
  PRIMARY KEY (`school_id`)
 ) ENGINE = InnoDB;
+
+CREATE TABLE `attendance` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `school_id` int(11) NOT NULL,
+ `indexNumber` int(11) NOT NULL,
+ `student_year` int(11) NOT NULL,
+ `semester` int(11) NOT NULL,
+ `student_attendance` int(11) NOT NULL,
+ `attendance_total` int(11) NOT NULL,
+ `date` datetime NOT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
