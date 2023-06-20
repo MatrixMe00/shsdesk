@@ -153,8 +153,10 @@
 </section>
 
 <section class="btn_section attendance_list stud_list">
-    <div class="btn wmax-sm w-full sm-auto p-lg">
+    <div class="btn wmax-sm flex flex-eq flex-wrap gap-sm w-full sm-auto p-lg">
         <button class="primary w-full" name="submit" value="get_document">Get Document</button>
+        <button class="success w-full no_disp" name="download_btn">Download</button>
+        <a href="" id="download_anchor" class="no_disp"></a>
     </div>
 </section>
 
@@ -170,12 +172,17 @@
 
             $(".section_btn:not(.plain-r)").addClass("plain-r")
             $(this).removeClass("plain-r")
+
+            $("button[name=download_btn]").addClass("no_disp")
         })
+
+        var downloadUrl = ""; downloadTitle = "";
 
         $("button[name=submit]").click(function(){
             const formName = $(".section_btn:not(.plain-r)").attr("data-section");
             const form = $(".btn_section."+ formName +" .form")
             let form_data = {}
+            let title = "";
             
             switch(formName){
                 case "stud_list":
@@ -185,6 +192,7 @@
                         program_year: $(form).find("select[name=program_year]").val(),
                         gender: $(form).find("select[name=student_gender]").val()
                     }
+                    title = "Student List"
                     break;
                 case "attendance_list":
                     form_data = {
@@ -193,28 +201,53 @@
                         program_year: $(form).find("select[name=student_year]").val(),
                         semester: $(form).find("select[name=student_semester]").val()
                     }
+                    title = "Attendance List"
                     break;
                 case "special":
                     break;
             }
 
-            /*$.ajax({
+            $.ajax({
                 url:"./admin/excelFile.php",
                 data: form_data,
                 timeout: 10000,
+                method: 'GET',
+                xhrFields: {
+                    responseType: 'blob'
+                },
                 beforeSend: function(){
                     alert_box("Getting Document...","secondary")
                 },
-                success: function(response){
-                    alert_box(response, "primary", 10)
+                success: function(response, textStatus, xhr){
+                    /*if(xhr.getResponseHeader('Content-Type') === 'application/octet-stream'){
+                        // Create a download link for the Excel file
+                        downloadUrl = window.URL.createObjectURL(response);
+                        downloadTitle = title + '.xlsx';
+                        $("button[name=download_btn]").removeClass("no_disp")
+                    }else{
+                        alert_box(response, "primary", 5)
+                    }*/
+
+                    // Create a download link for the Excel file
+                    downloadUrl = window.URL.createObjectURL(response);
+                    downloadTitle = title + '.xlsx';
+                    $("button[name=download_btn]").removeClass("no_disp")
+                    alert_box("Download file ready")
                 },
                 error: function(xhr){
                     if(xhr.statusText == "timeout"){
                         alert_box("Connection was timed out due to slow network. Please check and try again", "danger", 6)
                     }
                 }
-            })*/
-            alert_box("Sorry, documents are not yet set. Try again later", "primary", 8)
+            })
+            // alert_box("Sorry, documents are not yet set. Try again later", "primary", 8)
+        })
+
+        $("button[name=download_btn]").click(function(){
+            $("#download_anchor").attr("href",downloadUrl)
+            $("#download_anchor").attr("download", downloadTitle)
+            $("#download_anchor")[0].click()
+            // window.URL.revokeObjectURL(downloadUrl);
         })
     })
 </script>

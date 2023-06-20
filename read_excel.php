@@ -329,12 +329,11 @@
                             }
     
                             //check if index number exists and insert data into database
-                            $index = fetchData1("indexNumber","students_table","indexNumber='$indexNumber'");
+                            $index = fetchData1("indexNumber, program_id","students_table","indexNumber='$indexNumber'");
     
                             if($index == "empty"){
                                 $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, programme, program_id, boardingStatus)
                                     VALUES (?,?,?,?,?,?,?,?,?,?)";
-                                $stmt = $connect2->prepare($sql);
                                 $stmt = $connect2->prepare($sql);
                                 $stmt->bind_param("ssssiiisis",$indexNumber, $Lastname, $Othernames, $Gender, $houseID, $user_school_id, $studentYear,
                                     $programme, $program_id, $boardingStatus);
@@ -347,6 +346,16 @@
                                 }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
                                     echo "Detail for $indexNumber not written. Gender must either be Male or Female";
                                 }                                
+                            }elseif($index["program_id"] == 0 || empty($index["program_id"])){
+                                $sql = "UPDATE students_table SET program_id=? WHERE indexNumber=?";
+                                $stmt = $connect2->prepare($sql);
+                                $stmt->bind_param("is",$program_id,$indexNumber);
+
+                                if($stmt->execute()){
+                                    if($row == $max_row){
+                                        echo "success";
+                                    }
+                                }
                             }else{
                                 echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
                             }                            
