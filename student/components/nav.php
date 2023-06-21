@@ -30,12 +30,10 @@
                 data-active="subject">
                 <span>My Subjects</span>
             </div>
-            <?php if($code !== "empty"): ?>
             <div id="my_report" data-href="<?= "$url/components/report.php" ?>" class="tab" data-document-title="<?= $student["Lastname"] ?> Reports"
                 data-active="report">
                 <span>My Reports</span>
             </div>
-            <?php endif; ?>
             <div data-href="<?= "$url/components/accessCode.php" ?>" class="tab" data-document-title="Get Access Code" data-active="code">
                 <span>Get Access Code</span>
             </div>

@@ -1,8 +1,8 @@
 $(document).ready(function(){
     const cust_amount = $("input#unit_price").val();
 
-    $("input#price").val("GHC " + cust_amount.toFixed(2))
-
+    $("input#price").val("GHC " + parseFloat(cust_amount).toFixed(2))
+    
     $("form").submit(async function(e){
         e.preventDefault()
       
@@ -29,7 +29,7 @@ $(document).ready(function(){
         const fullname = $("input[name=lname]").val() + " " + $("input[name=oname]").val()
 
         if(cust_amount <= 0){
-            alert_box("Price is unacceptable", "danger"); return
+            alert_box("Price cannot be lower than 0. Please select an option", "danger"); return
         }
 
         var handler = PaystackPop.setup({

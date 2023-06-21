@@ -5,14 +5,16 @@
                 <span class="self-align-start">Number of Subjects</span>
                 <span class="txt-fl3 txt-bold self-align-end">
                     <?php 
-                        $course_ids = fetchData1(
-                            "course_ids","program","LOWER(program_name)='".
-                            strtolower($student["programme"])."' AND school_id=".$student["school_id"]
-                        );
-                        if($course_ids === "empty"){
-                            echo 0;
+                        if(!is_null($student["program_id"])){
+                            $course_ids = fetchData1("course_ids","program","program_id=".intval($student["program_id"]));
+                            if($course_ids == "empty"){
+                                echo "<span class='txt-fl2'>No courses assigned</span>";
+                            }else{
+                                $courses = fetchData1("COUNT(DISTINCT course_id) AS total","teacher_classes","program_id={$student['program_id']}")["total"];
+                                echo $courses;
+                            }
                         }else{
-                            echo count(explode(" ",$course_ids["course_ids"])) - 1;
+                            echo "<span class='txt-fl2'>No class assigned</span>";
                         }
                     ?>
                 </span>

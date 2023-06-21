@@ -86,6 +86,13 @@
                 $student_program = $student["programme"];
                 $academicYear = getAcademicYear(fetchData1("date","results","indexNumber='{$student['indexNumber']}' AND exam_year=$exam_year ORDER BY date DESC")["date"]);
 
+                $attendance = fetchData1("student_attendance, attendance_total", "attendance", "indexNumber={$student['indexNumber']} AND student_year=$exam_year AND semester=$semester");
+                if(is_array($attendance)){
+                    $attendance = "Class Attendance: {$attendance['student_attendance']} of {$attendance['attendance_total']}";
+                }else{
+                    $attendance = "Class Attendance: Not Set";
+                }
+
                 $table = "
                 <table id=\"results_table\">
                     <thead>
@@ -133,6 +140,8 @@
                         <td>".number_format($total_class + $total_exam, 1)."</td>
                         <td colspan=\"2\"></td>
                     </tr>
+                    <tr><td colspan=\"6\"></rd></tr>
+                    <tr><td colspan=\"6\" style=\"text-align: center\">$attendance</rd></tr>
                     ";
                 }else{
                     $table .= "<tr colspan=\"6\">No results were found</tr>";

@@ -8,9 +8,8 @@
                 if($course_ids == "empty"){
                     echo "<span class='txt-fl2'>No courses assigned</span>";
                 }else{
-                    $course_ids = explode(" ", $course_ids["course_ids"]);
-                    array_pop($course_ids);
-                    echo count($course_ids);
+                    $courses = fetchData1("COUNT(DISTINCT course_id) AS total","teacher_classes","program_id={$student['program_id']}")["total"];
+                    echo $courses;
                 }
             }else{
                 echo "<span class='txt-fl2'>No class assigned</span>";

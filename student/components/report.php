@@ -1,4 +1,7 @@
 <?php require_once "compSession.php"; $_SESSION["active-page"] = "report" ?>
+<?php 
+$code = fetchData1("accessToken","accesstable","indexNumber='{$student['indexNumber']}' AND status=1 ORDER BY expiryDate DESC"); 
+if($code == "empty"): ?>
 <section class="flex d-section flex-wrap gap-sm p-lg card-section">
     <div class="card v-card gap-lg indigo sm-rnd flex-wrap">
         <span class="self-align-start">Number of Subjects</span>
@@ -8,9 +11,8 @@
                 if($course_ids == "empty"){
                     echo "<span class='txt-fl2'>No courses assigned</span>";
                 }else{
-                    $course_ids = explode(" ", $course_ids["course_ids"]);
-                    array_pop($course_ids);
-                    echo count($course_ids);
+                    $courses = fetchData1("COUNT(DISTINCT course_id) AS total","teacher_classes","program_id={$student['program_id']}")["total"];
+                    echo $courses;
                 }
             }else{
                 echo "<span class='txt-fl2'>No class assigned</span>";
@@ -104,7 +106,7 @@
     <p class="sp-lg txt-fl"></p>
 </section>
 
-<section>
+<section class="">
     <canvas id="stats" class="wmax-md" style="max-height: 40vh"></canvas>
 </section>
 
@@ -224,3 +226,8 @@
         })
     })
 </script>
+<?php else: ?>
+<section class="sp-xxlg border txt-al-c">
+    <p>Please Go to the 'Get Access Code' tab to make a purchase</p>
+</section>
+<?php endif ?>
