@@ -122,6 +122,7 @@
                         <td>Lastname</td>
                         <td>Othernames</td>
                         <td>House</td>
+                        <td>Class</td>
                         <td>Boarding Status</td>
                     </tr>
                 </thead>
@@ -135,7 +136,19 @@
                         <td class="index"><?php echo $row["indexNumber"] ?></td>
                         <td class="lname"><?php echo $row["Lastname"] ?></td>
                         <td class="oname"><?php echo $row["Othernames"]?></td>
-                        <td class="house"><?php echo fetchData("title", "houses", "id=".$row["houseID"])["title"]?></td>
+                        <td class="house"><?php 
+                            $house = fetchData("title", "houses", "id=".$row["houseID"]);
+                            $house = is_array($house) ? $house["title"] : "Invalid House index";
+                            echo $house;
+                        ?></td>
+                        <td><?php
+                            $program = fetchData1("program_name", "program", "program_id=".$row["program_id"]);
+                            if($program == "empty"){
+                                echo "Not Set";
+                            }else{
+                                echo $program["program_name"];
+                            }
+                        ?></td>
                         <td class="board_stat"><?php echo $row["boardingStatus"]?></td>
                         <td>
                             <span class="item-event edit studs">View</span>
