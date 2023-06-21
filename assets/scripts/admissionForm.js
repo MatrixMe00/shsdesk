@@ -103,7 +103,11 @@ $("button[name=modal_cancel]").click(function(){
         $("button[name=student_cancel_operation]").click();
 
         //keep the amount section disabled
-        $("#pay_amount").prop("disabled", true);
+        $("#pay_amount").prop("readonly", true);
+
+        //get intial payment value
+        const payValue = $("form[name=paymentForm] input#pay_amount").attr("data-init")
+        $("form[name=paymentForm] input#pay_amount").val("GHC " + payValue)
     }else if($(this).parents(".form_modal_box").prop("id") == "admission"){
         //enable the index input field
         $("#ad_index").prop("readonly", false);
@@ -131,6 +135,10 @@ $("button[name=modal_cancel]").click(function(){
 
         $("#admission input[required], #admission input.required").blur();
         $("#admission select[required], #admission select.required").change();
+
+        //get intial payment value
+        const payValue = $("form[name=paymentForm] input#pay_amount").attr("data-init")
+        $("form[name=paymentForm] input#pay_amount").val("GHC " + payValue)
     }
 })
 

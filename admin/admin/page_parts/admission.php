@@ -215,10 +215,6 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                         2 => [
                             "value"=> "ctvet",
                             "title"=> "CTVET Only"
-                        ],
-                        3 => [
-                            "value"=> "both",
-                            "title"=> "Both"
                         ]
                     ]
                 ?>
