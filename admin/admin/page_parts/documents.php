@@ -17,7 +17,7 @@
     <div class="btn sm-auto p-lg m-sm">
         <button class="plain-r primary section_btn" data-section="stud_list">Student Lists</button>
         <button class="plain-r primary section_btn" data-section="attendance_list">Attendance List</button>
-        <button class="plain-r primary section_btn" data-section="special">Special Documents</button>
+        <button class="plain-r primary section_btn" data-section="upload">Upload Documents</button>
     </div>
 </section>
 
@@ -148,15 +148,45 @@
 </section>
 
 
-<section class="btn_section txt-al-c p-xlg-lr p-xxlg-tp txt-fl special">
-    <p>This section would present other special documents</p>
+<section class="btn_section txt-al-c p-xlg-lr p-xxlg-tp txt-fl upload">
+    <p>Use this section to upload your documents such as the attendance list</p>
+</section>
+
+<section class="btn_section upload">
+    <form class="form" action="admin/excelRead.php" name="upload_form" enctype="multipart/form-data">
+        <h3 class="txt-al-c">Please select your documents to upload</h3>
+        <div class="joint gap-sm">
+            <label for="document_type" class="flex-column self-align-end">
+                <span class="label_title">Select type of document</span>
+                <select name="document_type" id="document_type">
+                    <option value="">Select Document Type</option>
+                    <option value="attendance_list">Attendance List</option>
+                    <option value="students_list">Students List</option>
+                </select>
+            </label>
+            <label for="document_file" class="file_label">
+                <span class="label_title self-align-center">Provide the document to upload</span>
+                <div class="fore_file_display">
+                    <input type="file" name="document_file" id="document_file" accept=".xlsx">
+                    <span class="plus">+</span>
+                    <span class="display_file_name">Choose or drag your file here</span>
+                </div>
+            </label>
+        </div>
+    </form>
 </section>
 
 <section class="btn_section attendance_list stud_list">
     <div class="btn wmax-sm flex flex-eq flex-wrap gap-sm w-full sm-auto p-lg">
-        <button class="primary w-full" name="submit" value="get_document">Get Document</button>
+        <button class="cyan w-full" name="submit" value="get_document">Get Document</button>
         <button class="success w-full no_disp" name="download_btn">Download</button>
         <a href="" id="download_anchor" class="no_disp"></a>
+    </div>
+</section>
+
+<section class="btn_section upload">
+    <div class="btn wmax-sm w-full sm-auto p-lg">
+        <button class="cyan w-full upload_btn" name="submit" value="upload_document">Upload Document</button>
     </div>
 </section>
 
@@ -184,70 +214,101 @@
             let form_data = {}
             let title = "";
             
-            switch(formName){
-                case "stud_list":
-                    form_data = {
-                        submit: "student_list",
-                        program_name: $(form).find("select[name=program]").val(),
-                        program_year: $(form).find("select[name=program_year]").val(),
-                        gender: $(form).find("select[name=student_gender]").val()
-                    }
-                    title = "Student List"
-                    break;
-                case "attendance_list":
-                    form_data = {
-                        submit: "attendance_list",
-                        program_id: $(form).find("select[name=program_id]").val(),
-                        program_year: $(form).find("select[name=student_year]").val(),
-                        semester: $(form).find("select[name=student_semester]").val()
-                    }
-                    title = "Attendance List"
-                    break;
-                case "special":
-                    break;
-            }
-
-            $.ajax({
-                url:"./admin/excelFile.php",
-                data: form_data,
-                timeout: 10000,
-                method: 'GET',
-                xhrFields: {
-                    responseType: 'blob'
-                },
-                beforeSend: function(){
-                    alert_box("Getting Document...","secondary")
-                },
-                success: function(response, textStatus, xhr){
-                    /*if(xhr.getResponseHeader('Content-Type') === 'application/octet-stream'){
-                        // Create a download link for the Excel file
-                        downloadUrl = window.URL.createObjectURL(response);
-                        downloadTitle = title + '.xlsx';
-                        $("button[name=download_btn]").removeClass("no_disp")
-                    }else{
-                        alert_box(response, "primary", 5)
-                    }*/
-
-                    // Create a download link for the Excel file
-                    downloadUrl = window.URL.createObjectURL(response);
-                    downloadTitle = title + '.xlsx';
-                    $("button[name=download_btn]").removeClass("no_disp")
-                    alert_box("Download file ready")
-                },
-                error: function(xhr){
-                    if(xhr.statusText == "timeout"){
-                        alert_box("Connection was timed out due to slow network. Please check and try again", "danger", 6)
-                    }
+            if($(this).val() == "get_document"){
+                switch(formName){
+                    case "stud_list":
+                        form_data = {
+                            submit: "student_list",
+                            program_name: $(form).find("select[name=program]").val(),
+                            program_year: $(form).find("select[name=program_year]").val(),
+                            gender: $(form).find("select[name=student_gender]").val()
+                        }
+                        title = "Student List"
+                        break;
+                    case "attendance_list":
+                        form_data = {
+                            submit: "attendance_list",
+                            program_id: $(form).find("select[name=program_id]").val(),
+                            program_year: $(form).find("select[name=student_year]").val(),
+                            semester: $(form).find("select[name=student_semester]").val()
+                        }
+                        title = "Attendance List"
+                        break;
                 }
-            })
-            // alert_box("Sorry, documents are not yet set. Try again later", "primary", 8)
+
+                $.ajax({
+                    url:"./admin/excelFile.php",
+                    data: form_data,
+                    timeout: 10000,
+                    method: 'GET',
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    // dataType: "text",
+                    beforeSend: function(){
+                        alert_box("Getting Document...","secondary")
+                    },
+                    success: function(response, textStatus, xhr){
+                        var contentType = xhr.getResponseHeader('Content-Type');
+
+                        if (contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+                            // var blob = new Blob([response], { type: contentType });
+                            downloadUrl = window.URL.createObjectURL(response);
+                            downloadTitle = title + '.xlsx';
+                            $("button[name=download_btn]").removeClass("no_disp")
+                            alert_box("Download file ready")
+                        }else if (contentType === "text/html; charset=UTF-8") {
+                            alert_box("An error occurred while processing your file. Check your fields and try again", "danger", 8)
+                        }else{
+                            alert_box("Unhandled error", "danger")
+                        }
+                    },
+                    error: function(xhr){
+                        if(xhr.statusText == "timeout"){
+                            alert_box("Connection was timed out due to slow network. Please check and try again", "danger", 6)
+                        }else{
+                            alert_box(xhr.responseText, "danger")
+                        }
+                    }
+                })
+            }else if($(this).val() == "upload_document"){
+                $("form[name=upload_form]").submit()
+            }
         })
 
         $("button[name=download_btn]").click(function(){
             $("#download_anchor").attr("href",downloadUrl)
             $("#download_anchor").attr("download", downloadTitle)
             $("#download_anchor")[0].click()
-            // window.URL.revokeObjectURL(downloadUrl);
+        })
+
+        //concerning the files that will be chosen
+        $("input[type=file]").change(function(){
+            //get the value of the image name
+            const image_path = $(this).val();
+
+            //strip the path name to file name only
+            const image_name = image_path.split("C:\\fakepath\\");
+
+            //store the name of the file into the display div
+            if(image_path != ""){
+                $(this).siblings(".plus").hide();
+                $(this).siblings(".display_file_name").html(image_name);       
+            }else{
+                $(this).siblings(".plus").css("display","initial");
+                $(this).siblings(".display_file_name").html("Choose or drag your file here");
+            }
+        })
+
+        $("form[name=upload_form]").submit(async function(e){
+            e.preventDefault();
+
+            response = await fileUpload($(this).find("input[type=file]"),$(this), $("button.upload_btn"), false)
+            if(response == true){
+                alert_box("upload finish")
+            }else{
+                alert_box(response, "danger")
+            }
         })
     })
 </script>

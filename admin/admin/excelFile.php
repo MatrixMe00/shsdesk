@@ -115,7 +115,7 @@
     }
 
     if($error === true){
-        echo $message; exit(1);
+        echo "Error: $message"; return;
     }
 
     $results = $results->fetch_all(MYSQLI_ASSOC);
@@ -230,14 +230,16 @@
         $sheet->getColumnDimension($column)->setAutoSize(TRUE);
     }
 
+    //create an IOFactory to ask for location for save file
+    $writer = IOFactory::createWriter($spreadsheet, "Xlsx");
+
     //set header to accept excel
     header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
     //define file name
     header("Content-Disposition: attachment;filename=\"$title.xlsx\"");
 
-    //create an IOFactory to ask for location for save file
-    $writer = IOFactory::createWriter($spreadsheet, "Xlsx");
+    header('Cache-Control: max-age=0');
 
     //save to php output
     $writer->save("php://output");

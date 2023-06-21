@@ -34,6 +34,7 @@
                     //get maximum cell number
                     $max_column = $sheet->getHighestDataColumn();
                     $max_row = $sheet->getHighestDataRow();
+                    $row_start = 2;
 
                     $acceptable = ["K","F","H","G","I"];
 
@@ -44,20 +45,36 @@
                         $cellValue = $cell->getValue();
 
                         if(strtolower($cellValue) != "index number" || strval(strpos(strtolower($cellValue), "index")) == "false"){
-                            //display error if the first column isnt the index number
-                            echo "First column not identified as 'index number'. Please follow the format directed in the documents above";
-                            exit(1);
+                            $cell =  $sheet->getCell("A2");
+                            $cellValue = $cell->getValue();
+
+                            $row_start = 3;
+
+                            if(strtolower($cellValue) != "index number" || strval(strpos(strtolower($cellValue), "index")) == "false"){
+                                //display error if the first column isnt the index number
+                                echo "First column not identified as 'index number'. Please follow the format directed in the documents above";
+                                exit(1);
+                            }
                         }
                     }elseif($max_column == "H" || $max_column == "G"){
                         //grab the detail in the first cell
                         $cell = $sheet->getCell("A2");
                         $cellValue = $cell->getValue();
 
+                        $row_start = 3;
+
                         if(strval(strpos(strtolower($cellValue), "index")) == "false"){
-                            echo "The file you sent cannot be defined. Please send a valid file format. Make sure it begins with 'index'";
-                            exit(1);
+                            $cell =  $sheet->getCell("A1");
+                            $cellValue = $cell->getValue();
+
+                            $row_start = 2;
+
+                            if(strval(strpos(strtolower($cellValue), "index")) == "false"){
+                                echo "The file you sent cannot be defined. Please send a valid file format. Make sure it begins with 'index'";
+                                exit(1);
+                            }
                         }
-                    }elseif(!array_search($max_column, $acceptable)){
+                    }elseif(array_search($max_column, $acceptable) === false){
                         echo "Invalid file detected. Please send the correct file to continue";
                         exit(1);
                     }
@@ -119,7 +136,7 @@
                     //display content
                     //--for placement
                     if($max_column == "J"){
-                        for($row=2; $row <= $max_row; $row++){
+                        for($row=$row_start; $row <= $max_row; $row++){
                             //grab columns
                             for($col = 0; $col <= $headerCounter; $col++){
                                 $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
@@ -197,7 +214,7 @@
                         //make it end at G
                         $headerCounter = 6;
                         
-                        for($row=3; $row <= $max_row; $row++){
+                        for($row=$row_start; $row <= $max_row; $row++){
                             //grab columns [reject last column, column H]
                             for($col = 0; $col <= $headerCounter; $col++){
                                 $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
@@ -281,16 +298,19 @@
                             }             
                         }
                     }elseif($max_column == "I"){
-                        for($row=2; $row <= $max_row; $row++){
+                        for($row=$row_start; $row <= $max_row; $row++){
+                            $skip_row = 0;
                             //grab columns
                             for($col = 0; $col <= $headerCounter; $col++){
                                 $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
                                 
                                 switch ($col) {
                                     case 0:
+                                        $skip_row = empty($cellValue) ? $skip_row + 1 : 0;
                                         $indexNumber = empty($cellValue) ? generateIndexNumber($user_school_id) : $cellValue;
                                         break;
                                     case 1:
+                                        $skip_row = empty($cellValue) ? $skip_row + 1 : $skip_row - 1;
                                         $Lastname = ucfirst($cellValue);
                                         break;
                                     case 2:
@@ -318,7 +338,7 @@
                                         $programme = formatName($cellValue);
                                         break;
                                     case 8:
-                                        $program = $cellValue;
+                                        $program = strtolower($cellValue);
                                         $program_id = fetchData1("program_id","program","school_id=$user_school_id AND (program_name='$program' OR short_form='$program')");
                                         $program_id = is_array($program_id) ? $program_id["program_id"] : 0;
                                         break;    
@@ -326,6 +346,14 @@
                                         "Buffer count is beyond expected input count";
                                         exit(1);
                                 }
+
+                                if($skip_row >= 2){
+                                    break;
+                                }
+                            }
+
+                            if($skip_row >= 2){
+                                continue;
                             }
     
                             //check if index number exists and insert data into database
@@ -361,7 +389,7 @@
                             }                            
                         }
                     }else{
-                        for($row=2; $row <= $max_row; $row++){
+                        for($row=$row_start; $row <= $max_row; $row++){
                             //grab columns
                             for($col = 0; $col <= $headerCounter; $col++){
                                 $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
