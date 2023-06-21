@@ -12,7 +12,6 @@ if(isset($_REQUEST['submit'])){
     if($submit == 'sendTransaction'){
         $senderId = "SHSDesk";
         $recipients = [$_REQUEST["phone"]];
-        $text_message = $_REQUEST['message'];
     }elseif($submit == 'exeat_request' || $submit == 'exeat_request_ajax'){
         $student = fetchData1("lastname, othernames, guardianContact","students_table","indexNumber='$student_index'");
         if(is_array($student)){
@@ -33,6 +32,8 @@ if(isset($_REQUEST['submit'])){
         }
     }elseif($submit == "send_sms" || $submit == "send_sms_ajax"){
         $jsonFormat = false;
+        $text_message = $sms_text;
+        
         if($group == "student"){
             if($individuals == "all"){
                 $numbers = fetchData1("guardianContact","students_table","school_id=$user_school_id",0);
@@ -46,7 +47,7 @@ if(isset($_REQUEST['submit'])){
                             $_REQUEST["system_message"] = "Process has been stopped because student with index number $individual has no valid contact number";
                             return;
                         }else{
-                            array_push($numbers, $number["guardianContact"]);
+                            array_push($numbers, remakeNumber($number["guardianContact"], true, false));
                         }
                     }else{
                         $_REQUEST["system_message"] = "Student with index number $individual was not found. Process has stopped";
@@ -63,13 +64,19 @@ if(isset($_REQUEST['submit'])){
                 $recipients = [];
                 foreach($numbers as $number){
                     if(is_array($number)){
-                        array_push($recipients, remakeNumber($number["guardianContact"], true, false));
+                        if(!empty($number["guardianContact"]) && !is_null($number["guardianContact"])){
+                            array_push($recipients, remakeNumber($number["guardianContact"], true, false));
+                        }
                     }else{
-                        array_push($recipients, remakeNumber($number, true, false));
+                        if(!empty($number) && !is_null($number)){
+                            array_push($recipients, remakeNumber($number, true, false));
+                        }
                     }                    
                 }
             }elseif(is_array($numbers) && array_key_exists("guardianContact", $numbers)){
-                $recipients = [$numbers["guardianContact"]];
+                if(!empty($numbers["guardianContact"])){
+                    $recipients = [remakeNumber($numbers["guardianContact"], true, false)];
+                }
             }else{
                 $_REQUEST["system_message"] = "No recipients were discovered";
             }
@@ -105,9 +112,13 @@ if(isset($_REQUEST['submit'])){
                 $recipients = [];
                 foreach($numbers as $number){
                     if(is_array($number)){
-                        array_push($recipients, remakeNumber($number["phone_number"], true, false));
+                        if(!empty($number["phone_number"]) && !is_null($number["phone_number"])){
+                            array_push($recipients, remakeNumber($number["phone_number"], true, false));
+                        }
                     }else{
-                        array_push($recipients, remakeNumber($number, true, false));
+                        if(!empty($number) && !is_null($number)){
+                            array_push($recipients, remakeNumber($number, true, false));
+                        }
                     }                    
                 }
             }elseif(is_array($numbers) && array_key_exists("phone_number", $numbers)){
@@ -130,9 +141,11 @@ if(isset($_REQUEST['submit'])){
             $_REQUEST["system_message"] = "You have not set an SMS USSD yet. Please provide one and await approval before trying again";
         }
 
-        if(!isset($_REQUEST["system_message"]))
-        $_REQUEST["system_message"] = implode(", ",$recipients);
-        return;
+        if(isset($_REQUEST["system_message"])){
+            $_REQUEST["system_message"] = implode(", ",$recipients);
+            return;
+        }
+        
     }elseif($submit == "addNewTeacher" || $submit == "addNewTeacher_ajax"){
         $jsonFormat = false;
         $recipients = [remakeNumber($teacher_phone, true, false)];
@@ -162,6 +175,11 @@ if(isset($_REQUEST['submit'])){
         }
     }
 
+    //stop process if there are no recipients
+    if(!isset($recipients) || count($recipients) < 1){
+        $_REQUEST["system_message"] = "No valid contact number(s) were found"; return;
+    }
+
     try {
         foreach ($recipients as $key => $value) {
             $ch = curl_init();
@@ -188,18 +206,20 @@ if(isset($_REQUEST['submit'])){
                 if($jsonFormat){
                     echo $e;
                 }else{
-                    $_SESSION["system_message"] = $e;
+                    $_REQUEST["system_message"] = $e;
                 }
             } else {
                 if($jsonFormat){
                     $decoded = json_decode($resp, true);
                     echo json_encode($decoded);
-                }            
+                }else{
+                    $_REQUEST["system_message"] = "sms sent";
+                }     
             }
             curl_close($ch);
         }   
     } catch (\Throwable $th) {
-        $_SESSION["system_message"] = $th->getMessage();
+        $_REQUEST["system_message"] = $th->getMessage();
     }
 }else{
     echo "No submission was received";
