@@ -41,7 +41,7 @@
                                         <img src="<?php echo $url?>/assets/images/icons/cash-outline.svg" alt="money">
                                     </span>
                                     <input type="text" name="pay_amount" id="pay_amount" 
-                                    title="This is the amount you will be charged from your mobile money wallet" value="GHC 30" disabled>
+                                    title="This is the amount you will be charged from your mobile money wallet" value="GHC 30" data-init="30" readonly>
                                 </label>
                                     <span class="item-event info" style="color:red">NB: This is only complementing the manual admission procedure
                                     (you will be charged GHC 30.45 as processing fee [e-tax inclusive])</span>
