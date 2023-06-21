@@ -168,7 +168,7 @@ $(document).ready(function(){
 
     function payWithPaystack(formData){
         if(formData.amount <= 0){
-            alert_box("Price is unacceptable", "danger"); return
+            alert_box("Price cannot be lower than 0. Please select an option", "danger"); return
         }
 
         //check and be sure that necessary details have been provided
