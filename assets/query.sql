@@ -169,7 +169,7 @@ CREATE TABLE `accesspay` (
 CREATE TABLE `attendance` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `school_id` int(11) NOT NULL,
- `indexNumber` int(11) NOT NULL,
+ `indexNumber` varchar(20) NOT NULL,
  `student_year` int(11) NOT NULL,
  `semester` int(11) NOT NULL,
  `student_attendance` int(11) NOT NULL,
