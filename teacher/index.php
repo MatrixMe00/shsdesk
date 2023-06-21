@@ -53,8 +53,7 @@
                     <div class="close"><span>&cross;</span></div>
                 </div>
                 <p class="txt-fs txt-al-c" style="color: #444;">
-                    This is the SHSDesk teachers portal. You can access your admission details using the admission button
-                    or use the Enter button to proceed into your portal
+                    This is the SHSDesk teachers portal. Provide your username and password to enter the portal
                 </p>
                 <label for="teacher_id">
                     <span class="label_image">
