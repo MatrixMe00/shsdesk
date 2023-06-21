@@ -30,7 +30,11 @@
                 $classes = fetchData1("DISTINCT(program_id)","teacher_classes","teacher_id={$teacher['teacher_id']}", 0);
                 if(is_array($classes)){
                     foreach($classes as $class){
-                        $total_students += intval(fetchData1("COUNT(indexNumber) as total","students_table", "program_id={$class['program_id']}")["total"]);
+                        if(!empty($class["program_id"])){
+                            $total_students += intval(fetchData1("COUNT(indexNumber) as total","students_table", "program_id={$class['program_id']}")["total"]);
+                        }else{
+                            $total_students += 0;
+                        }
                     }
                 }
                 echo $total_students;

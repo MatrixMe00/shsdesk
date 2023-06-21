@@ -95,6 +95,7 @@ $(".form-element button[name=reset]").click(function(){
     $("label[for=class_year]").removeClass("no_disp")
 
     $("table#class_list_table tbody").html(insertEmptyTableLabel("Make a search on your class year to proceed", columns))
+    $("select").attr("selectedIndex",0)
 })
 
 //function to change the page from main view to single view and vice versa
