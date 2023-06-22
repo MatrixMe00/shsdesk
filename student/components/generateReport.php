@@ -60,31 +60,43 @@
                 $pdf->SetKeywords("Report, SHSDesk, summary, document, ".getSchoolDetail($student["school_id"])['schoolName']);
 
                 $date_now = date("M j, Y")." at ".date("H:i:sa");
+
+                //semester results table filters
+                $semester = $_REQUEST["semester"];
+                $exam_year = $_REQUEST["year"];
+
+                //school details
+                $school_result_type = fetchData("school_result","admissiondetails","schoolID={$student['school_id']}")["school_result"];
                 $schoolLogo = "<img src=\"$mainRoot".fetchData("logoPath","schools","id={$student['school_id']}")["logoPath"]."\" alt=\"logo\" width=\"30mm\" height=\"30mm\">";
                 $head_master = fetchData("headName","admissiondetails","schoolID={$student['school_id']}")["headName"];
-                $schoolName = getSchoolDetail($student["school_id"])["schoolName"];
-
-                //semester results table
-                $semester = $_POST["semester"];
-                $exam_year = $_POST["year"];
+                
+                $schoolFullData = getSchoolDetail($student["school_id"], true);
+                $schoolName = $schoolFullData["schoolName"];
+                $postal_address = $schoolFullData["postalAddress"];
+                //end of school details
 
                 //all student details
                 $student_name = $student["Lastname"]." ".$student["Othernames"];
+                
                 $class_name = fetchData1("program_name, short_form","program", "program_id={$student['program_id']}");
-                $chartImg = "<img src=\"".$_REQUEST['canvas']."\" height=\"80mm\ width=\"80mm\">";
+                // $chartImg = "<img src=\"".$_REQUEST['canvas']."\" height=\"80mm\ width=\"80mm\">";
                 if(is_array($class_name)){
                     $class_name = empty($class_name["short_form"]) ? $class_name["program_name"] : $class_name["short_form"];
                 }else{
                     $class_name = "Not Set";
                 }
 
-                $class_position = getStudentPosition($student["indexNumber"], $exam_year, $semester);
-                $average = fetchData1("AVG(mark) as Mark","results","indexNumber='".$student["indexNumber"]."' AND exam_year=$exam_year AND semester=$semester")["Mark"];
-                $average = number_format($average, 1);
-                $school_result_type = fetchData("school_result","admissiondetails","schoolID={$student['school_id']}")["school_result"];
-                $avg_grade = giveGrade($average, $school_result_type);
                 $student_program = $student["programme"];
                 $academicYear = getAcademicYear(fetchData1("date","results","indexNumber='{$student['indexNumber']}' AND exam_year=$exam_year ORDER BY date DESC")["date"]);
+
+                //average of student marks
+                $average = fetchData1("AVG(mark) as Mark","results","indexNumber='".$student["indexNumber"]."' AND exam_year=$exam_year AND semester=$semester")["Mark"];
+                $average = number_format($average, 1);
+                $avg_grade = giveGrade($average, $school_result_type);
+
+                //calculating class position
+                $class_position = getStudentPosition($student["indexNumber"], $exam_year, $semester);
+                $total_position = fetchData1("COUNT(DISTINCT indexNumber) as total", "results","program_id={$student['program_id']} AND exam_year=$exam_year AND semester=$semester")["total"];
 
                 $attendance = fetchData1("student_attendance, attendance_total", "attendance", "indexNumber={$student['indexNumber']} AND student_year=$exam_year AND semester=$semester");
                 if(is_array($attendance)){
@@ -92,7 +104,10 @@
                 }else{
                     $attendance = "Class Attendance: Not Set";
                 }
+                
+                //end of student details
 
+                //results table
                 $table = "
                 <table id=\"results_table\">
                     <thead>
@@ -140,7 +155,7 @@
                         <td>".number_format($total_class + $total_exam, 1)."</td>
                         <td colspan=\"2\"></td>
                     </tr>
-                    <tr><td colspan=\"6\"></rd></tr>
+                    <tr><td colspan=\"6\" style=\"border: unset\"></rd></tr>
                     <tr><td colspan=\"6\" style=\"text-align: center\">$attendance</rd></tr>
                     ";
                 }else{
@@ -159,7 +174,7 @@
                 $content = <<<HTML
                 <head>
                     <style>
-                        .border{border: 1px solid #888; padding: 0.5em; margin: 5mm auto}
+                        .border{border: 1px solid #888; padding: 0.5em; margin: 2.5mm auto}
                         .border.no-b{border-bottom: unset;}
                         .f-left{float: left}
                         .f-right{float: right}
@@ -179,6 +194,7 @@
                         #results_table thead{font-weight: bold}
                         #results_table td{border: 1px solid lightgrey}
                         #results_table .total td{border: unset; border-top: 3px double grey; border-bottom: 3px double grey; font-weight: bold}
+                        #table td.no-border, .no-border{border: unset}
                         .digital{margin-top: 3mm;}
                     </style>
                 </head>
@@ -187,8 +203,9 @@
                         $schoolLogo
                     </div>
                     <div class="f-right">
-                        <b class="fl school_name">$schoolName</b><br><br><br>
-                        <span>$academicYear Academic Report - Semester $semester </span>
+                        <br><b class="fl school_name">$schoolName</b><br>
+                        <span>$academicYear Academic Report - Semester $semester </span><br>
+                        <span>$postal_address</span>
                     </div>
                 </div>
                 <div class="border">
@@ -198,7 +215,7 @@
                     <div class="quarter f-left inline"><b>Year: </b>$exam_year</div>
                     <div class="third f-left inline top-space"><b>Average Score: </b> $average</div>
                     <div class="third f-left inline"><b>Average Grade: </b>$avg_grade</div>
-                    <div class="third f-left inline"><b>Class Position: </b>$class_position</div>
+                    <div class="third f-left inline"><b>Class Position: </b>$class_position of $total_position</div>
                 </div>
                 <div class="border">
                     <br><p><b>School Grading Type: </b>$school_result_type</p>

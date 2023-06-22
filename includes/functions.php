@@ -1045,7 +1045,7 @@
 
                 return positionFormat($position);   
             }else{
-                return "no-results";
+                return "$sql";
             }
         }
     }

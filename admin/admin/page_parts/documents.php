@@ -236,7 +236,15 @@
                         break;
                 }
 
-                $.ajax({
+                let dataString = JSON.stringify(form_data)
+                //format
+                dataString = dataString.replace(/[{}"]/g, "")
+                dataString = dataString.replace(/[:,]/g, function (match) {
+                            return match === ':' ? '=' : '&';
+                            });
+                location.href = "./admin/excelFile.php?" + dataString
+
+                /*$.ajax({
                     url:"./admin/excelFile.php",
                     data: form_data,
                     timeout: 10000,
@@ -270,7 +278,7 @@
                             alert_box(xhr.responseText, "danger")
                         }
                     }
-                })
+                })*/
             }else if($(this).val() == "upload_document"){
                 $("form[name=upload_form]").submit()
             }

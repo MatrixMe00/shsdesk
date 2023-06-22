@@ -106,7 +106,7 @@ if($code !== "empty"): ?>
     <p class="sp-lg txt-fl"></p>
 </section>
 
-<section class="">
+<section id="canvas_section" class="no_disp">
     <canvas id="stats" class="wmax-md" style="max-height: 40vh"></canvas>
 </section>
 
@@ -132,6 +132,7 @@ if($code !== "empty"): ?>
                 timeout: 8000,
                 beforeSend: function(){
                     $("#empty_result").removeClass("no_disp").find(".empty td").html("Fetching data...")
+                    $("#non_empty_result, #canvas_section").addClass("no_disp")
                 },
                 success: function(response){
                     if(response["error"] === true){
@@ -148,7 +149,7 @@ if($code !== "empty"): ?>
                             arrayData: response["message"], isMarks: false, chartID: "stats", chartType: "pie"
                         })
 
-                        $("label[for=report_save], label[for=report_reset], #non_empty_result").removeClass("no_disp")
+                        $("label[for=report_save], label[for=report_reset], #non_empty_result, #canvas_section").removeClass("no_disp")
                     }
                 },
                 error: function(xhr, textStatus){
@@ -176,48 +177,8 @@ if($code !== "empty"): ?>
                 alert_box("Chart could not be drawn")
                 return
             }
-
-            $.ajax({
-                url: "./components/generateReport.php",
-                data: {
-                    canvas: canvasImage, submit:"generateReport", year: report_year, semester: report_term
-                },
-                type: "POST",
-                timeout: 8000,
-                cache: false,
-                beforeSend: function (){
-                    $("#save_status p").html("Getting your document ready, please wait...")
-                    $("#save_status").removeClass("no_disp")
-                },
-                success: function (data){
-                    $("#save_status p").html("Documents are ready")
-        
-                    if(typeof data === "object"){
-                        isError = data["error"] == true
-
-                        if(isError){
-                            alert_box("An error occurred while processing the document", "danger")
-                        }else{
-                            alert_box("Response: " + data["message"])
-                        }
-                    }else{
-                        alert_box(data, "primary", 10);
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown){
-                    let message = ""
-                    $("#save_status p").html("")
-                    $("#save_status").addClass("no_disp")
-
-                    if(textStatus == "timeout"){
-                        message = "Connection was timed out. Please check your connection and try again"
-                    }else{
-                        message = JSON.stringify(jqXHR)
-                    }
-
-                    alert_box(message, "danger")
-                }
-            })
+            dataString = "submit=generateReport&year=" + report_year + "&semester=" + report_term
+            location.href="./components/generateReport.php?" + dataString
         })
 
         $("select[name=report_year], select[name=report_term]").change(function(){

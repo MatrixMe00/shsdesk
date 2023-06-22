@@ -19,7 +19,7 @@ function examScoreBlur(element){
     const total_score = parseFloat($(class_score).html()) + parseFloat($(exam_mark).html())
     //grab total mark
     $(total_mark).html(total_score)
-    $(grade).html(giveGrade(total_score), result_type)
+    $(grade).html(giveGrade(total_score, result_type))
 }
 
 function blurOnEnter(element){
@@ -89,7 +89,7 @@ $("form").submit(function(e){
                         tr += "<td contenteditable=\"true\" class=\"white class_score\" data-max=\"30\" onblur=\"examScoreBlur($(this))\" onkeydown=\"blurOnEnter($(this))\">0</td>"
                         tr += "<td contenteditable=\"true\" class=\"white exam_score\" data-max=\"70\" onblur=\"examScoreBlur($(this))\" onkeydown=\"blurOnEnter($(this))\">0</td>"
                         tr += "<td class=\"total_score\">0</td>"
-                        tr += "<td class=\"grade\">F9</td>"
+                        tr += "<td class=\"grade\">" + giveGrade(0,$("input#result_type").val()) + "</td>"
                     tr += "</tr>"
 
                     $("#result_slip tbody").append(tr)

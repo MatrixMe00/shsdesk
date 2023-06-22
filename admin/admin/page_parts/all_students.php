@@ -159,7 +159,7 @@
                         }else{
                     ?>
                     <tr class="empty">
-                        <td colspan="5">No results to show</td>
+                        <td colspan="6">No results to show</td>
                     </tr>
                     <?php } ?>
                 </tbody>
@@ -178,7 +178,7 @@
                                 <?php endif; ?>
                             </div>
                         </td>
-                        <td colspan="3">
+                        <td colspan="4">
                             <?= $query->num_rows ?> results were returned
                         </td>
                     </tr>

@@ -52,7 +52,7 @@
             $message = "Please provide the gender(s) involved";
             $error = true;
         }else{
-            $sql = "SELECT indexNumber, Lastname, Othernames, Gender, studentYear, houseID as houseName, boardingStatus, programme, program_id AS className 
+            $sql = "SELECT indexNumber, Lastname, Othernames, Gender, studentYear, houseID as houseName, boardingStatus, programme, program_id AS className, guardianContact
                 FROM students_table WHERE school_id=$user_school_id";
             if(strtolower($program_name) != "all"){
                 $sql .= " AND programme='$program_name'";   
@@ -202,11 +202,20 @@
                 //enter value into cells
                 if($submit == "student_list"){
                     if($field_name == "houseName"){
-                        $sheet->setCellValueExplicit($cellName, ucwords(fetchData("title","houses","id={$result[$field_name]}")["title"]), "s");
+                        $cellValue = fetchData("title","houses","id={$result[$field_name]}");
+                        $cellValue = is_array($cellValue) ? $cellValue["title"] : "no house";
+                        $sheet->setCellValueExplicit($cellName, ucwords($cellValue), "s");
                     }elseif($field_name == "className" && !empty($result[$field_name])){
                         $cellValue = fetchData1("program_name","program","program_id=$result[$field_name]");
                         $cellValue = is_array($cellValue) ? $cellValue["program_name"] : "";
                         $sheet->setCellValueExplicit($cellName, ucwords($cellValue), "s");
+                    }elseif($field_name == "guardianContact"){
+                        if(!empty($result["guardianContact"]) && !is_null($result["guardianContact"])){
+                            $cellValue = remakeNumber($result["guardianContact"], false, false);
+                        }else{
+                            $cellValue = "";
+                        }
+                        $sheet->setCellValueExplicit($cellName, $result[$field_name], "s");
                     }else{
                         $sheet->setCellValueExplicit($cellName, formatName($result[$field_name]), "s");
                     }
@@ -214,11 +223,13 @@
                     $sheet->setCellValueExplicit($cellName, formatName($result[$field_name]), "s");
                 }
 
+                //enter the semester value for the attendance list
                 if($submit == "attendance_list" && $field_name == "formLevel"){
                     $cellName = $current_col_names[($key + 1)].$row;
                     
                     $sheet->setCellValue($cellName, ucwords($semester));
                 }
+                
             }
         }
 

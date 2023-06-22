@@ -35,7 +35,7 @@
             }
 
             $sql .= "FROM results r JOIN courses c ON r.course_id=c.course_id
-                WHERE indexNumber='$index_number' AND exam_year=$report_year AND semester=$report_term
+                WHERE indexNumber='$index_number' AND exam_year=$report_year AND semester=$report_term AND accept_status=1
                 ORDER BY r.exam_type ASC";
             $query = $connect2->query($sql);
 
@@ -99,7 +99,7 @@
             $message = "No index number provided. Please check if you are logged in to continue";
         }else{
             try {
-                $sql = "SELECT * FROM results WHERE indexNumber=? AND school_id=? AND course_id=?";
+                $sql = "SELECT * FROM results WHERE indexNumber=? AND school_id=? AND course_id=? AND accept_status=1";
                 $stmt = $connect2->prepare($sql);
                 $stmt->bind_param("sii", $student_index, $school_id, $course_id);
                 $stmt->execute();
@@ -112,7 +112,7 @@
                     $error = false;
                     $message = $results->fetch_all(MYSQLI_ASSOC);
                 }else{
-                    $message = "No uploaded results for this subject were found. Please try again another time";
+                    $message = "You have no approved results for this subject. Please try again another time";
                 }
             } catch (\Throwable $th) {
                 $error = true;
@@ -137,7 +137,7 @@
         $phoneNumber = $_POST["phoneNumber"] ?? null;
         $price = $_POST["price"] ?? null;
         $school_id = $student["school_id"] ?? null;
-        $transaction_id = $_POST["transaction_id"];
+        $transaction_id = $_POST["transaction_id"] ?? null;
 
         if(is_null($indexNumber) || empty($indexNumber)){
             $message = "Please provide an index number";
@@ -156,42 +156,47 @@
         }elseif(is_null($price) || empty($price)){
             $message = "Price has not been provided or set";
         }else{
-            $purchaseDate = date("Y-m-d H:i:s");
-            $expiryDate = date("Y-m-d 23:59:59",strtotime($purchaseDate." +4 months +1 day"));
-            $price = floatval(explode(" ",$price)[1]);
-            $deduction = number_format($price * (1.95/100), 2);
-            $price -= $deduction;
+            try {
+                $purchaseDate = date("Y-m-d H:i:s");
+                $expiryDate = date("Y-m-d 23:59:59",strtotime($purchaseDate." +4 months +1 day"));
+                $price = floatval(explode(" ",$price)[1]);
+                $deduction = number_format($price * (1.95/100), 2);
+                $price -= $deduction;
 
-            $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email) VALUES (?,?,?,?,?,?)";
-            $stmt = $connect2->prepare($sql);
-            $stmt->bind_param("siddss", $transaction_id, $school_id, $price, $deduction, $phoneNumber, $email);
-
-            if($stmt->execute()){
-                do{
-                    $accessToken = generateToken(rand(1,9), $school_id);
-                }while(is_array(fetchData1("accessToken","accesstable","accessToken='$accessToken'")));
-
-                $sql = "INSERT INTO accesstable(indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
+                $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email) VALUES (?,?,?,?,?,?)";
                 $stmt = $connect2->prepare($sql);
-                $stmt->bind_param("ssisss", $indexNumber, $accessToken, $school_id, $purchaseDate, $expiryDate, $transaction_id);
+                $stmt->bind_param("siddss", $transaction_id, $school_id, $price, $deduction, $phoneNumber, $email);
 
                 if($stmt->execute()){
-                    $status = true;
-                    $message = "success";
+                    do{
+                        $accessToken = generateToken(rand(1,9), $school_id);
+                    }while(is_array(fetchData1("accessToken","accesstable","accessToken='$accessToken'")));
+
+                    $sql = "INSERT INTO accesstable(indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("ssisss", $indexNumber, $accessToken, $school_id, $purchaseDate, $expiryDate, $transaction_id);
+
+                    if($stmt->execute()){
+                        $status = true;
+                        $message = "success";
+                    }else{
+                        $status = false;
+                        $message = "Student token was not captured appropriately. Token ID is <b>$accessToken</b>";
+                    }
                 }else{
                     $status = false;
-                    $message = "Student token was not captured appropriately. Token ID is <b>$accessToken</b>";
+                    $message = "Transaction was processed but not stored. Transaction Reference is <b>$transaction_id</b>";
                 }
-            }else{
-                $status = false;
-                $message = "Transaction was processed but not stored. Transaction Reference is <b>$transaction_id</b>";
-            }
 
-            include_once("../sms/sms.php");
+                include_once("../sms/sms.php");
 
-            if(isset($_SESSION["system_message"]) && $_SESSION["system_message"] != ""){
-                $message = "Details were successful but an sms could not be sent. SMS Error: {$_SESSION['system_message']}";
+                if(isset($_SESSION["system_message"]) && $_SESSION["system_message"] != ""){
+                    $message = "Details were successful but an sms could not be sent. SMS Error: {$_SESSION['system_message']}";
+                }
+            } catch (\Throwable $th) {
+                $message = "Error: ".$th->getMessage();
             }
+            
             echo $message;
         }
     }elseif($submit == "update_profile" || $submit == "update_profile_ajax"){

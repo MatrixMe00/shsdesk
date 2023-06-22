@@ -79,6 +79,9 @@
                         exit(1);
                     }
 
+                    //last heading
+                    $last_heading = ucwords($sheet->getCell($max_column.($row_start-1))->getValue());
+
                     //create a general column header
                     $all_col_names = array("A","B","C","D","E","F",
                                             "G","H","I","J","K","L",
@@ -135,7 +138,7 @@
                     
                     //display content
                     //--for placement
-                    if($max_column == "J"){
+                    if($max_column == "J" && $last_heading != "Guardian Contact"){
                         for($row=$row_start; $row <= $max_row; $row++){
                             //grab columns
                             for($col = 0; $col <= $headerCounter; $col++){
@@ -297,7 +300,7 @@
                                 break;
                             }             
                         }
-                    }elseif($max_column == "I"){
+                    }elseif($max_column == "J" && $last_heading == "Guardian Contact"){
                         for($row=$row_start; $row <= $max_row; $row++){
                             $skip_row = 0;
                             //grab columns
@@ -349,7 +352,15 @@
                                         $program = strtolower($cellValue);
                                         $program_id = fetchData1("program_id","program","school_id=$user_school_id AND (program_name='$program' OR short_form='$program')");
                                         $program_id = is_array($program_id) ? $program_id["program_id"] : 0;
-                                        break;    
+                                        break;
+                                    case 9:
+                                        if(empty($cellValue) || ctype_digit($cellValue) === false){
+                                            $guardianContact = null;
+                                        }else{
+                                            $guardianContact = remakeNumber($cellValue, false, false);
+                                        }
+                                        
+                                        break; 
                                     default:
                                         "Buffer count is beyond expected input count";
                                         exit(1);
@@ -364,37 +375,41 @@
                                 continue;
                             }
     
-                            //check if index number exists and insert data into database
-                            $index = fetchData1("indexNumber, program_id","students_table","indexNumber='$indexNumber'");
-    
-                            if($index == "empty"){
-                                $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, programme, program_id, boardingStatus)
-                                    VALUES (?,?,?,?,?,?,?,?,?,?)";
-                                $stmt = $connect2->prepare($sql);
-                                $stmt->bind_param("ssssiiisis",$indexNumber, $Lastname, $Othernames, $Gender, $houseID, $user_school_id, $studentYear,
-                                    $programme, $program_id, $boardingStatus);
-                                if($stmt->execute()){
-                                    if($row == $max_row){
-                                        echo "success";
-                                    }
-                                }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
-                                    echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
-                                }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
-                                    echo "Detail for $indexNumber not written. Gender must either be Male or Female";
-                                }                                
-                            }elseif($index["program_id"] == 0 || empty($index["program_id"])){
-                                $sql = "UPDATE students_table SET program_id=? WHERE indexNumber=?";
-                                $stmt = $connect2->prepare($sql);
-                                $stmt->bind_param("is",$program_id,$indexNumber);
+                            try {
+                                //check if index number exists and insert data into database
+                                $index = fetchData1("indexNumber, program_id","students_table","indexNumber='$indexNumber'");
+        
+                                if($index == "empty"){
+                                    $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, guardianContact, programme, program_id, boardingStatus)
+                                        VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+                                    $stmt = $connect2->prepare($sql);
+                                    $stmt->bind_param("ssssiiissis",$indexNumber, $Lastname, $Othernames, $Gender, $houseID, $user_school_id, $studentYear,
+                                        $guardianContact,$programme, $program_id, $boardingStatus);
+                                    if($stmt->execute()){
+                                        if($row == $max_row){
+                                            echo "success";
+                                        }
+                                    }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
+                                        echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
+                                    }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
+                                        echo "Detail for $indexNumber not written. Gender must either be Male or Female";
+                                    }                                
+                                }elseif($index["program_id"] == 0 || empty($index["program_id"])){
+                                    $sql = "UPDATE students_table SET program_id=? WHERE indexNumber=?";
+                                    $stmt = $connect2->prepare($sql);
+                                    $stmt->bind_param("is",$program_id,$indexNumber);
 
-                                if($stmt->execute()){
-                                    if($row == $max_row){
-                                        echo "success";
+                                    if($stmt->execute()){
+                                        if($row == $max_row){
+                                            echo "success";
+                                        }
                                     }
-                                }
-                            }else{
-                                echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
-                            }                            
+                                }else{
+                                    echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
+                                }     
+                            } catch (\Throwable $th) {
+                                echo $th->getMessage();
+                            }                          
                         }
                     }else{
                         for($row=$row_start; $row <= $max_row; $row++){

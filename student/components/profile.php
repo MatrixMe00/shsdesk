@@ -69,7 +69,12 @@
                 </label>
                 <label for="primary_contact" class="flex flex-column">
                     <span class="label_title">Contact of Guardian</span>
-                    <input type="tel" name="primary_contact" id="primary_contact" placeholder="Guardian Phone Number" value="<?= remakeNumber($student["guardianContact"], false, false) ?>"
+                    <input type="tel" name="primary_contact" id="primary_contact" placeholder="Guardian Phone Number" value="<?php 
+                        if(!empty($student["guardianContact"])){
+                            echo remakeNumber($student["guardianContact"], false, false);
+                        }
+                        
+                    ?>"
                         minlength="10" maxlength="10">
                 </label>
             </div>

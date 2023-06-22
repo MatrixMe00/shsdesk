@@ -17,7 +17,7 @@ if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
         ],
         "students_list" => [
             "first"=> "index number",
-            "last"=> "class name"
+            "last"=> "guardian contact"
         ]
     ];
 
@@ -206,7 +206,6 @@ if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
                             } catch (\Throwable $th) {
                                 echo $th->getMessage();
                             }
-                            
                         }
                     }elseif($document_type == "students_list"){
                         for($row=$row_start; $row <= $max_row; $row++){
@@ -260,7 +259,14 @@ if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
                                         $program = strtolower($cellValue);
                                         $program_id = fetchData1("program_id","program","school_id=$user_school_id AND (program_name='$program' OR short_form='$program')");
                                         $program_id = is_array($program_id) ? $program_id["program_id"] : 0;
-                                        break;    
+                                        break;
+                                    case 9:
+                                        if(empty($cellValue) || ctype_digit($cellValue) === false){
+                                            $guardianContact = null;
+                                        }else{
+                                            $guardianContact = remakeNumber($cellValue, false, false);
+                                        }
+                                        break; 
                                     default:
                                         "Buffer count is beyond expected input count";
                                         exit(1);
@@ -280,11 +286,11 @@ if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
                                 $index = fetchData1("indexNumber, program_id","students_table","indexNumber='$indexNumber'");
         
                                 if($index == "empty"){
-                                    $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, programme, program_id, boardingStatus)
-                                        VALUES (?,?,?,?,?,?,?,?,?,?)";
+                                    $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, guardianContact, programme, program_id, boardingStatus)
+                                        VALUES (?,?,?,?,?,?,?,?,?,?,?)";
                                     $stmt = $connect2->prepare($sql);
-                                    $stmt->bind_param("ssssiiisis",$indexNumber, $Lastname, $Othernames, $Gender, $houseID, $user_school_id, $studentYear,
-                                        $programme, $program_id, $boardingStatus);
+                                    $stmt->bind_param("ssssiiissis",$indexNumber, $Lastname, $Othernames, $Gender, $houseID, $user_school_id, $studentYear,
+                                        $guardianContact,$programme, $program_id, $boardingStatus);
                                     if($stmt->execute()){
                                         if($row == $max_row){
                                             echo "success";

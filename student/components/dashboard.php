@@ -56,24 +56,24 @@
 
             <section class="d-section lt-shade flex-all-center flex-column" style="flex: 3 1 auto">
                 <h2 class="sm-xlg-b">Statistics</h2>
-                <div class="form" id="searchStats">
-                    <label for="stat_year">
+                <div class="form flex-all-center flex-eq wmax-md sm-auto flex-wrap gap-sm" id="searchStats">
+                    <label for="stat_year" class="p-med">
                         <select name="stat_year" id="stat_year">
                             <?php for($i = intval($student["studentYear"]); $i > 0 ; $i--) : ?>
                             <option value="<?= $i ?>">Year <?= $i ?></option>
                             <?php endfor; ?>
                         </select>
                     </label>
-                    <label for="stat_term">
+                    <label for="stat_term" class="p-med">
                         <select name="stat_term" id="stat_term">
                             <option value="1">Semester 1</option>
                             <option value="2">Semester 2</option>
                         </select>
                     </label>
                     <input type="hidden" name="student_id" id="search_student_id" value="<?= $student["indexNumber"] ?>">
-                    <label for="submit" class="btn">
-                        <button id="stat_search" class="primary m-border b-primary" name="submit" value="stat_search">Preview</button>
-                    </label>
+                    <div for="submit" class="flex btn w-fluid-child flex-eq gap-sm">
+                        <button id="stat_search" class="xs-rnd primary b-primary w-full m-border" name="submit" value="stat_search">Preview</button>
+                    </div>
                 </div>
                 <div id="chart_type_div" class="form no_disp">
                     <label for="chart_type">

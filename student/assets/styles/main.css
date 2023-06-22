@@ -2,7 +2,7 @@ body{
     display: flex;
 }
 
-nav{flex: 1 1 auto; position: sticky; top: 0;}
+nav{flex: 1 1; min-width: 25vw; position: sticky; top: 0;}
 main{flex: 4 1 auto;}
 
 /* dashboard */
@@ -41,6 +41,7 @@ main{flex: 4 1 auto;}
 @media screen and (max-width: 768px) {
     body{flex-direction: column;}
     .d-greeting{text-align: center}
+    nav .name{display: none}
 }
 
 @media screen and (max-width: 480px) {
