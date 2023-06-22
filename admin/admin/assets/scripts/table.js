@@ -1,12 +1,16 @@
 $("table tbody tr .edit").click(function(){
     //initiate variables to be used to check which table to use
-    cssps = false, student = false;
+    cssps = false, student = false; db=""
 
     //determine which kind of table is being used
     if($(this).hasClass("cssps")){
         cssps = true;
     }else if($(this).hasClass("studs")){
         student = true;
+    }
+
+    if($(this).hasClass("db2")){
+        db = "shsdesk2";
     }
 
     //take id number
@@ -18,7 +22,9 @@ $("table tbody tr .edit").click(function(){
         dataString = "index_number=" + id_number + "&registered=" + registered + "&submit=fetchStudentDetails";
     }else if(student){
         dataString = "index_number=" + id_number + "&submit=fetchStudentsDetail";
-    }       
+    }
+
+    dataString += "&db=" + db
 
     //display form modal
     $("#updateStudent").removeClass("no_disp");
@@ -82,6 +88,8 @@ $("table tbody tr .edit").click(function(){
                     $("form[name=adminUpdateStudent] label[for=jhs]").hide();
                     $("form[name=adminUpdateStudent] label[for=dob]").hide();
                     $("form[name=adminUpdateStudent] label[for=track_id]").hide();
+                    $("form[name=adminUpdateStudent] select[name=program_id]").val(response["program_id"]);
+                    $("form[name=adminUpdateStudent] select[name=year_level]").val(response["studentYear"]);
 
                     $("form[name=adminUpdateStudent] button[name=submit]").prop("disabled", true);
                 }
@@ -99,7 +107,7 @@ $("table tbody tr .edit").click(function(){
                 $("form[name=adminUpdateStudent] button[name=cancel]").click();
             }
         },
-        error: function(r, texMessage){
+        error: function(r, textMessage){
             if(textMessage === "timeout"){
                 alert_box("Connection was timed out or was slow. Please try again.", "danger", 10);
             }else if(r.responseText == "no-submission"){
@@ -115,13 +123,17 @@ $("table tbody tr .edit").click(function(){
 
 $("table tbody tr .delete").click(function(){
     //initiate variables to be used to check which table to use
-    cssps = false, student = false;
+    cssps = false, student = false; db = ""
 
     //determine which kind of table is being used
     if($(this).hasClass("cssps")){
         cssps = true;
     }else if($(this).hasClass("studs")){
         student = true;
+    }
+
+    if($(this).hasClass("db2")){
+        db = "shsdesk2";
     }
 
     item_id = $(this).parents("tr").attr("data-index");
@@ -140,6 +152,7 @@ $("table tbody tr .delete").click(function(){
 
     //fill form with needed details
     $("#table_del input[name=indexNumber]").val(item_id);
+    $("#table_del input[name=db]").val(db)
 })
 
 //delete all records button

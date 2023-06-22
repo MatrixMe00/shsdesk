@@ -297,16 +297,23 @@
         }elseif($submit == "fetchStudentDetails"){
             $index_number = $_REQUEST["index_number"];
             $registered = $_REQUEST["registered"];
+            $db = $_REQUEST["db"];
 
-            if($registered == "true"){
-                $sql = "SELECT c.*, e.enrolCode, h.houseID 
-                    FROM cssps c JOIN house_allocation h
-                    ON c.indexNumber = h.indexNumber 
-                    JOIN enrol_table e ON c.indexNumber = e.indexNumber
-                    WHERE c.indexNumber='$index_number'";
+            if(empty($db)){
+                if($registered == "true"){
+                    $sql = "SELECT c.*, e.enrolCode, h.houseID 
+                        FROM cssps c JOIN house_allocation h
+                        ON c.indexNumber = h.indexNumber 
+                        JOIN enrol_table e ON c.indexNumber = e.indexNumber
+                        WHERE c.indexNumber='$index_number'";
+                }else{
+                    $sql = "SELECT * FROM cssps WHERE indexNumber='$index_number' AND enroled=FALSE";
+                }
             }else{
-                $sql = "SELECT * FROM cssps WHERE indexNumber='$index_number' AND enroled=FALSE";
-            }
+                $sql = "SELECT indexNumber, Lastname, Othernames, studentYear, houseID, boardingStatus, program_id 
+                    FROM students_table s
+                    WHERE indexNumber='$index_number'";
+            }            
             
             $query = $connect->query($sql);
 
@@ -694,22 +701,26 @@
                 }
 
                 if($connect2->query($sql)){
-                    //promote students
-                    $sql = "UPDATE students_table SET studentYear=3 WHERE school_id=$school_id AND studentYear=2";
-                    if($connect2->query($sql)){
-                        $sql = "UPDATE students_table SET studentYear=2 WHERE school_id=$school_id AND studentYear=1";
+                    if($indexNumber == "all"){
+                        //promote students
+                        $sql = "UPDATE students_table SET studentYear=3 WHERE school_id=$school_id AND studentYear=2";
                         if($connect2->query($sql)){
-                            //report that this school has updated its records
-                            $cleanDate = date("Y-m-d H:i:s");
-                            $sql = "INSERT INTO record_cleaning (school_id, cleanDate) VALUES ('$school_id','$cleanDate')";
-                            $connect2->query($sql);
-                            
-                            echo "success";
+                            $sql = "UPDATE students_table SET studentYear=2 WHERE school_id=$school_id AND studentYear=1";
+                            if($connect2->query($sql)){
+                                //report that this school has updated its records
+                                $cleanDate = date("Y-m-d H:i:s");
+                                $sql = "INSERT INTO record_cleaning (school_id, cleanDate) VALUES ('$school_id','$cleanDate')";
+                                $connect2->query($sql);
+                                
+                                echo "success";
+                            }else{
+                                echo "Promotion from Year 1 to Year 2 failed";
+                            }
                         }else{
-                            echo "Promotion from Year 1 to Year 2 failed";
+                            echo "Promotion from Year 2 to Year 3 failed";
                         }
                     }else{
-                        echo "Promotion from Year 2 to Year 3 failed";
+                        echo "success";
                     }
                 }else{
                     if($indexNumber == "all"){
@@ -1065,8 +1076,12 @@
 
                                                     $stmt->execute();
                                                 }else{
-                                                    $detailsExist = fetchData1("t.lname, tc.course_id","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.course_id=$cid AND tc.program_id=$pid");
-                                                    $message = "Teacher added, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($detailsExist["course_id"],"SID");
+                                                    $detailsExist = fetchData1("t.lname","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.course_id=$cid AND tc.program_id=$pid");
+                                                    if(is_array($detailsExist)){
+                                                        $message = "Teacher added, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($cid,"SID");
+                                                    }else{
+                                                        $message = "Teacher responsible for ".formatItemId($cid,"SID")." has been deleted, but details of him exist. Contact superadmin for help";
+                                                    }
                                                     break;
                                                 }
 
@@ -1364,7 +1379,7 @@
                                                     $cid = $part[1];
 
                                                     // sql syntax would go here
-                                                    $detailsExist = fetchData1("COUNT(c.teacher_id) as total, c.course_id, t.lname","teacher_classes c JOIN teachers t ON t.teacher_id=c.teacher_id","c.school_id=$user_school_id AND c.program_id=$pid AND c.course_id=$cid");
+                                                    $detailsExist = fetchData1("COUNT(teacher_id) AS total","teacher_classes", "school_id=$user_school_id AND program_id=$pid AND course_id=$cid");
                                                     if(intval($detailsExist["total"]) < 1){
                                                         $sql = "INSERT INTO teacher_classes (school_id, teacher_id, program_id, course_id) VALUES (?,?,?,?)";
                                                         $stmt = $connect2->prepare($sql);
@@ -1372,7 +1387,12 @@
 
                                                         $stmt->execute();
                                                     }else{
-                                                        $message = "Teacher data updated, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($detailsExist["course_id"],"CID");
+                                                        $detailsExist = fetchData1("t.lname","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.course_id=$cid AND tc.program_id=$pid");
+                                                        if(is_array($detailsExist)){
+                                                            $message = "Teacher data updated, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($cid,"SID");
+                                                        }else{
+                                                            $message = "Teacher responsible for ".formatItemId($cid,"SID")." has been deleted, but details of him exist. Contact superadmin for help";
+                                                        }
                                                         break;
                                                     }
                                                 }else{
@@ -1439,7 +1459,7 @@
                 try{
                     $sql = "UPDATE recordapproval SET result_status=? WHERE result_token=?";
                     $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("si",$record_status, $record_token);
+                    $stmt->bind_param("ss",$record_status, $record_token);
 
                     if($stmt->execute()){
                         if($record_status === "accepted"){

@@ -1,7 +1,7 @@
 <?php require_once "compSession.php"; $_SESSION["active-page"] = "report" ?>
 <?php 
 $code = fetchData1("accessToken","accesstable","indexNumber='{$student['indexNumber']}' AND status=1 ORDER BY expiryDate DESC"); 
-if($code == "empty"): ?>
+if($code !== "empty"): ?>
 <section class="flex d-section flex-wrap gap-sm p-lg card-section">
     <div class="card v-card gap-lg indigo sm-rnd flex-wrap">
         <span class="self-align-start">Number of Subjects</span>

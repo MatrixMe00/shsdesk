@@ -1,4 +1,6 @@
-<?php @include_once('../../../includes/session.php')?>
+<?php @include_once('../../../includes/session.php');
+    $admin_mode = $_SESSION["admin_mode"] ?? "no-data";
+?>
 
 <div class="flex flex-column flex-center-align flex-center-content">
     <div id="getLoader"></div>
@@ -16,6 +18,7 @@
         </div>
         <div class="joint">
             <input type="hidden" name="school_id" value="<?php echo $user_school_id?>">
+            <input type="hidden" name="admin_mode" value="<?= $admin_mode ?>">
             <label for="student_index">
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/index.png" alt="index">
@@ -70,7 +73,7 @@
                     <img src="<?php echo $url?>/assets/images/icons/home.png" alt="house">
                 </span>
                 <select name="house" id="house" disabled>
-                    <option value="">Select House</option>
+                    <option value="0">Select House</option>
                     <?php 
                         $query = $connect->query("SELECT id, title, Gender FROM houses WHERE schoolID = $user_school_id");
 
@@ -89,6 +92,42 @@
                 <input type="text" name="student_course" id="student_course" title="Enter the selected course"
                 autocomplete="off" placeholder="Enter the selected course*" required>
             </label>
+            <?php if($admin_mode == "records") : ?>
+            <label for="program_id">
+                <span class="label_image">
+                    <img src="<?php echo $url?>/assets/images/icons/book-outline.svg" alt="course">
+                </span>
+                <select name="program_id" id="program_id">
+                    <?php 
+                        $sql = "SELECT program_id, program_name, short_form FROM program WHERE school_id=$user_school_id";
+                        $query = $connect2->query($sql);
+                        if($query->num_rows > 0){
+                            echo <<<HTML
+                            <option value="0">Select Class</option>
+                            HTML;
+
+                            while($row = $query->fetch_assoc()):
+                    ?>
+                    <option value="<?= $row["program_id"] ?>"><?= "{$row['program_name']} [{$row['short_form']}]" ?></option>
+                    <?php  endwhile;
+                        }else{
+                            echo "<option value=''>No Class Uploaded</option>";
+                        }
+                    ?>
+                </select>
+            </label>
+            <label for="year_level">
+                <span class="label_image">
+                    <img src="<?php echo $url?>/assets/images/icons/book-outline.svg" alt="course">
+                </span>
+                <select name="year_level" id="year_level">
+                    <option value="">Select Form Year</option>
+                    <option value="1">Form 1</option>
+                    <option value="2">Form 2</option>
+                    <option value="3">Form 3</option>
+                </select>
+            </label>
+            <?php endif; ?>
             <label for="aggregate">
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/hashtag.png" alt="aggregate">

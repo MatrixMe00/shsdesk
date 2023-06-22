@@ -7,7 +7,7 @@
     // api key
     $apiToken = '313|XvzFfivJR6eq7a4Cz3f4pNVkGKdFz4RMF48INToZ ';
     $senderId = "SHSDesk";
-    $text_message = "This is a demo text from the test sms.php";
+    $text_message = "This is a demo text from the test sms.php. This is the @ symbol which is supposed to provide an at symbol";
     $recipients = ["+233279284896"];
 
     try {

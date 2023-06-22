@@ -318,13 +318,17 @@
                                         break;
                                     case 3:
                                         $Gender = ucfirst($cellValue);
+                                        if($Gender != "Male" && $Gender != "Female"){
+                                            echo "Gender for <b>$indexNumber</b> was invalid. Process has been terminated";
+                                            exit(1);
+                                        }
                                         break;
                                     case 4:
                                         $studentYear = intval($cellValue);
                                         break;
                                     case 5:
                                         $house = strtolower($cellValue);
-                                        $houseID = fetchData("id","houses","LOWER(title)='$house' AND schoolID=$user_school_id");
+                                        $houseID = fetchData("id","houses","LOWER(title)='$house' AND schoolID=$user_school_id AND (gender='$Gender' OR gender='Both')");
                                         if(is_array($houseID)){
                                             $houseID = $houseID["id"];
                                         }else{
@@ -332,7 +336,11 @@
                                         }
                                         break;
                                     case 6:
-                                        $boardingStatus = formatName($cellValue);
+                                        $boardingStatus = ucfirst($cellValue);
+                                        if($boardingStatus !== "Boarder" && $boardingStatus !== "Day"){
+                                            echo "Boarding Status for <b>$indexNumber</b> is invalid. Process execution has been terminated";
+                                            exit(1);
+                                        }
                                         break;
                                     case 7:
                                         $programme = formatName($cellValue);

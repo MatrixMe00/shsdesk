@@ -22,8 +22,8 @@
                 }elseif(strtolower($teacher_id) == "new user"){
                     $message = "Your username is incorrect or invalid";
                 }else{
-                    if(str_contains($teacher_id, "tid")){
-                        $teacher_id = formatItemId($teacher_id, "TID", true);
+                    if(str_contains(strtolower($teacher_id), "tid")){
+                        $teacher_id = formatItemId(strtoupper($teacher_id), "TID", true);
                     }
 
                     if($step == 1){
@@ -43,6 +43,9 @@
                             $message = "There is an internal sql error. Please try again later";
                         }
                     }else{
+                        if(str_contains($_POST["password"], "Password?") === true){
+                            $_POST["password"] = str_replace("?","@",$_POST["password"]);
+                        }
                         $password = MD5($_POST["password"]) ?? null;
 
                         if(is_null($password) || empty($password)){

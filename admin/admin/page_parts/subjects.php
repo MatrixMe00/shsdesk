@@ -23,7 +23,7 @@
             </h2>
         </div>
         <div class="body">
-            <span>Total Courses</span>
+            <span>Total Subjects</span>
         </div>
     </div>
 
@@ -42,7 +42,7 @@
 <section class="flex-column flex-all-center">
     <div class="head">
         <h1 class="txt-primary">Controls</h1>
-    </div>    
+    </div>
     <div class="body control btn flex flex-wrap gap-md">
         <button class="sp-lg xs-rnd primary" data-refresh="false" data-section="courses">View All Subjects</button>
         <?php if(is_array($courses)) :?>
