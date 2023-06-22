@@ -90,7 +90,7 @@
                 $academicYear = getAcademicYear(fetchData1("date","results","indexNumber='{$student['indexNumber']}' AND exam_year=$exam_year ORDER BY date DESC")["date"]);
 
                 //average of student marks
-                $average = fetchData1("AVG(mark) as Mark","results","indexNumber='".$student["indexNumber"]."' AND exam_year=$exam_year AND semester=$semester")["Mark"];
+                $average = fetchData1("AVG(mark) as Mark","results","indexNumber='".$student["indexNumber"]."' AND exam_year=$exam_year AND semester=$semester AND accept_status=1")["Mark"];
                 $average = number_format($average, 1);
                 $avg_grade = giveGrade($average, $school_result_type);
 

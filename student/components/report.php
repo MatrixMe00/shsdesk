@@ -22,7 +22,7 @@ if($code !== "empty"): ?>
     <div class="card v-card gap-lg orange sm-rnd flex-wrap">
         <span class="self-align-start">Average Score (Overall)</span>
         <span class="txt-fl3 txt-bold self-align-end"><span id="avg_score"><?php 
-            $average = fetchData1("AVG(mark) as Mark","results","indexNumber=".$student["indexNumber"]);
+            $average = fetchData1("AVG(mark) as Mark","results","indexNumber='".$student["indexNumber"]."' AND accept_status=1");
             if($average == "empty"){
                 $average = 0;
             }else{
