@@ -1,12 +1,10 @@
 <?php 
+    include($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+
     if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         $user_school_id = $_REQUEST["school_id"];
         $user_details = getUserDetails($_REQUEST["user_id"]);
-        
-        include("../../includes/session.php");
-    }else{
-        include("../../../includes/session.php");
-    
+    }else{    
         //set nav_point session
         $_SESSION["nav_point"] = "subjects";
     }

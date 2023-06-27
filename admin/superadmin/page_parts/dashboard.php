@@ -1,4 +1,4 @@
-<?php include_once("../../../includes/session.php");
+<?php include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
     $price = fetchData("price","roles","id=".$user_details["role"])["price"];
     $system_price = fetchData("price","roles","title='system'")["price"];
 
@@ -9,36 +9,20 @@
 <section class="section_container">
     <div class="content" style="background-color: #007bff;">
         <div class="head">
-            <h2>
-                <?php
-                $res = $connect->query("SELECT id FROM schools");
-                echo $res->num_rows;
-                ?>
-            </h2>
+            <h2><?= $total_schools = fetchData("COUNT(id) as total", "schools", "")["total"] ?></h2>
         </div>
         <div class="body">
-            <span><?php 
-                if($res->num_rows > 1){
-                    echo "Schools";
-                }else{
-                    echo "School";
-                }
-            ?> Registered</span>
+            <span><?= $total_schools != 1 ? "Schools":"School" ?> Registered</span>
         </div>
     </div>
 
     <div class="content" style="background-color: #20c997">
         <div class="head">
-            <h2>
-                <?php
-                $res = $connect->query("SELECT indexNumber FROM enrol_table");
-                echo $res->num_rows;
-                ?>
-            </h2>
+            <h2><?= $total_students = fetchData("COUNT(indexNumber) as total","enrol_table","")["total"] ?></h2>
         </div>
         <div class="body">
             <span><?php 
-                if($res->num_rows > 1){
+                if($total_students > 1){
                     echo "Students";
                 }else{
                     echo "Student";
@@ -49,12 +33,8 @@
 
     <div class="content" style="background-color: #ffc107">
         <div class="head">
-            <h2>
-                <?php 
-                    $res = $connect->query("SELECT count(indexNumber) AS total FROM enrol_table WHERE enrolDate LIKE '".date('Y-m-d')."%'");
-                    echo $res->fetch_assoc()["total"];
-                ?>
-            </h2>
+            <h2><?= fetchData("count(indexNumber) AS total", "enrol_table", 
+                "enrolDate LIKE '".date('Y-m-d')."%'")["total"];?></h2>
         </div>
         <div class="body">
             <span>Applications today</span>
@@ -63,21 +43,10 @@
 
     <div class="content" style="background-color: #dc3545">
         <div class="head">
-            <h2>
-                <?php
-                $res = $connect->query("SELECT id FROM schools WHERE Active = FALSE");
-                echo $res->num_rows;
-                ?>
-            </h2>
+            <h2><?= $total_schools = fetchData("COUNT(id) as total","schools","Active=FALSE")["total"] ?></h2>
         </div>
         <div class="body">
-            <span><?php 
-                if($res->num_rows > 1){
-                    echo "Schools";
-                }else{
-                    echo "School";
-                }
-            ?> Deactivated</span>
+            <span><?= $total_schools != 1 ? "Schools":"School" ?> Deactivated</span>
         </div>
     </div>
 </section>

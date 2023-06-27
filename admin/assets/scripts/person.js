@@ -70,7 +70,7 @@ $("#users .item-event.dev").click(function(){
         url: $("form[name=addAdmin]").attr("action"),
         data: dataString,
         dataType: "json",
-        timeout: 8000,
+        timeout: 30000,
         success: function (json){
             json = JSON.parse(JSON.stringify(json));
 
@@ -148,7 +148,7 @@ $(".item-event.status").click(function(){
         url: $("form[name=user_account_form]").prop("action"),
         data: "submit=status_modify&stat=" + stat + "&user_id=" + user_id,
         cache: false,
-        timeout: 8000,
+        timeout: 30000,
         success: function (){
             if(text.toLowerCase() == "activate"){
                 $(me).html("Deactivate");

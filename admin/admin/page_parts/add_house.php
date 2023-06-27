@@ -1,4 +1,4 @@
-<?php @include_once('../../../includes/session.php')?>
+<?php @include_once($_SESSION["DOCUMENT_ROOT"]."/includes/session.php")?>
 
 <form action="<?php echo $url?>/admin/admin/submit.php" method="POST" name="addHouseForm" method="post">
     <div class="head">

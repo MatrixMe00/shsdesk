@@ -159,7 +159,7 @@ $(".item-event").click(function(){
                 submit: "getItem",
                 isTeacher: is_teacher
             },
-            timeout: 8000,
+            timeout: 30000,
             beforeSend: function(){
                 $("#updateLoader").addClass("flex").removeClass("no_disp")
                 $("#updateItem #getLoader").html(loadDisplay({

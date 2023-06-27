@@ -87,7 +87,7 @@
             </label>
             <label for="pass_forg">
                 <p onclick="location.href='<?php echo $url?>/register'" style="margin-right: 10px">Register</p>
-                <p onclick="location.href='<?php echo $url?>/password.php'">Forgot Your Password?</p>
+                <p onclick="location.href='<?php echo $url?>/password-reset'">Forgot Your Password?</p>
             </label>
             <label for="submit" class="btn_label">
                 <button type="submit" name="submit" value="login" class="sp-lg">Login</button>

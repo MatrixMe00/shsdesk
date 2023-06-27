@@ -104,7 +104,7 @@ $("table tbody tr .edit").click(function(){
         data: "submit=fetchHouseDetails&id=" + id,
         method: "get",
         dataType: "json",
-        timeout: 8000,
+        timeout: 30000,
         beforeSend: function(){
             $("#modal_1 #getLoader").html(loadDisplay({
                 circular: true, 

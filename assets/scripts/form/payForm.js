@@ -1,8 +1,9 @@
 //reference id tracker
-reference_parsed = false;
-payment_received = false;
-transaction_reference = "";
-retry_counter = 0;
+var reference_parsed = false;
+var payment_received = false;
+var transaction_reference = "";
+var retry_counter = 0;
+var api_key = ""; var school_split_code = "";
 
 //variable to be used for tracking
 trackKeeper = null;
@@ -13,61 +14,70 @@ function payWithPaystack(){
     cust_amount = parseInt(cust_amount[1]) * 100;
     cust_email = $("form[name=paymentForm] .body #pay_email").val();
 
-    var handler = PaystackPop.setup({
-        // key: "pk_live_056157b8c9152eb97c1f04b2ed60e7484cd0d955",
-        key: "pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca",
-        email: cust_email,
-        amount: cust_amount,
-        currency: "GHS",
-        // split_code: "SPL_U6mW80wZNH",
-        metadata: {
-            custom_fields: [
-                {
-                    display_name: "Mobile Number",
-                    variable_name: "mobile_number",
-                    value: $("#pay_phone").val()
-                },
-                {
-                    display_name: "Customer's Name",
-                    variable_name: "customer_name",
-                    value: $("#pay_fullname").val()
-                },
-                {
-                    display_name: "School Name",
-                    variable_name: "school_name",
-                    value: $("#school_admission_case #school_select option:selected").html()
-                }
-            ]
-        },
-        callback: function(response){
-            //mark that payment has been received
-            payment_received = true;
+    try {
+        var handler = PaystackPop.setup({
+            key: api_key,
+            email: cust_email,
+            amount: cust_amount,
+            currency: "GHS",
+            split_code: school_split_code,
+            metadata: {
+                custom_fields: [
+                    {
+                        display_name: "Mobile Number",
+                        variable_name: "mobile_number",
+                        value: $("#pay_phone").val()
+                    },
+                    {
+                        display_name: "Customer's Name",
+                        variable_name: "customer_name",
+                        value: $("#pay_fullname").val()
+                    },
+                    {
+                        display_name: "School Name",
+                        variable_name: "school_name",
+                        value: $("#school_admission_case #school_select option:selected").html()
+                    }
+                ]
+            },
+            callback: function(response){
+                //mark that payment has been received
+                payment_received = true;
+    
+                //pass a message that payment has been made
+                message = "Transaction was made successfully";
+                messageBoxTimeout("paymentForm", message, "success");
+                alert_box(message, "success", 3.5)
+    
+                //pull out admission form right after payment
+                displayAdmissionForm(response.reference);
+                
+                //send an sms
+                sendSMS(response.reference);
+    
+                //parse data into database in the background
+                passPaymentToDatabase(response.reference);
+                
+                //store reference into memory
+                transaction_reference = response.reference;
+    
+                //check if transaction id is present in db after 3.5 seconds
+                trackKeeper = setInterval(reCheck, 3500);
+            },
+            onClose: function(){
+                alert_box('Transaction has been canceled by user', "secondary", 10);
+            }
+        });
+        handler.openIframe();   
+    } catch (error) {
+        error = error.toString();
 
-            //pass a message that payment has been made
-            message = "Transaction was made successfully";
-            messageBoxTimeout("paymentForm", message, "success");
-            alert_box(message, "success", 3.5)
-
-            //pull out admission form right after payment
-            displayAdmissionForm(response.reference);
-            
-            //send an sms
-            sendSMS(response.reference);
-
-            //parse data into database in the background
-            passPaymentToDatabase(response.reference);
-            
-            //store reference into memory
-            transaction_reference = response.reference;
-
-            //check if transaction id is present in db after 3.5 seconds
-            trackKeeper = setInterval(reCheck, 3500);
-        },
-        onClose: function(){
-            alert_box('Transaction has been canceled by user', "secondary", 10);
+        if(error.indexOf("PaystackPop is not defined") > -1){
+            alert_box("You are currently offline. Please check your internet connection and try again later", "danger", 7)
+        }else{
+            alert_box(error, "danger")
         }
-    });
-    handler.openIframe();
+    }
 }
 
 //function to display the admission form
@@ -109,7 +119,7 @@ async function trackTransactions(reference = ""){
                 dataType: "text",
                 data: dataString,
                 cache: false,
-                timeout: 8000,
+                timeout: 30000,
                 success: function(response){
                     if(response.includes("success")){
                         //pass transaction id to admission form
@@ -182,7 +192,7 @@ function sendSMS(reference){
         data: dataString,
         type: "POST",
         dataType: "json",
-        timeout: 8000,
+        timeout: 30000,
         success: function(response){
             response1 = JSON.parse(JSON.stringify(response));
             if(response1["status"] == "success"){
@@ -228,7 +238,7 @@ async function passPaymentToDatabase(reference){
             dataType: "text",
             data: dataString,
             cache: false,
-            timeout: 8000,
+            timeout: 30000,
             success: function(response){
                 if(response.includes("success")){
                     //pass admin number into admission form
@@ -309,7 +319,7 @@ $("form[name=paymentForm]").submit(function(){
             type: "POST",
             dataType: "text",
             cache: false,
-            timeout: 8000,
+            timeout: 30000,
             beforeSend: function(){
                 message = loadDisplay({size:"small", animation:"anim-fade anim-swing"});
                 messageType = "load";
@@ -372,11 +382,44 @@ $("form[name=paymentForm]").submit(function(){
     }
 })
 
-$("#paymentFormButton").click(function(){
-    $("form[name=paymentForm]").submit();
+function getKey() {
+    const school_id = $("#student #school_admission_case label #school_select").val();
+    
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: "./submit.php",
+        data: {
+          submit: "get_keys_ajax",
+          schoolID: school_id
+        },
+        success: function(response) {
+          resolve(response);
+        },
+        error: function(error) {
+          reject(error);
+        }
+      });
+    });
+  }
+
+$("#paymentFormButton").click(async function(){
+    const payment_key = await getKey()
+    if(payment_key.indexOf(" | ") > -1){
+        api_key = payment_key.split(" | ")[1]
+        school_split_code = payment_key.split(" | ")[0]
+
+        $("form[name=paymentForm]").submit();
+    }else{
+        api_key = ""; school_split_code = "";
+        alert_box(payment_key)
+    }
+    
+    // 
 })
 
 // $("#pay_email").blur(function(){
 //     window.clearTimeout(null);
 //     messageBoxTimeout("paymentForm","My Message", "load", 5);
 // })
+
+// 010404501821

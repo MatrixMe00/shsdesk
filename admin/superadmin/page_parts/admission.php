@@ -1,4 +1,4 @@
-    <?php include_once("../../../includes/session.php")?>
+    <?php include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php")?>
 
     <form action="" method="post" name="admissiondetailsForm">
         <div class="body">

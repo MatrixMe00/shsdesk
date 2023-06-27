@@ -50,7 +50,7 @@ $(".item-event.sign-return").click(function(){
         dataType: "json",
         type: "POST",
         data: "submit=markReturn&id=" + id,
-        timeout: 8000,
+        timeout: 30000,
         success: function(text){
             text = JSON.parse(JSON.stringify(text));
 
@@ -85,7 +85,7 @@ $("tbody tr").click(function(){
         url: $("form[name=exeatForm]").attr("action"),
         data: "submit=getExeat&id=" + id,
         dataType: "json",
-        timeout: 8000,
+        timeout: 30000,
         success: function (data){
             data = JSON.parse(JSON.stringify(data));
 

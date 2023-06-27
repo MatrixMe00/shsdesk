@@ -74,7 +74,7 @@ $(".item-event").click(function(){
                 program_id: item_id,
                 submit: "getProgram"
             },
-            timeout: 8000,
+            timeout: 30000,
             beforeSend: function(){
                 $("#updateLoader").toggleClass("no_disp flex")
                 $("#updateProgram #getLoader").html(loadDisplay({
@@ -146,7 +146,7 @@ $(".item-event").click(function(){
             },
             type: "POST",
             dataType: "json",
-            timeout: 8000,
+            timeout: 30000,
             cache: false,
             beforeSend: function(){
                 $(table_foot).addClass("sticky top secondary w-full")
@@ -192,7 +192,7 @@ $(".item-event").click(function(){
         $.ajax({
             url: "./admin/submit.php",
             data: {submit: "view_results", token_id: item_id},
-            timeout: 10000,
+            timeout: 30000,
             beforeSend: function(){
                 const tr = "<tr class='empty'><td colspan='6'>Fetching results, please wait...</td></tr>"
                 $("#view_results table tbody").html(tr)

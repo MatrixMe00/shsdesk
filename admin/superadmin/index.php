@@ -2,10 +2,8 @@
     //depending on where the page is being called from
     $this_url = $_SERVER["REQUEST_URI"];
 
-    if(strpos($this_url, "shsdesk")){
-        include_once($_SERVER["DOCUMENT_ROOT"]."/shsdesk/includes/session.php");
-    }else{
-        include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+    if($this_url == "/admin/superadmin/"){
+        header("Location: ./admin");
     }
 ?>
 
@@ -109,6 +107,14 @@
                             <span>USSD Management</span>
                         </div>
                     </div>
+                    <div class="item" name="broadcase" title="Broadcast Message" data-url="<?php echo $url?>/admin/superadmin/page_parts/broadcast.php">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="broadcast" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Broadcast Message</span>
+                        </div>
+                    </div>
                 </div>
     
                 <!--Management-->
@@ -135,6 +141,14 @@
                         </div>
                         <div class="menu_name">
                             <span>Payments</span>
+                        </div>
+                    </div>
+                    <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/trans_split.php" name="trans_splits" title="Transaction Splits">
+                        <div class="icon">
+                            <img src="<?php echo $url?>/assets/images/icons/receipt-outline.svg" alt="transaction split" />
+                        </div>
+                        <div class="menu_name">
+                            <span>Transaction Splits</span>
                         </div>
                     </div>
                 </div>

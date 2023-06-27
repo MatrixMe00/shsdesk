@@ -1,12 +1,18 @@
 <?php
+include_once("appMemory.php");
+
+//stop execution if server is down
+if($serverDown === true){
+    header("Location: ./shutdown");
+}
 
 @include_once("functions.php");
 
-$host = "localhost";
-$hostname = "root";
-$host_password = "";
-$dbname = "shsdesk";
-$dbname2 = "shsdesk2";
+$host = $sqlServer["host"];
+$hostname = $sqlServer["hostname"];
+$host_password = $sqlServer["hostpassword"];
+$dbname = $sqlServer["db1"];
+$dbname2 = $sqlServer["db2"];
 
 @$connect = new mysqli($host,$hostname,$host_password, $dbname);
 @$connect2 = new mysqli($host,$hostname,$host_password, $dbname2);
@@ -50,6 +56,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     $user_school_id = $user_details['school_id'];
     $user_role = getRole($user_details['role']);
     $user_email = $user_details['email'];
+    $admin_access = fetchData("access","roles","id={$user_details['role']}")["access"];
 
     //check for admission mode and results mode
     if(!isset($_SESSION["admin_mode"])){

@@ -468,7 +468,6 @@
             } 
         } catch (\Throwable $th) {
             $result = $th->getMessage();
-            echo $result;
         }
 
         return $result;
@@ -514,9 +513,7 @@
             }    
         } catch (\Throwable $th) {
             $result = $th->getMessage();
-            echo $result;
         }
-           
 
         return $result;
     }
@@ -1143,5 +1140,17 @@
         }, $array);
 
         return $newArray;
+    }
+
+    /**
+     * This function is used to get the details of the split keys of a school
+     * @param int $school_id This is the id of the school
+     * @param APIKEY $key_type This receives the type of the api key needed
+     * @return string|array the api key(s)
+     */
+    function getSchoolSplit($school_id, $key_type){
+        $response = fetchData("$key_type, status","transaction_splits","schoolID=$school_id");
+
+        return $response;
     }
 ?>

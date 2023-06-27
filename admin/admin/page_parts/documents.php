@@ -5,7 +5,7 @@
         
         include_once("../../includes/session.php");
     }else{
-        include_once("../../../includes/session.php");
+        include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
     
         //set nav_point session
         $_SESSION["nav_point"] = "documents";
@@ -243,42 +243,6 @@
                             return match === ':' ? '=' : '&';
                             });
                 location.href = "./admin/excelFile.php?" + dataString
-
-                /*$.ajax({
-                    url:"./admin/excelFile.php",
-                    data: form_data,
-                    timeout: 10000,
-                    method: 'GET',
-                    xhrFields: {
-                        responseType: 'blob'
-                    },
-                    // dataType: "text",
-                    beforeSend: function(){
-                        alert_box("Getting Document...","secondary")
-                    },
-                    success: function(response, textStatus, xhr){
-                        var contentType = xhr.getResponseHeader('Content-Type');
-
-                        if (contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-                            // var blob = new Blob([response], { type: contentType });
-                            downloadUrl = window.URL.createObjectURL(response);
-                            downloadTitle = title + '.xlsx';
-                            $("button[name=download_btn]").removeClass("no_disp")
-                            alert_box("Download file ready")
-                        }else if (contentType === "text/html; charset=UTF-8") {
-                            alert_box("An error occurred while processing your file. Check your fields and try again", "danger", 8)
-                        }else{
-                            alert_box("Unhandled error", "danger")
-                        }
-                    },
-                    error: function(xhr){
-                        if(xhr.statusText == "timeout"){
-                            alert_box("Connection was timed out due to slow network. Please check and try again", "danger", 6)
-                        }else{
-                            alert_box(xhr.responseText, "danger")
-                        }
-                    }
-                })*/
             }else if($(this).val() == "upload_document"){
                 $("form[name=upload_form]").submit()
             }

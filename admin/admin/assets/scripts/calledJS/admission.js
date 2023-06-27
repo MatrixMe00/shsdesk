@@ -99,7 +99,7 @@ $("form[name=admissiondetailsForm]").submit(function(e){
         async: false,
         contentType: false,
         processData: false,
-        timeout: 8000,
+        timeout: 30000,
         beforeSend: function(){
             message = loadDisplay({size: "small"});
             type = "load";

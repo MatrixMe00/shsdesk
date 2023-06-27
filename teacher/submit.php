@@ -3,9 +3,6 @@
 
     if(isset($_REQUEST["submit"])){
         $submit = $_REQUEST["submit"];
-        $phoneNumbers = [
-            "023", "024","054","055","025", "059", "020", "050", "027", "057", "026", "056"
-        ];
 
         switch($submit){
             case "user_login":

@@ -50,7 +50,7 @@ $(".form-element button[name=list_search]").click(function(){
                 submit: "search_class_list", program_id: index, program_year: p_year,
                 course_id: c_index, sem:semester, period: date_period
             },
-            timeout: 8000,
+            timeout: 30000,
             beforeSend: function(){
                 tr = insertEmptyTableLabel("Fetching your results, please wait...", columns)
                 $("#class_list_table tbody").html(tr)

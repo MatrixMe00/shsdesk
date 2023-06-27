@@ -22,7 +22,7 @@ $(".tab:not(.logout)").click(function(){
         url: $(this).attr("data-href"),
         dataType: "html",
         type: "GET",
-        timeout: 8000,
+        timeout: 30000,
         beforeSend: function(){
             $("main").html("Loading page content...")
         },
@@ -51,7 +51,7 @@ $(".tab.logout").click(()=>{
     $.ajax({
         url: "./logout",
         dataType: "html",
-        timeout: 8000,
+        timeout: 30000,
         beforeSend: function(){
             $("main").html("Logging out...")
         },

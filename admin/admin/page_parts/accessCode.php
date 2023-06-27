@@ -1,15 +1,8 @@
 <?php   
-    if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
-        $user_school_id = $_REQUEST["school_id"];
-        $user_details = getUserDetails($_REQUEST["user_id"]);
-        
-        include_once("../../includes/session.php");
-    }else{
-        include_once("../../../includes/session.php");
+    include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
     
-        //set nav_point session
-        $_SESSION["nav_point"] = "access";
-    }
+    //set nav_point session
+    $_SESSION["nav_point"] = "access";
 ?>
 
 <section id="main_view" class="sp-xlg-tp sp-med-lr txt-al-c">
@@ -35,10 +28,26 @@
 <section class="sp-xlg-tp btn_section bulk-purchase">
     <h3 class="txt-al-c sm-lg-b">Select which category of students you are buying for</h3>
     <div class="btn flex flex-wrap gap-sm sm-auto">
-        <button class="plain-r primary btn-item" data-id="1" data-count="<?= fetchData1("COUNT(indexNumber) AS total","students_table","school_id=$user_school_id AND studentYear=1")["total"] ?>">Year 1 Only</button>
-        <button class="plain-r primary btn-item" data-id="2" data-count="<?= fetchData1("COUNT(indexNumber) AS total","students_table","school_id=$user_school_id AND studentYear=2")["total"] ?>">Year 2 Only</button>
-        <button class="plain-r primary btn-item" data-id="3" data-count="<?= fetchData1("COUNT(indexNumber) AS total","students_table","school_id=$user_school_id AND studentYear=3")["total"] ?>">Year 3 Only</button>
-        <button class="plain-r primary btn-item" data-id="all" data-count="<?= fetchData1("COUNT(indexNumber) AS total","students_table","school_id=$user_school_id")["total"] ?>">All Students</button>
+        <?php
+            //grab total students
+            $year1 = fetchData1("COUNT(indexNumber) AS total","students_table","school_id=$user_school_id AND studentYear=1")["total"];
+            $year2 = fetchData1("COUNT(indexNumber) AS total","students_table","school_id=$user_school_id AND studentYear=2")["total"];
+            $year3 = fetchData1("COUNT(indexNumber) AS total","students_table","school_id=$user_school_id AND studentYear=3")["total"];
+
+            //grab total number of students with active access codes
+            $year1_access = fetchData1("COUNT(DISTINCT a.indexNumber) AS total","accesstable a JOIN students_table s ON a.indexNumber = s.indexNumber","a.school_id=$user_school_id AND s.studentYear=1 AND a.status=1")["total"];
+            $year2_access = fetchData1("COUNT(DISTINCT a.indexNumber) AS total","accesstable a JOIN students_table s ON a.indexNumber = s.indexNumber","a.school_id=$user_school_id AND s.studentYear=2 AND a.status=1")["total"];
+            $year3_access = fetchData1("COUNT(DISTINCT a.indexNumber) AS total","accesstable a JOIN students_table s ON a.indexNumber = s.indexNumber","a.school_id=$user_school_id AND s.studentYear=3 AND a.status=1")["total"];
+
+            //get the current users who have no code
+            $year1 -= $year1_access;
+            $year2 -= $year2_access;
+            $year3 -= $year3_access;
+        ?>
+        <button class="plain-r primary btn-item" data-id="1" data-count="<?= $year1 ?>">Year 1 Only [<?= $year1_access ?>]</button>
+        <button class="plain-r primary btn-item" data-id="2" data-count="<?= $year2 ?>">Year 2 Only [<?= $year2_access ?>]</button>
+        <button class="plain-r primary btn-item" data-id="3" data-count="<?= $year3 ?>">Year 3 Only [<?= $year3_access ?>]</button>
+        <button class="plain-r primary btn-item" data-id="all" data-count="<?= $year1 + $year2 + $year3 ?>">All Students [<?= $year1_access + $year2_access + $year3_access ?>]</button>
         <button class="plain-r primary btn-item specify-btn" data-count="0">Specify</button>
     </div>
     <label for="specify" class="specify no_disp flex-column">
@@ -46,6 +55,7 @@
         <input type="text" name="specify" id="specify" placeholder="Specify student or students">
         <div id="student_match" class="no_disp flex-wrap gap-md" style="max-height: 30vh; overflow: auto"></div>
     </label>
+    <p class="item-event txt-al-c info">[number] are students with active access codes</p>
 </section>
 
 <section class="btn_section bulk-purchase">

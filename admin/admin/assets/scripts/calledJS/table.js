@@ -27,7 +27,7 @@ $("table tbody tr .edit").click(function(){
         data: dataString,
         dataType: "json",
         cache: true,
-        timeout: 8000,
+        timeout: 30000,
         success: function(response){
             response = JSON.parse(JSON.stringify(response));
 

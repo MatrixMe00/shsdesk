@@ -444,6 +444,188 @@
             }
 
             echo $message;
+        }elseif($submit == "add_split" || $submit == "add_split_ajax"){
+            $school_id = $_POST["school_id"] ?? null;
+            $split_code_admission = $_POST["split_code_admission"] ?? null;
+            $split_code_management = $_POST["split_code_management"] ?? null;
+            $admin_number = $_POST["admin_number"] ?? null;
+            $head_number = $_POST["head_number"] ?? null;
+            $admin_account_type = $_POST["admin_account_type"] ?? null;
+            $head_account_type = $_POST["head_account_type"] ?? null;
+            $admin_bank = $_POST["admin_bank"] ?? null;
+            $head_bank = $_POST["head_bank"] ?? null;
+
+            $telecoms = ["airteltigo", "glo", "mtn","vodafone"];
+            $message = "";
+
+            if(is_null($school_id) || empty($school_id)){
+                $message = "No school was selected";
+            }elseif(is_null($split_code_admission) || empty($split_code_admission)){
+                $message = "Please provide the split code for admission";
+            }elseif(str_contains(strtolower($split_code_admission),"spl_") === false){
+                $message = "Split code provided for admission has the wrong format";
+            }elseif(!is_null($split_code_management) && !empty($split_code_management) && str_contains(strtolower($split_code_management),"spl_") === false){
+                $message = "Split code provided for management has the wrong format";
+            }elseif(!is_null($admin_account_type) && !empty($admin_account_type)){
+                if(is_null($admin_bank) || empty($admin_bank)){
+                    $message = "No admin account vendor was selected. Please check and try again";
+                }elseif(is_null($admin_number) || empty($admin_number)){
+                    $message = "Please provide the account number for the admin";
+                }elseif(strtolower($admin_account_type) == "bank" && (strlen($admin_number) < 10 || strlen($admin_number) > 20)){
+                    $message = "The bank account number for the admin is of invalid standard length";
+                }elseif(strtolower($admin_account_type) == "mobile" && strlen($admin_number) != 10){
+                    $message = "Please provide a valid 10 digit phone number for the admin";
+                }elseif(strtolower($admin_account_type) == "mobile" && ctype_digit($admin_number) === false){
+                    $message = "Phone number for the admin must be only numbers";
+                }elseif(strtolower($admin_account_type) == "mobile" && array_search(strtolower($admin_bank),$telecoms) === false){
+                    $message = "You have provided an invalid account vendor for the admin";
+                }elseif(strtolower($admin_account_type) == "mobile" && array_search(substr($admin_number, 0, 3), $phoneNumbers1[strtolower($admin_bank)]) === false){
+                    $message = "Admin's phone number does not match the specified service provider";
+                }
+            }elseif(!is_null($head_account_type) && !empty($head_account_type)){
+                if(is_null($head_bank) || empty($head_bank)){
+                    $message = "No head account vendor was selected. Please check and try again";
+                }elseif(is_null($head_number) || empty($head_number)){
+                    $message = "Please provide the account number for the head";
+                }elseif(strtolower($head_account_type) == "bank" && (strlen($head_number) < 10 || strlen($head_number) > 20)){
+                    $message = "The bank account number for the head is of invalid standard length";
+                }elseif(strtolower($head_account_type) == "mobile" && strlen($head_number) != 10){
+                    $message = "Please provide a valid 10 digit phone number for the head";
+                }elseif(strtolower($head_account_type) == "mobile" && ctype_digit($head_number) === false){
+                    $message = "Phone number for the head must be only numbers";
+                }elseif(strtolower($head_account_type) == "mobile" && array_search(strtolower($head_bank),$telecoms) === false){
+                    $message = "You have provided an invalid account vendor for the head";
+                }elseif(strtolower($head_account_type) == "mobile" && array_search(substr($head_number, 0, 3), $phoneNumbers1[strtolower($head_bank)]) === false){
+                    $message = "Head's phone number does not match the specified service provider";
+                }
+            }elseif((is_null($admin_number) || empty($admin_number)) && (is_null($head_number) || empty($head_number))){
+                $message = "Provide at least the detail of the admin or the school head";
+            }
+            
+            if(empty($message)){
+                try {
+                    $split_code_admission = strtoupper($split_code_admission);
+                    $split_code_management = strtoupper($split_code_management);
+
+                    $proceed = true;
+
+                    if(intval(fetchData("COUNT(split_code_admission) as total","transaction_splits","split_code_admission='$split_code_admission'")["total"]) > 0){
+                        $proceed = false;
+                    }else{
+                        $message = "Admission Split Code already exists. Processing was terminated";
+                    }
+
+                    if(!empty($split_code_management)){
+                        if(intval(fetchData("COUNT(split_code_management) as total","transaction_splits","split_code_management='$split_code_management'")["total"]) > 0){
+                            $proceed = false;
+
+                            //send an sms to the admin
+                            $user_school_id = $school_id;
+                            include_once("$rootPath/sms/sms.php");
+                        }else{
+                            $message = "Management Split Code already exists. Processing was terminated";
+                        }
+                    }
+
+                    if($proceed === true){
+                        $sql = "INSERT INTO transaction_splits (schoolID, split_code_admission, split_code_management, admin_bank, admin_number, head_bank, head_number) VALUES (?,?,?,?,?,?,?)";
+                        $stmt = $connect->prepare($sql);
+                        $stmt->bind_param("issssss",$school_id, $split_code_admission, $split_code_management, $admin_bank, $admin_number, $head_bank, $head_number);
+
+                        if($stmt->execute()){
+                            $message = "success";
+                        }else{
+                            $message = "An error occured while details were been sent into the database";
+                        }
+                    }
+                } catch (\Throwable $th) {
+                    $message = $th->getMessage();
+                }                
+            }
+            echo $message;
+        }elseif($submit == "approve_split"){
+            $status = $_POST["status"] ?? null;
+            $school_id = $_POST["school_id"] ?? null;
+            $m_code = $_POST["m_code"] ?? null;
+            $a_code = $_POST["a_code"] ?? null;
+
+            if(is_null($status) || empty($status) && intval($status) < 0){
+                $message = "Status key is empty $status";
+            }elseif(is_null($school_id) || empty($school_id)){
+                $message = "No school was selected";
+            }elseif(boolval($status) === true && (is_null($a_code) || empty($a_code))){
+                $message = "Admission split code has not been provided";
+            }elseif(boolval($status) === true && 
+                (str_contains(strtolower($a_code),"spl_") === false || 
+                (!empty($m_code) && !is_null($m_code) && str_contains(strtolower($m_code),"spl_") === false))){
+                $message = "Please check that your split codes are in the right format";
+            }else{
+                if(boolval($status) === false){
+                    $sql = "UPDATE transaction_splits SET status=? WHERE schoolID=?";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("ii", $status, $school_id);
+                }else{
+                    $sql = "UPDATE transaction_splits SET split_code_admission=?, split_code_management=?, status=? WHERE schoolID=?";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("ssii", $a_code, $m_code, $status, $school_id);
+                }
+                
+                if($stmt->execute()){
+                    $message = "success";
+                }else{
+                    $message = "An error occured while sending data into database. Please try again later";
+                }
+            }
+
+            echo $message;
+        }elseif($submit == "send_sms_admin" || $submit == "send_sms_admin_ajax"){
+            $message = $_POST["message"] ?? null;
+            $recipients = $_POST["recipients"] ?? null;
+            $response = "";
+
+            if(is_null($recipients) || empty($recipients)){
+                $response = "Please provide at least one recipient";
+            }elseif(is_null($message) || empty($message)){
+                $response = "Please provide the sms text to be sent";
+            }elseif(strlen($message) > 160){
+                $response = "Your message exceeds the maximum length of 160 characters";
+            }else{
+                //make sure number is in good shape
+                $recipients = str_replace(" ","",$recipients);
+                if(str_contains($recipients,",")){
+                    $recipients = explode(",",$recipients);
+                }else{
+                    $recipients = array($recipients);
+                }
+
+                foreach($recipients as $key => $recipient){
+                    if(strlen($recipient) != 10){
+                        $response = "'$recipient' is not up to 10 digits. Please check and try again";
+                        break;
+                    }elseif(!ctype_digit($recipient)){
+                        $response = "'$recipient' has an invalid character. Please check and try again";
+                        break;
+                    }elseif(array_search(substr($recipient, 0, 3), $phoneNumbers) === false){
+                        $response = "'$recipient' does not match any network operator in the system";
+                        break;
+                    }else{
+                        $recipients[$key] = remakeNumber($recipient, true, false);
+                    }
+                }
+
+                if(empty($response)){
+                    //avoid repeated numbers
+                    $recipients = array_unique($recipients);
+
+                    include_once($_SERVER["DOCUMENT_ROOT"]."/sms/sms.php");
+
+                    $response = $_REQUEST["system_message"];
+                }
+            }
+
+            echo $response;
+        }else{
+            echo "Submission value was not present";
         }
     }else{
         echo "no-submission";

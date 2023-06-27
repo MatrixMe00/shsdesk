@@ -618,6 +618,34 @@
                     echo "<a href=\"tel:".remakeNumber($row["contact"],true,false)."\">".remakeNumber($row["contact"],false)."</a> - ".$row["fullname"];
                 }
             }
+        }elseif($submit == "get_keys" || $submit == "get_keys_ajax"){
+            $school_id = $_REQUEST["schoolID"] ?? null;
+
+            if(is_null($school_id) || empty($school_id)){
+                $message = "School required was not selected. Contact the admin for help";
+            }elseif(ctype_digit($school_id) == false){
+                $message = "School selected has an invalid index. Please contact admin for help";
+            }else{
+                $message = getSchoolSplit($school_id, APIKEY::ADMISSION);
+
+                if(is_array($message)){
+                    $stat = $message["status"];
+                    $message = $message[APIKEY::ADMISSION];
+                    
+                    $message = $stat === true ? $message : "disabled"; 
+                    $message = empty($message) ? "empty1" : $message;
+                }
+
+                if($message == "empty"){
+                    $message = "Transaction for this school cannot be done yet";
+                }elseif($message == "disabled"){
+                    $message = "Transaction to this school has been disabled. Please try again later";
+                }else{
+                    $message .= " | $priceKey";
+                }
+            }
+
+            echo $message;
         }else{
             echo "Provided submission could not be found. Please try again, else use the message us button";
         }

@@ -11,5 +11,10 @@
         include_once("./main.php");
     }elseif($actual_path == "/logout"){
         include_once("./logout.php");
+    }elseif(str_contains($actual_path, "shutdown")){
+        include_once("shutdown.php");
+    }else {
+        $page_title = "error 404 not found!";
+        include_once('./404.php');
     }
 ?>

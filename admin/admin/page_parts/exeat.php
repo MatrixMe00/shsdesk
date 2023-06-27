@@ -1,12 +1,8 @@
-<?php include_once("../../../includes/session.php");
+<?php 
+    include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
 
-    if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
-        $user_school_id = $_REQUEST["school_id"];
-        $user_details = getUserDetails($_REQUEST["user_id"]);
-    }else{
-        //set nav_point session
-        $_SESSION["nav_point"] = "exeat";
-    }
+    //set nav_point session
+    $_SESSION["nav_point"] = "programs";
 ?>
 <section>
     <form action="<?php echo $url?>/admin/admin/submit.php" method="post" name="exeatForm">

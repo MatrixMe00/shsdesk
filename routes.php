@@ -32,10 +32,17 @@
         else if($actual_path == "/contact"){
             $page_title = "SHSDesk | Contact Us";
             include_once('./pages/contact.php');
-        }
-        else if(strpos($actual_path, "/admin/admin") || strpos($actual_path, "/admin/superadmin")){
+        }elseif(str_contains($actual_path, "shutdown")){
+            include_once("shutdown.php");
+        }else if(strpos($actual_path, "/admin/admin") || strpos($actual_path, "/admin/superadmin")){
             $page_title = "SHSDesk | Admin";
-            include_once('./admin');
+            include_once('./admin.index.php');
+        }elseif($actual_path == "/admin"){
+            $page_title = "SHSDesk | Admin";
+            include_once('./admin/index.php');
+        }elseif($actual_path == "/password-reset"){
+            $page_title = "SHSDesk | Admin";
+            include_once('./password.php');
         }
         else {
             $page_title = "error 404 not found!";

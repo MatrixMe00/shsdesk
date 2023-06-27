@@ -121,7 +121,7 @@
                             cid: course_id, sid: school_id, stud_index: student_index, 
                             submit: "getCourseData"
                         },
-                        timeout: 8000,
+                        timeout: 30000,
                         beforeSend: function(){
                             $("canvas#stats").addClass("no_disp")
 

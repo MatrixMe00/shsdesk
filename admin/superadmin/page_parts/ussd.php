@@ -1,4 +1,4 @@
-<?php include_once("../../../includes/session.php");
+<?php include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
 
     //add nav point session
     $_SESSION["nav_point"] = "ussd";
@@ -166,7 +166,7 @@
             $.ajax({
                 url: "./superadmin/submit.php",
                 data: {submit: "update_ussd_status", value: val, school_id: sid},
-                timeout: 10000,
+                timeout: 30000,
                 success: function(response){
                     if(response == "update-success"){
                         alert_box("Status was changed successfully", "success")

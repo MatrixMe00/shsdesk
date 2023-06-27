@@ -2,7 +2,7 @@
     $form_type = $_GET["form_type"];
     $user_school_id = $_GET["school_id"];
 
-    include_once("../../../includes/session.php");
+    include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
     $courses = fetchData1("*","courses","school_id=$user_school_id", 0);
     $teachers = fetchData1("*","teachers","school_id=$user_school_id", 0);
     $classes = fetchData1("*","program","school_id=$user_school_id", 0);

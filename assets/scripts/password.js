@@ -13,7 +13,7 @@ $("input#email").blur(function() {
             type: "POST",
             dataType: "html",
             cache: false,
-            timeout: 8000,
+            timeout: 30000,
             beforeSend: function(){
                 messageBoxTimeout("passwordForm",loadDisplay({
                     span1: "gray", 
@@ -89,7 +89,7 @@ $("form").submit(function(e){
         data: $(this).serialize() + "&submit=" + $("button[name=submit]").val(),
         type: $(this).prop("method"),
         dataType: "html",
-        timeout: 8000,
+        timeout: 30000,
         beforeSend: function(){
             messageBoxTimeout("passwordForm",loadDisplay({
                     size: "vsmall"

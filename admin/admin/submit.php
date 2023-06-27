@@ -1,11 +1,8 @@
 <?php
-    @include_once("../../includes/session.php");
+    @include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
 
     if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != NULL){
         $submit = $_REQUEST["submit"];
-        $phoneNumbers = [
-            "024","054","055","025", "020", "050", "027", "057", "026", "056"
-        ];
 
         if($submit == "new_user_update" || $submit == "new_user_update_ajax"){
             $new_username = strip_tags(stripslashes($_REQUEST["new_username"]));
@@ -1647,11 +1644,18 @@
             echo $message;
         }elseif($submit == "search_name" || $submit == "search_name_ajax"){
             $keyword = $_GET["keyword"] ?? null;
+            $type = $_GET["type"] ?? null;
             
             if(is_null($keyword) || empty($keyword)){
                 $status = false; $message = "";
+            }elseif(is_null($type) || empty($type)){
+                $status = false; $message = "";
             }else{
-                $sql = "SELECT Lastname, Othernames, indexNumber FROM students_table WHERE school_id = $user_school_id AND (Lastname LIKE '%$keyword%' OR Othernames LIKE '%$keyword%')";
+                if($type == "student"){
+                    $sql = "SELECT Lastname, Othernames, indexNumber FROM students_table WHERE school_id = $user_school_id AND (Lastname LIKE '%$keyword%' OR Othernames LIKE '%$keyword%')";
+                }else{
+                    $sql = "SELECT lname AS Lastname, oname AS Othernames, teacher_id AS indexNumber FROM teachers WHERE school_id=$user_school_id AND (lname LIKE '%$keyword%' OR oname LIKE '%$keyword%')";
+                }
                 $result = $connect2->query($sql);
 
                 if($result->num_rows > 0){
@@ -1659,6 +1663,9 @@
                     $message = array();
 
                     while($row = $result->fetch_assoc()){
+                        if($type == "teacher"){
+                            $row["indexNumber"] = formatItemID($row["indexNumber"],"TID");
+                        }
                         array_push($message, $row);
                     }
                 }else{
@@ -1941,6 +1948,76 @@
             header("Content-Type: application/json");
             
             echo json_encode($response);
+        }elseif($submit == "add_split" || $submit == "add_split_ajax"){
+            $school_id = $_POST["school_id"] ?? null;
+            $admin_number = $_POST["admin_number"] ?? null;
+            $head_number = $_POST["head_number"] ?? null;
+            $admin_account_type = $_POST["admin_account_type"] ?? null;
+            $head_account_type = $_POST["head_account_type"] ?? null;
+            $admin_bank = $_POST["admin_bank"] ?? null;
+            $head_bank = $_POST["head_bank"] ?? null;
+
+            $telecoms = ["airteltigo", "glo", "mtn","vodafone"];
+            $message = "";
+
+            if(is_null($school_id) || empty($school_id)){
+                $message = "No school was selected";
+            }elseif(!is_null($admin_account_type) && !empty($admin_account_type)){
+                if(is_null($admin_bank) || empty($admin_bank)){
+                    $message = "No admin account vendor was selected. Please check and try again";
+                }elseif(is_null($admin_number) || empty($admin_number)){
+                    $message = "Please provide the account number for the admin";
+                }elseif(strtolower($admin_account_type) == "bank" && (strlen($admin_number) < 10 || strlen($admin_number) > 20)){
+                    $message = "The bank account number for the admin is of invalid standard length";
+                }elseif(strtolower($admin_account_type) == "mobile" && strlen($admin_number) != 10){
+                    $message = "Please provide a valid 10 digit phone number for the admin";
+                }elseif(strtolower($admin_account_type) == "mobile" && ctype_digit($admin_number) === false){
+                    $message = "Phone number for the admin must be only numbers";
+                }elseif(strtolower($admin_account_type) == "mobile" && array_search(strtolower($admin_bank),$telecoms) === false){
+                    $message = "You have provided an invalid account vendor for the admin";
+                }elseif(strtolower($admin_account_type) == "mobile" && array_search(substr($admin_number, 0, 3), $phoneNumbers1[strtolower($admin_bank)]) === false){
+                    $message = "Admin's phone number does not match the specified service provider";
+                }
+            }elseif(!is_null($head_account_type) && !empty($head_account_type)){
+                if(is_null($head_bank) || empty($head_bank)){
+                    $message = "No head account vendor was selected. Please check and try again";
+                }elseif(is_null($head_number) || empty($head_number)){
+                    $message = "Please provide the account number for the head";
+                }elseif(strtolower($head_account_type) == "bank" && (strlen($head_number) < 10 || strlen($head_number) > 20)){
+                    $message = "The bank account number for the head is of invalid standard length";
+                }elseif(strtolower($head_account_type) == "mobile" && strlen($head_number) != 10){
+                    $message = "Please provide a valid 10 digit phone number for the head";
+                }elseif(strtolower($head_account_type) == "mobile" && ctype_digit($head_number) === false){
+                    $message = "Phone number for the head must be only numbers";
+                }elseif(strtolower($head_account_type) == "mobile" && array_search(strtolower($head_bank),$telecoms) === false){
+                    $message = "You have provided an invalid account vendor for the head";
+                }elseif(strtolower($head_account_type) == "mobile" && array_search(substr($head_number, 0, 3), $phoneNumbers1[strtolower($head_bank)]) === false){
+                    $message = "Head's phone number does not match the specified service provider";
+                }
+            }elseif((is_null($admin_number) || empty($admin_number)) && (is_null($head_number) || empty($head_number))){
+                if(is_null($admin_number)){
+                    $message = "Please provide the detail of the school head to continue";
+                }else{
+                    $message = "Provide at least the detail of the admin or the school head";
+                }
+            }
+            
+            if(empty($message)){
+                try {
+                    $sql = "INSERT INTO transaction_splits (schoolID, admin_bank, admin_number, head_bank, head_number) VALUES (?,?,?,?,?)";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("issss",$school_id, $admin_bank, $admin_number, $head_bank, $head_number);
+
+                    if($stmt->execute()){
+                        $message = "success";
+                    }else{
+                        $message = "An error occured while details were been sent into the database";
+                    }
+                } catch (\Throwable $th) {
+                    $message = $th->getMessage();
+                }            
+            }
+            echo $message;
         }
     }else{
         echo "no-submission";

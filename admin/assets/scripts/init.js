@@ -40,7 +40,7 @@ $("form").submit(function(e){
             dataType: "html",
             type: "POST",
             async: true,
-            timeout: 8000,
+            timeout: 30000,
             beforeSend: function(){
                 message = loadDisplay();
                 message_type = "load";

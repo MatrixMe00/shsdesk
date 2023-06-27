@@ -5,7 +5,7 @@
         </div>
         <h3 class="flex-all-center txt-al-c flex-column gap-sm">
             <span><?= $teacher["lname"]." ".$teacher["oname"] ?></span>
-            <span id="nonactive_access" class="txt-fs">[<?= $teacher["user_username"] ?>]</span>
+            <span class="txt-fs">[<?= $teacher["user_username"] ?>]</span>
         </h3>
     </div>
     <div class="nav_links">
@@ -26,9 +26,13 @@
                 data-active="classes">
                 <span>My Classes</span>
             </div>
-            <div id="my_report" data-href="<?= "$url/components/results.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Results"
+            <div id="my_report" data-href="<?= "$url/components/results.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Result Entry"
                 data-active="results">
-                <span>Student Results</span>
+                <span>Result Entry</span>
+            </div>
+            <div id="" data-href="<?= "$url/components/uploaded.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Result Summary"
+                data-active="res_sum" data-current-tab="approve">
+                <span>My Results</span>
             </div>
             <div data-href="<?= "$url/components/profile.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Profile" data-active="profile">
                 <span>My Profile</span>

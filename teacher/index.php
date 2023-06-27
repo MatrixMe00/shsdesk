@@ -102,7 +102,7 @@
                         submit: "user_login", teacher_id: id, step: 1
                     },
                     type: "GET",
-                    timeout: 8000,
+                    timeout: 30000,
                     beforeSend: function(){
                         //disable editing for the id section
                         $("label[for=teacher_id] input").attr("readonly", true)
@@ -154,7 +154,7 @@
                         submit: "user_login", teacher_id: id, step: 2, password: password
                     },
                     type: "POST",
-                    timeout: 8000,
+                    timeout: 30000,
                     beforeSend: function(){
                         //disable editing for the id section
                         $("label[for=password] input").attr("readonly", true);

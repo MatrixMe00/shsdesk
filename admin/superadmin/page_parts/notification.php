@@ -1,4 +1,4 @@
-<?php require_once("../../../includes/session.php");
+<?php require_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
 
     //add nav point session
     $_SESSION["nav_point"] = "Notification";

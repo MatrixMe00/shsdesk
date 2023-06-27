@@ -1,12 +1,10 @@
 <?php
+include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
 
 if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     $user_school_id = $_REQUEST["school_id"];
     $user_details = getUserDetails($_REQUEST["user_id"]);
-    
-    include_once("../../includes/session.php");
 }else{
-    include_once("../../../includes/session.php");
 
     //set nav_point session
     $_SESSION["nav_point"] = "admission";
@@ -316,7 +314,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
             $.ajax({
                 url: "admin/submit.php",
                 data: records,
-                timeout: 8000,
+                timeout: 30000,
                 beforeSend: function(){
                     messageBoxTimeout("recordsForm","Updating...", "load",0)
                 },

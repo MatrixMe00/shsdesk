@@ -129,7 +129,7 @@ if($code !== "empty"): ?>
                     report_term: report_term, report_year: report_year, submit: "report_search",
                     index_number: indexNumber
                 },
-                timeout: 8000,
+                timeout: 30000,
                 beforeSend: function(){
                     $("#empty_result").removeClass("no_disp").find(".empty td").html("Fetching data...")
                     $("#non_empty_result, #canvas_section").addClass("no_disp")

@@ -8,6 +8,7 @@ Disallow: /admin/logout.php
 Disallow: /admin/submit.php
 Disallow: /assets/
 Disallow: /blocks/
+Disallow: /cron/
 Disallow: /includes/
 Disallow: /pages/faq.php
 Disallow: /PhpSpreadSheet/

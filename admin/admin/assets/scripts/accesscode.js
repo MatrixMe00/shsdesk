@@ -105,10 +105,10 @@ $(document).ready(function(){
             
             $.ajax({
                 url: "./admin/submit.php",
-                data: {submit: "search_name", keyword: keyword},
+                data: {submit: "search_name", keyword: keyword, type: "student"},
                 dataType: "json",
                 method: "GET",
-                timeout: 10000,
+                timeout: 30000,
                 beforeSend: function(){
                     const span = "<p class='txt-al-c'>Searching...</p>"
                     $("#student_match").removeClass("no_disp").addClass("flex-all-center").html(span)
@@ -120,7 +120,9 @@ $(document).ready(function(){
                         $("#student_match").html("")
                         for(var i = 0; i < response["message"].length; i++){
                             const student = response["message"][i]
-                            const span = "<p class='w-fit h-light sp-med' onclick='addToList($(this))'>" + 
+                            const hide_span = $("input#specify").val().indexOf(student["indexNumber"]) > -1 ? " no_disp" : ""
+                            
+                            const span = "<p class='w-fit h-light sp-med" + hide_span + "' onclick='addToList($(this))'>" + 
                                             student["Lastname"] + " " + student["Othernames"] + " - " + student["indexNumber"]
                                         "</p>";
                             $("#student_match").append(span)
@@ -206,7 +208,7 @@ $(document).ready(function(){
                         $.ajax({
                             url:$("form[name=payForm]").attr("action"),
                             data: formData,
-                            timeout: 10000,
+                            timeout: 30000,
                             method: "POST",
                             async: false,
                             beforeSend: function(){

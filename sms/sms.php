@@ -173,6 +173,14 @@ if(isset($_REQUEST['submit'])){
             $senderId = "SHSDesk";
             $recipients = [remakeNumber($phoneNumber, true, false)];
         }
+    }elseif($submit == "add_split" || $submit == "add_split_ajax"){
+        $recipients = ["233279284896"];
+        $senderId = "SHSDesk";
+        $text_message = "Request for a split account received from SID $user_school_id. Please check and make necessary update";
+    }elseif($submit == "send_sms_admin" || $submit == "send_sms_admin_ajax"){
+        $senderId = "SHSDesk";
+        $text_message = $message;
+        $jsonFormat = false;
     }
 
     //stop process if there are no recipients

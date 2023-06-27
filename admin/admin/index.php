@@ -1,14 +1,10 @@
 <?php
     //depending on where the page is being called from
 
-use function Composer\Autoload\includeFile;
-
     $this_url = $_SERVER["REQUEST_URI"];
 
-    if(strpos($this_url, "shsdesk")){
-        include_once($_SERVER["DOCUMENT_ROOT"]."/shsdesk/includes/session.php");
-    }else{
-        include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+    if($this_url == "/admin/admin/"){
+        header("Location: ./admin");
     }
 
 if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
@@ -185,7 +181,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                     data: {
                         submit: "change_admin_mode", admin_mode: val
                     },
-                    timeout: 8000,
+                    timeout: 30000,
                     success: function(response){
                         if(response === "true"){
                             alert_box("Mode changed to " + val, "teal")
@@ -216,7 +212,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
 </html>
 <?php
     }else{
-        include_once("../../includes/session.php");
+        include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
         
         header("location: $url/admin");
     }

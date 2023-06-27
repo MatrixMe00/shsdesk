@@ -173,7 +173,7 @@ $("button#student_check").click(function(){
         data: dataString,
         type: "GET",
         dataType: "json",
-        timeout: 8000,
+        timeout: 30000,
         beforeSend: function(){
             $("button#student_check").prop("disabled", true);
             $("button#student_check").html("Checking...");
@@ -222,7 +222,7 @@ $("select#getContact").change(function(){
             url: "submit.php",
             data: "submit=getContact&schoolID=" + $(this).val(),
             dataType: "text",
-            timeout: 8000,
+            timeout: 30000,
             beforeSend: function(){
                 $("span#contResult").html("Fetching contact...");
             },
