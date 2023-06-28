@@ -39,22 +39,22 @@
     </section>
     <?php 
         $approved_results = fetchData1(
-            "r.result_token, p.program_name, c.course_name, r.submission_date",
+            "r.result_token, r.program_id, p.program_name, c.course_name, r.submission_date",
             "recordapproval r JOIN program p ON r.program_id = p.program_id JOIN courses c ON r.course_id = c.course_id",
             "r.teacher_id={$teacher['teacher_id']} AND r.result_status='accepted'", 0
         );
         $pending_results = fetchData1(
-            "r.result_token, p.program_name, c.course_name, r.submission_date",
+            "r.result_token, r.program_id, p.program_name, c.course_name, r.submission_date",
             "recordapproval r JOIN program p ON r.program_id = p.program_id JOIN courses c ON r.course_id = c.course_id",
             "r.teacher_id={$teacher['teacher_id']} AND r.result_status='pending'", 0
         );
         $rejected_results = fetchData1(
-            "r.result_token, p.program_name, c.course_name, r.submission_date",
+            "r.result_token, r.program_id, p.program_name, c.course_name, r.submission_date",
             "recordapproval r JOIN program p ON r.program_id = p.program_id JOIN courses c ON r.course_id = c.course_id",
             "r.teacher_id={$teacher['teacher_id']} AND r.result_status='rejected'", 0
         );
         $saved_results = fetchData1(
-            "p.program_name, s.exam_year, s.semester, c.course_name, DISTINCT s.token, s.save_date as submission_date",
+            "p.program_name, s.program_id, s.exam_year, s.semester, c.course_name, DISTINCT s.token, s.save_date as submission_date",
             "saved_results s JOIN program p ON p.program_id = s.program_id JOIN courses c ON c.course_id = s.course_id",
             "s.teacher_id={$teacher['teacher_id']}",0
         );
@@ -93,11 +93,14 @@
                     <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?= fetchData1("CONCAT('Sem ',semester,' | Year ',exam_year) as year_sem","results","result_token='{$result['result_token']}'")["year_sem"] ?></p>
                 </div>
                 <div class="foot btn self-align-end">
-                    <button class="light plain-r sp-xlg class_single" onclick="pageChange({table_id: 'class_list_table'})">View Data</button>
+                    <button class="light plain-r sp-xlg class_single" 
+                        onclick="pageChange({table_id: 'class_list_table', type:'approved', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['result_token'] ?>'})">
+                        View Data
+                    </button>
                 </div>
             </div>
             <?php endforeach; ?>
-            <div class="no-result p-lg-lr p-xlg-tp no_disp txt-al-c border self-align-center w-full">
+            <div class="no-result p-lg-lr p-xlg-tp white no_disp txt-al-c border self-align-center w-full">
                 <p>No results returned from search</p>
             </div>
         </div>
@@ -128,11 +131,14 @@
                     <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?= fetchData1("CONCAT('Sem ',semester,' | Year ',exam_year) as year_sem","results","result_token='{$result['result_token']}'")["year_sem"] ?></p>
                 </div>
                 <div class="foot btn self-align-end">
-                    <button class="light plain-r sp-xlg class_single" onclick="pageChange({table_id: 'class_list_table'})">View Data</button>
+                    <button class="light plain-r sp-xlg class_single" 
+                        onclick="pageChange({table_id: 'class_list_table', type:'pending', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['result_token'] ?>'})">
+                        View Data
+                    </button>
                 </div>
             </div>
             <?php endforeach; ?>
-            <div class="no-result p-lg-lr p-xlg-tp no_disp txt-al-c border self-align-center w-full">
+            <div class="no-result p-lg-lr p-xlg-tp white no_disp txt-al-c border self-align-center w-full">
                 <p>No results returned from search</p>
             </div>
         </div>
@@ -163,11 +169,14 @@
                     <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?= fetchData1("CONCAT('Sem ',semester,' | Year ',exam_year) as year_sem","results","result_token='{$result['result_token']}'")["year_sem"] ?></p>
                 </div>
                 <div class="foot btn self-align-end">
-                    <button class="light plain-r sp-xlg class_single" onclick="pageChange({table_id: 'class_list_table'})">View Data</button>
+                    <button class="light plain-r sp-xlg class_single" 
+                        onclick="pageChange({table_id: 'class_list_table', type:'rejected', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['result_token'] ?>'})">
+                        View Data
+                    </button>
                 </div>
             </div>
             <?php endforeach; ?>
-            <div class="no-result p-lg-lr p-xlg-tp no_disp txt-al-c border self-align-center w-full">
+            <div class="no-result p-lg-lr p-xlg-tp white no_disp txt-al-c border self-align-center w-full">
                 <p>No results returned from search</p>
             </div>
         </div>
@@ -198,11 +207,14 @@
                     <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?= "Sem {$result['semester']} | Year {$result['exam_year']}" ?></p>
                 </div>
                 <div class="foot btn self-align-end">
-                    <button class="light plain-r sp-xlg class_single" onclick="pageChange({table_id:'save_data_table'})">View Data</button>
+                    <button class="light plain-r sp-xlg class_single" 
+                        onclick="pageChange({table_id:'save_data_table', type:'saved', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['result_token'] ?>'})">
+                        View Data
+                    </button>
                 </div>
             </div>
             <?php endforeach; ?>
-            <div class="no-result p-lg-lr p-xlg-tp no_disp txt-al-c border self-align-center w-full">
+            <div class="no-result p-lg-lr p-xlg-tp white no_disp txt-al-c border self-align-center w-full">
                 <p>No results returned from search</p>
             </div>
         </div>
@@ -212,43 +224,43 @@
         </div>
         <?php endif; ?>
     </section>
+</section>
 
-    <section id="class_single" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-        <div class="wmax-md sp-lg light w-full window txt-fl">
-            <div class="head flex flex-space-content light sp-med">
-                <div class="title">
-                    <span class="txt-bold">Student Data</span>
-                </div>
-                <div class="controls border sp-sm-lr" onclick="$('#single_student').addClass('no_disp')">
-                    <div class="mini-o" title="Close" >
-                        <span></span>
-                    </div>
-                </div>
+<section id="class_single" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <div class="wmax-md sp-lg light w-full window txt-fl">
+        <div class="head flex flex-space-content light sp-med">
+            <div class="title">
+                <span class="txt-bold">Student Data</span>
             </div>
-            <div class="body white sp-lg flex flex-column gap-md">
-                <div class="flex flex-space-content">
-                    <span class="txt-bold">Name</span>
-                    <span class="name"></span>
-                </div>
-                <div class="flex flex-space-content">
-                    <span class="txt-bold">Index Number</span>
-                    <span class="index"></span>
-                </div>
-                <div class="flex flex-space-content">
-                    <span class="txt-bold">Mark</span>
-                    <span class="mark"></span>
-                </div>
-                <div class="flex flex-space-content">
-                    <span class="txt-bold">Grade</span>
-                    <span class="grade"></span>
-                </div>
-                <div class="flex flex-space-content">
-                    <span class="txt-bold">Gender</span>
-                    <span class="gender"></span>
+            <div class="controls border sp-sm-lr" onclick="$('#class_single').addClass('no_disp')">
+                <div class="mini-o" title="Close" >
+                    <span></span>
                 </div>
             </div>
         </div>
-    </section>
+        <div class="body white sp-lg flex flex-column gap-md">
+            <div class="flex flex-space-content">
+                <span class="txt-bold">Name</span>
+                <span class="name"></span>
+            </div>
+            <div class="flex flex-space-content">
+                <span class="txt-bold">Index Number</span>
+                <span class="index"></span>
+            </div>
+            <div class="flex flex-space-content">
+                <span class="txt-bold">Mark</span>
+                <span class="mark"></span>
+            </div>
+            <div class="flex flex-space-content">
+                <span class="txt-bold">Grade</span>
+                <span class="grade"></span>
+            </div>
+            <div class="flex flex-space-content">
+                <span class="txt-bold">Gender</span>
+                <span class="gender"></span>
+            </div>
+        </div>
+    </div>
 </section>
 
 <section id="single_class" class="d-section lt-shade no_disp">
@@ -310,4 +322,5 @@
     </div>
 </section>
 
+<script src="<?= "$url/assets/scripts/functions.min.js?v=".time() ?>"></script>
 <script src="<?= "$url/assets/scripts/uploaded.js?v=".time() ?>"></script>

@@ -291,6 +291,7 @@
                 $semester = $_POST["semester"] ?? null;
                 $isFinal = $_POST["isFinal"] ?? false;
                 $program_id = $_POST["program_id"] ?? null;
+                $prev_token = isset($_POST["prev_token"]) ? $_POST["prev_token"] : null;
 
                 if(empty($student_index) || is_null($student_index) ||
                     empty($result_token) || is_null($course_id) || 
@@ -323,6 +324,7 @@
                             VALUES ({$teacher["school_id"]}, {$teacher["teacher_id"]}, $program_id, $course_id, '$result_token', NOW())";
                             
                             if($connect2->query($sql)){
+                                $connect2->query("DELETE FROM saved_results WHERE token='$prev_token'");
                                 $message = "true";
                             }else{
                                 $message = "Results could not be compiled for approval";
@@ -411,7 +413,60 @@
                 echo $message;
 
                 break;
+            case "pull_results":
+                $token_id = $_POST["token_id"] ?? null;
+                $response_type = strtolower($_POST["response_type"]) ?? null;
+                $responses = ["approved","rejected","pending","saved"];
 
+                if(is_null($token_id) || empty($token_id)){
+                    $message = "Results token was not provided. Please contact the admin for help";
+                }elseif(is_null($response_type) || empty($response_type)){
+                    $message = "Please provide the type of data to be received";
+                }elseif(array_search($response_type, $responses) === false){
+                    $message = "Your type of response is invalid. Please check and try again";
+                }elseif(isset($teacher) && (is_null($teacher["teacher_id"]) || empty($teacher["teacher_id"]))){
+                    $message = "Please refresh the page to make sure you are logged in";
+                }else{
+                    try {
+                        if($response_type == "saved"){
+                            $sql = "SELECT s.indexNumber, st.Lastname, st.Othernames, s.class_mark, s.exam_mark, s.mark
+                                FROM saved_results s JOIN students_table st ON s.indexNumber=st.indexNumber
+                                WHERE token='$token_id'";
+                        }else{
+                            $sql = "SELECT s.indexNumber, CONCAT(s.Lastname, ' ', s.Othernames) AS fullname, s.gender, ROUND(r.mark, 1)
+                            FROM results r JOIN students_table s ON r.indexNumber = s.indexNumber
+                            WHERE r.result_token='$token_id'";
+                        }
+
+                        if($results = $connect2->query($sql)){
+                            if($results->num_rows > 1){
+                                $message = $results->fetch_all(MYSQLI_ASSOC);
+                                $error = false;
+                            }elseif($results->num_rows == 1){
+                                $message = [$results->fetch_assoc()];
+                                $error = false;
+                            }else{
+                                $message = "This results has been either deleted or been changed";
+                            }
+                        }else{
+                            $message = "There was an error that occured while parsing the problem";
+                        }
+                    } catch (\Throwable $th) {
+                        if($developmentServer){
+                            $message = $th->getTraceAsString();
+                        }else{
+                            $message = $th->getMessage();
+                        }
+                    }
+                }
+
+                header("Content-Type: application/json");
+                echo json_encode([
+                    "error"=>$error ?? true,
+                    "message"=>$message ?? "No message was returned"
+                ]);
+
+                break;
             default:
                 echo "cant find what you want";
         }
