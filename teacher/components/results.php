@@ -112,7 +112,7 @@
             <tr>
                 <td colspan="6" class="btn p-lg">
                     <button class="green" id="submit_result">Submit Results</button>
-                    <button class="teal" id="save_result" disabled>Save Results</button>
+                    <button class="teal" id="save_result">Save Results</button>
                     <button class="reset_table red">Reset Table</button>
                 </td>
             </tr>

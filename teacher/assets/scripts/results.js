@@ -234,3 +234,94 @@ $("#submit_result").click(function(){
         }
     }
 })
+
+$("#save_result").click(function(){
+    let isHaveToken = false; let token = ""
+    const c_id = $("select[name=subject]").val()
+
+    if(c_id == ""){
+        alert_box("Course has not been selected yet. Please select one to continue", "danger", 8)
+        return
+    }
+
+    //get a token from the server
+    $.ajax({
+        url: "./submit.php",
+        data: {submit: "getToken"},
+        timeout: 30000,
+        async: false,
+        beforeSend: function(){
+            $("#table_status").html("Generating results token...")
+        },
+        success: function(response){
+            response = JSON.parse(JSON.stringify(response))
+
+            if(response["error"] == true){
+                $("#table_status").html("Token Generation failed. Please try again later")
+            }else{
+                $("#table_status").html("Token acquired.")
+                token = response["data"]
+                isHaveToken = true
+            }
+        }
+    })
+
+    if(isHaveToken){
+        let success = 0; let fail = 0; let failIndex = []
+        const total = $("#result_slip tbody tr").length;
+        
+        $("#result_slip tbody tr").each(function(){
+            const stud_index = $(this).children("td:first-child").html()
+            const score = $(this).children(".total_score").html()
+            const c_mark = $(this).children(".class_score").html()
+            const e_mark = $(this).children(".exam_score").html()
+            const e_year = $("select[name=year]").attr("data-selected-year")
+            const sem = $("select[name=semester").val()
+            const isLast = (success+fail+1) == total ? true : false
+            const c_id = $("select[name=subject]").val()
+            const p_id = $("select[name=class]").attr("data-selected-class")
+
+            $.ajax({
+                url: "./submit.php",
+                data: {
+                    submit: "save_result", student_index: stud_index, mark: score,
+                    exam_mark: e_mark, class_mark: c_mark, course_id: c_id, result_token: token,
+                    exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id
+                },
+                type: "POST",
+                timeout: 30000,
+                async: false,
+                beforeSend: function(){
+                    $("#table_status").html("Submitting " + stud_index + " | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
+                },
+                success: function(data){
+                    if(data == "true"){
+                        success += 1
+                    }else{
+                        if(data !== "false"){
+                            alert_box(data, "danger", 8)
+                        }
+                        fail += 1
+                        failIndex.push(stud_index)
+                    }
+                },
+                error: function(xhr){
+                    let message = ""
+                    if(xhr.statusText == "timeout"){
+                        message = "Connection was timed out due to poor network connection. Please try again later";
+                    }else{
+                        message = xhr.responseText
+                    }
+
+                    alert_box(message, "danger", 8)
+                }
+            })
+        })
+
+        $("#table_status").html("Submission completed! | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
+
+        if(fail > 0){
+            $("#table_status").append("<br>Failed Submission: " + failIndex.join(", "))
+        }
+    }
+})

@@ -324,7 +324,9 @@
                             VALUES ({$teacher["school_id"]}, {$teacher["teacher_id"]}, $program_id, $course_id, '$result_token', NOW())";
                             
                             if($connect2->query($sql)){
-                                $connect2->query("DELETE FROM saved_results WHERE token='$prev_token'");
+                                if(!is_null($prev_token)){
+                                    $connect2->query("DELETE FROM saved_results WHERE token='$prev_token'");
+                                }
                                 $message = "true";
                             }else{
                                 $message = "Results could not be compiled for approval";
@@ -336,6 +338,61 @@
                 echo $message;
 
                 break;
+            
+                case "save_result":
+                    $student_index = $_POST["student_index"] ?? null;
+                    $mark = $_POST["mark"] ?? null;
+                    $class_mark = $_POST["class_mark"] ?? null;
+                    $exam_mark = $_POST["exam_mark"] ?? null;
+                    $result_token = $_POST["result_token"] ?? null;
+                    $course_id = $_POST["course_id"] ?? null;
+                    $exam_year = $_POST["exam_year"] ?? null;
+                    $semester = $_POST["semester"] ?? null;
+                    $isFinal = $_POST["isFinal"] ?? false;
+                    $program_id = $_POST["program_id"] ?? null;
+                    
+                    if(empty($student_index) || is_null($student_index) ||
+                        empty($result_token) || is_null($course_id) || 
+                        empty($course_id) || is_null($result_token) || 
+                        empty($semester) || is_null($semester) || 
+                        empty($program_id) || is_null($program_id)){
+                        $message = "false";
+                    }elseif(!isset($_POST["mark"], $_POST["class_mark"], $_POST["exam_mark"])){
+                        $message  = "false";
+                    }elseif(is_null($exam_year) || is_null($semester)){
+                        $message = "false";
+                    }else{
+                        $isInserted = fetchData1("COUNT(indexNumber) as total","saved_results",
+                            "indexNumber='$student_index' AND course_id=$course_id AND exam_year=$exam_year AND semester=$semester")["total"];
+                        if(intval($isInserted) > 0){
+                            $message = "Results already exist";
+                        }else{
+                            $sql = "INSERT INTO saved_results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, token, save_date) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?, NOW())";
+                            $stmt = $connect2->prepare($sql);
+                            $stmt->bind_param("siiidddiiis",$student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, $mark, $teacher["teacher_id"], $exam_year, $semester, $result_token);
+    
+                            if($stmt->execute()){
+                                $message = "true";
+                            }else{
+                                $message = "Error inserting result";
+                            }
+    
+                            if($isFinal == "true" || $isFinal === true){
+                                $sql = "INSERT INTO recordapproval (school_id, teacher_id, program_id, course_id, result_token, submission_date) 
+                                VALUES ({$teacher["school_id"]}, {$teacher["teacher_id"]}, $program_id, $course_id, '$result_token', NOW())";
+                                
+                                if($connect2->query($sql)){
+                                    $message = "true";
+                                }else{
+                                    $message = "Results could not be compiled for approval";
+                                }
+                            }
+                        }
+                    }
+    
+                    echo $message;
+    
+                    break;
 
             case "update_profile":
             case "update_profile_ajax":
