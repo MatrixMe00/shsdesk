@@ -32,6 +32,9 @@
     $splitKey = [];
     $priceKey = "";
 
+    //determine development server and live server to determine how error codes are shown
+    $developmentServer = null;
+
     if($serverDown === false){
         switch($serverName){
             case "localhost":
@@ -52,6 +55,8 @@
                 $priceKey = $priceKeys["development"];
                 $splitKey = $splitKeys["development"];
 
+                $developmentServer = true;
+
                 break;
             case "shsdesk.com":
             case "www.shsdesk.com":
@@ -70,6 +75,8 @@
                 $priceKey = $priceKeys["live"];
                 $splitKey = $splitKeys["live"];
 
+                $developmentServer = false;
+
                 break;
             case "test.shsdesk.com":
             case "www.test.shsdesk.com":
@@ -87,6 +94,8 @@
 
                 $priceKey = $priceKeys["development"];
                 $splitKey = $splitKeys["development"];
+
+                $developmentServer = true;
 
                 break;
 
