@@ -632,7 +632,7 @@
                     $stat = $message["status"];
                     $message = $message[APIKEY::ADMISSION];
                     
-                    $message = $stat === true ? $message : "disabled"; 
+                    $message = $stat == true ? $message : "disabled"; 
                     $message = empty($message) ? "empty1" : $message;
                 }
 
