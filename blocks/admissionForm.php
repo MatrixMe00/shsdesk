@@ -268,23 +268,23 @@
                                     <legend>Interests</legend>
                                     <p>Indicate your interest</p>
                                     <div class="joint">
-                                        <label for="ad_interest" class="checkbox">
-                                            <input type="checkbox" name="ad_interest"  value="Athletics">
+                                        <label for="ad_interest1" class="checkbox ad_interest">
+                                            <input type="checkbox" id="ad_interest1"  data-value="Athletics">
                                             <span class="label_title">Athletics</span>
                                         </label>
-                                        <label for="ad_interest" class="checkbox">
-                                            <input type="checkbox" name="ad_interest"  value="Football">
+                                        <label for="ad_interest2" class="checkbox ad_interest">
+                                            <input type="checkbox" id="ad_interest2"  data-value="Football">
                                             <span class="label_title">Football</span>
                                         </label>
-                                        <label for="ad_interest" class="checkbox">
-                                            <input type="checkbox" name="ad_interest"  value="Debating Club">
+                                        <label for="ad_interest3" class="checkbox ad_interest">
+                                            <input type="checkbox" id="ad_interest3"  data-value="Debating Club">
                                             <span class="label_title">Debating Club</span>
                                         </label>
-                                        <label for="ad_interest" class="checkbox">
-                                            <input type="checkbox" name="ad_interest"  value="Others">
+                                        <label for="ad_interest4" class="checkbox ad_interest">
+                                            <input type="checkbox" id="ad_interest4"  data-value="Others">
                                             <span class="label_title">Others</span>
                                         </label>
-                                        <input type="hidden" name="interest" id="interest" ng-model="interest">
+                                        <input type="hidden" name="interest" id="interest">
                                     </div>
                                 </fieldset>
                                 <fieldset>

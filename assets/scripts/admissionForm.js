@@ -307,38 +307,29 @@ $("#payment_form form input").keyup(function(){
 })
 
 //interests
-$("label[for=ad_interest]").click(function(){
-    val = $(this).children("input[type=checkbox]").val();
-    val_int = $("input[name=interest]").val();
+$("label.ad_interest input").change(function(){
+    let active_value = $(this).prop("checked")
+    let check_value = $(this).attr("data-value")
+    const interest_item = $("input#interest")
 
-    if($(this).children("input[type=checkbox]").prop("checked") == false){
-        $(this).children("input[type=checkbox]").prop("checked",true);
-        if(val_int == ""){
-            val_int = val;
-        }else{
-            val_int += ", " + val;
-        }
-    }else{
-        $(this).children("input[type=checkbox]").prop("checked",false);
-        if(val_int.includes(",")){
-            //if value is not at the end
-            temp_val = val + ", ";
+    //get content of course ids
+    let interests = interest_item.val().split(", ")
 
-            //if value is at the end
-            temp_val2 = ", " + val;
-
-            if(val_int.replace(temp_val2)){
-                val_int = val_int.replace(temp_val2,"");
-            }else{
-                val_int = val_int.replace(temp_val1,"");
-            }            
-        }else{
-            val_int = "";
-        }
+    if(interest_item.val() === ""){
+        interests = [];
     }
 
-    $("input[name=interest]").val(val_int);
-    $("#interest_value").html(val_int);
+    if(active_value){
+        interests.push(check_value)
+    }else{
+        interests = $.grep(interests, function(value){
+            return value !== check_value;
+        })
+    }
+
+    //push new response into interests
+    interest_item.val(interests.join(", "))
+    $("#interest_value").html(interests.join(", "))
 })
 
 //check if the user entered a valid enrolment code
