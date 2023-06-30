@@ -1186,6 +1186,12 @@
 
             $sql = "DELETE FROM $table_name WHERE $column_name=$item_id";
             if($db->query($sql)){
+                //delete every detail about this teacher from the system
+                if($table_name == "teachers"){
+                    $connect2->query("DELETE FROM teacher_classes WHERE teacher_id=$item_id");  //remove all classes handled by teacher
+                    $connect2->query("DELETE FROM saved_results WHERE teacher_id=$item_id");    //delete all saved records by teacher
+                    $connect2->query("DELETE FROM teacher_login WHERE user_id=$item_id");       //delete login details of teacher
+                }
                 echo "success";
             }else{
                 echo "Failed to delete data";
