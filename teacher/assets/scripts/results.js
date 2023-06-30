@@ -238,6 +238,7 @@ $("#submit_result").click(function(){
 $("#save_result").click(function(){
     let isHaveToken = false; let token = ""
     const c_id = $("select[name=subject]").val()
+    const new_save = true;
 
     if(c_id == ""){
         alert_box("Course has not been selected yet. Please select one to continue", "danger", 8)
@@ -286,13 +287,13 @@ $("#save_result").click(function(){
                 data: {
                     submit: "save_result", student_index: stud_index, mark: score,
                     exam_mark: e_mark, class_mark: c_mark, course_id: c_id, result_token: token,
-                    exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id
+                    exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id, saved: new_save
                 },
                 type: "POST",
                 timeout: 30000,
                 async: false,
                 beforeSend: function(){
-                    $("#table_status").html("Submitting " + stud_index + " | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
+                    $("#table_status").html("Saving " + stud_index + " | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
                 },
                 success: function(data){
                     if(data == "true"){
@@ -318,10 +319,10 @@ $("#save_result").click(function(){
             })
         })
 
-        $("#table_status").html("Submission completed! | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
+        $("#table_status").html("Save completed! | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
 
         if(fail > 0){
-            $("#table_status").append("<br>Failed Submission: " + failIndex.join(", "))
+            $("#table_status").append("<br>Failed Saves: " + failIndex.join(", "))
         }
     }
 })

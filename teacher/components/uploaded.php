@@ -23,7 +23,7 @@
     </div>
     <div class="card v-card gap-lg yellow color-dark p-med sm-rnd flex-wrap">
         <span class="">Results Saved for later</span>
-        <span class="txt-fl3 txt-bold"><?= fetchData1("COUNT(DISTINCT(program_id)) as total","saved_results","teacher_id={$teacher['teacher_id']}")["total"]; ?></span>
+        <span class="txt-fl3 txt-bold"><?= fetchData1("COUNT(DISTINCT(token)) as total","saved_results","teacher_id={$teacher['teacher_id']}")["total"]; ?></span>
     </div>
 </section>
 
@@ -54,7 +54,7 @@
             "r.teacher_id={$teacher['teacher_id']} AND r.result_status='rejected'", 0
         );
         $saved_results = fetchData1(
-            "p.program_name, s.program_id, s.exam_year, s.semester, c.course_name, DISTINCT s.token, s.save_date as submission_date",
+            "DISTINCT s.token, p.program_name, s.program_id, s.exam_year, s.semester, c.course_name, s.from_reject, DATE(s.save_date) as submission_date",
             "saved_results s JOIN program p ON p.program_id = s.program_id JOIN courses c ON c.course_id = s.course_id",
             "s.teacher_id={$teacher['teacher_id']}",0
         );
@@ -93,7 +93,7 @@
                     <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?= fetchData1("CONCAT('Sem ',semester,' | Year ',exam_year) as year_sem","results","result_token='{$result['result_token']}'")["year_sem"] ?></p>
                 </div>
                 <div class="foot btn self-align-end">
-                    <button class="light plain-r sp-xlg class_single" 
+                    <button class="light plain-r sp-lg class_single" 
                         onclick="pageChange({table_id: 'class_list_table', type:'approved', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['result_token'] ?>'})">
                         View Data
                     </button>
@@ -131,7 +131,7 @@
                     <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?= fetchData1("CONCAT('Sem ',semester,' | Year ',exam_year) as year_sem","results","result_token='{$result['result_token']}'")["year_sem"] ?></p>
                 </div>
                 <div class="foot btn self-align-end">
-                    <button class="light plain-r sp-xlg class_single" 
+                    <button class="light plain-r sp-lg class_single" 
                         onclick="pageChange({table_id: 'class_list_table', type:'pending', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['result_token'] ?>'})">
                         View Data
                     </button>
@@ -169,7 +169,8 @@
                     <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?= fetchData1("CONCAT('Sem ',semester,' | Year ',exam_year) as year_sem","results","result_token='{$result['result_token']}'")["year_sem"] ?></p>
                 </div>
                 <div class="foot btn self-align-end">
-                    <button class="light plain-r sp-xlg class_single" 
+                    <button class="primary plain-r sp-lg pass_to_save" data-token="<?= $result["result_token"] ?>">Save For Editing</button>
+                    <button class="light plain-r sp-lg class_single" 
                         onclick="pageChange({table_id: 'class_list_table', type:'rejected', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['result_token'] ?>'})">
                         View Data
                     </button>
@@ -207,10 +208,11 @@
                     <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?= "Sem {$result['semester']} | Year {$result['exam_year']}" ?></p>
                 </div>
                 <div class="foot btn self-align-end">
-                    <button class="light plain-r sp-xlg class_single" 
-                        onclick="pageChange({table_id:'save_data_table', type:'saved', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['result_token'] ?>'})">
+                    <button class="light plain-r sp-lg class_single" 
+                        onclick="pageChange({table_id:'save_data_table', type:'saved', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['token'] ?>'})">
                         View Data
-                    </button>
+                    </button><?php if($result["from_reject"] == false): ?>
+                    <button class="red plain-r sp-lg del_save" data-token="<?= $result["token"] ?>">Delete</button><?php endif; ?>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -295,7 +297,7 @@
             </tbody>
         </table>
 
-        <table class="full no_disp" id="save_data_table">
+        <table class="full light no_disp" id="save_data_table">
             <thead>
                 <td>Index Number</td>
                 <td>Full Name</td>
@@ -319,7 +321,26 @@
                 </tr>
             </tfoot>
         </table>
+        <p>Status: <span id="table_status"></span></p>
     </div>
+</section>
+
+<section id="confirm_box" class="fixed flex-all-center form_modal_box no_disp">
+            <form action="./submit.php" name="confirm_box" method="get"
+                class="light sp-xlg-lr sp-xxlg-tp sm-rnd wmax-sm wmin-unset w-full sm-auto">
+                <div class="message white p-lg txt-al-c">
+                    <p>Do you want to delete this?</p>
+                </div>
+                
+                <!-- contents to send -->
+                <input type="hidden" name="token">
+                <input type="hidden" name="mode">
+                
+                <div class="btn p-lg flex-all-center w-full flex-eq sm-xlg-t gap-md">
+                    <button class="plain-r green" type="submit" name="submit" value="confirm_box_response">Yes</button>
+                    <button class="plain-r red" type="reset" onclick="$('#confirm_box').addClass('no_disp')">No</button>
+                </div>
+            </form>
 </section>
 
 <script src="<?= "$url/assets/scripts/functions.min.js?v=".time() ?>"></script>

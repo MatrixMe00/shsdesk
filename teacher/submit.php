@@ -350,44 +350,50 @@
                     $semester = $_POST["semester"] ?? null;
                     $isFinal = $_POST["isFinal"] ?? false;
                     $program_id = $_POST["program_id"] ?? null;
+                    $new_save = $_POST["saved"] ?? null;
                     
                     if(empty($student_index) || is_null($student_index) ||
                         empty($result_token) || is_null($course_id) || 
                         empty($course_id) || is_null($result_token) || 
                         empty($semester) || is_null($semester) || 
-                        empty($program_id) || is_null($program_id)){
+                        empty($program_id) || is_null($program_id) ||
+                        is_null($new_save)){
                         $message = "false";
                     }elseif(!isset($_POST["mark"], $_POST["class_mark"], $_POST["exam_mark"])){
                         $message  = "false";
                     }elseif(is_null($exam_year) || is_null($semester)){
                         $message = "false";
                     }else{
-                        $isInserted = fetchData1("COUNT(indexNumber) as total","saved_results",
-                            "indexNumber='$student_index' AND course_id=$course_id AND exam_year=$exam_year AND semester=$semester")["total"];
-                        if(intval($isInserted) > 0){
-                            $message = "Results already exist";
-                        }else{
-                            $sql = "INSERT INTO saved_results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, token, save_date) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?, NOW())";
-                            $stmt = $connect2->prepare($sql);
-                            $stmt->bind_param("siiidddiiis",$student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, $mark, $teacher["teacher_id"], $exam_year, $semester, $result_token);
-    
-                            if($stmt->execute()){
-                                $message = "true";
+                        try {
+                            $isInserted = fetchData1("COUNT(indexNumber) as total","saved_results",
+                                "indexNumber='$student_index' AND course_id=$course_id AND exam_year=$exam_year AND semester=$semester")["total"];
+                            if(intval($isInserted) > 0 && $new_save == "true"){
+                                $message = "Results for $student_index already exist | $new_save";
                             }else{
-                                $message = "Error inserting result";
-                            }
-    
-                            if($isFinal == "true" || $isFinal === true){
-                                $sql = "INSERT INTO recordapproval (school_id, teacher_id, program_id, course_id, result_token, submission_date) 
-                                VALUES ({$teacher["school_id"]}, {$teacher["teacher_id"]}, $program_id, $course_id, '$result_token', NOW())";
-                                
-                                if($connect2->query($sql)){
+                                if($new_save == "false"){
+                                    $sql = "UPDATE saved_results SET class_mark=?, exam_mark=?, mark=? WHERE indexNumber=?  AND token=?";
+                                    $stmt = $connect2->prepare($sql);
+                                    $stmt->bind_param("dddss", $class_mark, $exam_mark, $mark, $student_index, $result_token);
+                                }else{
+                                    $sql = "INSERT INTO saved_results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, token, save_date) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?, NOW())";
+                                    $stmt = $connect2->prepare($sql);
+                                    $stmt->bind_param("siiidddiiis",$student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, $mark, $teacher["teacher_id"], $exam_year, $semester, $result_token);
+                                }                            
+        
+                                if($stmt->execute()){
                                     $message = "true";
                                 }else{
-                                    $message = "Results could not be compiled for approval";
+                                    $message = "Error inserting result";
                                 }
                             }
+                        } catch (\Throwable $th) {
+                            if($developmentServer){
+                                $message = $th->getTraceAsString();
+                            }else{
+                                $message = $th->getMessage();
+                            }
                         }
+                        
                     }
     
                     echo $message;
@@ -524,8 +530,104 @@
                 ]);
 
                 break;
+            
+            case "get_pces":
+                $token = $_GET["token"] ?? null;
+
+                if(is_null($token) || empty($token)){
+                    $message = "No token was provided";
+                }else{
+                    try {
+                        $sql = "SELECT program_id, course_id, exam_year, semester FROM saved_results WHERE token='$token' LIMIT 1";
+                        $result = $connect2->query($sql);
+
+                        if($result->num_rows > 0){
+                            $message = $result->fetch_assoc();
+                            $error = false;
+                        }else{
+                            $message = "No data for this result list was found. Contact admin for help with token: $token";
+                        }
+                    } catch (\Throwable $th) {
+                        if($developmentServer){
+                            $message = $th->getTraceAsString();
+                        }else{
+                            $message = $th->getMessage();
+                        }
+                    }
+                }
+
+                header("Content-Type: application/json");
+                echo json_encode([
+                    "error"=>$error ?? true,
+                    "message"=>$message ?? "No response from the server"
+                ]);
+                break;
+            
+            case "confirm_box_response":
+            case "confirm_box_response_ajax":
+                $token = $_GET["token"] ?? null;
+                $mode = strtolower($_GET["mode"]) ?? null;
+                $modes = ["transfer", "delete"];
+
+                if(is_null($token) || empty($token)){
+                    $message = "Result token was not specified";
+                }elseif(is_null($mode) || empty($mode)){
+                    $message = "Mode of operation was not specified";
+                }elseif(array_search($mode, $modes) === false){
+                    $message = "Wrong mode was specified $mode";
+                }else{
+                    try {
+                        if($mode == "transfer"){
+                            $sql = "INSERT INTO saved_results(indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, token, from_reject, save_date)
+                                SELECT indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, result_token, 1, NOW()
+                                FROM results
+                                WHERE result_token=?";
+                            $stmt = $connect2->prepare($sql);
+                            $stmt->bind_param("s", $token);
+                        }elseif($mode == "delete"){
+                            $sql = "DELETE FROM saved_results WHERE token = ?";
+                            $stmt = $connect2->prepare($sql);
+                            $stmt->bind_param("s", $token);
+                        }
+
+                        if($stmt->execute()){
+                            //remove the rejected results from the results section
+                            if($mode == "transfer"){
+                                // Delete from results table
+                                $stmt1 = $connect2->prepare("DELETE FROM results WHERE result_token = ?");
+                                $stmt1->bind_param("s", $token);
+                                $stmt1->execute();
+                                $stmt1->close();
+
+                                // Delete from recordapproval table
+                                $stmt2 = $connect2->prepare("DELETE FROM recordapproval WHERE result_token = ?");
+                                $stmt2->bind_param("s", $token);
+                                $stmt2->execute();
+                                $stmt2->close();
+
+                                $message = "success";
+                            }else{
+                                $message = "success";
+                            }
+                        }else{
+                            $message = "Token $token could not be processed";
+                        }
+
+                    } catch (\Throwable $th) {
+                        if($developmentServer){
+                            $message = $th->getTraceAsString();
+                        }else{
+                            $message = $th->getMessage();
+                        }
+                    }
+                }
+
+                echo $message;
+
+                break;
+
             default:
-                echo "cant find what you want";
+                echo "Submission value has not been programmed. Value: $submit";
         }
     }else{
         echo "No submit request delivered. No operation is performed.";

@@ -66,6 +66,7 @@ function pageChange({index = 0, program_name="", token="", type="", table_id=""}
     $("#cards-section").toggleClass("flex")
     $("#content_wrapper").toggleClass("no_disp")
     $("span#single_class_name").html("")
+    $("#table_status").html("")
     // $("#class_list_table tbody").html(insertEmptyTableLabel("Make a search on your class year to proceed", columns))
 
     $("#single_class table:not(.no_disp)").addClass("no_disp")
@@ -94,7 +95,7 @@ function pageChange({index = 0, program_name="", token="", type="", table_id=""}
                     tfoot.addClass("no_disp")
                     $("#sub_term_form, #search_form").addClass("no_disp")
                 }else if(response["error"] == false){
-                    $("#sub_term_form, #result_slip tfoot").removeClass("no_disp")
+                    $("#sub_term_form, #save_data_table tfoot").removeClass("no_disp")
 
                     if(table_id == "save_data_table"){
                         saved_token = token;
@@ -105,8 +106,8 @@ function pageChange({index = 0, program_name="", token="", type="", table_id=""}
                             let tr = "<tr class=\"p-lg\">"
                                 tr += "<td>" + tableData[i]["indexNumber"] + "</td>"
                                 tr += "<td>" + tableData[i]["Lastname"] + " " + tableData[i]["Othernames"] + "</td>"
-                                tr += "<td contenteditable=\"true\" class=\"white class_score\" data-max=\"30\" onblur=\"examScoreBlur($(this))\" onkeydown=\"blurOnEnter($(this))\">" + tableData[i]["class_mark"] + "</td>"
-                                tr += "<td contenteditable=\"true\" class=\"white exam_score\" data-max=\"70\" onblur=\"examScoreBlur($(this))\" onkeydown=\"blurOnEnter($(this))\">"+ tableData[i]["exam_mark"] +"</td>"
+                                tr += "<td contenteditable=\"true\" class=\"white class_score\" data-max=\"30\" data-initial=\"" + tableData[i]["class_mark"] + "\" onblur=\"examScoreBlur($(this))\" onkeydown=\"blurOnEnter($(this))\">" + tableData[i]["class_mark"] + "</td>"
+                                tr += "<td contenteditable=\"true\" class=\"white exam_score\" data-max=\"70\" data-initial=\"" + tableData[i]["exam_mark"] + "\" onblur=\"examScoreBlur($(this))\" onkeydown=\"blurOnEnter($(this))\">"+ tableData[i]["exam_mark"] +"</td>"
                                 tr += "<td class=\"total_score\">" + tableData[i]["mark"] + "</td>"
                                 tr += "<td class=\"grade\">" + giveGrade(tableData[i]["mark"],$("input#result_type").val()) + "</td>"
                             tr += "</tr>"
@@ -141,51 +142,42 @@ function pageChange({index = 0, program_name="", token="", type="", table_id=""}
     }
 }
 
-$("#submit_result").click(function(){
+$("#submit_result").click(async function(){
     let isHaveToken = false; let token = ""
-    const c_id = $("select[name=subject]").val()
+    let c_id = 0, p_id = 0, e_year = 0, sem = 0;
 
-    if(c_id == ""){
+    //search for other details about the school
+    await getPCES(saved_token).then((response) => {
+        response = JSON.parse(JSON.stringify(response))
+        c_id = parseInt(response["course_id"]); p_id = parseInt(response["program_id"])
+        e_year = parseInt(response["exam_year"]); sem = parseInt(response["semester"])
+    }).catch((err)=>{
+        alert_box(err, "danger", 7)
+    })
+
+    if(c_id <= 0){
         alert_box("Course has not been selected yet. Please select one to continue", "danger", 8)
         return
     }
 
     //get a token from the server
-    $.ajax({
-        url: "./submit.php",
-        data: {submit: "getToken"},
-        timeout: 30000,
-        async: false,
-        beforeSend: function(){
-            $("#table_status").html("Generating results token...")
-        },
-        success: function(response){
-            response = JSON.parse(JSON.stringify(response))
-
-            if(response["error"] == true){
-                $("#table_status").html("Token Generation failed. Please try again later")
-            }else{
-                $("#table_status").html("Token acquired.")
-                token = response["data"]
-                isHaveToken = true
-            }
-        }
+    token = await getAToken("table_status").then((response)=>{
+        isHaveToken = true; return response;
+    }).catch((err)=>{
+        alert_box(err,"danger"); isHaveToken = false;
+        return "";
     })
 
     if(isHaveToken){
         let success = 0; let fail = 0; let failIndex = []
-        const total = $("#result_slip tbody tr").length;
+        const total = $("#save_data_table tbody tr").length;
         
-        $("#result_slip tbody tr").each(function(){
+        $("#save_data_table tbody tr").each(function(){
             const stud_index = $(this).children("td:first-child").html()
-            const score = $(this).children(".total_score").html()
-            const c_mark = $(this).children(".class_score").html()
-            const e_mark = $(this).children(".exam_score").html()
-            const e_year = $("select[name=year]").attr("data-selected-year")
-            const sem = $("select[name=semester").val()
+            const score = parseFloat($(this).children(".total_score").html()).toFixed(1)
+            const c_mark = parseFloat($(this).children(".class_score").html()).toFixed(1)
+            const e_mark = parseFloat($(this).children(".exam_score").html()).toFixed(1)
             const isLast = (success+fail+1) == total ? true : false
-            const c_id = $("select[name=subject]").val()
-            const p_id = $("select[name=class]").attr("data-selected-class")
 
             $.ajax({
                 url: "./submit.php",
@@ -231,3 +223,248 @@ $("#submit_result").click(function(){
         }
     }
 })
+
+$("#save_result").click(async function(){
+    let isHaveToken = false; let token = saved_token
+    let c_id = 0, p_id = 0, e_year = 0, sem = 0;
+    const new_save = false;
+
+    //search for other details about the school
+    await getPCES(saved_token).then((response) => {
+        response = JSON.parse(JSON.stringify(response))
+        c_id = parseInt(response["course_id"]); p_id = parseInt(response["program_id"])
+        e_year = parseInt(response["exam_year"]); sem = parseInt(response["semester"])
+    }).catch((err)=>{
+        alert_box(err, "danger", 7)
+    })
+
+    if(c_id <= 0){
+        alert_box("Course has not been selected yet. Please select one to continue", "danger", 8)
+        return
+    }
+
+    //get a token from the server
+    if(token !== ""){
+        isHaveToken = true;
+    }
+
+    if(isHaveToken){
+        let success = 0; let fail = 0; let failIndex = []
+        const total = $("#save_data_table tbody tr").length;
+        
+        $("#save_data_table tbody tr").each(function(){
+            const stud_index = $(this).children("td:first-child").html()
+            const score = parseFloat($(this).children(".total_score").html()).toFixed(1)
+            const c_mark = parseFloat($(this).children(".class_score").html()).toFixed(1)
+            const e_mark = parseFloat($(this).children(".exam_score").html()).toFixed(1)
+            const isLast = (success+fail+1) == total ? true : false
+
+            $.ajax({
+                url: "./submit.php",
+                data: {
+                    submit: "save_result", student_index: stud_index, mark: score,
+                    exam_mark: e_mark, class_mark: c_mark, course_id: c_id, result_token: token,
+                    exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id, prev_token: saved_token,
+                    saved: new_save
+                },
+                type: "POST",
+                timeout: 30000,
+                async: false,
+                beforeSend: function(){
+                    $("#table_status").html("Saving " + stud_index + " | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
+                },
+                success: function(data){
+                    if(data == "true"){
+                        success += 1
+                    }else{
+                        if(data !== "false"){
+                            alert_box(data, "danger", 8)
+                        }
+                        fail += 1
+                        failIndex.push(stud_index)
+                    }
+                },
+                error: function(xhr){
+                    let message = ""
+                    if(xhr.statusText == "timeout"){
+                        message = "Connection was timed out due to poor network connection. Please try again later";
+                    }else{
+                        message = xhr.responseText
+                    }
+
+                    alert_box(message, "danger", 8)
+                }
+            })
+        })
+
+        $("#table_status").html("Save completed! | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
+
+        if(fail > 0){
+            $("#table_status").append("<br>Failed Saves: " + failIndex.join(", "))
+        }
+    }
+})
+
+function getAToken(response_id){
+    return new  Promise((resolve, reject) => {
+        $.ajax({
+            url: "./submit.php",
+            data: {submit: "getToken"},
+            timeout: 30000,
+            async: false,
+            beforeSend: function(){
+                if(response_id !== ""){
+                    $("#" + response_id).html("Generating results token...")
+                }
+            },
+            success: function(response){
+                response = JSON.parse(JSON.stringify(response))
+
+                if(response["error"] == true){
+                    if(response_id !== ""){
+                        $("#" + response_id).html("Token Generation failed. Please try again later")
+                    }else{
+                        reject("Token Generation failed. Please try again later")
+                    }
+                }else{
+                    if(response_id !== ""){
+                        $("#" + response_id).html("Token acquired.","success",3)
+                    }
+                    resolve(response["data"])
+                }
+            },
+            error: function(xhr){
+                let message = xhr.responseText
+
+                if(xhr.statusText == "timeout"){
+                    message = "Connection was timed out because of a slow network detected";
+                }
+
+                reject(message);
+            }
+        })
+    })
+}
+
+function getPCES(token_id){
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: "./submit.php",
+            data: {submit: "get_pces", token: token_id},
+            method: "get",
+            timeout: 30000,
+            success: function(response){
+                response = JSON.parse(JSON.stringify(response))
+
+                if(response["error"] == true){
+                    reject(response["message"])
+                }else{
+                    resolve(response["message"]);
+                }
+            },
+            error: function(xhr){
+                let message = xhr.responsetext
+
+                if(xhr.statusText == "timeout"){
+                    message = "Connection timed out due to slow network detected. Please check your internet connection and try again";
+                }
+
+                reject(message);
+            }
+        })
+    })
+}
+
+$(".reset_table").click(function(){
+    $("#save_data_table").find(".class_score, .exam_score").html(function(){
+        return $(this).attr("data-initial")
+    })
+    $("#save_data_table").find(".class_score").blur()
+    $("#table_status").html("")
+})
+
+$("button.pass_to_save").click(function(){
+    const alert_message = "Clicking 'Yes' would prepare these records to be editable. Do you wish to proceed?"
+    const token = $(this).attr("data-token")
+    const mode = "transfer";
+
+    showConfirmBox({
+        token: token, mode: mode, message: alert_message
+    })
+})
+
+$("button.del_save").click(function(){
+    const alert_message = "Are you sure you want to delete this record?"
+    const token = $(this).attr("data-token")
+    const mode = "delete";
+
+    showConfirmBox({
+        token: token, mode: mode, message: alert_message
+    })
+})
+
+function showConfirmBox({token, mode, message}){
+    const confirm_box = $("section#confirm_box");
+
+    //fill the confirm box form
+    confirm_box.find("input[name=token]").val(token)
+    confirm_box.find("input[name=mode]").val(mode)
+
+    //show the display with message
+    confirm_box.find(".message p").html(message)
+    confirm_box.removeClass("no_disp")
+}
+
+$("form[name=confirm_box]").submit(function(e){
+    e.preventDefault();
+    const mode = $(this).find("input[name=mode]").val()
+    
+    const response = formSubmit($(this), $(this).find("button[name=submit]"), false);
+
+    if(response == true){
+        let message = "";
+        if(mode == "delete"){
+            message = "Record was deleted successfully";
+        }else if(mode == "transfer"){
+            message = "Your records have been saved for editing.";
+        }
+
+        alert_box(message, "success", 3)
+        $("#lhs .active").click()
+    }else{
+        alert_box(response, "danger")
+    }
+})
+
+function blurOnEnter(element){
+    $(element).keydown(function(event){
+        if(event.key === "Enter"){
+            event.preventDefault()
+            $(this).blur()
+        }
+    })
+}
+
+function examScoreBlur(element){
+    const tr = $(element).parents("tr")
+    const class_score = $(tr).find(".class_score")
+    const exam_mark = $(tr).find(".exam_score")
+    const total_mark = $(tr).find(".total_score")
+    const grade = $(tr).find(".grade")
+    const result_type = $("input#result_type").val()
+    
+    if($(element).html() === ""){
+        $(element).html("0")
+    }else if(parseInt($(element).html()) < 0){
+        alert_box("Lower than 0 value rejected", "red")
+        $(element).html("0")
+    }else if(parseInt($(element).html()) > parseInt($(element).attr("data-max"))){
+        alert_box("Value greater than " + $(element).attr("data-max") + " rejected", "red")
+        $(element).html("0")
+    }
+
+    const total_score = parseFloat($(class_score).html()) + parseFloat($(exam_mark).html())
+    //grab total mark
+    $(total_mark).html(total_score)
+    $(grade).html(giveGrade(total_score, result_type))
+}
