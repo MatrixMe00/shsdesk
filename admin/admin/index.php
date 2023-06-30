@@ -101,8 +101,8 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     </section>
     </div>
     <div id="gen_del" class="modal_yes_no fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-        <div class="yes_no_container">
-            <div class="body">
+        <div class="yes_no_container white sp-xlg-lr sp-xxlg-tp sm-rnd wmax-sm wmin-unset w-full sm-auto">
+            <div class="body txt-al-c sp-xxlg-tp">
                 <p id="warning_content">Do you want to delete?</p>
             </div>
 
@@ -115,9 +115,9 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                 <input type="hidden" name="submit" value="yes_no_submit">
             </form>
 
-            <div class="foot btn flex flex-center-content flex-center-align">
-                <button type="button" name="yes_button" class="success" onclick="$('#yes_no_form').submit()">Yes</button>
-                <button type="button" name="no_button" class="red" onclick="$('#gen_del').addClass('no_disp')">No</button>
+            <div class="foot btn p-lg flex-all-center w-full flex-eq sm-xlg-t gap-md">
+                <button type="button" name="yes_button" class="plain primary" onclick="$('#yes_no_form').submit()">Yes</button>
+                <button type="button" name="no_button" class="plain red" onclick="$('#gen_del').addClass('no_disp')">No</button>
             </div>
         </div>
     </div>
