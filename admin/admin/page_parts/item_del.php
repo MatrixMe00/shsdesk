@@ -1,5 +1,5 @@
-<div class="yes_no_container">
-        <div class="body">
+<div class="yes_no_container white sp-xlg-lr sp-xxlg-tp sm-rnd wmax-sm wmin-unset w-full sm-auto">
+        <div class="body txt-al-c sp-xxlg-tp">
             <p id="warning_content">Do you want to delete?</p>
         </div>
 
@@ -12,9 +12,9 @@
         </form>
 
         <div class="foot flex flex-center-content flex-center-align">
-            <div class="btn w-full-child wmax-xs flex gap-sm w-full">
-                <button type="button" name="yes_button" class="primary" onclick="$('#delete_form').submit();">Yes</button>
-                <button type="button" name="no_button" class="red" onclick="$('#table_del').addClass('no_disp')">No</button>
+            <div class="btn p-lg flex-all-center w-full flex-eq sm-xlg-t gap-md">
+                <button type="button" name="yes_button" class="plain-r green" onclick="$('#delete_form').submit();">Yes</button>
+                <button type="button" name="no_button" class="plain-r red" onclick="$('#table_del').addClass('no_disp')">No</button>
             </div>
             
         </div>

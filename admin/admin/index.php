@@ -116,8 +116,8 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             </form>
 
             <div class="foot btn p-lg flex-all-center w-full flex-eq sm-xlg-t gap-md">
-                <button type="button" name="yes_button" class="plain primary" onclick="$('#yes_no_form').submit()">Yes</button>
-                <button type="button" name="no_button" class="plain red" onclick="$('#gen_del').addClass('no_disp')">No</button>
+                <button type="button" name="yes_button" class="plain-r green" onclick="$('#yes_no_form').submit()">Yes</button>
+                <button type="button" name="no_button" class="plain-r red" onclick="$('#gen_del').addClass('no_disp')">No</button>
             </div>
         </div>
     </div>

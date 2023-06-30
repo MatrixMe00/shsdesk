@@ -13,8 +13,8 @@
 
         <div class="foot flex flex-center-content flex-center-align">
             <div class="btn p-lg flex-all-center w-full flex-eq sm-xlg-t gap-md">
-                <button type="button" name="yes_button" class="plain primary" onclick="$('#table_yes_no_form').submit();">Yes</button>
-                <button type="button" name="no_button" class="plain red" onclick="$('#table_del').addClass('no_disp')">No</button>
+                <button type="button" name="yes_button" class="plain-r green" onclick="$('#table_yes_no_form').submit();">Yes</button>
+                <button type="button" name="no_button" class="plain-r red" onclick="$('#table_del').addClass('no_disp')">No</button>
             </div>
             
         </div>
