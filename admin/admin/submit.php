@@ -212,82 +212,136 @@
 
             echo $message;
         }elseif($submit == "adminUpdateStudent" || $submit == "adminUpdateStudent_ajax"){
-            $student_index = strip_tags(stripslashes($_REQUEST["student_index"]));
-            $lname = strip_tags(stripslashes($_REQUEST["lname"]));
-            $oname = strip_tags(stripslashes($_REQUEST["oname"]));
-            $gender = strip_tags(stripslashes($_REQUEST["gender"]));
-            $boarding_status = strip_tags(stripslashes($_REQUEST["boarding_status"]));
-            $student_course = strip_tags(stripslashes($_REQUEST["student_course"]));
-            $enrolCode = $_REQUEST["enrolCode"];
-            $aggregate = strip_tags(stripslashes($_REQUEST["aggregate"]));
-            $jhs = strip_tags(stripslashes($_REQUEST["jhs"]));
-            $dob = strip_tags(stripslashes($_REQUEST["dob"]));
-            $track_id = strip_tags(stripslashes($_REQUEST["track_id"]));
+            //perform operation based on mode
+            $admin_mode = $_REQUEST["admin_mode"];
+
+            if($admin_mode == "admission"){
+                $enrolCode = $_REQUEST["enrolCode"];
+                $aggregate = strip_tags(stripslashes($_REQUEST["aggregate"])) ?? null;
+                $jhs = strip_tags(stripslashes($_REQUEST["jhs"])) ?? null;
+                $dob = strip_tags(stripslashes($_REQUEST["dob"])) ?? null;
+                $track_id = strip_tags(stripslashes($_REQUEST["track_id"])) ?? null;
+            }else{
+                $guardianContact = $_REQUEST["guardianContact"] ?? null;
+                $year_level = $_REQUEST["year_level"] ?? null;
+                $program_id = $_REQUEST["program_id"] ?? null;
+            }
+            // print_r($_REQUEST); return;
+            $student_index = strip_tags(stripslashes($_REQUEST["student_index"])) ?? null;
+            $lname = strip_tags(stripslashes($_REQUEST["lname"])) ?? null;
+            $oname = strip_tags(stripslashes($_REQUEST["oname"])) ?? null;
+            $gender = strip_tags(stripslashes($_REQUEST["gender"])) ?? null;
+            $boarding_status = strip_tags(stripslashes($_REQUEST["boarding_status"])) ?? null;
+            $student_course = strip_tags(stripslashes($_REQUEST["student_course"])) ?? null;
+
             if(isset($_REQUEST["house"]))
                 $house = strip_tags(stripslashes($_REQUEST["house"]));
 
             //variable to hold messages
             $message = "";
 
-            if(empty($student_index)){
+            if(is_null($student_index) || empty($student_index)){
                 $message = "index-number-empty";
-            }elseif(empty($lname)){
+            }elseif(is_null($lname) || empty($lname)){
                 $message = "lastname-empty";
-            }elseif(empty($oname)){
+            }elseif(is_null($oname) || empty($oname)){
                 $message = "no-other-name";
-            }elseif(empty($gender)){
+            }elseif(is_null($gender) || empty($gender)){
                 $message = "gender-not-set";
-            }elseif(empty($boarding_status)){
+            }elseif(is_null($boarding_status) || empty($boarding_status)){
                 $message = "boarding-status-not-set";
-            }elseif(empty($student_course)){
+            }elseif(is_null($student_course) || empty($student_course)){
                 $message = "no-student-program-set";
-            }elseif(empty($aggregate)){
+            }elseif($admin_mode == "admission" && (is_null($aggregate) || empty($aggregate))){
                 $message = "no-aggregate-set";
-            }elseif(intval($aggregate) < 6 || intval($aggregate) > 81){
+            }elseif($admin_mode == "admission" && (intval($aggregate) < 6 || intval($aggregate) > 81)){
                 $message = "aggregate-wrong";
-            }elseif(empty($track_id)){
+            }elseif($admin_mode == "admission" && (is_null($track_id) || empty($track_id))){
                 $message = "no-track-id";
-            }elseif(isset($_REQUEST['house']) && empty($house)){
+            }elseif($admin_mode == "admission" && (isset($_REQUEST['house']) && empty($house))){
                 $message = "no-house";
+            }elseif($admin_mode == "records" && (is_null($year_level) || empty($year_level))){
+                $message = "Student year was not specified. Please specify before you continue";
+            }elseif($admin_mode == "records" && (is_null($program_id) || empty($program_id))){
+                $message = "Student class not specified. Please specify before you continue";
             }else{
-                //format date
-                $dob = date("Y-m-d", strtotime($dob));
-
-                //update data in CSSPS table
-                $sql = "UPDATE cssps SET Lastname=?, Othernames=?, Gender=?, boardingStatus=?,
-                        programme=?, aggregate=?, jhsAttended=?, dob=?, trackID=? 
-                        WHERE indexNumber=?";
-                $stmt = $connect->prepare($sql);
-                $stmt->bind_param("sssssissss",$lname,$oname,$gender,$boarding_status,$student_course,
-                    $aggregate,$jhs,$dob,$track_id, $student_index);
-                if($stmt->execute()){
-                    //update student enrolment data
-                    if(fetchData("enroled","cssps","indexNumber='$student_index'")["enroled"]){
-                        if(empty($enrolCode)){
-                            $message = "no-enrol-code";
-                        }elseif(strlen($enrolCode) < 6){
-                            $message = "enrol-code-short";
+                try{
+                    if($admin_mode == "records"){
+                        if(!is_null($guardianContact) && !empty($guardianContact)){
+                            if(strlen($guardianContact) != 10){
+                                $message = "Guardian's phone number is too short";
+                            }elseif(ctype_digit($guardianContact) === false){
+                                $message = "Your phone number should only contain numbers";
+                            }elseif(array_search(substr($guardianContact,0,3), $phoneNumbers) === false){
+                                $message = "Phone number has an invalid operator";
+                            }
+    
+                            if(!empty($message)){
+                                echo $message;
+                                return;
+                            }
                         }else{
-                            $sql = "UPDATE enrol_table SET program=?, lastname=?, othername=?, gender=?, jhsName=?, birthdate=?, enrolCode=? WHERE indexNumber=?";
-                            $stmt = $connect->prepare($sql);
-                            $stmt->bind_param("ssssssss",$student_course, $lname, $oname, $gender, $jhs, $dob, $enrolCode, $student_index);
-                            $stmt->execute();
+                            $guardianContact = "";
                         }
 
-                        //make update to house allocation
-                        $sql = "UPDATE house_allocation SET studentLname=?, studentOname=?, houseID=?, studentGender=?, boardingStatus=? 
+                        $sql = "UPDATE students_table SET Lastname=?, Othernames=?, Gender=?,
+                            studentYear=?, guardianContact=?, programme=?, program_id=?, boardingStatus=?
                             WHERE indexNumber=?";
-                        $stmt = $connect->prepare($sql);
-                        $stmt->bind_param("ssisss", $lname, $oname, $house, $gender, $boarding_status, $student_index);
-                    }
-                    if($stmt->execute()){
-                        $message = "success";
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param("sssississ", $lname, $oname, $gender, $year_level, $guardianContact, $student_course, $program_id, $boarding_status, $student_index);
+                        if($stmt->execute()){
+                            $message = "success";
+                        }else{
+                            $message = "There was an error while updating the student detail";
+                        }
+                        // $message = "Everything is fine";
                     }else{
-                        $message = "Could not update details";
+                        //format date
+                        $dob = date("Y-m-d", strtotime($dob));
+
+                        //update data in CSSPS table
+                        $sql = "UPDATE cssps SET Lastname=?, Othernames=?, Gender=?, boardingStatus=?,
+                                programme=?, aggregate=?, jhsAttended=?, dob=?, trackID=? 
+                                WHERE indexNumber=?";
+                        $stmt = $connect->prepare($sql);
+                        $stmt->bind_param("sssssissss",$lname,$oname,$gender,$boarding_status,$student_course,
+                            $aggregate,$jhs,$dob,$track_id, $student_index);
+                        if($stmt->execute()){
+                            //update student enrolment data
+                            if(fetchData("enroled","cssps","indexNumber='$student_index'")["enroled"]){
+                                if(empty($enrolCode)){
+                                    $message = "no-enrol-code";
+                                }elseif(strlen($enrolCode) < 6){
+                                    $message = "enrol-code-short";
+                                }else{
+                                    $sql = "UPDATE enrol_table SET program=?, lastname=?, othername=?, gender=?, jhsName=?, birthdate=?, enrolCode=? WHERE indexNumber=?";
+                                    $stmt = $connect->prepare($sql);
+                                    $stmt->bind_param("ssssssss",$student_course, $lname, $oname, $gender, $jhs, $dob, $enrolCode, $student_index);
+                                    $stmt->execute();
+                                }
+
+                                //make update to house allocation
+                                $sql = "UPDATE house_allocation SET studentLname=?, studentOname=?, houseID=?, studentGender=?, boardingStatus=? 
+                                    WHERE indexNumber=?";
+                                $stmt = $connect->prepare($sql);
+                                $stmt->bind_param("ssisss", $lname, $oname, $house, $gender, $boarding_status, $student_index);
+                            }
+                            if($stmt->execute()){
+                                $message = "success";
+                            }else{
+                                $message = "Could not update details";
+                            }
+                        }else{
+                            $message = "Could not update details";
+                        }  
                     }
-                }else{
-                    $message = "Could not update details";
-                }  
+                }catch(\Throwable $th){
+                    if($developmentServer){
+                        $message = $th->getTraceAsString();
+                    }else{
+                        $message = $th->getMessage();
+                    }
+                }
             }
 
             echo $message;

@@ -24,7 +24,7 @@
                     <img src="<?php echo $url?>/assets/images/icons/index.png" alt="index">
                 </span>
                 <input type="text" name="student_index" id="student_index" required
-                autocomplete="off" placeholder="Index Number*" title="Enter the index number of the student here">
+                autocomplete="off" placeholder="Index Number*" readonly title="Enter the index number of the student here">
             </label>
             <label for="lname">
                 <span class="label_image">
@@ -40,6 +40,7 @@
                 <input type="text" name="oname" id="oname" required
                 autocomplete="off" placeholder="Other Name(s)" title="Enter other names of the student">
             </label>
+            <?php if($admin_mode == "admission"): ?>
             <label for="enrolCode" class="no_disp">
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/reader-outline.svg" alt="firstname">
@@ -47,6 +48,7 @@
                 <input type="text" name="enrolCode" id="enrolCode"
                 autocomplete="off" placeholder="Enrolment Code*" title="Provide Student's enrolment code">
             </label>
+            <?php endif; ?>
             <label for="gender">
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/male-female-outline.svg" alt="gender">
@@ -127,7 +129,12 @@
                     <option value="3">Form 3</option>
                 </select>
             </label>
+            <label for="guardianContact">
+                <span class="label_image"><img src="<?= "$url/assets/images/icons/phone-portrait-outline.svg" ?>" alt="guardian contact"></span>
+                <input type="tel" name="guardianContact" placeholder="Phone number of guardian" maxlength="10">
+            </label>
             <?php endif; ?>
+            <?php if($admin_mode == "admission"): ?>
             <label for="aggregate">
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/hashtag.png" alt="aggregate">
@@ -156,17 +163,17 @@
                 <input type="text" name="track_id" id="track_id" required title="Enter the track id here"
                 autocomplete="off" placeholder="Student's Track Id*">
             </label>
+            <?php endif; ?>
         </div>
     </div>
-    <div class="foot">
-        <div class="flex flex-wrap gap-sm flex-eq wmax-xs">
-            <label for="submit" class="btn w-full sm-unset sp-unset">
+    <div class="foot btn w-full wmax-sm sm-auto">
+        <div class="flex flex-wrap gap-sm flex-eq">
+            <label for="submit" class="w-full sm-unset sp-unset">
                 <button type="submit" name="submit" class="primary w-fluid sp-med" value="adminUpdateStudent">Update</button>
             </label>
-            <label for="cancel" class="btn w-full sm-unset sp-unset">
+            <label for="cancel" class="w-full sm-unset sp-unset">
                 <button type="reset" name="cancel" class="red w-fluid sp-med">Cancel</button>
             </label>
         </div>
-        
     </div>
 </form>

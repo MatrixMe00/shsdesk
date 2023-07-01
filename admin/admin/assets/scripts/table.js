@@ -81,7 +81,7 @@ $("table tbody tr .edit").click(function(){
                     $("form[name=adminUpdateStudent] input[name=dob]").val(response["dob"]);
                     $("form[name=adminUpdateStudent] input[name=track_id]").val(response["trackID"]);
                 }else if(student){
-                    $("form[name=adminUpdateStudent] select, form[name=adminUpdateStudent] input").css("color", "black").prop("disabled", true);
+                    $("form[name=adminUpdateStudent] select, form[name=adminUpdateStudent] input").css("color", "black");
                     $("form[name=adminUpdateStudent] label[for=house]").removeClass("no_disp");
                     
                     $("form[name=adminUpdateStudent] label[for=aggregate]").hide();
@@ -90,8 +90,9 @@ $("table tbody tr .edit").click(function(){
                     $("form[name=adminUpdateStudent] label[for=track_id]").hide();
                     $("form[name=adminUpdateStudent] select[name=program_id]").val(response["program_id"]);
                     $("form[name=adminUpdateStudent] select[name=year_level]").val(response["studentYear"]);
+                    $("form[name=adminUpdateStudent] input[name=guardianContact]").val(response["guardianContact"]);
 
-                    $("form[name=adminUpdateStudent] button[name=submit]").prop("disabled", true);
+                    $("form[name=adminUpdateStudent] button[name=submit]");
                 }
 
                 $("form[name=adminUpdateStudent] input[name=student_course]").val(response["programme"]);
