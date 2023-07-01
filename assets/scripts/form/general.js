@@ -1,6 +1,6 @@
 $(document).ready(function(){
     //get all input labels and add their titles when they are focused
-    $("label input").val(function(){
+    $("label input").each(function(){
         //grab the html content
         message_span = "<span class='title_message'></span>";
         parent = $(this).parent();

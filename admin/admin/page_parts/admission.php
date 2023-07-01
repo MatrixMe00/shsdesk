@@ -8,7 +8,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 
     //set nav_point session
     $_SESSION["nav_point"] = "admission";
-    }
+}
 ?>
     <?php if($_SESSION["admin_mode"] == "admission") : ?>
     <form action="<?php echo $url?>/admin/admin/submit.php" method="post" name="admissiondetailsForm">
@@ -18,9 +18,8 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                 <div class="close"><span>&cross;</span></div>
             </div>
 
-            <?php 
-                $query = $connect->query("SELECT * FROM admissiondetails WHERE schoolID= $user_school_id");
-                $row = $query->fetch_assoc();
+            <?php
+                $row = fetchData("*","admissiondetails","schoolID=$user_school_id");
 
                 $schoolDetail = getSchoolDetail($user_school_id, true);
             ?>
@@ -292,7 +291,6 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
             </tbody>
         </table>
     </section>
-    <?php endif; ?>
 
     <script>
         $("select#school_result").change(function(){
@@ -333,6 +331,8 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
             })
         })
     </script>
+    <?php endif; ?>
+
     <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
