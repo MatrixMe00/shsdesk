@@ -656,77 +656,109 @@
 
             echo json_encode($data);
         }elseif($submit == "table_yes_no_submit"){
-            $indexNumber = $_REQUEST["indexNumber"];
-            $school_id = $_REQUEST["school_id"];
+            $indexNumber = $_REQUEST["indexNumber"] ?? null;
+            $school_id = $_REQUEST["school_id"] ?? null;
 
-            //delete record
-            if($_REQUEST["db"] === ""){
-                if($indexNumber == "all"){
-                    $sql = "DELETE FROM cssps WHERE schoolID=$school_id";
-                }else{
-                    $sql = "DELETE FROM cssps WHERE indexNumber='$indexNumber'";
-                }
-                if($connect->query($sql)){
-                    if($indexNumber == "all"){
-                        $sql = "DELETE FROM enrol_table WHERE shsID=$school_id";
-                    }else{
-                        $sql = "DELETE FROM enrol_table WHERE indexNumber='$indexNumber'";
-                    }
-                    if($connect->query($sql)){
+            if(is_null($indexNumber) || empty($indexNumber)){
+                $message = "Index Number could not be received";
+            }elseif(is_null($school_id) || empty($school_id)){
+                $message = "Student's school selection error. Please reload the page and try again";
+            }else{//delete record
+                if($_REQUEST["db"] === ""){
+                    try{
                         if($indexNumber == "all"){
-                            $sql = "DELETE FROM house_allocation WHERE schoolID=$school_id";
+                            $sql = "DELETE FROM cssps WHERE schoolID=$school_id";
                         }else{
-                            $sql = "DELETE FROM house_allocation WHERE indexNumber='$indexNumber'";
+                            $sql = "DELETE FROM cssps WHERE indexNumber='$indexNumber'";
                         }
                         if($connect->query($sql)){
-                            echo "success";
-                        }else{
-                            echo "Student detail could not be removed from house allocated";
-                        }
-                    }else{
-                        echo "Could not remove student from your enrolment list";
-                    }
-                }else{
-                    echo "Could not remove student from cssps";
-                }
-            }elseif($_REQUEST["db"] == "shsdesk2"){
-                if($indexNumber == "all"){
-                    //delete third years
-                    $sql = "DELETE FROM students_table WHERE school_id=$school_id AND studentYear=3";
-                }else{
-                    $sql = "DELETE FROM students_table WHERE indexNumber = '$indexNumber'";
-                }
-
-                if($connect2->query($sql)){
-                    if($indexNumber == "all"){
-                        //promote students
-                        $sql = "UPDATE students_table SET studentYear=3 WHERE school_id=$school_id AND studentYear=2";
-                        if($connect2->query($sql)){
-                            $sql = "UPDATE students_table SET studentYear=2 WHERE school_id=$school_id AND studentYear=1";
-                            if($connect2->query($sql)){
-                                //report that this school has updated its records
-                                $cleanDate = date("Y-m-d H:i:s");
-                                $sql = "INSERT INTO record_cleaning (school_id, cleanDate) VALUES ('$school_id','$cleanDate')";
-                                $connect2->query($sql);
-                                
-                                echo "success";
+                            if($indexNumber == "all"){
+                                $sql = "DELETE FROM enrol_table WHERE shsID=$school_id";
                             }else{
-                                echo "Promotion from Year 1 to Year 2 failed";
+                                $sql = "DELETE FROM enrol_table WHERE indexNumber='$indexNumber'";
+                            }
+                            if($connect->query($sql)){
+                                if($indexNumber == "all"){
+                                    $sql = "DELETE FROM house_allocation WHERE schoolID=$school_id";
+                                }else{
+                                    $sql = "DELETE FROM house_allocation WHERE indexNumber='$indexNumber'";
+                                }
+                                if($connect->query($sql)){
+                                    $message = "success";
+                                }else{
+                                    $message = "Student detail could not be removed from house allocated";
+                                }
+                            }else{
+                                $message = "Could not remove student from your enrolment list";
                             }
                         }else{
-                            echo "Promotion from Year 2 to Year 3 failed";
+                            $message = "Could not remove student from cssps";
                         }
-                    }else{
-                        echo "success";
+                    }catch(\Throwable $th){
+                        if($developmentServer){
+                            $message = $th->getTraceAsString();
+                        }else{
+                            $message = $th->getMessage();
+                        }
                     }
-                }else{
-                    if($indexNumber == "all"){
-                        echo "Could not remove Year 3 students from records. Cleaning Failed";
-                    }else{
-                        echo "Could not remove student with index number '$indexNumber' from records";
-                    }                    
+                }elseif($_REQUEST["db"] == "shsdesk2"){
+                    try{
+                        if($indexNumber == "all"){
+                            //delete third years
+                            $sql = "UPDATE SET students_table SET studentYear=4 WHERE school_id=$school_id AND studentYear=3";
+                        }elseif($indexNumber == "wipe"){
+                            $sql = "DELETE FROM students_table WHERE school_id=$school_id";
+                        }else{
+                            $sql = "DELETE FROM students_table WHERE indexNumber = '$indexNumber'";
+                        }
+        
+                        if($connect2->query($sql)){
+                            if($indexNumber == "all"){
+                                //promote students
+                                $sql = "UPDATE students_table SET studentYear=3 WHERE school_id=$school_id AND studentYear=2";
+                                if($connect2->query($sql)){
+                                    $sql = "UPDATE students_table SET studentYear=2 WHERE school_id=$school_id AND studentYear=1";
+                                    if($connect2->query($sql)){
+                                        //report that this school has updated its records
+                                        $cleanDate = date("Y-m-d H:i:s");
+                                        $sql = "INSERT INTO record_cleaning (school_id, cleanDate) VALUES ('$school_id','$cleanDate')";
+                                        $connect2->query($sql);
+                                        
+                                        $message = "success";
+                                    }else{
+                                        $message = "Promotion from Year 1 to Year 2 failed";
+                                    }
+                                }else{
+                                    $message = "Promotion from Year 2 to Year 3 failed";
+                                }
+                            }else{
+                                //clean every record about the student
+                                $connect2->query("DELETE FROM attendance WHERE indexNumber='$indexNumber'");
+                                $connect2->query("DELETE FROM exeat WHERE indexNumber='$indexNumber'");
+                                $connect2->query("DELETE FROM results WHERE indexNumber='$indexNumber'");
+                                $connect2->query("DELETE FROM saved_results WHERE indexNumber='$indexNumber'");
+                                $message = "success";
+                            }
+                        }else{
+                            if($indexNumber == "all"){
+                                $message = "Could not remove Year 3 students from records. Cleaning Failed";
+                            }elseif($indexNumber == "wipe"){
+                                $message = "Could not wipe out all students from the system";
+                            }else{
+                                $message = "Could not remove student with index number '$indexNumber' from records";
+                            }                    
+                        }
+                    }catch(\Throwable $th){
+                        if($developmentServer){
+                            $message = $th->getTraceAsString();
+                        }else{
+                            $message = $th->getMessage();
+                        }
+                    }
                 }
-            }            
+            }
+
+            echo $message;
         }elseif($submit == "admissiondetails" ||  $submit == "admissiondetails_ajax"){
             $school_name = formatName($_REQUEST["school_name"]);
             $school_email = $_POST["school_email"];
