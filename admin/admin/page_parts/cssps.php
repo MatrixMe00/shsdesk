@@ -71,10 +71,10 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 
 <section>
     <div id="action">
-        <div class="head">
-            <h2>Placement Actions</h2>
+        <div class="head txt-al-c">
+            <h3>Placement Actions</h3>
         </div>
-        <div class="body btn flex flex-wrap wrap-half w-full-child w-full gap-sm border p-med flex-eq">
+        <div class="body btn flex flex-wrap wrap-half w-full-child w-full wmax-sm sm-auto gap-sm p-med flex-eq">
                 <button onclick="$('#modal').removeClass('no_disp')" class="cyan">Add New Student</button>
             <?php if($user_details["role"] != 2 && ($user_details["role"] <= 5 || str_contains(strtolower(getRole($user_details["role"])), "admin"))){?>
                 <button onclick="$('#lhs .menu .item.active').click()" class="secondary">Refresh</button>
