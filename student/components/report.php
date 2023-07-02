@@ -36,7 +36,7 @@ if($code !== "empty"): ?>
         <span class="txt-fl3 txt-bold self-align-end">Grade <span id="avg_grade"><?= giveGrade($average, fetchData("school_result","admissiondetails","schoolID=".$student["school_id"])["school_result"]) ?></span></span>
     </div>
 </section>
-<section class="d-section lt-shade">
+<section class="d-section lt-shade white">
     <div class="form flex-all-center flex-eq wmax-md sm-auto flex-wrap gap-sm">
         <label class="p-med" for="report_year">
             <select class="w-full" name="report_year" id="report_year">
@@ -66,7 +66,7 @@ if($code !== "empty"): ?>
         
     </div>
 </section>
-<section class="d-section lt-shade no_disp" id="empty_result">
+<section class="d-section white lt-shade no_disp" id="empty_result">
     <table class="full">
         <tbody>
             <tr class="empty">
@@ -76,7 +76,7 @@ if($code !== "empty"): ?>
     </table>
 </section>
 
-<section class="d-section lt-shade" id="default_result">
+<section class="d-section lt-shade white" id="default_result">
     <table class="full">
         <tbody>
             <tr class="empty">
@@ -86,7 +86,7 @@ if($code !== "empty"): ?>
     </table>
 </section>
 
-<section class="d-section lt-shade no_disp" id="non_empty_result">
+<section class="d-section lt-shade white no_disp" id="non_empty_result">
     <table class="full">
         <thead>
             <td>ID</td>
@@ -102,7 +102,7 @@ if($code !== "empty"): ?>
     </table>
 </section>
 
-<section class="d-section lt-shade txt-al-c no_disp" id="save_status">
+<section class="d-section white lt-shade txt-al-c no_disp" id="save_status">
     <p class="sp-lg txt-fl"></p>
 </section>
 

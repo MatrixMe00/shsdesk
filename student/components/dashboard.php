@@ -26,7 +26,7 @@
         </section>
         
         <div class="flex gap-md flex-wrap">
-            <section class="d-section light lt-shade hmin" style="flex: 2 1 360px">
+            <section class="d-section white lt-shade hmin" style="flex: 2 1 360px">
                 <div class="head txt-al-c">
                     <h2>Announcements</h2>
                 </div>
@@ -39,7 +39,7 @@
                         if($query->num_rows > 0) :
                             while($message = $query->fetch_assoc()) :
                     ?>
-                    <div class="sp-med w-full lt-shade-h white">
+                    <div class="sp-med w-full lt-shade-h light">
                         <h3 class="top"><?= $message["heading"] ?></h3>
                         <div class="middle sm-med-tp"><?= html_entity_decode($message["body"]) ?></div>
                         <div class="foot">
@@ -47,14 +47,14 @@
                         </div>
                     </div>
                     <?php endwhile; else: ?>
-                    <div class="sp-med w-full p-lg txt-al-c lt-shade white">
+                    <div class="sp-med w-full light p-lg txt-al-c lt-shade white">
                         <div class="middle">No Announcements have been made</div>
                     </div>
                     <?php endif; ?>
                 </div>
             </section>
 
-            <section class="d-section lt-shade flex-all-center flex-column" style="flex: 3 1 auto">
+            <section class="d-section white lt-shade flex-all-center flex-column" style="flex: 3 1 auto">
                 <h2 class="sm-xlg-b">Statistics</h2>
                 <div class="form flex-all-center flex-eq wmax-md sm-auto flex-wrap gap-sm" id="searchStats">
                     <label for="stat_year" class="p-med">
@@ -92,7 +92,7 @@
             </section>
         </div>
         
-        <section class="d-section no_disp" id="exam_data">
+        <section class="d-section white no_disp" id="exam_data">
             <table class="full">
                 <thead>
                     <td>ID</td>

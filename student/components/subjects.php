@@ -31,7 +31,7 @@
 
 <input type="hidden" name="student_index" id="student_index" value="<?= $student["indexNumber"] ?>">
 
-<section class="d-section">
+<section class="d-section white">
     <h1 class="sm-lg-b">Registered Courses</h1>
     <table class="full" id="subject_table">
         <thead>
@@ -87,7 +87,7 @@
     </table>
 </section>
 
-<section class="d-section lt-shade flex-all-center flex-column">
+<section class="d-section white lt-shade flex-all-center flex-column">
     <h2 class="sm-xlg-b">Statistics <span id="subject_name"></span></h2>
     <canvas id="stats" class="wmax-md no_disp" style="max-height: 40vh"></canvas>
     <p id="stat_message">Click on a subject to see your progress in it</p>

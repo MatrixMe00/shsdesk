@@ -25,7 +25,7 @@
     <?php include_once("components/nav.php") ?>
 
     <!-- main section -->
-    <main class="m-lg">
+    <main class="m-lg light">
         
     </main>
 

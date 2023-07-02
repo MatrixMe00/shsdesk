@@ -1,4 +1,4 @@
-<nav>
+<nav class="<?= intval(date("H")) >= 18 ? "dark" : "primary" ?>">
     <div class="head">
         <div class="logo">
             <img src="" alt="">
