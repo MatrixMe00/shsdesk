@@ -149,7 +149,7 @@
                         ?></td>
                         <td class="board_stat"><?php echo $row["boardingStatus"]?></td>
                         <td>
-                            <span class="item-event edit studs db2">View</span>
+                            <span class="item-event edit studs db2">Edit</span>
                             <span class="item-event delete studs db2">Delete</span>
                         </td>
                     </tr>
