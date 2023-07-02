@@ -1,6 +1,6 @@
 <?php include_once("compSession.php"); $_SESSION["active-page"] = "profile" ?>
 <section class="p-section flex-wrap flex p-lg flex-align-start">
-    <div id="lhs" class="lt-shade flex-all-center flex-column gap-lg">
+    <div id="lhs" class="lt-shade white flex-all-center flex-column gap-lg">
         <div class="name txt-al-c">
             <h2 class="txt-fm"><?= $teacher["lname"]." ".$teacher["oname"] ?></h2>
             <p class="txt-fs">@<?= $teacher["user_username"] ?></p>
@@ -14,7 +14,7 @@
             </div>
         </div>        
     </div>
-    <div id="rhs" class="lt-shade">
+    <div id="rhs" class="lt-shade white">
         <h1>Edit Profile</h1>
         <form action="<?= $url ?>/submit.php" method="POST" class="flex flex-column gap-sm" name="profileForm">
             <div class="joint gap-sm">

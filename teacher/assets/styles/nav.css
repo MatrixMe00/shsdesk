@@ -37,6 +37,7 @@ nav .head .name{
     width: inherit;
     text-align: center;
     cursor: pointer;
+    border: 1px solid transparent;
 }
 
 .buttons:hover .tab:first-child.active{
@@ -52,7 +53,8 @@ nav .head .name{
 }
 
 .buttons .tab:not(.active):hover{
-    background-color: lightskyblue;
+    border-color: azure;
+    background-color: hsla(180, 100%, 97%, 0.15);
 }
 
 .buttons .tab.active{

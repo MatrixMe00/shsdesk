@@ -73,7 +73,7 @@
             $saved_results = [$saved_results];
         }
     ?>
-    <section class="light p-section lt-shade btn_section" id="approve">
+    <section class="white p-section lt-shade btn_section" id="approve">
         <div class="head flex flex-column gap-md">
             <h3 class="txt-al-c">Approved Records</h3>
             <?php 
@@ -86,7 +86,7 @@
         <?php if(is_array($approved_results) && count($approved_results) > 0) : ?>
         <div class="body flex flex-center-content flex-wrap gap-md sm-lg-t">
         <?php foreach($approved_results as $result) : ?>
-            <div class="card white v-card sm-rnd m-med-tp sp-lg">
+            <div class="card light v-card sm-rnd m-med-tp sp-lg">
                 <div class="self-align-start flex gap-sm flex-column">
                     <h2><?= $result["program_name"] ?></h2>
                     <h4><?= $result["course_name"] ?></h4>
@@ -111,7 +111,7 @@
         <?php endif; ?>
     </section>
 
-    <section class="light p-section lt-shade btn_section" id="pending">
+    <section class="white p-section lt-shade btn_section" id="pending">
         <div class="head flex flex-column gap-md">
             <h3 class="txt-al-c">Pending Records</h3>
             <?php 
@@ -124,7 +124,7 @@
         <?php if(is_array($pending_results) && count($pending_results) > 0) : ?>
         <div class="body flex flex-center-content flex-wrap gap-md sm-lg-t">
             <?php foreach($pending_results as $result) : ?>
-            <div class="card white v-card sm-rnd m-med-tp sp-lg">
+            <div class="card light v-card sm-rnd m-med-tp sp-lg">
                 <div class="self-align-start flex gap-sm flex-column">
                     <h2><?= $result["program_name"] ?></h2>
                     <h4><?= $result["course_name"] ?></h4>
@@ -149,7 +149,7 @@
         <?php endif; ?>
     </section>
 
-    <section class="light p-section lt-shade btn_section" id="reject">
+    <section class="white p-section lt-shade btn_section" id="reject">
         <div class="head flex flex-column gap-md">
             <h3 class="txt-al-c">Rejected Records</h3>
             <?php 
@@ -162,7 +162,7 @@
         <?php if(is_array($rejected_results) && count($rejected_results) > 0) : ?>
         <div class="body flex flex-center-content flex-wrap gap-md sm-lg-t">
             <?php foreach($rejected_results as $result) : ?>
-            <div class="card white v-card sm-rnd m-med-tp sp-lg">
+            <div class="card light v-card sm-rnd m-med-tp sp-lg">
                 <div class="self-align-start flex gap-sm flex-column">
                     <h2><?= $result["program_name"] ?></h2>
                     <h4><?= $result["course_name"] ?></h4>
@@ -188,7 +188,7 @@
         <?php endif; ?>
     </section>
 
-    <section class="light p-section lt-shade btn_section" id="saved">
+    <section class="white p-section lt-shade btn_section" id="saved">
         <div class="head flex flex-column gap-md">
             <h3 class="txt-al-c">Saved Records</h3>
             <?php 
@@ -201,7 +201,7 @@
         <?php if(is_array($saved_results) && count($saved_results) > 0) : ?>
         <div class="body flex flex-center-content flex-wrap gap-md sm-lg-t">
             <?php foreach($saved_results as $result) : ?>
-            <div class="card white v-card sm-rnd m-med-tp sp-lg">
+            <div class="card light v-card sm-rnd m-med-tp sp-lg">
                 <div class="self-align-start flex gap-sm flex-column">
                     <h2><?= $result["program_name"] ?></h2>
                     <h4><?= $result["course_name"] ?></h4>

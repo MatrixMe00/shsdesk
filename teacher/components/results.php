@@ -6,7 +6,7 @@
     $result_type = fetchData("school_result","admissiondetails","schoolID=".$teacher["school_id"])["school_result"];
 ?>
 <input type="hidden" name="result_type" id="result_type" value="<?= $result_type ?>">
-<section class="d-section lt-shade">
+<section class="d-section lt-shade white">
     <div class="head txt-al-c sm-med-b m-sm-b">
         <h2>Draw out Class List</h2>
         <p>Please select a class list to draw out</p>
@@ -41,7 +41,7 @@
     </form>
 </section>
 
-<section class="lt-shade d-section no_disp sm-xlg-tp" id="sub_term_form">
+<section class="lt-shade white d-section no_disp sm-xlg-tp" id="sub_term_form">
     <div class="form txt-al-c wmax-md sm-auto">
         <p>Please provide the subject and current semester to proceed</p>
         <div class="joint gap-sm sp-med-tp">
@@ -82,7 +82,7 @@
     </div>
 </section>
 
-<section class="lt-shade d-section sm-xlg-t m-xlg-tp" id="table_section">
+<section class="lt-shade white d-section sm-xlg-t m-xlg-tp" id="table_section">
     <div class="head">
         <h2>Result Slip For <span id="head_class_name">Classname</span></h2>
     </div>

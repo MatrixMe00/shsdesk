@@ -15,7 +15,7 @@
 <?php if(fetchData1("LOWER(user_username) AS username", "teacher_login", "user_id=".$_SESSION["teacher_id"])["username"] !== "new user") : ?>
 <body class="flex">
     <?php include_once("blocks/nav.php") ?>
-    <main id="rhs" class="sp-med">
+    <main id="rhs" class="sp-med light">
     </main>
 
     <script src="assets/scripts/functions.min.js?v=<?php echo time()?>"></script>

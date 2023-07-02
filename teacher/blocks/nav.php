@@ -1,4 +1,4 @@
-<nav id="lhs">
+<nav id="lhs" class="<?= intval(date("H")) >= 18 ? "dark" : "primary" ?>">
     <div class="head">
         <div class="txt-al-c white sp-med">
             <img src="assets/images/icons/person-outline.svg" class="rect-xxsm" alt="">
@@ -15,7 +15,7 @@
             <span></span>
         </div>
         <div class="buttons">
-            <div data-href="<?= "$url/components/dashboard.php" ?>" class="tab primary active" data-document-title="<?= $teacher["lname"] ?> Dashboard"
+            <div data-href="<?= "$url/components/dashboard.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Dashboard"
                 data-active="dashboard">
                 <span>Dashboard</span>
             </div>

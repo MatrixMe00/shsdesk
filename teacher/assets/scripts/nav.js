@@ -11,8 +11,8 @@ $("#ham").click(function(){
 
 //tabs manipulation
 $(".tab:not(.logout)").click(function(){
-    $(".tab.active").removeClass("active primary")
-    $(this).addClass("active primary")
+    $(".tab.active").removeClass("active white")
+    $(this).addClass("active white")
 
     //change page title
     $("title").html($(this).attr("data-document-title"))

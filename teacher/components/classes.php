@@ -31,7 +31,7 @@
             for($i=0; $i < (array_key_exists(0, $results) ? count($results) : 1); $i++) :
                 $result = array_key_exists(0,$results) ? $results[$i] : $results;
     ?>
-    <div class="card v-card sm-rnd m-med-tp sp-lg">
+    <div class="card v-card sm-rnd m-med-tp white sp-lg">
         <div class="self-align-start flex gap-sm flex-column">
             <h2><?= $result["program_name"] ?></h2>
             <h4><?php 

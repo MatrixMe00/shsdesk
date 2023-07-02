@@ -5,7 +5,7 @@
     //variable to use within the script
     $result_type = fetchData("school_result","admissiondetails","schoolID=".$teacher["school_id"])["school_result"];
 ?>
-<section class="d-section lt-shade">
+<section class="d-section lt-shade white">
     <div class="img txt-al-c">
         <img src="<?= "$mainRoot/assets/images/icons/city hall.png" ?>" class="rect-xsm" alt="school logo">
     </div>
@@ -48,7 +48,7 @@
 </section>
 
 <section class="d-section flex flex-wrap gap-md p-sm sm-xlg-tp">
-    <div id="my_classes" class="lt-shade window gap-xsm">
+    <div id="my_classes" class="lt-shade white window gap-xsm">
         <div class="head flex flex-space-content light sp-med">
             <div class="title">
                 <span class="txt-bold">Your Classes</span>
@@ -94,7 +94,7 @@
         </div>
     </div>
 
-    <div id="best_students" class="lt-shade window gap-xsm">
+    <div id="best_students" class="lt-shade white window gap-xsm">
         <div class="head flex flex-space-content light sp-med">
             <div class="title">
                 <span class="txt-bold">Best Students [Top 5]</span>
@@ -139,7 +139,7 @@
     </div>
 </section>
 
-<section class="d-section lt-shade sm-xlg-t">
+<section class="d-section lt-shade white sm-xlg-t">
     <div class="head txt-al-c">
         <h2>Announcements</h2>
     </div>
