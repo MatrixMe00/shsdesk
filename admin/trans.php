@@ -112,9 +112,16 @@
     <p>This section is used to display all payments done through the system to admins and schools</p>
 </section>
 
-<?php if($isAdmin): ?>
-<section class="txt-al-c color-red">
-    <p>Please add your transaction accounts by using the "Trans Account" tab below</p>
+<?php if($isAdmin): 
+    $trans_split = fetchData("*","transaction_splits","schoolID=$user_school_id");
+    if($trans_split == "empty"){
+        $trans_message = "Please add your transaction accounts by using the \"Trans Account\" tab below";
+    }else{
+        $trans_message = "Transaction account has been provided";
+    }
+?>
+<section class="txt-al-c <?= $trans_split == "empty" ? "color-red":"color-green" ?>">
+    <p><?= $trans_message ?></p>
 </section>
 <?php endif; ?>
 
@@ -483,6 +490,7 @@
     }
 ?>
 <section class="section_block trans_split no_disp">
+    <?php if($trans_split == "empty"): ?>
     <form name="add_new_split" method="POST" action="<?= "$url/admin/admin/submit.php" ?>">
         <div class="head">
             <h2>Transaction Accounts</h2>
@@ -609,6 +617,50 @@
             <button class="primary" name="submit" value="add_split">Add New Split</button>
         </div>
     </form>
+    <?php else: ?>
+    <div class="form">
+        <div class="body">
+            <div class="joint">
+                <label class="flex-column sp-med gap-sm">
+                    <span class="label_title">Split Code [Admission]</span>
+                    <input type="text" class="white" readonly value="<?= empty($trans_split["split_code_admission"]) ? "Processing" : $trans_split["split_code_admission"] ?>">
+                </label>
+                <label class="flex-column sp-med gap-sm">
+                    <span class="label_title">Split Code [Management]</span>
+                    <input type="text" class="white" readonly value="<?= empty($trans_split["split_code_management"]) ? "Processing" : $trans_split["split_code_management"] ?>">
+                </label>
+            </div>
+
+            <div class="joint">
+                <?php if($adminIsPaid): ?>
+                <label class="flex-column sp-med gap-sm">
+                    <span class="label_title">Admin Account [Bank]</span>
+                    <input type="text" class="white" readonly value="<?= $trans_split["admin_bank"] ?>">
+                </label>
+                <label class="flex-column sp-med gap-sm">
+                    <span class="label_title">Admin Account [Number]</span>
+                    <input type="text" class="white" readonly value="<?= $trans_split["admin_number"] ?>">
+                </label>
+                <?php endif; ?>
+                <label class="flex-column sp-med gap-sm">
+                    <span class="label_title">Head Account [Bank]</span>
+                    <input type="text" class="white" readonly value="<?= $trans_split["head_bank"] ?>">
+                </label>
+                <label class="flex-column sp-med gap-sm">
+                    <span class="label_title">Head Account [Number]</span>
+                    <input type="text" class="white" readonly value="<?= $trans_split["head_number"] ?>">
+                </label>
+            </div>
+            <div class="p-lg-lr wmax-md sm-auto p-xlg-tp border txt-al-c">
+                <?php if(boolval($trans_split["status"]) === true): ?>
+                <p>Your account is active and students can now make payment directly to you through the system.</p>
+                <?php else: ?>
+                <p>Your account has not been confirmed yet. Please wait as your payment account is registered.</p>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 </section>
 <?php endif; ?>
 
