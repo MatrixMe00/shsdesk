@@ -10,9 +10,9 @@
     <title>SHSDesk - Forgot Your Password</title>
 
     <!--Scripts-->
-    <script src="assets/scripts/jquery/uncompressed_jquery.js?v=<?php echo time()?>" async></script>
-    <script src="assets/scripts/index.min.js?v=<?php echo time()?>" async></script>
-    <script src="assets/scripts/functions.min.js?v=<?php echo time()?>" async></script>
+    <script src="assets/scripts/jquery/uncompressed_jquery.js?v=<?php echo time()?>"></script>
+    <script src="assets/scripts/index.min.js?v=<?php echo time()?>"></script>
+    <script src="assets/scripts/functions.min.js?v=<?php echo time()?>"></script>
 
     <!--Styles-->
     <link rel="stylesheet" href="assets/styles/general.min.css">
@@ -124,7 +124,7 @@
         </div>
         <div class="foot">
             <p>
-                @2021 shsdesk.com
+                @<?= date("Y") ?> shsdesk.com
             </p>
         </div>
     </form>
@@ -138,8 +138,8 @@
             <p>Click <a href="<?php echo $url?>/admin/">here</a> to login with your new details</p>
         </div>
     </div>
-<script src="assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/assets/scripts/password.min.js?v=<?php echo time()?>" async></script>
+<script src="assets/scripts/form/general.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/assets/scripts/password.min.js?v=<?php echo time()?>"></script>
 </body>
 </html>
 

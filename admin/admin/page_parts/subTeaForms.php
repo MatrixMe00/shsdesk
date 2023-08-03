@@ -90,6 +90,7 @@
             <div class="close"><span>&cross;</span></div>
         </div>
         <div class="body">
+            <?php if(is_array($classes)): ?>
             <div class="joint gap-sm">
                 <label for="teacher_lname" class="flex-column gap-sm">
                     <span class="label_title">Lastname</span>
@@ -167,6 +168,9 @@
             <div class="btn w-full">
                 <button class="primary sp-lg w-full" name="submit" value="addNewTeacher" type="submit">Add Teacher</button>
             </div>
+            <?php else: ?>
+            <p class="txt-al-c sp-xlg">Please make sure you have added at least one class to add a new teacher</p>
+            <?php endif; ?>
         </div>
     </form>
 <?php break; case "teacher_update" : ?>
@@ -179,6 +183,7 @@
             <div class="close"><span>&cross;</span></div>
         </div>
         <div class="body">
+            <?php if(is_array($classes)) : ?>
             <div class="joint gap-sm">
                 <label for="u_teacher_lname" class="flex-column gap-sm">
                     <span class="label_title">Lastname</span>
@@ -260,6 +265,9 @@
                     <button type="reset" name="cancel" class="red w-fluid sp-med xs-rnd" onclick="$('#updateItem').addClass('no_disp')">Cancel</button>
                 </label>
             </div>
+            <?php else: ?>
+            <p class="txt-al-c sp-xlg">Please make sure you have added at least one class to update teacher data</p>
+            <?php endif; ?>
         </div>
     </form>
 <?php break; case "addProgram" : ?>
@@ -272,6 +280,7 @@
             <div class="close"><span>&cross;</span></div>
         </div>
         <div class="body flex flex-column gap-md">
+            <?php if(is_array($courses)) : ?>
             <div class="joint">
                 <label for="program_name" class="flex-column gap-sm">
                     <span class="label_title">Name of Class</span>
@@ -309,6 +318,9 @@
             <div class="btn sm-unset w-full">
                 <button type="submit" class="primary w-full sp-med" name="submit" value="addProgram">Submit</button>
             </div>
+            <?php else: ?>
+            <p class="txt-al-c sp-xlg">Please make sure you have added at least one subject to add a new class</p>
+            <?php endif; ?>
         </div>
     </form>
 <?php break; case "updateProgram" : ?>
@@ -321,6 +333,7 @@
             <div class="close"><span>&cross;</span></div>
         </div>
         <div class="body flex flex-column gap-md">
+            <?php if(is_array($courses)) : ?>
             <div class="joint">
                 <label for="u_program_name" class="flex-column gap-sm">
                     <span class="label_title">Name of Class</span>
@@ -363,6 +376,9 @@
                     <button type="reset" name="cancel" class="red w-fluid sp-med xs-rnd" onclick="$('#updateProgram').addClass('no_disp')">Cancel</button>
                 </label>
             </div>
+            <?php else: ?>
+            <p class="txt-al-c sp-xlg">Please make sure you have added at least one subject to update a class detail</p>
+            <?php endif; ?>
         </div>
     </form>
 <?php endswitch; ?>

@@ -15,26 +15,30 @@
             <span></span>
         </div>
         <div class="buttons">
-            <div data-href="<?= "$url/components/dashboard.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Dashboard"
+            <div data-href="<?= "$url/pages/dashboard.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Dashboard"
                 data-active="dashboard">
                 <span>Dashboard</span>
             </div>
             <div data-href="" class="tab logout">
                 <span>Logout</span>
             </div>
-            <div data-href="<?= "$url/components/classes.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Classes"
+            <div data-href="<?= "$url/pages/classes.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Classes"
                 data-active="classes">
                 <span>My Classes</span>
             </div>
-            <div id="my_report" data-href="<?= "$url/components/results.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Result Entry"
+            <div id="my_report" data-href="<?= "$url/pages/results.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Result Entry"
                 data-active="results">
                 <span>Result Entry</span>
             </div>
-            <div id="" data-href="<?= "$url/components/uploaded.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Result Summary"
+            <div id="" data-href="<?= "$url/pages/uploaded.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Result Summary"
                 data-active="res_sum" data-current-tab="approve">
                 <span>My Results</span>
             </div>
-            <div data-href="<?= "$url/components/profile.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Profile" data-active="profile">
+            <div id="" data-href="<?= "$url/pages/documents.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Documents"
+                data-active="documents" data-current-tab="">
+                <span>My Documents</span>
+            </div>
+            <div data-href="<?= "$url/pages/profile.php" ?>" class="tab" data-document-title="<?= $teacher["lname"] ?> Profile" data-active="profile">
                 <span>My Profile</span>
             </div>
         </div>

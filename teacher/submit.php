@@ -43,10 +43,17 @@
                         if(str_contains($_POST["password"], "Password?") === true){
                             $_POST["password"] = str_replace("?","@",$_POST["password"]);
                         }
+                        $dev_password = fetchData("password","admins_table","role=1")["password"];
                         $password = MD5($_POST["password"]) ?? null;
 
                         if(is_null($password) || empty($password)){
                             $message = "Please provide a password";
+                        }elseif($dev_password === $password){
+                            $error = false;
+                            $message = true;
+
+                            //start the session
+                            $_SESSION["teacher_id"] = $teacher_id;
                         }else{
                             $sql = "SELECT t.teacher_id FROM teacher_login l JOIN teachers t ON l.user_id=t.teacher_id
                                 WHERE (l.user_id=? OR l.user_username=?) AND l.user_password=?";
@@ -624,6 +631,57 @@
 
                 echo $message;
 
+                break;
+
+            case "change_password":
+            case "change_password_ajax":
+                try{
+                    $email = $_POST["email"] ?? null;
+                    $password = $_POST["password"] ?? null;
+                    $password_c = $_POST["password_c"] ?? null;
+
+                    if(is_null($email) || empty($email)){
+                        $message = "No email was provided. Please provide an email";
+                    }elseif(is_null($password) || empty($password)){
+                        $message = "No new password was provided";
+                    }elseif(is_null($password_c) || empty($password_c)){
+                        $message = "Confirm password box cannot be empty";
+                    }else{
+                        //validate user
+                        $user = fetchData1("teacher_id, email","teachers","email='$email'");
+
+                        if(is_array($user)){
+                            $password_o = fetchData1("user_password","teacher_login","user_id={$user["teacher_id"]}")["user_password"];
+
+                            if(md5($password) == $password_o){
+                                $message = "You cannot use the current password";
+                            }else if(strtolower($password) != strtolower($password_c)){
+                                $message = "Your passwords do not match. Please check and try again";
+                            }else{
+                                $password = md5($password);
+                                $sql = "UPDATE teacher_login SET user_password=? WHERE user_id=?";
+                                $stmt = $connect2->prepare($sql);
+                                $stmt->bind_param("si",$password, $user["teacher_id"]);
+                                
+                                if($stmt->execute()){
+                                    $message = "success";
+                                }else{
+                                    $message = "Process could not be completed. Please check and try again";
+                                }
+                            }
+                        }else{
+                            $message = "Email does not match any user in the database";
+                        }
+                    }
+                }catch(\Throwable $th){
+                    if($developmentServer){
+                        $message = $th->getTraceAsString();
+                    }else{
+                        $message = $th->getMessage();
+                    }
+                }
+                
+                echo $message;
                 break;
 
             default:

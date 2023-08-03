@@ -14,7 +14,7 @@
     <div class="content purple">
         <div class="head">
             <h2>
-                <?= fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id AND studentYear=1")["total"] ?>
+                <?= $year1 = fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id AND studentYear=1")["total"] ?>
             </h2>
         </div>
         <div class="body">
@@ -25,7 +25,7 @@
     <div class="content purple">
         <div class="head">
             <h2>
-                <?= fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id AND studentYear=2")["total"] ?>
+                <?= $year2 = fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id AND studentYear=2")["total"] ?>
             </h2>
         </div>
         <div class="body">
@@ -36,7 +36,7 @@
     <div class="content purple">
         <div class="head">
             <h2>
-                <?= fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id AND studentYear=3")["total"] ?>
+                <?= $year3 = fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id AND studentYear=3")["total"] ?>
             </h2>
         </div>
         <div class="body">
@@ -94,22 +94,22 @@
         <h2>Student Year</h2>
         <div class="flex flex-wrap wrap-half gap-sm flex-eq wmax-sm">
             <div class="btn w-full sm-unset sp-unset">
-                <button class="primary year_btn w-full" data-year="1" data-break-point="10">Year One</button>
+                <button class="primary year_btn w-full table_btn" data-year="1" data-break-point="10" data-max-value="<?= $year1 ?>">Year One</button>
             </div>
             <div class="btn w-full sm-unset sp-unset">
-                <button class="light year_btn w-full" data-year="2" data-break-point="10">Year Two</button>
+                <button class="light year_btn w-full table_btn" data-year="2" data-break-point="10" data-max-value="<?= $year2 ?>">Year Two</button>
             </div>
             <div class="btn w-full sm-unset sp-unset">
-                <button class="light year_btn w-full" data-year="3" data-break-point="10">Year Three</button>
+                <button class="light year_btn w-full table_btn" data-year="3" data-break-point="10" data-max-value="<?= $year3 ?>">Year Three</button>
             </div>
         </div>
     </div>
     <div class="form sm-lg-tp">
-            <label for="search" class="flex-column gap-sm">
-                <span class="title_label">Search for any data in the table below</span>
-                <input type="search" name="search" id="search" placeholder="Type your search here...">
-            </label>
-        </div>
+        <label for="search_mul_table" class="flex-column gap-sm">
+            <span class="title_label">Search for any data in the table below</span>
+            <input type="search" name="search" id="search_mul_table" placeholder="Type your search here..." data-table-parent-id="year" data-active="primary" data-parent-value="1">
+        </label>
+    </div>
     <div class="body">        
         <?php $i=1; while($i <= 3) : ?>
         <div id="year<?= $i ?>" class="year">
@@ -176,7 +176,7 @@
                                 <?php endif; ?>
                             </div>
                         </td>
-                        <td colspan="4">
+                        <td colspan="4" class="result">
                             <?= $query->num_rows ?> results were returned
                         </td>
                     </tr>
@@ -203,7 +203,7 @@
     <?php @include_once($rootPath."/admin/admin/page_parts/update_student.php")?>
 </div>
 
-<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.min.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/placement.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/table.min.js?v=<?php echo time()?>" async></script>

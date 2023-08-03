@@ -23,7 +23,7 @@
 </body>
 <?php else: ?>
 <body>
-    <?php include("components/update_stat.php") ?>
+    <?php include("pages/update_stat.php") ?>
 </body>
 <?php endif; ?>
 </html>

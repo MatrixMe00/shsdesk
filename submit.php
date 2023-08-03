@@ -626,7 +626,7 @@
             }elseif(ctype_digit($school_id) == false){
                 $message = "School selected has an invalid index. Please contact admin for help";
             }else{
-                $message = getSchoolSplit($school_id, APIKEY::ADMISSION);
+                /*$message = getSchoolSplit($school_id, APIKEY::ADMISSION);
 
                 if(is_array($message)){
                     $stat = $message["status"];
@@ -642,7 +642,9 @@
                     $message = "Transaction to this school has been disabled. Please try again later";
                 }else{
                     $message .= " | $priceKey";
-                }
+                }*/
+
+                $message = "$splitKey | $priceKey";
             }
 
             echo $message;

@@ -113,36 +113,104 @@ $("label[for=search] input[name=search]").blur(function(){
         $(this).parents(".form").siblings(".head").find("button").attr("data-break-point", def_ault)
         $(this).parents(".table_section").find("table").find("tr").show();
         $(this).parents(".form").siblings(".head").find("button").click()
-        $(table_foot).children("tr").children("td:first-child").attr("hidden", false);
-        $(table_foot).children("tr").children("td:last-child").html("");
+        $(table_foot).find("td:first-child").attr("hidden", false);
+        $(table_foot).find("td:last-child").html("");
     }
 })
 
 //search field workout
 $("label[for=search] input[name=search]").keyup(function(){
-    search_value = $(this).val();
-
-    table_foot = $(this).parents("#content").find("tfoot");
-    table_body = $(this).parents("#content").find("tbody");
-
-    //grab portion for displaying result counts
-    td = $(table_foot).children("tr").children("td.result");
-
     //search key control
     const searchText = $(this).val().toLowerCase()
-    $(table_body).children("tr").each(function(){
-        const rowData = $(this).text().toLowerCase()
-        if(rowData.indexOf(searchText) === -1){
-            $(this).hide()
-        }else{
-            $(this).show()
-        }
-    })
-    
-    //count number of visible results
-    tr = $(this).parents(".form, .head").siblings(".body").children("table").children("tbody").children("tr:visible");
-    if(tr.length > 0)
-        $(td).html(tr.length + " results returned");
-    else
-        $(td).html("No results were returned");
+
+    if(searchText !== ""){
+        table_foot = $(this).parents("#content").find("tfoot");
+        table_body = $(this).parents("#content").find("tbody");
+
+        //grab portion for displaying result counts
+        td = $(table_foot).find("td.result");
+
+        
+        $(table_body).children("tr").each(function(){
+            const rowData = $(this).text().toLowerCase()
+            if(rowData.indexOf(searchText) === -1){
+                $(this).hide()
+            }else{
+                $(this).show()
+            }
+        })
+        
+        //count number of visible results
+        tr = $(this).parents(".form, .head").siblings(".body").children("table").children("tbody").children("tr:visible");
+        if(tr.length > 0)
+            td.html(tr.length + " results returned");
+        else
+            td.html("No results were returned");
+    }else{
+        def_ault = 10
+        table_foot = $(this).parents(".table_section").find("table").children("tfoot");
+
+        //pass default values into needful elements
+        $(this).parents(".table_section").find(".navs").children("span").attr("data-break-point", def_ault)
+        $(this).parents(".form").siblings(".head").find("button").attr("data-break-point", def_ault)
+        $(this).parents(".table_section").find("table").find("tr").show();
+        $(this).parents(".form").siblings(".head").find("button").click()
+        $(table_foot).find("td:first-child").attr("hidden", false);
+        $(table_foot).find("td:last-child").html("");
+    }
+})
+
+$("label[for=search_mul_table] input[name=search]").on({
+    focus: function(){
+        const table = $("#" + $(this).attr("data-table-parent-id") + $(this).attr("data-parent-id" + " table"));
+        const table_foot = table.find("tfoot");
+        const table_body = table.find("tbody");
+        const activeClass = $(this).attr("data-active");
+        const button = $(this).parents("section").find(".table_btn." + activeClass);
+
+        //let new values show the total rows
+        const max_break_point = button.attr("data-max-value")
+        button.attr("data-break-point",max_break_point).click()
+
+        //pass default values into needful elements
+        table_body.find("tr").show();
+        $(table_foot).find("td:first-child").attr("hidden", false);
+        $(table_foot).find("td:last-child").html("");
+    },
+    blur: function(){
+        const table = $("#" + $(this).attr("data-table-parent-id") + $(this).attr("data-parent-id" + " table"));
+        const table_foot = table.find("tfoot");
+        const table_body = table.find("tbody");
+        const activeClass = $(this).attr("data-active");
+        const button = $(this).parents("section").find(".table_btn." + activeClass);
+
+        //let new values show the default rows
+        button.attr("data-break-point",10).click()
+    },
+    keyup: function(){
+        const table = $("#" + $(this).attr("data-table-parent-id") + $(this).attr("data-parent-value") + " table");
+        const table_foot = table.find("tfoot");
+        const table_body = table.find("tbody");
+
+        //grab portion for displaying result counts
+        td = $(table_foot).find("td.result");
+
+        //search key control
+        const searchText = $(this).val().toLowerCase()
+        $(table_body).children("tr").each(function(){
+            const rowData = $(this).text().toLowerCase()
+            if(rowData.indexOf(searchText) === -1){
+                $(this).hide()
+            }else{
+                $(this).show()
+            }
+        })
+        
+        //count number of visible results
+        tr = table_body.children("tr:visible");
+        if(tr.length > 0)
+            td.html(tr.length + " results returned");
+        else
+            td.html("No results were returned");
+    }
 })

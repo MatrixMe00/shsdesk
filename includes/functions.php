@@ -1153,4 +1153,21 @@
 
         return $response;
     }
+
+    /**
+     * This function is used to make an array have decimal indexes
+     * @param array $array The array to be processed
+     * @return array|false returns a decimal indexed array or false if not an array
+     */
+    function decimalIndexArray($array){
+        if(is_array($array)){
+            if(array_key_exists(0,$array)){
+                return $array;
+            }else{
+                return [$array];
+            }
+        }else{
+            return false;
+        }
+    }
 ?>

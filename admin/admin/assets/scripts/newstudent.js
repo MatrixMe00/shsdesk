@@ -258,6 +258,9 @@ $(".table_section .head .btn button").click(function(){
     //retrieve year number
     year = $(this).attr("data-year");
 
+    //pass parent id to search
+    $("label[for=search_mul_table] input[name=search]").attr("data-parent-value", $(this).attr("data-year"))
+
     //display all navigations
     $("#year" + year + " .navs span").removeClass("no_disp");
 

@@ -73,7 +73,8 @@
                     <td><?= formatItemId($course["course_id"], "SID") ?></td>
                     <td><?= $course["course_name"] ?></td>
                     <td><?= $course["short_form"] ?></td>
-                    <td><?= fetchData1("COUNT(*) AS total","program","course_ids LIKE '%".$course["course_id"]."% '")["total"] ?></td>
+                    <!-- <td><?= fetchData1("COUNT(*) AS total","program","course_ids LIKE '%".$course["course_id"]."% '")["total"] ?></td> -->
+                    <td><?= fetchData1("COUNT(DISTINCT program_id) as total","teacher_classes","school_id=$user_school_id AND course_id={$course['course_id']}")["total"] ?></td>
                     <td><?= is_null($course["credit_hours"]) ? "Not Set" : $course["credit_hours"] ?></td>
                     <td>
                         <span class="item-event edit" data-item-id="<?= $course["course_id"] ?>">Edit</span>

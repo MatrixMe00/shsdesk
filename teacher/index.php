@@ -70,7 +70,7 @@
                     title="Enter your password to continue">
                 </label>
                 <label for="forget-link" class="color-teal txt-fs link-label bg-plain flex-content-start">
-                    <a href="#" name="forget-link" data-step="1">Forgot your account?</a>
+                    <a href="./forgot-account" name="forget-link" data-step="1">Forgot your account?</a>
                 </label>
             </div>
             <div class="foot">
@@ -120,7 +120,7 @@
 
                                 //indicate that it should move to the next step
                                 $("button[name=submit]").attr("data-step","2");
-                                $("a[name=forget-link]").attr("data-step","2");
+                                $("a[name=forget-link]").attr("data-step","2").attr("href","./forgot-password");
 
                                 //change html content of forget link
                                 $("a[name=forget-link]").html("Forgot your password?");
@@ -195,7 +195,7 @@
 
         $("button[name=reset]").click(function(){
             //reset submit step
-            $("button[name=submit], a[name=forget-link]").attr("data-step", "1");
+            $("button[name=submit], a[name=forget-link]").attr("data-step", "1").attr("href","./forgot-account");
 
             //reset submit button text
             $("button[name=submit]").html("Proceed");

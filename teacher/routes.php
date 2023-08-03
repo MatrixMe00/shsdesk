@@ -11,6 +11,8 @@
         include_once("./main.php");
     }elseif($actual_path == "/logout"){
         include_once("./logout.php");
+    }elseif($actual_path == "/forgot-account" || $actual_path == "/forgot-password"){
+        include_once("./forgot.php");
     }elseif(str_contains($actual_path, "shutdown")){
         include_once("shutdown.php");
     }else {
