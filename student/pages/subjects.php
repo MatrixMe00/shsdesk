@@ -17,7 +17,7 @@
         ?></span>
     </div>
     <div class="card v-card gap-lg orange sm-rnd flex-wrap">
-        <span class="self-align-start">Total Program Teachers</span>
+        <span class="self-align-start">Total Program Teachers (Registered)</span>
         <span class="txt-fl3 txt-bold self-align-end"><?php 
             if(!is_null($student["program_id"])){
                 echo fetchData1("COUNT(DISTINCT teacher_id) as total","teacher_classes","program_id={$student['program_id']}")["total"];
@@ -49,15 +49,18 @@
                 <td colspan="5" class="txt-al-c sp-xxlg-tp">Your program has not been uploaded yet. Please contact your school administrator for aid.</td>
             </tr>
             <?php else :
-                $subjects = getProgramSubjectNTeachers($student["program_id"]);
+                // $subjects = getProgramSubjectNTeachers($student["program_id"]);
+                $table_columns = ["course_id","course_name","short_form", "credit_hours"];
+                $subjects = getProgramSubjects($student["program_id"], $table_columns);
+                $teachers = getProgramTeachers($student["program_id"]);
                 if(is_array($subjects) && count($subjects) > 0) :
                     foreach($subjects as $counter=>$subject) :
             ?>
             <tr data-course-id="<?= $subject["course_id"] ?>" data-school-id="<?= $student["school_id"] ?>">
-                <td><?= $counter+1 ?></td>
-                <td><?= $subject["course_name"] ?></td>
-                <td><?= $subject["short_form"] ?></td>
-                <td><?= $subject["fullname"] ?? "No teacher yet" ?></td>
+                <td><?= formatItemId($subject["course_id"], "SID") ?></td>
+                <td><?= ucwords(strtolower($subject["course_name"])) ?></td>
+                <td><?= ucwords(strtolower($subject["short_form"])) ?></td>
+                <td><?= $teachers[$counter] != "none" ? ucwords(strtolower($teachers[$counter])) : "Teacher Not Set" ?></td>
                 <td><?= is_null($subject["credit_hours"]) ? "Not Set" : $subject["credit_hours"] ?></td>
             </tr>
             <?php 

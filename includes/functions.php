@@ -1272,7 +1272,7 @@
         try{
             if(is_array($column) && count($column) > 1){
                 $column = implode(",",$column);
-            }elseif(strtolower($column) === "all"){
+            }elseif(!is_array($column) && strtolower($column) === "all"){
                 $column = "*";
             }else{
                 $column = "c.course_id, c.course_name, c.credit_hours, c.short_form, CONCAT(t.lname,' ', t.oname) as fullname";
@@ -1289,15 +1289,71 @@
 
             $data = fetchData1(
                 "DISTINCT $column",
-                "courses c JOIN program p ON c.school_id=p.school_id 
+                "courses c
                 LEFT JOIN teacher_classes tc ON c.course_id = tc.course_id
                 LEFT JOIN teachers t ON tc.teacher_id=t.teacher_id",
-                "p.program_id=$program_id AND c.course_id IN ($course_ids)",0
+                "tc.program_id=$program_id AND c.course_id IN ($course_ids)",0
             );
 
             return $indexed_array ? decimalIndexArray($data) : $data;
         }catch(\Throwable $th){
             return throwableMessage($th);
         }
+    }
+
+    /**
+     * This function is for holding an array of teacher names (lname,oname or fullname) or ids
+     * @param int $program_id The program to checked
+     * @param boolean $return_name This when false will return the ids of the teachers, else would return the fullname
+     * @param string|array $columns It takes the columns to return, either lname, oname, separated, or fullname
+     * @param boolean $indexed_array The array should be indexed by default
+     * @return array|string|false returns an array of data or false if not found or a string for error message 
+     */
+    function getProgramTeachers($program_id, $return_name = true, $columns="fullname", $indexed_array=true){
+        global $connect2;
+
+        if($return_name === false){
+            $columns = "teacher_id";
+        }
+
+        $index = "fullname";
+        $isDefault = false;
+
+        if(!is_array($columns)){
+            if(strtolower($columns) == "fullname"){
+                $columns = "CONCAT(lname, ' ', oname)";
+                $isDefault = true;
+            }
+        }else{
+            $columns = implode(",",$columns);
+        }
+
+        $search = ["lname","oname"];
+        $replace = ["t.lname","t.oname"];
+
+        if(str_contains($columns, "t.") === false){
+            $columns = str_replace($search, $replace, $columns);
+
+            if($isDefault){
+                $columns .= " AS fullname";
+            }
+        }
+
+        $course_ids = getSubjectIDs($program_id);
+        
+        $teachers = [];
+        // $teachers = fetchData1($columns,"teacher_classes tc LEFT JOIN teachers t ON t.teacher_id=tc.teacher_id","tc.program_id=$program_id AND tc.course_id IN (".implode(",",$course_ids).")",0);
+        // print_r($teachers);
+        foreach($course_ids as $course_id){
+            $result = fetchData1($columns,"teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.program_id=$program_id AND tc.course_id=$course_id");
+            
+            if(is_array($result)){
+                array_push($teachers, $result[$index]);
+            }else{
+                array_push($teachers, "none");
+            }
+        }
+        
+        return $indexed_array ? decimalIndexArray($teachers) : $teachers;
     }
 ?>
