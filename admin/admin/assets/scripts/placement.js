@@ -185,7 +185,9 @@ $("label[for=search_mul_table] input[name=search]").on({
         const button = $(this).parents("section").find(".table_btn." + activeClass);
 
         //let new values show the default rows
-        button.attr("data-break-point",10).click()
+        if($(this).val() == ""){
+            button.attr("data-break-point",10).click()
+        }
     },
     keyup: function(){
         const table = $("#" + $(this).attr("data-table-parent-id") + $(this).attr("data-parent-value") + " table");
