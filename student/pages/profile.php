@@ -4,6 +4,10 @@
         <div class="name txt-al-c">
             <h2 class="txt-fm"><?= $student["Lastname"]." ".$student["Othernames"] ?></h2>
             <p class="txt-fs">@<?= $student["indexNumber"] ?></p>
+            <p class="txt-fs sm-sm-t color-orange"><?php 
+                $class_name = fetchData1("program_name","program","program_id={$student['program_id']}"); 
+                echo is_array($class_name) ? $class_name["program_name"] : "Class Not Set" ?> 
+                | <?= "Year {$student['studentYear']}" ?></p>
         </div>
         <div>
             <div class="border w-auto sp-med rnd txt-al-c">
