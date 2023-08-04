@@ -6,12 +6,12 @@
                 <span class="txt-fl3 txt-bold self-align-end">
                     <?php 
                         if(!is_null($student["program_id"])){
-                            $course_ids = fetchData1("course_ids","program","program_id=".intval($student["program_id"]));
-                            if($course_ids == "empty"){
+                            $course_total = countProgramSubjects($student["program_id"]);
+
+                            if($course_total === false){
                                 echo "<span class='txt-fl2'>No courses assigned</span>";
                             }else{
-                                $courses = fetchData1("COUNT(DISTINCT course_id) AS total","teacher_classes","program_id={$student['program_id']}")["total"];
-                                echo $courses;
+                                echo $course_total;
                             }
                         }else{
                             echo "<span class='txt-fl2'>No class assigned</span>";

@@ -1170,4 +1170,24 @@
             return false;
         }
     }
+
+    /**
+     * This function is used to get the number of subjects of a specified program
+     * @param int $program_id This receives the id of the specified program
+     * @return false|int returns false or the number of subjects 
+     */
+    function countProgramSubjects($program_id){
+        $course_ids = fetchData1("course_ids","program","program_id=$program_id");
+        if($course_ids == "empty"){
+            return false;
+        }else{
+            $courses = explode(" ", $course_ids["course_ids"]);
+            
+            //remove any trailing space before counting
+            if(empty(end($courses)) || ctype_space(end($courses)))
+                array_pop($courses);
+            
+            return count($courses);
+        }
+    }
 ?>
