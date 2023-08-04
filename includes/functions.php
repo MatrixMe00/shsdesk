@@ -1270,7 +1270,13 @@
      */
     function getProgramSubjectNTeachers($program_id, $column=[], $indexed_array = true){
         try{
-            
+            if(is_array($column) && count($column) > 1){
+                $column = implode(",",$column);
+            }elseif(strtolower($column) === "all"){
+                $column = "*";
+            }else{
+                $column = "c.course_id, c.course_name, c.credit_hours, c.short_form, CONCAT(t.lname,' ', t.oname) as fullname";
+            }
 
             $course_ids = getSubjectIDs($program_id);
             
@@ -1282,7 +1288,7 @@
             $course_ids = "'$course_ids'";
 
             $data = fetchData1(
-                "DISTINCT c.course_id, c.course_name, c.credit_hours, c.short_form, CONCAT(t.lname,' ', t.oname) as fullname",
+                "DISTINCT $column",
                 "courses c JOIN program p ON c.school_id=p.school_id 
                 LEFT JOIN teacher_classes tc ON c.course_id = tc.course_id
                 LEFT JOIN teachers t ON tc.teacher_id=t.teacher_id",
