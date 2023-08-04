@@ -67,6 +67,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     
     if(!is_array($student)){
         echo "Sorry, the account was not found. Contact the administrator for help.";
+        session_unset();
         exit();
     }
 }elseif(isset($_SESSION["teacher_id"]) && !is_null($_SESSION["teacher_id"])){
@@ -74,6 +75,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
 
     if(!is_array($teacher)){
         echo "Your account could not be found or was just deleted. Please contact your admin for help";
+        session_unset();
         exit(1);
     }
 }else{
