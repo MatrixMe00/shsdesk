@@ -22,7 +22,7 @@
 </head>
 <body>
     <!-- navigation bar -->
-    <?php include_once("components/nav.php") ?>
+    <?php include_once("blocks/nav.php") ?>
 
     <!-- main section -->
     <main class="m-lg light">
