@@ -1117,6 +1117,24 @@
     }
 
     /**
+     * This function determines what message should be displayed in a try/catch throwable block
+     * @param \Throwable $throwable This takes the throwable variable
+     * @return string Returns the string form of the desired error
+     */
+    function throwableMessage($throwable):string{
+        global $developmentServer;
+        
+        $message = "";
+        if($developmentServer){
+            $message = $throwable->getTraceAsString();
+        }else{
+            $message = $throwable->getMessage();
+        }
+
+        return $message;
+    }
+
+    /**
      * This function would be used to get the admission year of a user
      * @param int $student_year This is the current year of the student
      * @param int $intended_year This is the year to present the academic year on
@@ -1177,17 +1195,103 @@
      * @return false|int returns false or the number of subjects 
      */
     function countProgramSubjects($program_id){
-        $course_ids = fetchData1("course_ids","program","program_id=$program_id");
-        if($course_ids == "empty"){
+        $subject_ids = getSubjectIDs($program_id);
+
+        return is_array($subject_ids) ? count($subject_ids) : false;
+    }
+
+    /**
+     * This function is used to return only the course/subject ids of a program
+     * @param int $program_id This takes the program's id
+     * @return false|array Returns false if there is no result
+     */
+    function getSubjectIDs($program_id){
+        $subject_ids = fetchData1("course_ids","program","program_id=$program_id");
+        if($subject_ids == "empty"){
             return false;
         }else{
-            $courses = explode(" ", $course_ids["course_ids"]);
+            $subjects = explode(" ", $subject_ids["course_ids"]);
             
             //remove any trailing space before counting
-            if(empty(end($courses)) || ctype_space(end($courses)))
-                array_pop($courses);
+            if(empty(end($subjects)) || ctype_space(end($subjects)))
+                array_pop($subjects);
             
-            return count($courses);
+            return $subjects;
+        }   
+    }
+    
+    /**
+     * This function is used to get the specified course/subject details
+     * @param int $program_id This takes the program id
+     * @param string|array $columns This takes the columns to retrieve. It retrieves only full names by default. Use the string 'all' if you want all columns
+     * @param bool $indexed_array This is true by default and returns an indexed array
+     * @return false|string|array Returns false if there is no result or an (indexed) array of results or an error message
+     */
+    function getProgramSubjects($program_id, $columns, $indexed_array = true){
+        global $connect2;
+
+        //get course ids
+        $subject_ids = getSubjectIDs($program_id);
+
+        if(!is_array($subject_ids)){
+            return false;
+        }else{
+            $subject_ids = count($subject_ids) == 1 ? $subject_ids[0] : implode("','",$subject_ids);
+            $subject_ids = "'$subject_ids'";
+        }
+
+        if(is_array($columns)){
+            $columns = implode(",", $columns);
+        }elseif(strtolower($columns) === "all"){
+            $columns = "*";
+        }
+
+        try {
+            $sql = "SELECT $columns FROM courses WHERE course_id IN ($subject_ids)";
+            $query = $connect2->query($sql);
+
+            if($query->num_rows > 0){
+                $results = $query->fetch_all(MYSQLI_ASSOC);
+                return $indexed_array ? decimalIndexArray($results) : $results;
+            }else{
+                return false;
+            }
+        } catch (\Throwable $th) {
+            return throwableMessage($th);
+        }
+    }
+
+    /**
+     * This is a function used to get a specified program's teachers full names (Lname Onames)
+     * @param int $program_id This is the program id to search
+     * @param string|array $column This receives the specified columns from course(c), teacher_classes(tc) and teacher(t) tables
+     * @param int $indexed_array [optional] The return array should be indexed or not
+     * @return string|array|false returns false if there is no result or a string if there is an error or an array of results 
+     */
+    function getProgramSubjectNTeachers($program_id, $column=[], $indexed_array = true){
+        try{
+            
+
+            $course_ids = getSubjectIDs($program_id);
+            
+            if(!is_array($course_ids)){
+                return $course_ids;
+            }
+
+            $course_ids = implode("','",$course_ids);
+            $course_ids = "'$course_ids'";
+
+            $data = fetchData1(
+                "DISTINCT c.course_id, c.course_name, c.credit_hours, c.short_form, CONCAT(t.lname,' ', t.oname) as fullname",
+                "courses c JOIN program p ON c.school_id=p.school_id 
+                LEFT JOIN teacher_classes tc ON c.course_id = tc.course_id
+                LEFT JOIN teachers t ON tc.teacher_id=t.teacher_id",
+                "p.program_id=$program_id AND c.course_id IN ($course_ids)",0
+            );
+
+            return $indexed_array ? decimalIndexArray($data) : $data;
+        }catch(\Throwable $th){
+            return throwableMessage($th);
         }
     }
 ?>

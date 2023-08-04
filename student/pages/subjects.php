@@ -4,12 +4,12 @@
         <span class="self-align-start">Total Subjects</span>
         <span class="txt-fl3 txt-bold self-align-end"><?php 
             if(!is_null($student["program_id"])){
-                $course_ids = fetchData1("course_ids","program","program_id=".intval($student["program_id"]));
-                if($course_ids == "empty"){
+                $course_total = countProgramSubjects($student["program_id"]);
+
+                if($course_total === false){
                     echo "<span class='txt-fl2'>No courses assigned</span>";
                 }else{
-                    $courses = fetchData1("COUNT(DISTINCT course_id) AS total","teacher_classes","program_id={$student['program_id']}")["total"];
-                    echo $courses;
+                    echo $course_total;
                 }
             }else{
                 echo "<span class='txt-fl2'>No class assigned</span>";
@@ -43,37 +43,25 @@
         </thead>
         <tbody>
             <?php 
-                $programData = fetchData1("program_id,course_ids","program","program_id=".intval($student["program_id"]));
-                if($programData == "empty") :
+                if(is_null($student["program_id"])) :
             ?>
             <tr class="empty">
                 <td colspan="5" class="txt-al-c sp-xxlg-tp">Your program has not been uploaded yet. Please contact your school administrator for aid.</td>
             </tr>
             <?php else :
-                $course_ids = explode(" ", $programData["course_ids"]);
-                //remove the last element which is a space
-                if(end($course_ids) == "")
-                    array_pop($course_ids);
-
-                    $sql = "SELECT t.lname, t.oname, tc.course_id, c.course_name, c.short_form, c.credit_hours
-                        FROM teacher_classes tc JOIN teachers t ON tc.teacher_id=t.teacher_id JOIN courses c
-                        ON tc.course_id = c.course_id
-                        WHERE tc.program_id={$student['program_id']}
-                    ";
-                    $subjects = $connect2->query($sql);
-                if($subjects->num_rows > 0) :
-                    $counter = 1;
-                    while($subject = $subjects->fetch_assoc()) :
+                $subjects = getProgramSubjectNTeachers($student["program_id"]);
+                if(is_array($subjects) && count($subjects) > 0) :
+                    foreach($subjects as $counter=>$subject) :
             ?>
             <tr data-course-id="<?= $subject["course_id"] ?>" data-school-id="<?= $student["school_id"] ?>">
-                <td><?= $counter++ ?></td>
+                <td><?= $counter+1 ?></td>
                 <td><?= $subject["course_name"] ?></td>
                 <td><?= $subject["short_form"] ?></td>
-                <td><?= $subject["lname"]." ".@$subject["oname"] ?></td>
+                <td><?= $subject["fullname"] ?? "No teacher yet" ?></td>
                 <td><?= is_null($subject["credit_hours"]) ? "Not Set" : $subject["credit_hours"] ?></td>
             </tr>
             <?php 
-                    endwhile;
+                    endforeach;
                 else :
             ?>
                 <tr class="empty">
