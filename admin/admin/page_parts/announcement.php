@@ -17,9 +17,9 @@ $_SESSION["nav_point"] = "announcement";
     <div class="head">
         <h2>Your Announcements</h2>
     </div>
-    <div class="body">
-        <?php $announcements = fetchData1("*","announcement","school_id=$user_school_id");
-            if(is_array($announcements) && array_key_exists(0,$announcements)) :
+    <div class="body hmax-unset flex flex-eq-4xs flex-wrap gap-sm">
+        <?php $announcements = decimalIndexArray(fetchData1("*","announcement","school_id=$user_school_id",0));
+            if(is_array($announcements)) :
                 foreach($announcements as $announcement) :
         ?>
         <div data-box-number="<?= $announcement["id"] ?>" class="flex flex-column border b-teal p-med announcement">
@@ -37,22 +37,7 @@ $_SESSION["nav_point"] = "announcement";
                 <span class="item-event" data-item-id="<?= $announcement["id"] ?>" data-item-event="delete">Delete</span>
             </div>
         </div>
-        <?php endforeach; elseif(is_array($announcements) && array_key_exists("id", $announcements)) : ?>
-            <div data-box-number="<?= $announcements["id"] ?>" class="flex flex-column border b-teal p-med announcement">
-            <div class="top">
-                <h4><?= $announcements["heading"] ?></h4>
-                <span class="item-event info">To: <?= ucfirst($announcements["audience"]) ?></span>
-                | <span class="item-event date"><?= date("M d, Y H:i:s", strtotime($announcements["date"])) ?></span>
-            </div>
-            <div class="middle">
-                <p>
-                    <?= html_entity_decode($announcements["body"]) ?>
-                </p>
-            </div>
-            <div class="foot">
-                <span class="item-event" data-item-id="<?= $announcements["id"] ?>" data-item-event="delete">Delete</span>
-            </div>
-        </div>
+        <?php endforeach;?>
         <?php else: ?>
         <div class="empty lt-shade p-xlg txt-al-c">
             <p>No announcements made yet. Please make one to see your announcements</p>
@@ -92,11 +77,11 @@ $_SESSION["nav_point"] = "announcement";
                         <span class="label_title">All</span>
                     </label>
                     <label for="audience_others" class="radio">
-                        <input type="radio" name="audience" id="audience_others" value="Teachers">
+                        <input type="radio" name="audience" id="audience_others" value="teachers">
                         <span class="label_title">Teachers</span>
                     </label>
                     <label for="audience_students" class="radio">
-                        <input type="radio" name="audience" id="audience_students" value="Students">
+                        <input type="radio" name="audience" id="audience_students" value="students">
                         <span class="label_title">Students</span>
                     </label>
                 </div>

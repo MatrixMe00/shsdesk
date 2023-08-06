@@ -1146,22 +1146,23 @@
                                     if(!empty($part)){
                                         if(strpos($part,'|') !== false){
                                             $part = explode("|",$part);
-                                            if(is_array($part) && count($part) == 2){
+                                            if(is_array($part) && count($part) == 3){
                                                 $pid = $part[0];
                                                 $cid = $part[1];
+                                                $yid = $part[2];
 
                                                 // sql syntax would go here
-                                                $detailsExist = fetchData1("COUNT(teacher_id) AS total","teacher_classes", "school_id=$user_school_id AND program_id=$pid AND course_id=$cid");
+                                                $detailsExist = fetchData1("COUNT(teacher_id) AS total","teacher_classes", "school_id=$user_school_id AND program_id=$pid AND course_id=$cid AND class_year=$yid");
                                                 if(intval($detailsExist["total"]) < 1){
-                                                    $sql = "INSERT INTO teacher_classes (school_id, teacher_id, program_id, course_id) VALUES (?,?,?,?)";
+                                                    $sql = "INSERT INTO teacher_classes (school_id, teacher_id, program_id, course_id, class_year) VALUES (?,?,?,?,?)";
                                                     $stmt = $connect2->prepare($sql);
-                                                    $stmt->bind_param("iiii", $user_school_id, $teacher_id, $pid, $cid);
+                                                    $stmt->bind_param("iiiii", $user_school_id, $teacher_id, $pid, $cid, $yid);
 
                                                     $stmt->execute();
                                                 }else{
                                                     $detailsExist = fetchData1("t.lname","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.course_id=$cid AND tc.program_id=$pid");
                                                     if(is_array($detailsExist)){
-                                                        $message = "Teacher added, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($cid,"SID");
+                                                        $message = "Teacher added, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($cid,"SID")." for Year $yid";
                                                     }else{
                                                         $message = "Teacher responsible for ".formatItemId($cid,"SID")." has been deleted, but details of him exist. Contact superadmin for help";
                                                     }
@@ -1203,7 +1204,7 @@
                             $message = "Teacher added, but teacher cannot login. Please contact the administrator for help";
                         }
                     }else{
-                        $message = "Teacher could not be added on first step";
+                        $message = "Error occured while creating an account for the teacher";
                     }
                 } catch (\Throwable $th) {
                     $status = false;
@@ -1355,7 +1356,7 @@
             if($result = $connect2->query($sql)){
                 $message = $result->fetch_all(MYSQLI_ASSOC);
                 if($isTeacher === true || strtolower($isTeacher) === "true"){
-                    $message[0]["course_id"] = stringifyClassIDs(fetchData1("program_id, course_id", "teacher_classes","teacher_id={$message[0]['teacher_id']}",0));
+                    $message[0]["course_id"] = stringifyClassIDs(fetchData1("program_id, course_id, class_year", "teacher_classes","teacher_id={$message[0]['teacher_id']}",0));
                     $message[0]["course_names"] = stringifyClassNames(fetchData1("p.program_name, p.short_form as short_p, c.course_name, c.short_form as short_c",
                     "teacher_classes t JOIN program p ON t.program_id = p.program_id JOIN courses c ON c.course_id=t.course_id",
                     "t.teacher_id={$message[0]['teacher_id']}", 0));
@@ -1438,7 +1439,7 @@
                 $message = "Mobile network could not be detected. Please make sure your phone number is valid";
             }elseif(empty($teacher_email)){
                 $message = "Please provide an email";
-            }elseif(empty($course_ids)){
+            }elseif(empty($course_ids) || strtolower($course_ids) === "wrong array data"){
                 $message = "Please assign the teacher at least one course";
             }elseif(empty($teacher_id)){
                 $message = "No teacher selected. Please check and try again";
@@ -1463,22 +1464,23 @@
                                         if(!empty($part)){
                                             if(strpos($part,'|') !== false){
                                                 $part = explode("|",$part);
-                                                if(is_array($part) && count($part) == 2){
+                                                if(is_array($part) && count($part) == 3){
                                                     $pid = $part[0];
                                                     $cid = $part[1];
+                                                    $yid = $part[2];
 
                                                     // sql syntax would go here
-                                                    $detailsExist = fetchData1("COUNT(teacher_id) AS total","teacher_classes", "school_id=$user_school_id AND program_id=$pid AND course_id=$cid");
+                                                    $detailsExist = fetchData1("COUNT(teacher_id) AS total","teacher_classes", "school_id=$user_school_id AND program_id=$pid AND course_id=$cid AND class_year=$yid");
                                                     if(intval($detailsExist["total"]) < 1){
-                                                        $sql = "INSERT INTO teacher_classes (school_id, teacher_id, program_id, course_id) VALUES (?,?,?,?)";
+                                                        $sql = "INSERT INTO teacher_classes (school_id, teacher_id, program_id, course_id, class_year) VALUES (?,?,?,?,?)";
                                                         $stmt = $connect2->prepare($sql);
-                                                        $stmt->bind_param("iiii", $user_school_id, $teacher_id, $pid, $cid);
+                                                        $stmt->bind_param("iiiii", $user_school_id, $teacher_id, $pid, $cid, $yid);
 
                                                         $stmt->execute();
                                                     }else{
                                                         $detailsExist = fetchData1("t.lname","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.course_id=$cid AND tc.program_id=$pid");
                                                         if(is_array($detailsExist)){
-                                                            $message = "Teacher data updated, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($cid,"SID");
+                                                            $message = "Teacher data updated, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($cid,"SID")." for Year $yid";
                                                         }else{
                                                             $message = "Teacher responsible for ".formatItemId($cid,"SID")." has been deleted, but details of him exist. Contact superadmin for help";
                                                         }
@@ -1502,7 +1504,7 @@
                                 }
                                 
                                 if(empty($message)){
-                                    $message = "Teacher has been added";
+                                    $message = "Teacher data has been updated";
                                     $status = true;
                                 }else{
                                     $status = false;
@@ -1626,6 +1628,8 @@
             $message = htmlentities($_REQUEST["message"], ENT_QUOTES);
             $audience = $_REQUEST["audience"];
 
+            $const_audience = ["all","teachers","students"];
+
             //get details from session
             if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] != null){
                 $school_id = $user_school_id;
@@ -1640,7 +1644,7 @@
             }elseif($message == "" || $message == null || empty($message)){
                 echo "no-message";
                 exit(1);
-            }elseif($audience != "All" && $audience != "Others"){
+            }elseif(array_search(strtolower($audience), $const_audience) === false){
                 echo "no-audience-provided";
                 exit(1);
             }
@@ -2110,6 +2114,39 @@
                 }            
             }
             echo $message;
+        }elseif($submit == "change_access_setting" || $submit == "change_access_setting_ajax"){
+            $current = $_POST["current"] ?? null;
+            $change = $_POST["change"] ?? null;
+
+            if(is_null($current) || ctype_digit($current) === false){
+                $message = "Current value not idenfied";
+            }elseif(is_null($change) || ctype_digit($change) === false){
+                $message = "Setting chosen is neither enable or disable";
+            }elseif($current === $change){
+                $message = "Load: No change was detected";
+            }else{
+                $is_present = fetchData1("COUNT(school_id) as total","accesstable","school_id=$user_school_id")["total"];
+
+                if(!$is_present){
+                    $sql = "INSERT INTO accesspay(school_id, active) VALUES(?,?)";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("ii",$user_school_id, $change);
+                }else{
+                    $sql = "UPDATE accesspay SET active=? WHERE school_id=?";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("ii",$change,$user_school_id);
+                }
+
+                if($stmt->execute()){
+                    $message = "success";
+                }else{
+                    $message = "Error occured while processing the results. Try again later";
+                }
+            }
+
+            echo $message;
+        }else{
+            echo "Procedure for submit value '$submit' was not found";
         }
     }else{
         echo "no-submission";
