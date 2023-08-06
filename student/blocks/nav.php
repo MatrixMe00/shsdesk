@@ -19,7 +19,7 @@
             <span></span>
         </div>
         <div class="buttons">
-            <div data-href="<?= "$url/pages/dashboard.php" ?>" class="tab primary active" data-document-title="<?= $student["Lastname"] ?> Dashboard"
+            <div data-href="<?= "$url/pages/dashboard.php" ?>" class="tab active" data-document-title="<?= $student["Lastname"] ?> Dashboard"
                 data-active="dashboard">
                 <span>Dashboard</span>
             </div>
