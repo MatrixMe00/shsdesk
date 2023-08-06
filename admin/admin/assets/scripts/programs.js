@@ -19,8 +19,8 @@ $("#courseIDs label input").change(function(){
         course_ids = course_ids.replace(check_value + " ", '')
     }
 
-    //push new response into course ids
-    $("input[name=course_ids]").val(course_ids)
+    //push new response into this course id element
+    parentForm.find("input[name=course_ids]").val(course_ids)
 })
 
 $("form[name=addProgramForm]").submit(function(e){
@@ -91,11 +91,16 @@ $(".item-event").click(function(){
                 const results = data["results"]
 
                 if(data["status"] === true){
+                    const course_ids = results["course_ids"].split(" ");
+
+                    //remove empty element at back
+                    course_ids[course_ids.length - 1] == "" ? course_ids.pop() : '';
+                    
                     $("#updateProgram input[name=program_id]").val(results["program_id"])
                     $("#updateProgram input[name=program_name]").val(results["program_name"])
                     $("#updateProgram input[type=checkbox]").each((index, element)=>{
-                        element_val = $(element).val() + " "
-                        if(results["course_ids"].includes(element_val)){
+                        element_val = $(element).val()
+                        if(course_ids.includes(element_val) === true){
                             $(element).prop('checked', true)
                         }
                     })

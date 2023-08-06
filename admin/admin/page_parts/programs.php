@@ -152,7 +152,7 @@
         </thead>
         <tbody>
             <?php for($counter = 0; $counter < (isset($resultAttended[0]) ? count($resultAttended) : 1); $counter++) : $result = isset($resultAttended[0]) ? $resultAttended[$counter] : $resultAttended ?>
-            <tr <?= $result["result_status"] === "rejected" ? 'class="red"' : '' ?>>
+            <tr <?= $result["result_status"] === "rejected" ? 'style="background-color:tomato; color: white"' : '' ?>>
                 <td><?= ($counter+1) ?></td>
                 <td><?= is_null($result["short_form"]) ? $result["program_name"] : $result["short_form"] ?></td>
                 <td><?= empty($result["short_form_c"]) ? $result["course_name"] : $result["short_form_c"] ?></td>
@@ -229,4 +229,4 @@
     </table>
 </div>
 
-<script src="<?= "$url/admin/admin/assets/scripts/programs.js?v=".time() ?>"></script>
+<script src="<?= "$url/admin/admin/assets/scripts/programs.min.js?v=".time() ?>"></script>
