@@ -217,10 +217,11 @@ $(".item-event").click(function(){
                                 let names = course_names[i].split("|")
 
                                 let tr = "<tr>"
-                                    tr += "<td>" + formatItemId(ids[0],"CID") + "</td>"
+                                    tr += "<td class=\"cid\">" + formatItemId(ids[0],"CID") + "</td>"
                                     tr += "<td>" + names[0] + "</td>"
-                                    tr += "<td>" + formatItemId(ids[1], "SID") + "</td>"
+                                    tr += "<td class=\"sid\">" + formatItemId(ids[1], "SID") + "</td>"
                                     tr += "<td>" + names[1] + "</td>"
+                                    tr += "<td class=\"yid\">Year " + ids[2] + "</td>"
                                     tr += "<td><span class='item-event' onclick='removeRow($(this))'>Remove</span></td>"
                                 tr += "</tr>"
 
@@ -268,10 +269,11 @@ $(".item-event").click(function(){
 })
 
 $(".add_detail").click(function(){
-    const form = $(this).parents("form")
-    const class_select = $(form).find("select[name=class_id]")
-    const subject_select = $(form).find("select[name=course_id]")
-    const table = $(form).find("table")
+    const form = $(this).parents("form");
+    const class_select = $(form).find("select[name=class_id]");
+    const subject_select = $(form).find("select[name=course_id]");
+    const form_level = form.find("select[name=class_year]");
+    const table = $(form).find("table");
 
     if(selectedClasses.length < 1){
         const message = "Please select at least one class"
@@ -280,9 +282,12 @@ $(".add_detail").click(function(){
         let message = "Please select the subject taught by the teacher in " 
         message += selectedClasses.length > 1 ? "these classes" : "this class"
         messageBoxTimeout($(form).attr("name"), message, "error")
+    }else if(form_level.val() == ""){
+        const message = "Please select the form year to proceed";
+        messageBoxTimeout(form.attr("name"), message, "error");
     }else{
         for(i=0; i < selectedClasses.length; i++){
-            const dat = "[" + selectedClasses[i]["option_value"] + "|" + selectedSubject["value"] + "] "
+            const dat = "[" + selectedClasses[i]["option_value"] + "|" + selectedSubject["value"] + "|" + form_level.val() + "] "
             //get content of course ids
             let course_ids = $(form).find("input[name=course_ids]").val()
 
@@ -296,10 +301,11 @@ $(".add_detail").click(function(){
                 alert_box("Teacher has been assigned this detail already, " + selectedSubject["option"] + " at " + selectedClasses[i]["option_name"])
             }else{
                 let tr = "<tr>"
-                    tr += "<td>" + formatItemId(selectedClasses[i]["option_value"], "CID") + "</td>"
+                    tr += "<td class=\"cid\">" + formatItemId(selectedClasses[i]["option_value"], "CID") + "</td>"
                     tr += "<td>" + selectedClasses[i]["option_name"] +"</td>"
-                    tr += "<td>" + formatItemId(selectedSubject["value"], "SID") + "</td>"
+                    tr += "<td class=\"sid\">" + formatItemId(selectedSubject["value"], "SID") + "</td>"
                     tr += "<td>" + selectedSubject["option"] + "</td>"
+                    tr += "<td class=\"yid\">Year " + form_level.val() + "</td>"
                     tr += "<td>" + "<span class='item-event' onclick='removeRow($(this))'>Remove</span>" + "</td>"
                 tr += "</tr>"
 
@@ -311,26 +317,28 @@ $(".add_detail").click(function(){
         }
 
         //reset fields
-        $(class_select).prop("selectedIndex", -1)
-        $(subject_select).prop("selectedIndex", 0)
-        selectedClasses = []
-        selectedSubject = {option:"", value:""}
+        class_select.prop("selectedIndex", -1);
+        subject_select.prop("selectedIndex", 0);
+        form_level.prop("selectedIndex", 0);
+        selectedClasses = [];
+        selectedSubject = {option:"", value:""};
     }
 })
 
 function removeRow(element){
     const tr = $(element).parents("tr")
     const form = $(element).parents("form")
-    const cid = formatItemId($(tr).find("td:first-child").text(), "CID", true)
-    const sid = formatItemId($(tr).find("td:nth-child(3)").text(), "SID", true)
+    const cid = formatItemId($(tr).find("td.cid").text(), "CID", true)
+    const sid = formatItemId($(tr).find("td.sid").text(), "SID", true)
+    const yid = tr.find("td.yid").text().replace("Year ","");
 
     let course_ids = $(form).find("input[name=course_ids]").val()
-    const dat = "[" + cid + "|" + sid + "] "
+    const dat = "[" + cid + "|" + sid + "|" + yid + "] "
 
     //push new response into course ids
-    $(form).find("input[name=course_ids]").val(course_ids.replace(dat, ''))     
+    form.find("input[name=course_ids]").val(course_ids.replace(dat, ''))     
 
-    $(tr).remove()
+    tr.remove()
 }
 
 $("#cancelUpdate").click(function(){

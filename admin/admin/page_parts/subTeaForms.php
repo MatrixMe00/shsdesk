@@ -128,7 +128,7 @@
                         <option value="<?= $class['program_id'] ?>"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></option>
                         <?php endfor; ?>
                     </select>
-                    <span class="item-event info">Hold down the control key to select multiple classes</span>
+                    <span class="w-full txt-al-c item-event info">Hold down the control key to select multiple classes</span>
                 </label>
             
                 <label for="course_id" class="w-full flex-column">
@@ -140,6 +140,16 @@
                             <?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?>
                         </option>
                         <?php endfor; ?>
+                    </select>
+                </label>
+
+                <label for="class_year" class="w-full flex-column">
+                    <span class="label_title">Select the Year Level</span>
+                    <select name="class_year" id="class_year">
+                        <option value="">Select the year level</option>
+                        <option value="1">Year 1</option>
+                        <option value="2">Year 2</option>
+                        <option value="3">Year 3</option>
                     </select>
                 </label>
             </div>
@@ -159,6 +169,7 @@
                         <td>Class Name</td>
                         <td>Subject ID</td>
                         <td>Subject Name</td>
+                        <td>Class Level</td>
                     </thead>
                     <tbody>
                     </tbody>
@@ -220,7 +231,7 @@
                         <option value="<?= $class['program_id'] ?>"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></option>
                         <?php endfor; ?>
                     </select>
-                    <span class="item-event info">Hold down the control key to select multiple classes</span>
+                    <span class="w-full txt-al-c item-event info">Hold down the control key to select multiple classes</span>
                 </label>
             
                 <label for="u_course_id" class="w-full flex-column">
@@ -232,6 +243,16 @@
                             <?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?>
                         </option>
                         <?php endfor; ?>
+                    </select>
+                </label>
+
+                <label for="u_class_year" class="w-full flex-column">
+                    <span class="label_title">Select the Year Level</span>
+                    <select name="class_year" id="u_class_year">
+                        <option value="">Select the year level</option>
+                        <option value="1">Year 1</option>
+                        <option value="2">Year 2</option>
+                        <option value="3">Year 3</option>
                     </select>
                 </label>
             </div>
@@ -251,6 +272,7 @@
                         <td>Class Name</td>
                         <td>Subject ID</td>
                         <td>Subject Name</td>
+                        <td>Class Level</td>
                     </thead>
                     <tbody>
                     </tbody>
