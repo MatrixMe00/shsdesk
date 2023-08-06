@@ -679,9 +679,16 @@ img{
     align-items: center !important;
 }
 
-.flex-eq > *{
-    flex: 1 !important;
-}
+.flex-eq > *{flex: 1 !important;}
+
+.flex-eq-4xs > *{flex: 1 1 200px;}
+.flex-eq-3xs > *{flex: 1 1 280px;}
+.flex-eq-2xs > *{flex: 1 1 320px;}
+.flex-eq-xs > *{flex: 1 1 468px}
+.flex-eq-sm > *{flex: 1 1 580px}
+.flex-eq-md > *{flex: 1 1 768px}
+.flex-eq-lg > *{flex: 1 1 1020px}
+.flex-eq-xl > *{flex: 1 1 1200px}
 
 .iflex-all-center{
     display: inline-flex !important;
@@ -891,6 +898,7 @@ img{
     color: var(--success);
 }
 
+/* widths */
 /*container widths*/
 .w-fit, .w-fit-child > *{
     width: -moz-fit-content;
@@ -916,6 +924,41 @@ img{
 .wmax-unset, .wmax-unset-child > *{
     max-width: unset !important;
 }
+
+/* percentage width */
+.wp-1, .wp-1-child > *{width: 10%;}
+.wp-2, .wp-2-child > *{width: 20%;}
+.wp-3, .wp-3-child > *{width: 30%;}
+.wp-4, .wp-4-child > *{width: 40%;}
+.wp-5, .wp-5-child > *{width: 50%;}
+.wp-6, .wp-6-child > *{width: 60%;}
+.wp-7, .wp-7-child > *{width: 70%;}
+.wp-8, .wp-8-child > *{width: 80%;}
+.wp-9, .wp-9-child > *{width: 90%;}
+.w-full, .w-full-child > *{width: 100% !important;}
+.w-auto, .w-auto-child > *{width: auto;}
+.w-max-unset, .wc-max-unset > *{max-width: unset !important;}
+.w-min-unset, .wc-min-unset > *{min-width: unset !important;}
+
+/* max widths by screen */
+.wmax-xxs{max-width: 320px;}
+.wmax-xs{max-width: 468px}
+.wmax-sm{max-width: 580px}
+.wmax-md{max-width: 768px}
+.wmax-lg{max-width: 1020px}
+.wmax-xl{max-width: 1200px}
+/* end of max widths */
+
+/* min widths by screen */
+.wmin-xxs{min-width: 320px;}
+.wmin-xs{min-width: 468px}
+.wmin-sm{min-width: 580px}
+.wmin-md{min-width: 768px}
+.wmin-lg{min-width: 1020px}
+.wmin-xl{min-width: 1200px}
+/* end of min widths */
+
+/* end of widths */
 
 .hmax, .hmax-child > *{
     height: -moz-max-content;
@@ -1302,31 +1345,6 @@ img{
 .gap-lg{gap: 1.5rem;}
 .gap-xlg{gap: 2rem;}
 /* end of gaps */
-
-/* widths */
-/* percentage width */
-.wp-1, .wp-1-child > *{width: 10%;}
-.wp-2, .wp-2-child > *{width: 20%;}
-.wp-3, .wp-3-child > *{width: 30%;}
-.wp-4, .wp-4-child > *{width: 40%;}
-.wp-5, .wp-5-child > *{width: 50%;}
-.wp-6, .wp-6-child > *{width: 60%;}
-.wp-7, .wp-7-child > *{width: 70%;}
-.wp-8, .wp-8-child > *{width: 80%;}
-.wp-9, .wp-9-child > *{width: 90%;}
-.w-full, .w-full-child > *{width: 100% !important;}
-.w-auto, .w-auto-child > *{width: auto;}
-.w-max-unset, .wc-max-unset > *{max-width: unset !important;}
-.w-min-unset, .wc-min-unset > *{min-width: unset !important;}
-
-/* max widths by screen */
-.wmax-xs{max-width: 468px}
-.wmax-sm{max-width: 580px}
-.wmax-md{max-width: 768px}
-.wmax-lg{max-width: 1020px}
-.wmax-xl{max-width: 1200px}
-/* end of max widths */
-/* end of widths */
 
 /*box shadows*/
 .lt-shade, .lt-shade-h{
