@@ -940,16 +940,16 @@
 
     /**
      * This function is for the records model to retrive the data of the classes and records of the teacher
-     * @param array $arrayData This is the data of array which holds the program id n course id
-     * @return string returns a string which compiles all arrays into one string in the format [pid|cid] 
+     * @param array $arrayData This is the data of array which holds the program id n course id n year level
+     * @return string returns a string which compiles all arrays into one string in the format [pid|cid|yid] 
      */
     function stringifyClassIDs($arrayData){
         $newString = "";
         if(is_array($arrayData) && !array_key_exists(0,$arrayData)){
-            $newString .= "[{$arrayData['program_id']}|{$arrayData['course_id']}] ";
+            $newString .= "[{$arrayData['program_id']}|{$arrayData['course_id']}|{$arrayData['class_year']}] ";
         }else if(is_array($arrayData[0])){
             foreach($arrayData as $data){
-                $newString .= "[{$data['program_id']}|{$data['course_id']}] ";
+                $newString .= "[{$data['program_id']}|{$data['course_id']}|{$data['class_year']}] ";
             }
         }else{
             return "wrong array data";
@@ -961,7 +961,7 @@
     /**
      * This function is for the records model to retrive the data of the classes and records of the teacher
      * @param array $arrayData This is the data of array which holds the program strings n course strings
-     * @return string returns a string which compiles all arrays into one string in the format [pid|cid] 
+     * @return string returns a string which compiles all arrays into one string in the format [pname|cname] 
      */
     function stringifyClassNames($arrayData){
         $newString = "";
