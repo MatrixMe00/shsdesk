@@ -8,6 +8,7 @@
 <section id="main_view" class="sp-xlg-tp sp-med-lr txt-al-c">
     <p>Please select an option to proceed</p>
     <div class="btn sm-auto p-lg m-med">
+        <?php if($developmentServer): ?><button class="plain-r primary" data-main-section="enable-disable">Change Settings</button><?php endif; ?>
         <button class="plain-r primary" data-main-section="set-up">Set Up Access Code Price</button>
         <button class="plain-r primary" data-main-section="bulk-purchase">Purchase Bulk Access Code</button>
     </div>
@@ -138,6 +139,40 @@
         </div>
     </form>
 </section>
+
+<?php if($developmentServer): ?>
+<section class="p-sm-tp p-med-lr txt-al-c btn_section enable-disable">
+    <p>This view determines if your school will allow students to make purchase of access codes or not</p>
+</section>
+
+<section class="btn_section enable-disable">
+    <form action="<?= "$url/admin/admin/submit.php" ?>" name="changeAccess" method="post">
+        <div class="head">
+            <h2>Set Up Access Code</h2>
+        </div>
+        <div class="body">
+            <label for="current" class="flex-column gap-sm">
+                <span class="label_title">Current Setting</span>
+                <?php $current = fetchData1("active","accesspay","school_id=$user_school_id") ?? false ?>
+                <input type="text" name="" class="border white" value="<?= $current === false ? "Disabled":"Enabled" ?>" readonly>
+                <input type="hidden" name="current" value="<?= $current["active"] ?? 0 ?>">
+            </label>
+            <label for="change" class="flex-column gap-sm">
+                <span class="label_title">Enable/Disable</span>
+                <select name="change" id="change">
+                    <option value="">Select Setting</option>
+                    <option value="0">Disable</option>
+                    <option value="1">Enable</option>
+                </select>
+            </label>
+        </div>
+        
+        <div class="btn w-full wmax-sm sm-auto p-lg">
+            <button class="primary w-full" name="submit" value="change_access_setting">Change Settings</button>
+        </div>
+    </form>
+</section>
+<?php endif; ?>
 
 <script src="https://js.paystack.co/v1/inline.js" defer></script>
 <script src="<?= "$url/admin/admin/assets/scripts/accesscode.js?v=".time() ?>"></script>

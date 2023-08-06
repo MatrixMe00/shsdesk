@@ -286,21 +286,19 @@ $(document).ready(function(){
         })
     }
 
-    $("form[name=payForm]").submit(function(e){
-        e.preventDefault()
-
+    function payFormSubmit(element){
         if($("input#specify").val() !== ""){
             $("input#specify").blur()
         }
 
         const form = {
-            fullname: $(this).find("input[name=fullname]").val(),
-            email: $(this).find("input[name=email]").val(),
-            phone: $(this).find("input[name=phone_number]").val(),
+            fullname: $(element).find("input[name=fullname]").val(),
+            email: $(element).find("input[name=email]").val(),
+            phone: $(element).find("input[name=phone_number]").val(),
             amount: cust_amount,
             recipients: recipient,
-            school_name: $(this).find("input[name=school_name]").val(),
-            submit: $(this).find("button[name=submit]").val(),
+            school_name: $(element).find("input[name=school_name]").val(),
+            submit: $(element).find("button[name=submit]").val(),
             transaction_id: ""
         }
 
@@ -315,17 +313,27 @@ $(document).ready(function(){
         }else{
             payWithPaystack(form)
         }
-    })
+    }
 
-    $("form[name=accessPriceForm]").submit(function(e){
-        e.preventDefault()
-        const response = formSubmit($(this), $(this).find("button[name=submit]", false));
-        
-        if(response === true){
-            alert_box("Update was successful", "success");
-            $("#lhs .item.active").click()
+    $("form").submit(function(e){
+        e.preventDefault();
+        const formName = $(this).attr("name");
+
+        if(formName == "payForm"){
+            payFormSubmit($(this));
         }else{
-            alert_box(response, "danger", 7)
+            const response = formSubmit($(this), $(this).find("button[name=submit]", false));
+        
+            if(response === true){
+                alert_box("Update was successful", "success");
+                $("#lhs .item.active").click()
+            }else{
+                if(response.indexOf("Load: ") > -1){
+                    alert_box(response.replace("Load: ",""), "white",7)
+                }else{
+                    alert_box(response, "danger", 7)
+                }
+            }
         }
     })
 })
