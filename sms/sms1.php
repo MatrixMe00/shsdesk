@@ -1,4 +1,5 @@
 <?php
+    include("../includes/session.php");
     $jsonFormat = true;
 
     // api endpoint
@@ -9,6 +10,27 @@
     $senderId = "SHSDesk";
     $text_message = "This is a demo text from the test sms.php. This is the @ symbol which is supposed to provide an at symbol";
     $recipients = ["+233279284896"];
+
+    $teacher_phone = "0279284896";
+    $teacher_lname = "Seth";
+    $teacher_id = "1";
+    $recipients = [remakeNumber($teacher_phone, true, false)];
+    $text_message = "Hello $teacher_lname, your login details are as follow; username: ".formatItemId($teacher_id, "TID").
+        " password: Password@1. Please go to www.teacher.shsdesk.com to access your portal";
+    
+    $senderId = fetchData1("sms_id, status","school_ussds", "school_id=$user_school_id");
+    if(is_array($senderId)){
+        if($senderId["status"] === "approve")
+            $senderId = $senderId["sms_id"];
+        elseif($senderId["status"] === "pending")
+            $_REQUEST["system_message"] = "Your USSD has not been validated yet";
+        else
+            $_REQUEST["system_message"] = "Your USSD was rejected. Please provide a new one and await approval before trying again";
+    }else{
+        $_REQUEST["system_message"] = "Teacher could not receive a message because you do not have an sms USSD yet.";
+    }
+
+    $senderId = "SHSDesk";
 
     try {
         foreach ($recipients as $key => $value) {

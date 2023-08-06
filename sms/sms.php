@@ -2,6 +2,7 @@
 if(isset($_REQUEST['submit'])){
     $submit = $_REQUEST['submit'];
     $jsonFormat = true;
+    $stopProcess = false;
 
     // api endpoint
     $endPoint = 'https://webapp.usmsgh.com/api/sms/send';
@@ -154,12 +155,17 @@ if(isset($_REQUEST['submit'])){
         
         $senderId = fetchData1("sms_id, status","school_ussds", "school_id=$user_school_id");
         if(is_array($senderId)){
-            if($senderId["status"] === "approve")
+            if($senderId["status"] === "approve"){
                 $senderId = $senderId["sms_id"];
-            elseif($senderId["status"] === "pending")
-                $_REQUEST["system_message"] = "Your USSD has not been validated yet";
-            else
-                $_REQUEST["system_message"] = "Your USSD was rejected. Please provide a new one and await approval before trying again";
+            }
+            elseif($senderId["status"] === "pending"){
+                $_REQUEST["system_message"] = "Your USSD has not been validated yet"; 
+                $stopProcess = true;
+            }
+            else{
+                $_REQUEST["system_message"] = "Your USSD was rejected. Please provide a new one and await approval before trying again"; 
+                $stopProcess = true;
+            }
         }else{
             $_REQUEST["system_message"] = "Teacher could not receive a message because you do not have an sms USSD yet.";
         }
@@ -186,6 +192,10 @@ if(isset($_REQUEST['submit'])){
     //stop process if there are no recipients
     if(!isset($recipients) || count($recipients) < 1){
         $_REQUEST["system_message"] = "No valid contact number(s) were found"; return;
+    }
+
+    if($stopProcess === true){
+        return;
     }
 
     try {
