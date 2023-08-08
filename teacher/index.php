@@ -53,13 +53,13 @@
                     <div class="close"><span>&cross;</span></div>
                 </div>
                 <p class="txt-fs txt-al-c" style="color: #444;">
-                    This is the SHSDesk teachers portal. Provide your username and password to enter the portal
+                    This is the SHSDesk teachers portal. Provide your teacher id/username and password to enter the portal
                 </p>
                 <label for="teacher_id">
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="username_logo">
                     </span>
-                    <input type="text" name="teacher_id" id="teacher_id" class="text_input" placeholder="Your Teacher ID" autocomplete="off"
+                    <input type="text" name="teacher_id" id="teacher_id" class="text_input" placeholder="Your Teacher ID or Username" autocomplete="off"
                     title="Enter your id number" value="">
                 </label>
                 <label for="password" class="no_disp">
