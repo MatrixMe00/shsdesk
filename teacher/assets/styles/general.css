@@ -505,7 +505,6 @@ button.green:hover, button.success:hover,
 
 .display_image_box{
     padding: 1%;
-    *border: 1px solid;
 }
 
 .display_image_box img{
@@ -516,6 +515,28 @@ img{
     vertical-align: middle;
     object-fit: cover;
 }
+
+/* img brigtness value*/
+img.bright-10, img.bright-10-h:hover, .img-bright-10 > img, .img-bright-10-h > img:hover{filter: brightness(0.1)}
+img.bright-15, img.bright-15-h:hover, .img-bright-15 > img, .img-bright-15-h > img:hover{filter: brightness(0.15)}
+img.bright-20, img.bright-20-h:hover, .img-bright-20 > img, .img-bright-20-h > img:hover{filter: brightness(0.2)}
+img.bright-25, img.bright-25-h:hover, .img-bright-25 > img, .img-bright-25-h > img:hover{filter: brightness(0.25)}
+img.bright-30, img.bright-30-h:hover, .img-bright-30 > img, .img-bright-30-h > img:hover{filter: brightness(0.3)}
+img.bright-35, img.bright-35-h:hover, .img-bright-35 > img, .img-bright-35-h > img:hover{filter: brightness(0.35)}
+img.bright-40, img.bright-40-h:hover, .img-bright-40 > img, .img-bright-40-h > img:hover{filter: brightness(0.4)}
+img.bright-45, img.bright-45-h:hover, .img-bright-45 > img, .img-bright-45-h > img:hover{filter: brightness(0.45)}
+img.bright-50, img.bright-50-h:hover, .img-bright-50 > img, .img-bright-50-h > img:hover{filter: brightness(0.5)}
+img.bright-55, img.bright-55-h:hover, .img-bright-55 > img, .img-bright-55-h > img:hover{filter: brightness(0.55)}
+img.bright-60, img.bright-60-h:hover, .img-bright-60 > img, .img-bright-60-h > img:hover{filter: brightness(0.6)}
+img.bright-65, img.bright-65-h:hover, .img-bright-65 > img, .img-bright-65-h > img:hover{filter: brightness(0.65)}
+img.bright-70, img.bright-70-h:hover, .img-bright-70 > img, .img-bright-70-h > img:hover{filter: brightness(0.7)}
+img.bright-75, img.bright-75-h:hover, .img-bright-75 > img, .img-bright-75-h > img:hover{filter: brightness(0.75)}
+img.bright-80, img.bright-80-h:hover, .img-bright-80 > img, .img-bright-80-h > img:hover{filter: brightness(0.8)}
+img.bright-85, img.bright-85-h:hover, .img-bright-85 > img, .img-bright-85-h > img:hover{filter: brightness(0.85)}
+img.bright-90, img.bright-90-h:hover, .img-bright-90 > img, .img-bright-90-h > img:hover{filter: brightness(0.9)}
+img.bright-95, img.bright-95-h:hover, .img-bright-95 > img, .img-bright-95-h > img:hover{filter: brightness(0.95)}
+img.bright-100, img.bright-100-h:hover, .img-bright-100 > img, .img-bright-100-h > img:hover{filter: brightness(1)}
+/* end of image brightness */
 
 .logo{
     display: flex;
@@ -941,7 +962,9 @@ img{
 .w-min-unset, .wc-min-unset > *{min-width: unset !important;}
 
 /* max widths by screen */
-.wmax-xxs{max-width: 320px;}
+.wmax-4xs{max-width: 200px}
+.wmax-3xs{max-width: 280px}
+.wmax-2xs{max-width: 320px}
 .wmax-xs{max-width: 468px}
 .wmax-sm{max-width: 580px}
 .wmax-md{max-width: 768px}
@@ -2076,9 +2099,6 @@ form .joint > *, .form .joint > *{
 
 @media screen and (max-width: 520px) {
     /* forms */
-    form label, .form label{
-        *width: 100%;
-    }
     form.inline-form, .form.inline-form{
         flex-direction: column;
         justify-content: center;
