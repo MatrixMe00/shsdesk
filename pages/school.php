@@ -22,88 +22,69 @@
     <meta name="keywords" content="school, shs, shsdesk, placed, register, admission, prospectus, code">
 
     <!--Stylesheets-->
-    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/school/school.min.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo $url?>/assets/styles/school/school.css?v=<?php echo time()?>">
 </head>
-<body>
-    <?php @include_once($rootPath.'/blocks/nav.php')?>
+<body class="light">
+    <?php $start_sticky = true; @include_once($rootPath.'/blocks/nav.php')?>
 
-    <main class="flex flex-wrap no-wrap-col">
-        <?php
-            $result = $connect->query("SELECT * FROM schools");
-
-            if($result->num_rows > 0){
-                while($row = $result->fetch_assoc()){
-        ?>
-        <div class="school flex flex-center-content flex-center-align">
-            <div class="head">
-                <div class="image_div">
-                    <img src="<?php echo $url?>/<?php echo $row["logoPath"]?>" loading="lazy" alt="School Name">
-                </div>
-                <div class="name">
-                    <h3><?php echo $row["schoolName"]?></h3>
-                    <?php
-                        if($row["abbr"] != null)
-                    ?>
-                    <h5 style="color:#aaa">(<?php echo strtoupper($row["abbr"])?>)</h5>
-                </div>
+    <main class="sp-xlg wmax-lg sm-auto flex gap-lg flex-eq-3xs flex-wrap">
+        <?php 
+            $schools = decimalIndexArray(fetchData("s.*, c.title as type","schools s JOIN school_category c ON c.id=s.category","",0));
+            if(is_array($schools)):
+                foreach($schools as $key=>$school): ?>
+        <div class="flex white school-card flex-column wmax-xs sm-auto lt-shade-h">
+            <div class="img" style="height: 195px; min-width: 195px;">
+                <img src="<?= "$url/{$school["logoPath"]}"?>" loading="lazy" alt="<?= $school["schoolName"] ?>" style="min-width: inherit; height: inherit">
             </div>
-            <div class="body flex flex-column">
-                <div class="desc">
-                    <div class="content">
-                        <p><?php 
-                            $sub = substr($row["description"], 0, 300);
-                            $sub = strip_tags(html_entity_decode($sub));
+            <div class="content sp-lg flex flex-column gap-lg">
+                <h5 class="color-secondary flex flex-space-content">
+                    <span><?= strtoupper($school["type"]) ?></span>
+                    <span><?= ucwords($school["residence_status"],"/") ?></span>
+                </h5>
+                <h3 class="flex-all-center gap-sm txt-al-c txt-fn flex-column">
+                    <span class="school_name"><?= $school["schoolName"] ?></span>
+                    <span class="txt-fs color-orange"><?= $school["abbr"] ?></span>
+                </h3>
+                <hr>
+                <p><?php 
+                        $add_btn = false;
+                        $sub = substr($school["description"], 0, 200);
+                        $sub = strip_tags(html_entity_decode($sub));
 
-                            echo $sub;
-                            if(intval(strlen($row["description"])) > 300){
-                                echo "...";
-                            }
-                        ?></p>
-                    </div>        
-                    <div class="no_disp full-content">
-                        <?php 
-                            $content = html_entity_decode($row["description"]);
+                        echo $sub;
+                        if(intval(strlen($school["description"])) > 200){
+                            $add_btn = true;
+                            echo "...";
+                        }
+                ?></p>
+                <div class="no_disp full-content">
+                    <?php 
+                        $content = html_entity_decode($school["description"]);
 
-                            //remove visible escape characters
-                            $content = str_replace("\\r", "", $content);
-                            $content = str_replace("\\n", "", $content);
-                            $content = str_replace("\\", "", $content);
+                        //remove visible escape characters
+                        $content = str_replace("\\r", "", $content);
+                        $content = str_replace("\\n", "", $content);
+                        $content = str_replace("\\", "", $content);
 
-                            echo $content;
-                        ?>
-                    </div>
-                </div>
-                <div class="button flex flex-content-end">
-                    <?php if($show){?><div class="btn">
-                        <button class="enrol_button">Enrol</button>
-                    </div><?php }
-                    if(intval(strlen($row["description"])) > 300){
+                        echo $content;
                     ?>
-                    <div class="btn">
-                        <button name="read_more">Read More</button>
-                    </div><?php } ?>
+                </div>
+                <div class="btn p-med w-full">
+                    <button <?= !$add_btn ? "disabled":"name='read_more'" ?> class="plain-r <?= $add_btn ? "teal":"red" ?> sm-auto wmax-sm w-full">Continue Reading</button>
                 </div>
             </div>
         </div>
-        <?php
-                }
-            }else{
-        ?>
-        <div class="school no_data flex flex-center-content flex-center-align">
-            <div class="body flex flex-column">
-                <div class="desc">
-                    <p>No School Has been Uploaded yet</p>
-                    <p>Come back later!</p>
-                </div>
-            </div>
+        <?php endforeach;
+            else: ?>
+        <div class="border-secondary border white txt-al-c sp-lg">
+            <p>No schools have been uploaded yet. Please try again later</p>
         </div>
-        <?php } ?>
-        
+        <?php endif; ?>
     </main>
 
     <?php @include_once($rootPath.'/blocks/footer.php')?>
 
-    <div class="fixed flex flex-center-content flex-center-align form_modal_box no_disp" id="more_detail">
+    <div class="fixed flex flex-center-content wmax-med flex-center-align form_modal_box no_disp" id="more_detail">
         <form class="form">
             <div class="head">
                 <h2>School Name</h2>
@@ -113,8 +94,8 @@
                 </div>
             </div>
             <div class="foot">
-                <div class="btn">
-                    <button name="cancel">Cancel</button>
+                <div class="btn p-lg wmax-sm sm-auto w-full">
+                    <button name="cancel" class="plain-r red w-full">Cancel</button>
                 </div>
             </div>
         </div>
@@ -126,17 +107,15 @@
     <script src="<?php echo $url?>/assets/scripts/head_foot.min.js?v=<?php echo time()?>"></script>
 
     <script>
-        nav_height = $("nav").height();
-        $("main").css("margin-top", nav_height);
-
         //display details of school
         $("button[name=read_more]").click(function(){
             //insert school name
-            s_name = $(this).parents(".body").siblings(".head").children(".name").children("h3").html();
+            const parent = $(this).parents(".school-card");
+            s_name = parent.find("span.school_name");
             $("#more_detail .head h2").html(s_name);
 
             //grab full detail
-            detail = $(this).parents(".button").siblings(".desc").children(".full-content").html();
+            detail = parent.find(".full-content").html();
 
             //parse data
             $("#more_detail #detail").html(detail);

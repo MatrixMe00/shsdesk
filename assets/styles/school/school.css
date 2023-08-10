@@ -1,7 +1,3 @@
-main{
-    min-height: 80vh;
-}
-
 main .school{
     background-color: #eee;
     flex: 1 1 550px;
