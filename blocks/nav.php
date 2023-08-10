@@ -1,4 +1,4 @@
-<nav class="sp-xlg-tp">
+<nav class="sp-xlg-tp <?= isset($start_sticky) && $start_sticky ? "sticky":"absolute no-sticky" ?> top">
         <div id="logo">
             <div id="name">
                 <span id="first">SHS</span>
