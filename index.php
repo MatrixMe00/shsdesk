@@ -42,7 +42,7 @@
     <main>
         <section id="carousel">
             <div class="block">
-                <div class="img_container">
+                <div class="img_container img-bright-50">
                     <?php
                         $result = $connect->query("SELECT item_img, image_alt
                         FROM pageitemdisplays

@@ -25,13 +25,12 @@
     <link rel="stylesheet" href="<?php echo $url?>/assets/styles/about/about.min.css?v=<?php echo time()?>">
 </head>
 <body id="index_main">
-    <?php @include_once($rootPath.'/blocks/nav.php')?>
+    <?php include_once($rootPath.'/blocks/nav.php')?>
 
     <section id="intro">
         <div id="background">
-            <img src="<?php echo "$url/assets/images/default/javier-quesada-qYfwGVNJqSA-unsplash.jpg"?>" loading="lazy" alt="Books on table">
+            <img src="<?php echo "$url/assets/images/default/javier-quesada-qYfwGVNJqSA-unsplash.jpg"?>" loading="lazy" class="bright-50" alt="Books on table">
         </div>
-        <div class="shadow"></div>
         <div class="head">
             <h1>About ShsDesk</h1>
         </div>

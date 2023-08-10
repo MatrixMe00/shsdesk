@@ -27,8 +27,8 @@
 </head>
 <body>
     <div id="cover"></div>
-    <?php @include_once($rootPath.'/blocks/nav.php')?>
-    <main>
+    <?php $start_sticky = true; @include_once($rootPath.'/blocks/nav.php')?>
+    <main style="min-height: 71vh;">
         <form action="../submit.php" method="post" name="contactForm">
             <div class="head">
                 <h2>Contact Us</h2>
