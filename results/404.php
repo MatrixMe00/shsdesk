@@ -1,0 +1,1 @@
+<?php require("../404.html"); echo 2+6; ?>
