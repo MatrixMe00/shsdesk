@@ -44,6 +44,8 @@
             case "www.teacher.shsdesk.local":
             case "student.shsdesk.local":
             case "www.student.shsdesk.local":
+            case "www.results.shsdesk.local":
+            case "results.shsdesk.local":
                 $sqlServer = [
                     "host" => "localhost",
                     "hostpassword" => "",
@@ -64,6 +66,8 @@
             case "www.teacher.shsdesk.com":
             case "student.shsdesk.com":
             case "www.student.shsdesk.com":
+            case "www.results.shsdesk.com":
+            case "results.shsdesk.com":
                 $sqlServer = [
                     "host" => "localhost",
                     "hostpassword" => "Password@2020",
