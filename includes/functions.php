@@ -1152,11 +1152,20 @@
      * @return array an index array profile
      */
     function numericIndexArray($array):array{
-        $newArray = array_map(function($item){
-            $key = array_keys($item);
-            return $item[$key[0]];
-        }, $array);
-
+        if(is_array($array)){
+            if(count($array) > 1){
+                $newArray = array_map(function($item){
+                    $key = array_keys($item);
+                    return $item[$key[0]];
+                }, $array);
+            }else{
+                $key = array_keys($array);
+                $newArray = [$array[$key[0]]];
+            }
+        }else{
+            $newArray = ["Invalid Array"];
+        }
+        
         return $newArray;
     }
 
