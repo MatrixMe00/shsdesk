@@ -973,7 +973,9 @@ img.bright-100, img.bright-100-h:hover, .img-bright-100 > img, .img-bright-100-h
 /* end of max widths */
 
 /* min widths by screen */
-.wmin-xxs{min-width: 320px;}
+.wmin-4xs{min-width: 200px}
+.wmin-3xs{min-width: 280px}
+.wmin-2xs{min-width: 320px}
 .wmin-xs{min-width: 468px}
 .wmin-sm{min-width: 580px}
 .wmin-md{min-width: 768px}
@@ -1583,21 +1585,27 @@ td{
 }
 /*end of custom alert box*/
 
-.rnd{
+.rnd, .rnd-h:hover{
     border-radius: 0.8em;
 }
 
-.sm-rnd{
+.sm-rnd, .sm-rnd-h:hover{
     border-radius: 0.5em;
 }
 
-.xs-rnd, input, textarea, select{
+.xs-rnd, .xs-rnd-h:hover, input, textarea, select{
     border-radius: 0.25em;
 }
 
-.b-rnd{
+.b-rnd, .b-rnd-h:hover{
     border-radius: 1em;
 }
+
+/* cursors */
+.cursor-def, .cursor-d, .cursor-def-h:hover, .cursor-d-h:hover{cursor: default}
+.cursor-point, .cursor-p, .cursor-point-h:hover, .cursor-p-h:hover{cursor: pointer}
+.cursor-l, .cursor-pro, .cursor-pro-h:hover, .cursor-l-h:hover{cursor: progress;}
+/* end of cursors */
 
 /* forms */
 /* form general */
