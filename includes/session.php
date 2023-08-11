@@ -62,7 +62,8 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     if(!isset($_SESSION["admin_mode"])){
         $_SESSION["admin_mode"] = "admission";
     }
-}elseif(isset($_SESSION["student_id"]) && !is_null($_SESSION["student_id"])){
+}
+if(isset($_SESSION["student_id"]) && !is_null($_SESSION["student_id"])){
     $student = fetchData1("*","students_table","indexNumber='".$_SESSION["student_id"]."'");
     
     if(!is_array($student)){
@@ -70,7 +71,8 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
         session_unset();
         exit();
     }
-}elseif(isset($_SESSION["teacher_id"]) && !is_null($_SESSION["teacher_id"])){
+}
+if(isset($_SESSION["teacher_id"]) && !is_null($_SESSION["teacher_id"])){
     $teacher = fetchData1("t.*, l.user_username","teachers t JOIN teacher_login l ON t.teacher_id=l.user_id","teacher_id=".$_SESSION["teacher_id"]);
 
     if(!is_array($teacher)){
