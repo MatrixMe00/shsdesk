@@ -1,4 +1,4 @@
-<?php include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+<?php include_once("session.php");
 
     //add nav point session
     $_SESSION["nav_point"] = "ussd";

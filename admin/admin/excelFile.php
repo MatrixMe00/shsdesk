@@ -157,7 +157,7 @@
 
     //set title
     $sheet->setCellValue("A1", $title);
-    $sheet->getStyle("A1")->getFont()->setBold("true");
+    $sheet->getStyle("A1")->getFont()->setBold(true);
     $sheet->getStyle("A1")->getAlignment()->setHorizontal('center');
     $sheet->getStyle("A1")->getAlignment()->setVertical('center');
 

@@ -1,4 +1,4 @@
-<?php @include_once('../../../includes/session.php')?>
+<?php include_once("auth.php") ?>
 
 <?php if(isset($_GET["db2"])): $user_school_id=$_GET["sid"] ?>
 <form action="<?php echo $url?>/admin/admin/submit.php" method="get" class="fixed" name="adminAddStudent">

@@ -178,12 +178,12 @@ $(document).ready(function(){
             if(response === true){
                 formData.submit = "access_payment"
                 var handler = PaystackPop.setup({
-                    // key: "pk_live_056157b8c9152eb97c1f04b2ed60e7484cd0d955",
-                    key: "pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca",
+                    key: "pk_live_056157b8c9152eb97c1f04b2ed60e7484cd0d955",
+                    // key: "pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca",
                     email: formData.email,
                     amount: formData.amount * 100,
                     currency: "GHS",
-                    // split_code: "SPL_U6mW80wZNH",
+                    split_code: "SPL_3VlEyxtLgF",
                     metadata: {
                         custom_fields: [
                             {

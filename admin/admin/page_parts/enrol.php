@@ -1,5 +1,5 @@
 <?php 
-    include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+    include_once("auth.php");
 
     if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         $user_school_id = $_REQUEST["school_id"];

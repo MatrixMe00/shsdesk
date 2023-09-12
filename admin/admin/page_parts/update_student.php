@@ -1,4 +1,4 @@
-<?php @include_once('../../../includes/session.php');
+<?php //include_once("auth.php");
     $admin_mode = $_SESSION["admin_mode"] ?? "no-data";
 ?>
 

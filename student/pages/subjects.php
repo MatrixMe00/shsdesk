@@ -78,6 +78,7 @@
     </table>
 </section>
 
+<?php if($code !== "empty") : ?>
 <section class="d-section white lt-shade flex-all-center flex-column">
     <h2 class="sm-xlg-b">Statistics <span id="subject_name"></span></h2>
     <canvas id="stats" class="wmax-md no_disp" style="max-height: 40vh"></canvas>
@@ -211,3 +212,9 @@
         }
     })
 </script>
+<?php else : ?>
+<section class="d-section white lt-shade flex-all-center flex-column">
+    <h2 class="sm-xlg-b">Statistics</h2>
+    <p class="sm-lg-t txt-fl1">Please purchase an access code from the 'Get Access Code' menu to view statistics</p>
+</section>
+<?php endif; ?>

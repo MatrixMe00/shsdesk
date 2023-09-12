@@ -22,11 +22,13 @@
     $splitKeys = array(
         "live" => [
             "matrix_admission" => "SPL_U6mW80wZNH",
-            "matrix_school_management" => "SPL_nDjVFzSGVb"
+            "matrix_school_management" => "SPL_nDjVFzSGVb",
+            "matrix_admission_bulk" => "SPL_3VlEyxtLgF"
         ],
         "development" => [
             "matrix_admission" => "",
-            "matrix_school_management" => ""
+            "matrix_school_management" => "",
+            "matrix_admission_bulk" => ""
         ]
     );
     $splitKey = [];

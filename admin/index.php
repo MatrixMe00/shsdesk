@@ -9,6 +9,7 @@
         }else{
             require("admin/index.php");
         }
+        unset($_SESSION);
     }else{
 ?>
 <!DOCTYPE html>

@@ -54,6 +54,7 @@
                 </div>
             </section>
 
+            <?php if($code !== "empty") : ?>
             <section class="d-section white lt-shade flex-all-center flex-column" style="flex: 3 1 auto">
                 <h2 class="sm-xlg-b">Statistics</h2>
                 <div class="form flex-all-center flex-eq wmax-md sm-auto flex-wrap gap-sm" id="searchStats">
@@ -207,3 +208,9 @@
             })
         })
     </script>
+    <?php else: ?>
+        <section class="d-section white lt-shade flex-all-center flex-column" style="flex: 3 1 auto">
+            <p>Please purchase an access code from the 'Get Access Code' menu to view statistics</p>
+        </section>
+    </div>
+    <?php endif ?>

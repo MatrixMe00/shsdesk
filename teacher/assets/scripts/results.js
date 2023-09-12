@@ -61,7 +61,6 @@ $("form").submit(function(e){
         data: {
             submit: $(this).find("button[name=submit]").val(), class: cid, year: yid
         },
-        timeout: 30000,
         beforeSend: function(){
             $("#result_slip tbody").html(insertEmptyTableLabel("Fetching class data, please wait a bit...", columns))
             $("#result_slip tfoot").addClass("no_disp")
@@ -157,7 +156,6 @@ $("#submit_result").click(function(){
     $.ajax({
         url: "./submit.php",
         data: {submit: "getToken"},
-        timeout: 30000,
         async: false,
         beforeSend: function(){
             $("#table_status").html("Generating results token...")
@@ -198,7 +196,7 @@ $("#submit_result").click(function(){
                     exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id
                 },
                 type: "POST",
-                timeout: 30000,
+    
                 async: false,
                 beforeSend: function(){
                     $("#table_status").html("Submitting " + stud_index + " | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
@@ -249,7 +247,6 @@ $("#save_result").click(function(){
     $.ajax({
         url: "./submit.php",
         data: {submit: "getToken"},
-        timeout: 30000,
         async: false,
         beforeSend: function(){
             $("#table_status").html("Generating results token...")
@@ -290,7 +287,7 @@ $("#save_result").click(function(){
                     exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id, saved: new_save
                 },
                 type: "POST",
-                timeout: 30000,
+    
                 async: false,
                 beforeSend: function(){
                     $("#table_status").html("Saving " + stud_index + " | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)

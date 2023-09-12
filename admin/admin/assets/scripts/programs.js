@@ -135,6 +135,7 @@ $(".item-event").click(function(){
         //fill form with needed details
         $("#delete_form input[name=item_id]").val(item_id)
         $("#delete_form input[name=table_name]").val("program")
+        $("#delete_form input[name=db]").val("shsdesk2")
         $("#delete_form input[name=column_name]").val("program_id")
 
         $(this).parents("tr").addClass("remove_marker");
@@ -235,11 +236,26 @@ $(".item-event").click(function(){
                 alert_box(message, "danger", 7)
             }
         })
+    }else if($(this).hasClass("remove")){
+        let program_name = $(this).parents("tr").children("td:nth-child(2)").html()
+        let subject_name = $(this).parents("tr").children("td:nth-child(3)").html()
+        $("#table_del").removeClass("no_disp")
+
+        //message to display
+        $("#table_del p#warning_content").html("Do you want to remove <b>" + subject_name + "</b> uploaded for <b>" + program_name + "</b> from your records?");
+
+        //fill form with needed details
+        $("#delete_form input[name=item_id]").val(item_id)
+        $("#delete_form input[name=table_name]").val("recordapproval")
+        $("#delete_form input[name=column_name]").val("result_token")
+        $("#delete_form input[name=db]").val("shsdesk2")
+
+        $(this).parents("tr").addClass("remove_marker");
     }
 })
 
 $("form[name=delete_form]").submit(function(e){
-    e.preventDefault()
+    e.preventDefault();
 
     const response = formSubmit($(this), $(this).find("input[name=submit]"), false)
     
@@ -252,6 +268,7 @@ $("form[name=delete_form]").submit(function(e){
         $("#table_del").addClass("no_disp")
     }else{
         $("tr.remove_marker").removeClass("remove_marker")
+        console.log(response);
     }
 })
 

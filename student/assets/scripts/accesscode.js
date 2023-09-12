@@ -37,7 +37,7 @@ $(document).ready(function(){
         }else if($("input[name=phoneNumber]").val().length != 10){
             alert_box("Please enter your provide a valid 10 digit phone number", "danger")
         }else{
-            const payment_key = await getKey()
+            const payment_key = await getKey();
             if(payment_key.indexOf(" | ") > -1){
                 api_key = payment_key.split(" | ")[1]
                 school_split_code = payment_key.split(" | ")[0]
@@ -129,15 +129,13 @@ $(document).ready(function(){
             });
             handler.openIframe();
         } catch (error) {
-            error = error.toString();
+            eror = error.toString();
 
-            if(error.indexOf("PaystackPop is not defined") > -1){
+            if(eror.indexOf("PaystackPop is not defined") > -1){
                 alert_box("You are currently offline. Please check your internet connection and try again later", "danger", 7)
             }else{
-                alert_box(error, "danger")
+                alert_box(eror, "danger")
             }
         }
-
-        
     }
 })

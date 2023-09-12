@@ -1,8 +1,8 @@
 <?php
-include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+    include_once("auth.php");
 
-//set nav_point session
-$_SESSION["nav_point"] = "announcement";
+    //set nav_point session
+    $_SESSION["nav_point"] = "announcement";
 ?>
 
 <section class="txt-al-c sp-xlg">

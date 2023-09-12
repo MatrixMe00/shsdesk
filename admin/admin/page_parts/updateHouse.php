@@ -1,4 +1,4 @@
-<?php @include_once('../../../includes/session.php')?>
+<?php include_once("auth.php")?>
 
 <div class="flex flex-column flex-center-align flex-center-content my_loader">
     <div id="getLoader"></div>

@@ -1,4 +1,4 @@
-<?php require_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+<?php include_once("auth.php");
     $price = fetchData("price","roles","id=".$user_details["role"])["price"];
 
     //set nav_point session

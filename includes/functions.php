@@ -287,7 +287,7 @@
      * 
      * @return string A string (school name) is returned when the key is an integer
      * @return int An integer is return when the key is a string
-     * @return array An array is returned when the all parameter is set to true
+     * @return array|string An array is returned when the all parameter is set to true
      */
     function getSchoolDetail($key, bool $all = false){
         global $connect;
@@ -1118,10 +1118,10 @@
 
     /**
      * This function determines what message should be displayed in a try/catch throwable block
-     * @param \Throwable $throwable This takes the throwable variable
+     * @param Throwable $throwable This takes the throwable variable
      * @return string Returns the string form of the desired error
      */
-    function throwableMessage($throwable):string{
+    function throwableMessage(Throwable $throwable):string{
         global $developmentServer;
         
         $message = "";
@@ -1176,7 +1176,7 @@
      * @return string|array the api key(s)
      */
     function getSchoolSplit($school_id, $key_type){
-        $response = fetchData("$key_type, status","transaction_splits","schoolID=$school_id");
+        $response = fetchData((string) $key_type.", status","transaction_splits","schoolID=$school_id");
 
         return $response;
     }

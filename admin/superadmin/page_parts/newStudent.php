@@ -1,4 +1,4 @@
-<?php @include_once('../../../includes/session.php')?>
+<?php include_once("session.php") ?>
 
 <form action="" method="post" class="fixed">
     <div class="head">

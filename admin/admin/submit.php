@@ -11,7 +11,7 @@
             $email = strip_tags(stripslashes($_REQUEST["email"]));
 
             //search for email
-            $sql = "SELECT user_id email FROM admins_table WHERE email=? AND fullname=?";
+            $sql = "SELECT user_id, email FROM admins_table WHERE email=? AND fullname=?";
             $res = $connect->prepare($sql);
             $res->bind_param("ss", $email,$fullname);
             
@@ -1260,10 +1260,10 @@
             header("Content-Type: application/json");
             echo json_encode($final);
         }elseif($submit == "delete_item" || $submit == "delete_item_ajax"){
-            @$item_id = $_GET["item_id"];
-            @$table_name = $_GET["table_name"];
-            @$column_name = $_GET["column_name"];
-            @$db = $_GET["db"];
+            $item_id = $_GET["item_id"];
+            $table_name = $_GET["table_name"];
+            $column_name = $_GET["column_name"];
+            $db = $_GET["db"] ?? "shsdesk";
 
             if($db == "shsdesk"){
                 $db = $connect;
@@ -1271,17 +1271,25 @@
                 $db = $connect2;
             }
 
-            $sql = "DELETE FROM $table_name WHERE $column_name=$item_id";
-            if($db->query($sql)){
-                //delete every detail about this teacher from the system
-                if($table_name == "teachers"){
-                    $connect2->query("DELETE FROM teacher_classes WHERE teacher_id=$item_id");  //remove all classes handled by teacher
-                    $connect2->query("DELETE FROM saved_results WHERE teacher_id=$item_id");    //delete all saved records by teacher
-                    $connect2->query("DELETE FROM teacher_login WHERE user_id=$item_id");       //delete login details of teacher
+            $sql = "DELETE FROM $table_name WHERE $column_name=?";
+            try{
+                $stmt = $db->prepare($sql);
+                $stmt->bind_param("s", $item_id);
+                if($stmt->execute()){
+                    //delete every detail about this teacher from the system
+                    if($table_name == "teachers"){
+                        $db->query("DELETE FROM teacher_classes WHERE teacher_id=$item_id");  //remove all classes handled by teacher
+                        $db->query("DELETE FROM saved_results WHERE teacher_id=$item_id");    //delete all saved records by teacher
+                        $db->query("DELETE FROM teacher_login WHERE user_id=$item_id");       //delete login details of teacher
+                    }elseif($table_name == "recordapproval"){
+                        $db->query("DELETE FROM results WHERE result_token='$item_id'");
+                    }
+                    echo "success";
+                }else{
+                    echo "Failed to delete data";
                 }
-                echo "success";
-            }else{
-                echo "Failed to delete data";
+            }catch(Throwable $th){
+                echo throwableMessage($th);
             }
         }elseif($submit == "getProgram" || $submit == "getProgram_ajax"){
             $message = null; $status = false; $final = array();

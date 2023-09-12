@@ -1,4 +1,4 @@
-<?php include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+<?php include_once("session.php");
     $price = fetchData("price","roles","id=".$user_details["role"])["price"];
     $system_price = fetchData("price","roles","title='system'")["price"];
 

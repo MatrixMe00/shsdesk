@@ -162,9 +162,9 @@
                 <td>
                     <?php if($result["result_status"] === "rejected") : ?>
                     <span class="item-event approve" data-item-id="<?= $result["result_token"] ?>">Approve</span>
+                    <span class="item-event remove" data-item-id="<?= $result["result_token"] ?>">Delete</span>
                     <?php else : ?>
-                    <span class="item-event reject" data-item-id="<?= $result["result_token"] ?>">Reject</span>
-                    <?php endif; ?>
+                    <span class="item-event reject" data-item-id="<?= $result["result_token"] ?>">Reject</span>                    <?php endif; ?>
                     <span class="item-event view" data-p-year="<?php 
                         $p_year = fetchData1("exam_year, semester","results","result_token='{$result['result_token']}'");
                         if($p_year == "empty"){
@@ -205,28 +205,30 @@
     <?php eval("?>".file_get_contents("$url/admin/admin/page_parts/subTeaForms.php?form_type=updateProgram&school_id=$user_school_id")) ?>
 </div>
 
-<div id="view_results" class="modal_yes_no fixed flex flex-all-center flex-column form_modal_box no_disp">
-    <h1 id="topic" class="light sp-lg txt-al-c" style="width: 100%; max-width: 480px">Results</h1>
-    <table class="sm-full wmax-lg light">
-        <thead>
-            <td>Index Number</td>
-            <td>Full name</td>
-            <td>Class Score</td>
-            <td>Exam Score</td>
-            <td>Total Score</td>
-            <td>Grade</td>
-        </thead>
-        <tbody style="overflow: auto; height: 100%; max-height: 80vh">
-        </tbody>
-        <tfoot>
-            <tr>
-                <td class="btn p-med w-fluid-child">
-                    <button class="pink" onclick="$('#view_results').addClass('no_disp')">Close</button>
-                </td>
-                <td id="year_sem"></td>
-            </tr>
-        </tfoot>
-    </table>
+<div id="view_results" class="modal_yes_no fixed flex-all-center flex-column form_modal_box no_disp">
+    <div class="flex flex-column wmax-lg w-full" style="max-height: 80vh; overflow: auto">
+        <h1 id="topic" class="light sp-lg txt-al-c sm-auto wmin-2xs sticky top border">Results</h1>
+        <table class="sm-full wmax-lg light">
+            <thead>
+                <td>Index Number</td>
+                <td>Full name</td>
+                <td>Class Score</td>
+                <td>Exam Score</td>
+                <td>Total Score</td>
+                <td>Grade</td>
+            </thead>
+            <tbody style="overflow: auto; height: 100%; max-height: 80vh">
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="btn p-med w-fluid-child">
+                        <button class="pink" onclick="$('#view_results').addClass('no_disp')">Close</button>
+                    </td>
+                    <td id="year_sem"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 </div>
 
 <script src="<?= "$url/admin/admin/assets/scripts/programs.min.js?v=".time() ?>"></script>
