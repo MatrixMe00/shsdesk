@@ -1,3 +1,4 @@
+<?php try{ ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -290,3 +291,8 @@
     </div>
 </body>
 </html>
+<?php 
+    }catch(Throwable $th){
+        echo $th->getTraceAsString();
+    }
+?>

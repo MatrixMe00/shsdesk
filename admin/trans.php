@@ -796,4 +796,4 @@
 </section>
 <?php endif; ?>
 
-<script src="<?= "$url/admin/assets/scripts/trans.js" ?>"></script>
+<script src="<?= "$url/admin/assets/scripts/trans.js?v=".time() ?>"></script>

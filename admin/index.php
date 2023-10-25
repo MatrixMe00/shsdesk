@@ -2,7 +2,7 @@
 
 <?php
     //determine the page to show
-    if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
+    if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0) :
         //determine which page to show per user role
         if($user_details["role"] <= 2){
             require("superadmin/index.php");
@@ -10,7 +10,7 @@
             require("admin/index.php");
         }
         unset($_SESSION);
-    }else{
+    else:
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -109,5 +109,5 @@
 <?php 
         //close the connection
         $connect->close();
-    } 
+    endif; 
 ?>

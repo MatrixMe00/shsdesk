@@ -240,23 +240,23 @@ $("span.item-event").click(function(){
     let item_event = $(this).attr("data-item-event");
     let db = 1;
     let key_column = ""
-    
+    const parent = $(this).parents(".reply_container, .notif_box, .announcement");
 
     //check if delete clicked is a notification or reply
-    if($(this).parents(".reply_container").length > 0){
+    if(parent.hasClass("reply_container")){
         table = "reply";
-    }else if($(this).parents(".notif_box").length > 0){
+    }else if(parent.hasClass("notif_box")){
         table = "notification";
-    }else if($(this).parents(".announcement").length > 0){
+    }else if(parent.hasClass("announcement")){
         table = "announcement";
         db = 2;
     }
     
 
     if(item_event == "edit"){
-
+        alert_box()
     }else if(item_event == "delete"){
-        if($(this).parents(".announcement")){
+        if(parent.hasClass("announcement")){
             item_event = "remove_item"
             key_column = "id"
         }

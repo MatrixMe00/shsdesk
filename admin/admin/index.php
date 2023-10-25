@@ -20,9 +20,9 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     <div id="container" class="flex">
     <?php
         //check if this is a new user
-        if(checkNewUser($_SESSION["user_login_id"]) == TRUE){
+        if(checkNewUser($_SESSION["user_login_id"]) === TRUE){
             require_once($rootPath."/admin/admin/page_parts/update_stat.php");
-        }elseif(checkNewUser($_SESSION["user_login_id"]) == "invalid-user"){
+        }elseif(checkNewUser($_SESSION["user_login_id"]) === "invalid-user"){
             echo "User cannot be found! Please speak to the administrator";
         }else{
     ?>

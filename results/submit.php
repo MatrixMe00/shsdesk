@@ -239,6 +239,34 @@ if(isset($_REQUEST["submit"])){
             
             echo $message;
         }
+    }elseif($submit == "get_keys" || $submit == "get_keys_ajax"){
+        $school_id = $student["school_id"] ?? null;
+    
+        if(is_null($school_id) || empty($school_id)){
+            $message = "School required was not selected. Contact the admin for help";
+        }elseif(ctype_digit($school_id) == false){
+            $message = "School selected has an invalid index. Please contact admin for help";
+        }else{
+            $message = getSchoolSplit($school_id, APIKEY::MANAGEMENT);
+    
+            if(is_array($message)){
+                $stat = $message["status"];
+                $message = $message[APIKEY::MANAGEMENT];
+                
+                $message = $stat == 1 ? $message : "disabled";
+            }
+    
+            if($message == "empty"){
+                $message = "Transaction for your school cannot be done yet";
+            }elseif($message == "disabled"){
+                $message = "Transaction to your school has been disabled. Please try again later";
+            }else{
+                $message .= " | $priceKey";
+            }
+            // $message = "{$splitKey['matrix_school_management']} | $priceKey";
+        }
+    
+        echo $message;
     }else{
         echo "No submit of value '$submit' has been programmed";
     }

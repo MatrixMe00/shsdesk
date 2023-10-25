@@ -35,6 +35,7 @@
             </div>
             <div class="foot">
                 <span class="item-event" data-item-id="<?= $announcement["id"] ?>" data-item-event="delete">Delete</span>
+                <span class="item-event" data-item-id="<?= $announcement["id"] ?>" data-item-event="edit">Edit</span>
             </div>
         </div>
         <?php endforeach;?>

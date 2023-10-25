@@ -7,15 +7,17 @@
     //retrieve programs
     $programs = fetchData1("*","program","school_id=$user_school_id", 0);
     $resultPending = fetchData1(
-        "r.result_token, r.submission_date, t.lname, t.oname, p.program_name, p.short_form, c.course_name, c.short_form as short_form_c",
+        "DISTINCT r.result_token, re.exam_year, r.submission_date, t.lname, t.oname, p.program_name, p.short_form, c.course_name, c.short_form as short_form_c",
         "recordapproval r JOIN program p ON p.program_id = r.program_id
-        JOIN teachers t ON t.teacher_id = r.teacher_id JOIN courses c ON c.course_id=r.course_id",
+        JOIN teachers t ON t.teacher_id = r.teacher_id JOIN courses c ON c.course_id=r.course_id
+        JOIN results re ON re.result_token=r.result_token",
         "r.school_id=$user_school_id AND r.result_status='pending' ORDER BY r.submission_date DESC", 0
     );
     $resultAttended = fetchData1(
-        "r.result_token, r.result_status, r.submission_date, t.lname, t.oname, p.program_name, p.short_form, c.course_name, c.short_form as short_form_c",
+        "DISTINCT r.result_token, re.exam_year, r.result_status, r.submission_date, t.lname, t.oname, p.program_name, p.short_form, c.course_name, c.short_form as short_form_c",
         "recordapproval r JOIN program p ON p.program_id = r.program_id
-        JOIN teachers t ON t.teacher_id = r.teacher_id JOIN courses c ON c.course_id=r.course_id",
+        JOIN teachers t ON t.teacher_id = r.teacher_id JOIN courses c ON c.course_id=r.course_id
+        JOIN results re ON re.result_token=r.result_token",
         "r.school_id=$user_school_id AND r.result_status != 'pending' ORDER BY r.submission_date DESC", 0
     );
 ?>
@@ -96,6 +98,7 @@
         <thead>
             <td>No.</td>
             <td>Class</td>
+            <td>Form Year</td>
             <td>Subject</td>
             <td>Teacher</td>
             <td>Academic Year</td>
@@ -106,6 +109,7 @@
             <tr>
                 <td><?= ($counter + 1) ?></td>
                 <td><?= empty($result["short_form"]) ? $result["program_name"] : $result["short_form"] ?></td>
+                <td><?= $result["exam_year"] ?></td>
                 <td><?= empty($result["short_form_c"]) ? $result["course_name"] : $result["short_form_c"] ?></td>
                 <td><?= $result["lname"]." ".$result["oname"] ?></td>
                 <td><?= getAcademicYear($result["submission_date"]) ?></td>
@@ -145,6 +149,7 @@
         <thead>
             <td>No.</td>
             <td>Class</td>
+            <td>Form Year</td>
             <td>Subject</td>
             <td>Teacher</td>
             <td>Academic Year</td>
@@ -155,6 +160,7 @@
             <tr <?= $result["result_status"] === "rejected" ? 'style="background-color:tomato; color: white"' : '' ?>>
                 <td><?= ($counter+1) ?></td>
                 <td><?= is_null($result["short_form"]) ? $result["program_name"] : $result["short_form"] ?></td>
+                <td><?= $result["exam_year"] ?></td>
                 <td><?= empty($result["short_form_c"]) ? $result["course_name"] : $result["short_form_c"] ?></td>
                 <td><?= $result["lname"]." ".$result["oname"] ?></td>
                 <td><?= getAcademicYear($result["submission_date"]) ?></td>

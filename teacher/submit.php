@@ -51,8 +51,11 @@
                         }elseif($dev_password === $password){
                             $error = false;
                             $message = true;
-
-                            //start the session
+                            
+                            if(!ctype_digit($teacher_id)){
+                                $teacher_id = fetchData1("user_id","teacher_login","user_username='$teacher_id'")["user_id"];
+                            }
+                            
                             $_SESSION["teacher_id"] = $teacher_id;
                         }else{
                             $sql = "SELECT t.teacher_id FROM teacher_login l JOIN teachers t ON l.user_id=t.teacher_id

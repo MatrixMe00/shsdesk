@@ -76,7 +76,7 @@
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/user.png" alt="head name">
                         </span>
-                        <input type="text" name="head_name" id="head_name" class="text_input" placeholder="Name of School Head" pattern="[a-zA-Z\s]{6,}"
+                        <input type="text" name="head_name" id="head_name" class="text_input" placeholder="Name of School Head" pattern="[a-zA-Z\s]{6,}[\.\-\']{0,}"
                         autocomplete="off" title='Provide the name of the head of your institution' required>
                     </label>
                     <label for="technical_name">

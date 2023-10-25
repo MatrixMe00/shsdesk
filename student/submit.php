@@ -274,14 +274,13 @@
         }elseif(ctype_digit($school_id) == false){
             $message = "School selected has an invalid index. Please contact admin for help";
         }else{
-            /*$message = getSchoolSplit($school_id, APIKEY::MANAGEMENT);
+            $message = getSchoolSplit($school_id, APIKEY::MANAGEMENT);
 
             if(is_array($message)){
                 $stat = $message["status"];
                 $message = $message[APIKEY::MANAGEMENT];
                 
-                // $message = $stat === true ? $message : "disabled"; 
-                // $message = empty($message) ? "empty1" : $message;
+                $message = $stat == 1 ? $message : "disabled";
             }
 
             if($message == "empty"){
@@ -290,8 +289,8 @@
                 $message = "Transaction to your school has been disabled. Please try again later";
             }else{
                 $message .= " | $priceKey";
-            }*/
-            $message = "{$splitKey['matrix_school_management']} | $priceKey";
+            }
+            // $message = "{$splitKey['matrix_school_management']} | $priceKey";
         }
 
         echo $message;
