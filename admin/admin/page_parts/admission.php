@@ -190,11 +190,31 @@
         </div>
     </form>
     <?php else: ?>
+        <section class="section_container">
+            <form action="<?= "$url/admin/admin/submit.php" ?>" method = "GET">
+                <div class="body">
+                    <div class="message_box no_disp">
+                        <span class="message"></span>
+                        <div class="close"><span>&cross;</span></div>
+                    </div>
+                    <div class="joint">
+                        <label for="start_date" class="flex-column gap-sm">
+                            <span class="label_title">Provide the type of result the school uses</span>
+                            <input type="date" name="start_date" id="start_date"> 
+                        </label>
+                        <label for="end_date" class="flex-column gap-sm">
+                            <span class="label_title">Provide the type of result the school uses</span>
+                            <input type="date" name="end_date" id="end_date"> 
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </section>
     <section class="section_container">
         <form action="<?= "$url/admin/admin/submit.php" ?>" method="GET" class="w-full sm-med color-dark" method="post" name="recordsForm">
             <div class="body">
                 <div class="message_box no_disp">
-                    <span class="message">Here is a test message</span>
+                    <span class="message"></span>
                     <div class="close"><span>&cross;</span></div>
                 </div>
                 <?php 
