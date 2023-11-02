@@ -716,3 +716,15 @@ function formatItemId(subject_id, prefix, reverse = false) {
 function insertEmptyTableLabel(message, colspan){
     return "<tr class='empty'><td colspan='" + colspan + "'>" + message + "</td></tr>"
 }
+
+/**
+ * This is used to delete a set of results with the specified token
+ * @param {string} token Token of the result set
+ */
+async function deleteTokenResults(token){
+    const response = await $.ajax({
+        url: "./submit.php",
+        data: {submit: "delete_token", token: token},
+        timeout: 30000
+    })
+}

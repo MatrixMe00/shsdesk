@@ -4,7 +4,15 @@
 
     //useful variables in this page
     $result_type = fetchData("school_result","admissiondetails","schoolID=".$teacher["school_id"])["school_result"];
+    $can_enter_results = checkResultsEntry($teacher["school_id"]);
 ?>
+
+<?php if(!$can_enter_results) : ?>
+<section class="d-section lt-shade white">
+    <p class="txt-al-c txt-fl sp-xlg">Results entry session is currently closed</p>
+</section>
+
+<?php else: ?>
 <input type="hidden" name="result_type" id="result_type" value="<?= $result_type ?>">
 <section class="d-section lt-shade white">
     <div class="head txt-al-c sm-med-b m-sm-b">
@@ -122,3 +130,4 @@
 </section>
 
 <script src="<?= "$url/assets/scripts/results.js?v=".time() ?>"></script>
+<?php endif; ?>

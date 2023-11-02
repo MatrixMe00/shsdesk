@@ -52,7 +52,7 @@
                             $error = false;
                             $message = true;
                             
-                            if(!ctype_digit($teacher_id)){
+                            if(!is_int($teacher_id)){
                                 $teacher_id = fetchData1("user_id","teacher_login","user_username='$teacher_id'")["user_id"];
                             }
                             
@@ -183,7 +183,7 @@
                             $message = "Process was broken on u&e check. Please contact admin for help";
                         }
                     } catch (\Throwable $th) {
-                        $message = $th->getMessage();
+                        $message = throwableMessage($th);
                     }
                 }
 
@@ -314,8 +314,12 @@
                 }elseif(is_null($exam_year) || is_null($semester)){
                     $message = "false";
                 }else{
-                    $isInserted = fetchData1("COUNT(indexNumber) as total","results",
-                        "indexNumber='$student_index' AND course_id=$course_id AND exam_year=$exam_year AND semester=$semester")["total"];
+                    $isInserted = fetchData1(
+                        "COUNT(indexNumber) as total",
+                        "results",
+                        "indexNumber='$student_index' AND course_id=$course_id 
+                        AND exam_year=$exam_year AND semester=$semester"
+                    )["total"];
                     if(intval($isInserted) > 0){
                         $message = "Results already exist";
                     }else{
@@ -378,7 +382,7 @@
                             $isInserted = fetchData1("COUNT(indexNumber) as total","saved_results",
                                 "indexNumber='$student_index' AND course_id=$course_id AND exam_year=$exam_year AND semester=$semester")["total"];
                             if(intval($isInserted) > 0 && $new_save == "true"){
-                                $message = "Results for $student_index already exist | $new_save";
+                                $message = "Results for $student_index already exist";
                             }else{
                                 if($new_save == "false"){
                                     $sql = "UPDATE saved_results SET class_mark=?, exam_mark=?, mark=? WHERE indexNumber=?  AND token=?";
@@ -397,11 +401,7 @@
                                 }
                             }
                         } catch (\Throwable $th) {
-                            if($developmentServer){
-                                $message = $th->getTraceAsString();
-                            }else{
-                                $message = $th->getMessage();
-                            }
+                            $message = throwableMessage($th);
                         }
                         
                     }
@@ -525,11 +525,7 @@
                             $message = "There was an error that occured while parsing the problem";
                         }
                     } catch (\Throwable $th) {
-                        if($developmentServer){
-                            $message = $th->getTraceAsString();
-                        }else{
-                            $message = $th->getMessage();
-                        }
+                        $message = throwableMessage($th);
                     }
                 }
 
@@ -558,11 +554,7 @@
                             $message = "No data for this result list was found. Contact admin for help with token: $token";
                         }
                     } catch (\Throwable $th) {
-                        if($developmentServer){
-                            $message = $th->getTraceAsString();
-                        }else{
-                            $message = $th->getMessage();
-                        }
+                        $message = throwableMessage($th);
                     }
                 }
 
@@ -624,15 +616,33 @@
                         }
 
                     } catch (\Throwable $th) {
-                        if($developmentServer){
-                            $message = $th->getTraceAsString();
-                        }else{
-                            $message = $th->getMessage();
-                        }
+                        $message = throwableMessage($th);
                     }
                 }
 
                 echo $message;
+
+                break;
+            
+            case "delete_token":
+                $token = $_GET["token"] ?? null;
+
+                if(empty($token) || is_null($token)){
+                    $message = "Please provide a token to continue";
+                }else{
+                    $sql = "DELETE FROM results WHERE result_token=?";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("s", $token);
+                    
+                    if($stmt->execute()){
+                        //remove from saved records if it finds itself there
+                        $connect2->query("DELETE FROM recordapproval WHERE result_token='$token'");
+
+                        $message = "success";
+                    }else{
+                        $message = "Error occured";
+                    }
+                }
 
                 break;
 
@@ -677,11 +687,7 @@
                         }
                     }
                 }catch(\Throwable $th){
-                    if($developmentServer){
-                        $message = $th->getTraceAsString();
-                    }else{
-                        $message = $th->getMessage();
-                    }
+                    $message = throwableMessage($th);
                 }
                 
                 echo $message;

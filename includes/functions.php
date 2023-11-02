@@ -811,7 +811,7 @@
                 $number = str_split($number, 3);
 
                 //set number in xxx xxx xxxx
-                $number = $number[0]." ".$number[1]." ".$number[2].$number[3];
+                $number = implode(" ", $number);
             }
         }
         
@@ -1364,5 +1364,29 @@
         }
         
         return $indexed_array ? decimalIndexArray($teachers) : $teachers;
+    }
+
+    /**
+     * This function is used to check if results entry mode is valid
+     * @param int $school_id The school to check
+     * @return bool True if its open and false if otherwise
+     */
+    function checkResultsEntry(int $school_id){
+        $record_date = fetchData1("end_date, start_date","record_dates","school_id=$school_id");
+
+        if(is_array($record_date)){
+            list("end_date"=>$end_date, "start_date"=>$start_date) = $record_date;
+            $now = date("Y-m-d H:i:s");
+
+            if(strtotime($now) >= strtotime($end_date) || strtotime($start_date) > strtotime($now)){
+                $response = false;
+            }else{
+                $response = true;
+            }
+        }else{
+            $response = false;
+        }
+
+        return $response;
     }
 ?>

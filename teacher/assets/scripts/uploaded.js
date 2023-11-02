@@ -172,54 +172,55 @@ $("#submit_result").click(async function(){
         let success = 0; let fail = 0; let failIndex = []
         const total = $("#save_data_table tbody tr").length;
         
-        $("#save_data_table tbody tr").each(function(){
-            const stud_index = $(this).children("td:first-child").html()
-            const score = parseFloat($(this).children(".total_score").html()).toFixed(1)
-            const c_mark = parseFloat($(this).children(".class_score").html()).toFixed(1)
-            const e_mark = parseFloat($(this).children(".exam_score").html()).toFixed(1)
+        for(let i = 0; i < total; i++){
+            const element = $("#save_data_table tbody tr").eq(i);
+            const stud_index = element.children("td:first-child").html();
+            const score = parseFloat(element.children(".total_score").html()).toFixed(1);
+            const c_mark = parseFloat(element.children(".class_score").html()).toFixed(1);
+            const e_mark = parseFloat(element.children(".exam_score").html()).toFixed(1);
             const isLast = (success+fail+1) == total ? true : false
+            
+            try{
+                const response = await $.ajax({
+                    url: "./submit.php",
+                    data: {
+                        submit: "submit_result", student_index: stud_index, mark: score,
+                        exam_mark: e_mark, class_mark: c_mark, course_id: c_id, result_token: token,
+                        exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id, prev_token: saved_token,
+                    },
+                    type: "POST",
+                    timeout: 5000
+                });
 
-            $.ajax({
-                url: "./submit.php",
-                data: {
-                    submit: "submit_result", student_index: stud_index, mark: score,
-                    exam_mark: e_mark, class_mark: c_mark, course_id: c_id, result_token: token,
-                    exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id, prev_token: saved_token,
-                },
-                type: "POST",
-                timeout: 30000,
-                async: false,
-                beforeSend: function(){
-                    $("#table_status").html("Submitting " + stud_index + " | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
-                },
-                success: function(data){
-                    if(data == "true"){
-                        success += 1
-                    }else{
-                        if(data !== "false"){
-                            alert_box(data, "danger", 8)
-                        }
-                        fail += 1
-                        failIndex.push(stud_index)
-                    }
-                },
-                error: function(xhr){
-                    let message = ""
-                    if(xhr.statusText == "timeout"){
-                        message = "Connection was timed out due to poor network connection. Please try again later";
-                    }else{
-                        message = xhr.responseText
-                    }
-
-                    alert_box(message, "danger", 8)
+                if(response == "true"){
+                    success += 1
+                }else{
+                    fail += 1
+                    failIndex.push(stud_index)
                 }
-            })
-        })
+
+                if(isLast){
+                    alert_box("Process completed", "success", 3);
+                }
+            }catch(error){
+                let message = "";
+                if(error.statusText == "timeout"){
+                    message = "Connection was timed out due to poor network connection. Please try again later";
+                }else{
+                    message = error.responseText;
+                }
+
+                alert_box(message, "danger", 8);
+            }
+            $("#table_status").html("Saving " + stud_index + " | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total);
+        }
 
         $("#table_status").html("Submission completed! | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
 
         if(fail > 0){
-            $("#table_status").append("<br>Failed Submission: " + failIndex.join(", "))
+            $("#table_status").append("<br>Failed Submission: " + failIndex.join(", "));
+            deleteTokenResults(token);
+            alert_box(fail + " results could not be submitted", "error", 8);
         }
     }
 })
@@ -252,55 +253,56 @@ $("#save_result").click(async function(){
         let success = 0; let fail = 0; let failIndex = []
         const total = $("#save_data_table tbody tr").length;
         
-        $("#save_data_table tbody tr").each(function(){
-            const stud_index = $(this).children("td:first-child").html()
-            const score = parseFloat($(this).children(".total_score").html()).toFixed(1)
-            const c_mark = parseFloat($(this).children(".class_score").html()).toFixed(1)
-            const e_mark = parseFloat($(this).children(".exam_score").html()).toFixed(1)
+        for(let i = 0; i < total; i++){
+            const element = $("#save_data_table tbody tr").eq(i);
+            const stud_index = element.children("td:first-child").html();
+            const score = parseFloat(element.children(".total_score").html()).toFixed(1);
+            const c_mark = parseFloat(element.children(".class_score").html()).toFixed(1);
+            const e_mark = parseFloat(element.children(".exam_score").html()).toFixed(1);
             const isLast = (success+fail+1) == total ? true : false
+            
+            try{
+                const response = await $.ajax({
+                    url: "./submit.php",
+                    data: {
+                        submit: "save_result", student_index: stud_index, mark: score,
+                        exam_mark: e_mark, class_mark: c_mark, course_id: c_id, result_token: token,
+                        exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id, prev_token: saved_token,
+                        saved: new_save
+                    },
+                    type: "POST",
+                    timeout: 5000
+                });
 
-            $.ajax({
-                url: "./submit.php",
-                data: {
-                    submit: "save_result", student_index: stud_index, mark: score,
-                    exam_mark: e_mark, class_mark: c_mark, course_id: c_id, result_token: token,
-                    exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id, prev_token: saved_token,
-                    saved: new_save
-                },
-                type: "POST",
-                timeout: 30000,
-                async: false,
-                beforeSend: function(){
-                    $("#table_status").html("Saving " + stud_index + " | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
-                },
-                success: function(data){
-                    if(data == "true"){
-                        success += 1
-                    }else{
-                        if(data !== "false"){
-                            alert_box(data, "danger", 8)
-                        }
-                        fail += 1
-                        failIndex.push(stud_index)
-                    }
-                },
-                error: function(xhr){
-                    let message = ""
-                    if(xhr.statusText == "timeout"){
-                        message = "Connection was timed out due to poor network connection. Please try again later";
-                    }else{
-                        message = xhr.responseText
-                    }
-
-                    alert_box(message, "danger", 8)
+                if(response == "true"){
+                    success += 1
+                }else{
+                    fail += 1
+                    failIndex.push(stud_index)
                 }
-            })
-        })
+
+                if(isLast){
+                    alert_box("Process completed", "success", 3);
+                }
+            }catch(error){
+                let message = "";
+                if(error.statusText == "timeout"){
+                    message = "Connection was timed out due to poor network connection. Please try again later";
+                }else{
+                    message = error.responseText;
+                }
+
+                alert_box(message, "danger", 8);
+            }
+            $("#table_status").html("Saving " + stud_index + " | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total);
+        }
 
         $("#table_status").html("Save completed! | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
 
         if(fail > 0){
-            $("#table_status").append("<br>Failed Saves: " + failIndex.join(", "))
+            $("#table_status").append("<br>Failed Saves: " + failIndex.join(", "));
+            deleteTokenResults(token);
+            alert_box(fail + " results could not be saved", "error", 8);
         }
     }
 })
