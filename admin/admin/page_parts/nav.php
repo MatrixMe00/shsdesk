@@ -154,7 +154,18 @@
                 "imgAlt" => "admissions",
                 "menu_class" => "",
                 "display_title" => "School Details",
-                "admin_mode" => "admission records"
+                "admin_mode" => "admission"
+            ],
+            [
+                "item_class"=> "",
+                "name" => "admission",
+                "title" => "School Details",
+                "data-url" => "/admin/admin/page_parts/admission.php",
+                "imgSrc" => "/assets/images/icons/receipt-outline.svg",
+                "imgAlt" => "admissions",
+                "menu_class" => "",
+                "display_title" => "School Settings",
+                "admin_mode" => "records"
             ],
             [
                 "item_class"=> "",
@@ -191,7 +202,7 @@
             "imgAlt" => "payment",
             "menu_class" => "",
             "display_title" => "Payments",
-            "admin_mode" => "admission"
+            "admin_mode" => "admission records"
         ],
         [
             "item_class"=> "",

@@ -1,5 +1,5 @@
 <?php
-    @include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+    require_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
 
     if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != NULL){
         $submit = $_REQUEST["submit"];
@@ -1052,10 +1052,10 @@
                 echo "First years are not going to be added";
             }
         }elseif($submit == "addNewCourse" || $submit == "addNewCourse_ajax"){
-            @$course_name = $_GET["course_name"];
-            @$course_alias = $_GET["course_alias"];
-            @$course_credit = $_GET["course_credit"];
-            @$school_id = intval($_GET["school_id"]);
+            $course_name = $_GET["course_name"];
+            $course_alias = $_GET["course_alias"];
+            $course_credit = $_GET["course_credit"];
+            $school_id = intval($_GET["school_id"]);
 
             $message = ""; $status = false; $final = array(); $isFirst = false;
 
@@ -2149,6 +2149,46 @@
                     $message = "success";
                 }else{
                     $message = "Error occured while processing the results. Try again later";
+                }
+            }
+
+            echo $message;
+        }elseif($submit == "record_date" || $submit == "record_date_ajax"){
+            $start_date = $_POST["start_date"] ?? null;
+            $end_date = $_POST["end_date"] ?? null;
+
+            if(empty($start_date) || is_null($start_date)){
+                $message = "The starting date was not provided";
+            }elseif(empty($end_date) || is_null($end_date)){
+                $message = "The final submission date was not provided";
+            }elseif(empty($user_school_id)){
+                $message = "Your login period has expired.";
+            }elseif(!strtotime($start_date)){
+                $message = "Invalid start date provided";
+            }elseif(!strtotime($end_date)){
+                $message = "Invalid final submission provided";
+            }elseif(strtotime($start_date) >= strtotime($end_date)){
+                $message = "Your starting date must be lower than your end date";
+            }else{
+                //format the dates
+                $start_date = date("Y-m-d H:i:s",strtotime($start_date));
+                $end_date = date("Y-m-d H:i:s",strtotime($end_date));
+
+                //check if school already has a detail
+                $hasEntry = fetchData1("school_id","record_dates","school_id=$user_school_id");
+                if(is_array($hasEntry)){
+                    $sql = "UPDATE record_dates SET start_date=?, end_date=? WHERE school_id=?";
+                }else{
+                    $sql = "INSERT INTO record_dates (start_date, end_date, school_id) VALUES (?,?,?)";
+                }
+
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("ssi", $start_date, $end_date, $user_school_id);
+
+                if($stmt->execute()){
+                    $message = "success";
+                }else{
+                    $message = "Failed to set a new records timestream";
                 }
             }
 
