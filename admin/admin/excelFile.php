@@ -54,6 +54,8 @@
         }else{
             $sql = "SELECT indexNumber, Lastname, Othernames, Gender, studentYear, houseID as houseName, boardingStatus, programme, program_id AS className, guardianContact
                 FROM students_table WHERE school_id=$user_school_id";
+            $additions = ["className", "programme"];
+            
             if(strtolower($program_name) != "all"){
                 $sql .= " AND programme='$program_name'";   
             }
@@ -65,7 +67,7 @@
                 $sql .= " AND Gender='$gender'";
             }
 
-            $sql .= " ORDER BY programme ASC";
+            $sql .= " ORDER BY ". implode(", ", $additions) ." ASC";
 
             $results = $connect2->query($sql);
             
@@ -191,8 +193,10 @@
             if($form_level == 0){
                 $form_level = $result["formLevel"];
             }elseif($form_level != $result["formLevel"]){
+                //set new form level
+                $form_level = $result["formLevel"];
                 ++$row;
-            }            
+            }
         }
 
         foreach($field_names as $key=>$field_name){
@@ -215,7 +219,8 @@
                         }else{
                             $cellValue = "";
                         }
-                        $sheet->setCellValueExplicit($cellName, $result[$field_name], "s");
+                        
+                        $sheet->setCellValueExplicit($cellName, $cellValue, "s");
                     }else{
                         $sheet->setCellValueExplicit($cellName, formatName($result[$field_name]), "s");
                     }
