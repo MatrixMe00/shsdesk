@@ -353,3 +353,34 @@ $("#updateItem button[name=cancel]").click(function(){
     $("#updateItem table tbody").html("")
     $("#updateItem").addClass("no_disp")
 })
+
+//search through a table
+$("label.search-label input[name=search]").keyup(function(){
+    const label  = $(this).parents("label");
+    const table = $("#" + label.attr("data-table"));
+
+    //table contents
+    const table_body = table.find("tbody");
+
+    //search text
+    const searchText = $(this).val().toLowerCase();
+    
+    if(searchText !== ""){        
+        $(table_body).children("tr").each(function(){
+            const rowData = $(this).text().toLowerCase()
+            if(rowData.indexOf(searchText) === -1){
+                $(this).hide()
+            }else{
+                $(this).show()
+            }
+        })
+        
+        //count number of visible results
+        const tr = table_body.children("tr:visible");
+        
+        if(tr.length === 0)
+            alert_box("No results were returned", "secondary");
+    }else{
+        table_body.children("tr").show();
+    }
+})

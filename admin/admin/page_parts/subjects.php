@@ -59,7 +59,13 @@
         <h1 class="txt-al-c">Subjects</h1>
     </div>
     <div class="body">
-        <table>
+        <div class="form sm-lg-tp">
+            <label for="search_subjects" class="flex-column gap-sm search-label" data-table="subject_table">
+                <span class="title_label">Search for any data in the table below</span>
+                <input type="search" name="search" id="search_subjects" placeholder="Type your search here...">
+            </label>
+        </div>
+        <table id="subject_table">
             <thead>
                 <td>Subject ID</td>
                 <td>Subject Name</td>
@@ -103,7 +109,13 @@
         <h2 class="txt-al-c">Teachers</h2>
     </div>
     <div class="body">
-        <table>
+        <div class="form sm-lg-tp">
+            <label for="search_teachers" class="flex-column gap-sm search-label" data-table="teacher_table">
+                <span class="title_label">Search for any data in the table below</span>
+                <input type="search" name="search" id="search_teachers" placeholder="Type your search here...">
+            </label>
+        </div>
+        <table id="teacher_table">
             <thead>
                 <td>Teacher ID</td>
                 <td>Teacher Name</td>

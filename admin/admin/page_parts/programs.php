@@ -62,7 +62,13 @@
         <h2 class="txt-al-c">Your Classes</h2>
     </div>
     <div class="body">
-        <table>
+        <div class="form sm-lg-tp">
+            <label for="search_classes" class="flex-column gap-sm search-label" data-table="classes_table">
+                <span class="title_label">Search for any data in the table below</span>
+                <input type="search" name="search" id="search_classes" placeholder="Type your search here...">
+            </label>
+        </div>
+        <table id="classes_table">
             <thead>
                 <td>Class ID</td>
                 <td>Class Name</td>
@@ -94,7 +100,13 @@
     <?php
         if(is_array($resultPending)) :
     ?>
-    <table class="relative">
+    <div class="form sm-lg-tp">
+        <label for="search_pending" class="flex-column gap-sm search-label" data-table="pending_table">
+            <span class="title_label">Search for any data in the table below</span>
+            <input type="search" name="search" id="search_pending" placeholder="Type your search here...">
+        </label>
+    </div>
+    <table class="relative" id="pending_table">
         <thead>
             <td>No.</td>
             <td>Class</td>
@@ -145,7 +157,13 @@
 <?php
         if(is_array($resultAttended)) :
     ?>
-    <table class="relative">
+    <div class="form sm-lg-tp">
+        <label for="search_attended" class="flex-column gap-sm search-label" data-table="reviewed_table">
+            <span class="title_label">Search for any data in the table below</span>
+            <input type="search" name="search" id="search_attended" placeholder="Type your search here...">
+        </label>
+    </div>
+    <table class="relative" id="reviewed_table">
         <thead>
             <td>No.</td>
             <td>Class</td>
