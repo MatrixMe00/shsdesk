@@ -176,7 +176,7 @@
                 return
             }
             dataString = "submit=generateReport&year=" + report_year + "&semester=" + report_term
-            location.href="./components/generateReport.php?" + dataString
+            location.href="./pages/generateReport.php?" + dataString
         })
 
         $("select[name=report_year], select[name=report_term]").change(function(){

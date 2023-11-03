@@ -996,9 +996,9 @@
         $suffix = "";
 
         switch($number % 10){
-            case 1: $suffix = "st"; break;
-            case 2: $suffix = "nd"; break;
-            case 3: $suffix = "rd"; break;
+            case 1: $suffix = $number > 20 || $number < 10 ? "st" : "th"; break;
+            case 2: $suffix = $number > 20 || $number < 10 ? "nd" : "th"; break;
+            case 3: $suffix = $number > 20 || $number < 10 ? "rd" : "th"; break;
             default: $suffix = "th";
         }
 

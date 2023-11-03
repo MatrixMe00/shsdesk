@@ -171,6 +171,8 @@
                 $newqr = '<barcode code="Document digitally signed by '.$head_master.'" type="QR" class="barcode" size="1" error="M" disableborder="0"
                 style="background-color: yellow;" />';
 
+                $school_result_type = strtoupper($school_result_type);
+
                 $content = <<<HTML
                 <head>
                     <style>
