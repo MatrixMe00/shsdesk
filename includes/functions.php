@@ -784,31 +784,47 @@
      * @return string returns a string of the formatted number
      */
     function remakeNumber(string $number, bool $international = false, $space = true){
+        //remove any space in number before editing
+        $number = str_replace(" ","", $number);
+
         if($international){     //add +233
-            //remove any space in it
-            $number = str_replace(" ","",$number);
+            if(substr($number, 0, 3) != "233"){
+                //make sure it begins with 0
+                if($number[0] != "0" && strlen($number) < 10){
+                    $number = "0".$number;
+                }
 
-            if(substr($number, 0, 3) == "233"){
-                return $number;
-            }
-            //make sure it begins with 0
-            if($number[0] != "0" && strlen($number) < 10){
-                $number = "0".$number;
+                //replace the zero at the beginning
+                if(strlen($number) < 13){
+                    $number = substr_replace($number,"233", 0, 1);
+                }
             }
 
-            //replace the zero at the beginning
-            if(strlen($number) < 13){
-                $number = substr_replace($number,"233", 0, 1);
+            if($space){
+                $number = str_split($number, 3);
+
+                $number = implode(" ", $number);
             }
         }else{      //remove +233
-            if(strlen($number) >= 12 && strpos($number, "+"))
+            //take first three
+            $beginning = substr($number, 0, 3);
+
+            if(str_contains($beginning, "+")){
                 $number = str_replace("+233", "0", $number);
-            elseif(strlen($number >= 12))
+            }
+            elseif($beginning == "233" || $beginning == "23"){
                 $number = str_replace("233","0", $number);
-            
+            }
+
             //insert spaces
             if(strlen($number) < 12){
                 $number = str_split($number, 3);
+
+                //let the last 
+                if(count($number) >= 4) {
+                    $number[2] = $number[2].$number[3];
+                    unset($number[3]);
+                }
 
                 //set number in xxx xxx xxxx
                 $number = implode(" ", $number);

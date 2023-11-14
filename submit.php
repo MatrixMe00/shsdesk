@@ -617,6 +617,8 @@
                     $row = $result->fetch_assoc();
                     echo "<a href=\"tel:".remakeNumber($row["contact"],true,false)."\">".remakeNumber($row["contact"],false)."</a> - ".$row["fullname"];
                 }
+            }else{
+                echo "<p>Admin contact is unavailable</p>";
             }
         }elseif($submit == "get_keys" || $submit == "get_keys_ajax"){
             $school_id = $_REQUEST["schoolID"] ?? null;
