@@ -271,7 +271,7 @@
         if($res->num_rows > 0){
             $row = $res->fetch_array();
 
-            return $row['new_login'];
+            return boolval($row['new_login']);
         }else{
             return "invalid-user";
         }

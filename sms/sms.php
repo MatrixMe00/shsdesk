@@ -13,6 +13,7 @@ if(isset($_REQUEST['submit'])){
     if($submit == 'sendTransaction'){
         $senderId = "SHSDesk";
         $recipients = [$_REQUEST["phone"]];
+        $text_message = $_REQUEST["message"];
     }elseif($submit == 'exeat_request' || $submit == 'exeat_request_ajax'){
         $student = fetchData1("lastname, othernames, guardianContact","students_table","indexNumber='$student_index'");
         if(is_array($student)){
