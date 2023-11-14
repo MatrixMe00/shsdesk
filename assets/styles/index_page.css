@@ -1,3 +1,4 @@
+/* carousel and page banner styling */
 #carousel{
     height: 100vh;
     color: white;
@@ -125,6 +126,7 @@
     background-color: white;
 }
 
+/* about section */
 #about{
     display: flex;
     flex-wrap: wrap;
@@ -149,7 +151,7 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    color: white;
+    color: red;
 }
 
 .control .head{
@@ -182,89 +184,11 @@
     font-size: large;
 }
 
-#usage{
-    padding: 3vh 2vw;
-    background-color: #eee3;
-    line-height: 1.3;
-    border-top: 5px solid lightgrey;
-    border-radius: 10px 10px 0 0;
-}
-
-#usage .head{
-    text-align: center;
-}
-
-#usage ol{
-    list-style-type: none;
-}
-
-#usage ol li{
-    margin: 1px 10px;
-    border: 1px solid lightgrey;
-    flex: 1;
-    height: max-content;
-    padding: 1.5%;
-}
-
-#usage ol li .step_name{
-    background-color: #223;
-    border-radius: 5px;
-    padding: 5px;
-    width: fit-content;
-    padding-right: 3vw;
-    color: white;
-}
-
-#usage ol li.arrow{
-    flex: 1 1 20px;
-    border-color: transparent;
-    font-size: xx-large;
-    align-self: center;
-    transform: rotate(90deg);
-    margin: 2px auto;
-}
-
-#usage ol .flex:first-child li.arrow:last-child{
-    transform: rotate(0);
-    align-self: flex-end;
-}
-
-#usage ol .flex:last-child{
-    flex-direction: column-reverse;
-}
-
-#usage ol .flex:last-child li.arrow{
-    transform: rotate(270deg);
-}
-
 .item-event.info{
     text-align: center;
 }
 #admission .item-event.info{
     text-align: right;
-}
-
-@media screen and (max-width:767px){
-    #usage ol{
-        flex-direction: column;
-    }
-
-    #usage ol li{
-        flex: 1;
-    }
-
-    #usage ol li.arrow{
-        align-self: center !important;
-        transform: rotate(90deg) !important;
-    }
-
-    #usage ol .flex:last-child{
-        flex-direction: column;
-    }
-
-    #admission .item-event.info{
-        text-align: right;
-    }
 }
 
 @media screen and (orientation:portrait){
@@ -283,11 +207,67 @@
     }
 }
 
-@media screen and (max-width: 500px){
+@media screen and (max-width: 540px){
     #about{
         flex-direction: column;
         height: unset;
         padding-top: 20px;
         padding-bottom: 20px;
+    }
+}
+
+/* message us button */
+#message_us{
+    padding: 1em; position: fixed; 
+    bottom: 5vh; left: 3vw; 
+    border-radius: 10px; font-size: large; 
+    font-weight: bold;
+    z-index: 5;
+}
+
+/* video section */
+#video{
+    text-align: center; 
+    flex: 7 1 600px; 
+    margin: auto 10px
+}
+
+#video .head{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#video .body{
+    padding-bottom: 10px;
+}
+
+#video video{
+    max-width: 640px;
+}
+
+/* admin contact section */
+#contacts{
+    flex:5 1 200px; 
+    text-align: center; 
+    padding: 0.3rem 1rem 1rem;
+    height: -moz-fit-content; 
+    height: fit-content; 
+    margin: 0 10px
+}
+
+#contacts > *{
+    margin: 0.5rem auto
+}
+
+#download_register{
+    display: inline-block;
+}
+
+label[for=student_index_number]{
+    width: 100%
+}
+
+@media screen and (max-width: 480px){
+    #message_us{font-size: normal;
     }
 }

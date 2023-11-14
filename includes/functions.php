@@ -1,4 +1,7 @@
 <?php
+    //for database purposes
+    require("database_functions.php");
+
     /**
      * The purpose of this function is to retrieve user details from database
      * 
@@ -430,30 +433,35 @@
     /**
      * Function to directly query database
      * 
-     * @param string $columns This receives the roles to fetch
-     * @param string $table Receives table name
-     * @param string $where Receives a where clause command
+     * @param string|array $columns This receives the roles to fetch
+     * @param string|array $table Receives table name
+     * @param string|array $where Receives a where clause command
      * @param int $limit Number of rows to deliver. Default is 1. Use 0 to fetch everything
+     * @param array|string $where_binds This is used to bind where conditions
      * 
      * @return string|array returns a(n) array|string of data or error
      */
-    function fetchData(string $columns, string $table, string $where, int $limit = 1){
+    function fetchData(string|array $columns, string|array $table, 
+        string|array $where = "", int $limit = 1, string|array $where_binds = ""
+    ){
         global $connect;
 
-        $sql = "SELECT $columns
-                FROM $table";
-        
-        if($where !== ""){
-            $sql .= " WHERE $where";
-        }
-                
+        try{
+            $columns = stringifyColumn($columns);
+            $table = stringifyTable($table);
+            $where = stringifyWhere($where, $where_binds);
 
-        //determine if it should set all or some
-        if($limit > 0){
-            $sql .= " LIMIT $limit";
-        }
-        
-        try {
+            $sql = "SELECT $columns FROM $table";
+            $sql .= !empty($where) ? " WHERE $where" : "";
+
+            //automatically detect that know that all data is been fetched if where is empty
+            if(empty($where)){
+                $limit = 0;
+            }
+
+            //add the limit if the limit is set
+            $sql .= $limit > 0 ? " LIMIT $limit" : "";
+
             $query = $connect->query($sql);
 
             if($query->num_rows > 0){
@@ -465,9 +473,9 @@
                     
             }else{
                 $result = "empty";
-            } 
-        } catch (\Throwable $th) {
-            $result = $th->getMessage();
+            }
+        }catch(Throwable $th){
+            $result = throwableMessage($th);
         }
 
         return $result;
@@ -480,25 +488,29 @@
      * @param string $table Receives table name
      * @param string $where Receives a where clause command
      * @param int $limit Number of rows to deliver. Default is 1. Use 0 to fetch everything
+     * @param string|array $where_binds 
      * 
      * @return string|array returns a(n) array|string of data or error
      */
-    function fetchData1(string $columns, string $table, string $where, int $limit = 1){
+    function fetchData1(string $columns, string $table, string $where = "", int $limit = 1, string|array $where_binds = ""){
         global $connect2;
 
-        $sql = "SELECT $columns
-                FROM $table";
-        
-        if($where !== ""){
-            $sql .= " WHERE $where";
-        }
-        
-        //determine if it should set all or some
-        if($limit > 0){
-            $sql .= " LIMIT $limit";
-        }
-        
-        try {
+        try{
+            $columns = stringifyColumn($columns);
+            $table = stringifyTable($table);
+            $where = stringifyWhere($where, $where_binds);
+
+            $sql = "SELECT $columns FROM $table";
+            $sql .= !empty($where) ? " WHERE $where" : "";
+
+            //automatically detect that know that all data is been fetched if where is empty
+            if(empty($where)){
+                $limit = 0;
+            }
+
+            //add the limit if the limit is set
+            $sql .= $limit > 0 ? " LIMIT $limit" : "";
+
             $query = $connect2->query($sql);
 
             if($query->num_rows > 0){
@@ -510,9 +522,9 @@
                     
             }else{
                 $result = "empty";
-            }    
-        } catch (\Throwable $th) {
-            $result = $th->getMessage();
+            }
+        }catch(Throwable $th){
+            $result = throwableMessage($th);
         }
 
         return $result;

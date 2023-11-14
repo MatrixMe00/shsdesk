@@ -6,11 +6,9 @@
     height: 100vh;
     background-color: whitesmoke;
     background-color: rgba(245, 245, 245, 0.3);
-    *display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2;
-    *display: none;
 }
 
 #student{
@@ -45,9 +43,5 @@ fieldset{
 
     #student .selection #school_admission_case{
         margin-bottom: 10px;
-    }
-
-    #student .selection #results_case{
-        margin-bottom: 5px;
     }
 }
