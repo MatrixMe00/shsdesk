@@ -45,6 +45,7 @@
         </div>
     </main>
     
+    <!-- message us button -->
     <a href="https://wa.me/233200449223">
         <span id="message_us" class="primary">
             Message Us
@@ -55,15 +56,15 @@
     <?php require_once($rootPath.'/blocks/footer.php')?>
 
     <!--Document scripts-->
-    <script src="assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
-    <script src="assets/scripts/index.min.js?v=<?php echo time()?>"></script>
-    <script src="assets/scripts/head_foot.min.js?v=<?php echo time()?>"></script>
-    <script src="assets/scripts/admissionForm.min.js?v=<?php echo time(); ?>"></script>
+    <script src="assets/scripts/form/general.min.js?v=<?= time()?>"></script>
+    <script src="assets/scripts/index.min.js?v=<?= time()?>"></script>
+    <script src="assets/scripts/head_foot.min.js?v=<?= time()?>"></script>
+    <script src="assets/scripts/admissionForm.min.js?v=<?= time(); ?>"></script>
 
     <!--Angular scripts-->
-    <script src="assets/scripts/angular_index.js?v=<?php echo time()?>"></script>
+    <script src="assets/scripts/angular_index.js?v=<?= time()?>"></script>
 
     <!--Payment scripts-->
-    <script src="assets/scripts/form/payForm.min.js?v=<?php echo time();?>"></script>
+    <script src="assets/scripts/form/payForm.min.js?v=<?= time();?>"></script>
 </body>
 </html>

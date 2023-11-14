@@ -1,9 +1,9 @@
 //reference id tracker
-var reference_parsed = false;
-var payment_received = false;
-var transaction_reference = "";
-var retry_counter = 0;
-var api_key = ""; var school_split_code = "";
+let reference_parsed = false;
+let payment_received = false;
+let transaction_reference = "";
+let retry_counter = 0;
+let api_key = ""; let school_split_code = "";
 
 //variable to be used for tracking
 trackKeeper = null;
@@ -43,6 +43,9 @@ function payWithPaystack(){
             callback: function(response){
                 //mark that payment has been received
                 payment_received = true;
+
+                //store reference into memory
+                transaction_reference = response.reference;
     
                 //pass a message that payment has been made
                 message = "Transaction was made successfully";
@@ -57,9 +60,6 @@ function payWithPaystack(){
     
                 //parse data into database in the background
                 passPaymentToDatabase(response.reference);
-                
-                //store reference into memory
-                transaction_reference = response.reference;
     
                 //check if transaction id is present in db after 3.5 seconds
                 trackKeeper = setInterval(reCheck, 3500);
@@ -96,24 +96,27 @@ function displayAdmissionForm(trans_ref){
 //this is a retry approach for the transactions
 async function trackTransactions(reference = ""){
     if(!reference_parsed){
-        fullname = $("#pay_fullname").val();
-        email = $("#pay_email").val();
-        phone = $("#pay_phone").val();
+        const fullname = $("#pay_fullname").val();
+        const email = $("#pay_email").val();
+        const phone = $("#pay_phone").val();
 
-        amount = $("#pay_amount").val().split(" ");
+        let amount = $("#pay_amount").val().split(" ");
         amount = amount[1];
 
-        deduction = parseFloat((((1.95/100) + Number.EPSILON) * parseInt(amount)).toFixed(2));
+        const deduction = parseFloat((((1.95/100) + Number.EPSILON) * parseInt(amount)).toFixed(2));
         
         //get the selected school name and id
-        school_name = $("#school_admission_case #school_select option:selected").html();
-        school_id = $("#student #school_admission_case label #school_select").val();
+        const school_name = $("#school_admission_case #school_select option:selected").html();
+        const school_id = $("#student #school_admission_case label #school_select").val();
 
         if(school_id > 0){
-            dataString = "transaction_id=" + reference + "&contact_number=" + phone + "&school=" + school_id + "&amount=" + amount + "&deduction=" + 
-                        deduction + "&contact_email=" + email + "&contact_name=" + fullname + "&submit=trackTransaction";
+            const dataString = {
+                transaction_id: reference, contact_number: phone,
+                school: school_id, amount: amount, deduction: deduction,
+                contact_email: email, contact_name: fullname, submit: "trackTransaction"
+            };
 
-            await $.ajax({
+            const ajax = await $.ajax({
                 url: $("form[name=paymentForm]").attr("action"),
                 type: "POST",
                 dataType: "text",
@@ -179,26 +182,27 @@ function reCheck(){
     }else if(retry_counter == 3 && !reference_parsed){ alert_box("Slow network detected", "warning", 8)}
 }
 
-function sendSMS(reference){
+async function sendSMS(reference){
     //send transaction id as an sms
-    phone = $("#pay_phone").val().replace("+","");
-    message = "Your payment was successful. Your transaction reference is " + reference + ". You can use this if you experience a " + 
+    const phone = $("#pay_phone").val().replace("+","");
+    const message = "Your payment was successful. Your transaction reference is " + reference + ". You can use this if you experience a " + 
     "problem while filling your form and would want to try again";
 
-    dataString = "submit=sendTransaction&phone=" + phone + "&message=" + message;
+    dataString = {submit: "sendTransaction", phone: phone, message: message};
 
-    $.ajax({
+    const ajax = await $.ajax({
         url: "sms/sms.php",
         data: dataString,
         type: "POST",
         dataType: "json",
         timeout: 30000,
         success: function(response){
-            response1 = JSON.parse(JSON.stringify(response));
+            const response1 = JSON.parse(JSON.stringify(response));
             if(response1["status"] == "success"){
                 alert_box("SMS sent successfully", "success");
             }else{
-                alert_box('An sms could not be sent, but payment was successful. Your transaction reference is ' + reference + ". Save this value at a safe place", "warning", 10);
+                const sms_message = "An sms could not be sent, but payment was successful. Your transaction reference is " + reference + ". Save this value at a safe place";
+                alert_box(sms_message, "danger", 10);
             }
         },
         error: function(e, textStatus){
@@ -206,33 +210,34 @@ function sendSMS(reference){
             if(textStatus == "timeout"){
                 alert_box("Connection was timed out due to a slow network. Please try again later", "danger")
             }else{
-                alert_box(e.responseText, "danger")
+                console.log(e.responseText)
             }
-            
         }
     })
 }
 
 //function to pass data into database
 async function passPaymentToDatabase(reference){
-    fullname = $("#pay_fullname").val();
-    email = $("#pay_email").val();
-    phone = $("#pay_phone").val();
+    const fullname = $("#pay_fullname").val();
+    const email = $("#pay_email").val();
+    const phone = $("#pay_phone").val();
 
-    amount = $("#pay_amount").val().split(" ");
+    let amount = $("#pay_amount").val().split(" ");
     amount = amount[1];
 
-    deduction = parseFloat((((1.95/100) + Number.EPSILON) * parseInt(amount)).toFixed(2));
+    const deduction = parseFloat((((1.95/100) + Number.EPSILON) * parseInt(amount)).toFixed(2));
     
     //get the selected school name and id
-    school_name = $("#school_admission_case #school_select option:selected").html();
-    school_id = $("#student #school_admission_case label #school_select").val();
+    const school_id = $("#student #school_admission_case label #school_select").val();
 
     if(school_id > 0){
-        dataString = "transaction_id=" + reference + "&contact_number=" + phone + "&school=" + school_id + "&amount=" + amount + "&deduction=" + 
-                    deduction + "&contact_email=" + email + "&contact_name=" + fullname + "&submit=add_payment_data";
+        const dataString = {
+            transaction_id: reference, contact_number: phone, school: school_id,
+            amount: amount, deduction: deduction, contact_email: email, contact_name: fullname,
+            submit: "add_payment_data"
+        };
 
-        await $.ajax({
+        const ajax = await $.ajax({
             url: $("form[name=paymentForm]").attr("action"),
             type: "POST",
             dataType: "text",
@@ -244,7 +249,7 @@ async function passPaymentToDatabase(reference){
                     //pass admin number into admission form
                     cont = response.split("-")[1];
                     html = "<p style='text-align: center; font-size: small; color: #666'>" + 
-                            "Finding trouble? Contact the admin via <a href='tel:" + cont + 
+                            "Having trouble? Contact the admin via <a href='tel:" + cont + 
                             "' style='color: blue'>" + cont + "</a></p>";
                     $("#admission #form_footer").html(html);
 
@@ -281,13 +286,12 @@ async function passPaymentToDatabase(reference){
                 exit(1);
             }
         })
-    }
-    
+    }    
 }
 
 //what should happen when the payment form is submitted
 $("form[name=paymentForm]").submit(function(){
-    form_name = "paymentForm";
+    const form_name = "paymentForm";
 
     //check if only the reference was given else, make payment to system
     if($("section#trans #pay_reference").val() == ""){
@@ -309,9 +313,9 @@ $("form[name=paymentForm]").submit(function(){
         //disable other input elements
         $("#pay_fullname, #pay_email, #pay_phone").prop("disabled", true).val("");
 
-        school_id = $("#student #school_admission_case label #school_select").val();
-        ref = $("section#trans #pay_reference").val();
-        dataString = "reference_id=" + ref + "&submit=checkReference&school_id=" + school_id;
+        const school_id = $("#student #school_admission_case label #school_select").val();
+        const ref = $("section#trans #pay_reference").val();
+        const dataString = {reference_id: ref, submit: "checkReference", school_id: school_id};
 
         $.ajax({
             url: $("form[name=paymentForm]").attr("action"),
@@ -413,13 +417,4 @@ $("#paymentFormButton").click(async function(){
         api_key = ""; school_split_code = "";
         alert_box(payment_key)
     }
-    
-    // 
 })
-
-// $("#pay_email").blur(function(){
-//     window.clearTimeout(null);
-//     messageBoxTimeout("paymentForm","My Message", "load", 5);
-// })
-
-// 010404501821
