@@ -12,8 +12,6 @@ $(document).ready(function(){
     $("form[name=admissionForm] button[name=modal_cancel]").click();
 })
 
-//function to be used to check if the next or submit button should be
-//shown in the admission form
 /**
  * This function is used to check if the next or submit button should be shown in the admission form
  * @returns {void} The function returns nothing
@@ -92,9 +90,12 @@ $("select[name=ad_year]").change(function(){
 //canceling results
 $("button[name=modal_cancel]").click(function(){
     admission_button_tab_index = 1;
-    $(this).parents(".form_modal_box").addClass("no_disp");
+    const parent = $(this).parents(".form_modal_box"); 
+    
+    // hide current parent
+    parent.addClass("no_disp");
 
-    if($(this).parents(".form_modal_box").prop("id") == "payment_form"){
+    if(parent.prop("id") == "payment_form"){
         //enable all fields
         $("form[name=paymentForm] input").prop("disabled", false);
         $("form[name=paymentForm]")[0].reset();
@@ -105,10 +106,10 @@ $("button[name=modal_cancel]").click(function(){
         //keep the amount section disabled
         $("#pay_amount").prop("readonly", true);
 
-        //get intial payment value
+        //get and display intial payment value
         const payValue = $("form[name=paymentForm] input#pay_amount").attr("data-init")
-        $("form[name=paymentForm] input#pay_amount").val("GHC " + payValue)
-    }else if($(this).parents(".form_modal_box").prop("id") == "admission"){
+        $("#pay_amount").val("GHC " + payValue)
+    }else if(parent.prop("id") == "admission"){
         //enable the index input field
         $("#ad_index").prop("readonly", false);
 

@@ -5,14 +5,17 @@ let transaction_reference = "";
 let retry_counter = 0;
 let api_key = ""; let school_split_code = "";
 
+//elements
+const paymentForm = $("form[name=paymentForm]");
+const selectedSchool = $("#school_select");
+
 //variable to be used for tracking
 trackKeeper = null;
 
 function payWithPaystack(){
-    //0551234987
-    cust_amount = $("#pay_amount").val().split(" ");
+    let cust_amount = $("#pay_amount").val().split(" ");
     cust_amount = parseInt(cust_amount[1]) * 100;
-    cust_email = $("form[name=paymentForm] .body #pay_email").val();
+    const cust_email = paymentForm.find("#pay_email").val();
 
     try {
         var handler = PaystackPop.setup({
@@ -105,9 +108,8 @@ async function trackTransactions(reference = ""){
 
         const deduction = parseFloat((((1.95/100) + Number.EPSILON) * parseInt(amount)).toFixed(2));
         
-        //get the selected school name and id
-        const school_name = $("#school_admission_case #school_select option:selected").html();
-        const school_id = $("#student #school_admission_case label #school_select").val();
+        //get the selected school id
+        const school_id = parseInt(selectedSchool.val());
 
         if(school_id > 0){
             const dataString = {
@@ -117,7 +119,7 @@ async function trackTransactions(reference = ""){
             };
 
             const ajax = await $.ajax({
-                url: $("form[name=paymentForm]").attr("action"),
+                url: paymentForm.attr("action"),
                 type: "POST",
                 dataType: "text",
                 data: dataString,
@@ -228,7 +230,7 @@ async function passPaymentToDatabase(reference){
     const deduction = parseFloat((((1.95/100) + Number.EPSILON) * parseInt(amount)).toFixed(2));
     
     //get the selected school name and id
-    const school_id = $("#student #school_admission_case label #school_select").val();
+    const school_id = selectedSchool.val();
 
     if(school_id > 0){
         const dataString = {
@@ -238,7 +240,7 @@ async function passPaymentToDatabase(reference){
         };
 
         const ajax = await $.ajax({
-            url: $("form[name=paymentForm]").attr("action"),
+            url: paymentForm.attr("action"),
             type: "POST",
             dataType: "text",
             data: dataString,
@@ -290,7 +292,7 @@ async function passPaymentToDatabase(reference){
 }
 
 //what should happen when the payment form is submitted
-$("form[name=paymentForm]").submit(function(){
+paymentForm.submit(function(){
     const form_name = "paymentForm";
 
     //check if only the reference was given else, make payment to system
@@ -313,12 +315,12 @@ $("form[name=paymentForm]").submit(function(){
         //disable other input elements
         $("#pay_fullname, #pay_email, #pay_phone").prop("disabled", true).val("");
 
-        const school_id = $("#student #school_admission_case label #school_select").val();
+        const school_id = selectedSchool.val();
         const ref = $("section#trans #pay_reference").val();
         const dataString = {reference_id: ref, submit: "checkReference", school_id: school_id};
 
         $.ajax({
-            url: $("form[name=paymentForm]").attr("action"),
+            url: paymentForm.attr("action"),
             data: dataString,
             type: "POST",
             dataType: "text",
@@ -387,34 +389,39 @@ $("form[name=paymentForm]").submit(function(){
 })
 
 function getKey() {
-    const school_id = $("#student #school_admission_case label #school_select").val();
+    const school_id = selectedSchool.val();
     
     return new Promise((resolve, reject) => {
-      $.ajax({
+        $.ajax({
         url: "./submit.php",
         data: {
-          submit: "get_keys_ajax",
-          schoolID: school_id
+            submit: "get_keys_ajax",
+            schoolID: school_id
         },
         success: function(response) {
-          resolve(response);
+            resolve(response);
         },
         error: function(error) {
-          reject(error);
+            reject(error);
         }
-      });
+        });
     });
-  }
+}
 
 $("#paymentFormButton").click(async function(){
-    const payment_key = await getKey()
-    if(payment_key.indexOf(" | ") > -1){
-        api_key = payment_key.split(" | ")[1]
-        school_split_code = payment_key.split(" | ")[0]
+    try {
+        const payment_key = await getKey();
 
-        $("form[name=paymentForm]").submit();
-    }else{
-        api_key = ""; school_split_code = "";
-        alert_box(payment_key)
+        if(payment_key.indexOf(" | ") > -1){
+            api_key = payment_key.split(" | ")[1]
+            school_split_code = payment_key.split(" | ")[0]
+
+            paymentForm.submit();
+        }else{
+            api_key = ""; school_split_code = "";
+            alert_box(payment_key)
+        }
+    } catch (error) {
+        console.error("Error fetching payment key:", error);
     }
 })

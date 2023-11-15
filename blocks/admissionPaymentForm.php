@@ -22,8 +22,9 @@
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/mail-outline.svg" alt="email">
                     </span>
-                    <input type="email" name="pay_email" id="pay_email" class="text_input" placeholder="Your Email [optional]"
-                    title="Provide an email so that secured information about your transaction can be passed there" autocomplete="off">
+                    <input type="email" name="pay_email" id="pay_email" class="text_input" placeholder="Your Email [required]"
+                    title="Provide an email so that secured information about your transaction can be passed there" autocomplete="off"
+                    pattern="^\+(?:[0-9] ?){6,14}[0-9]$">
                 </label>
             </div>
             
@@ -72,7 +73,7 @@
     </div>
     <div class="foot">
         <p>
-            @<?php echo date("Y") ?> shsdesk.com
+            <?php echo "@".date("Y")." ".$_SERVER["SERVER_NAME"] ?>
         </p>
     </div>
 </form>
