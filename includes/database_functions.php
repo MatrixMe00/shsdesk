@@ -51,10 +51,11 @@
     /**
      * used to stringify the table query part
      * @param string|string[] $table The table query to stringify
+     * @param string $join_type This is the type of join to be used
      * 
      * @return string The formated version of the table query
      */
-    function stringifyTable(string|array $tables) :string{
+    function stringifyTable(string|array $tables, string $join_type) :string{
         $new_tables = "";
 
         if(is_array($tables)){
@@ -66,8 +67,8 @@
                         $alias2, $ref1, $ref2) = tableArraySplit($table);
 
                     //bind table1 to string
-                    joinTableString($new_tables, $table1, $alias1);
-                    joinTableString($new_tables, $table2, $alias2);
+                    joinTableString($new_tables, $table1, $alias1, $join_type);
+                    joinTableString($new_tables, $table2, $alias2, $join_type);
                     onTableString($new_tables, $table);
                 }
             }elseif(!isset($tables[0])){
@@ -75,12 +76,13 @@
                     $alias2, $ref1, $ref2) = tableArraySplit($tables);
 
                 //bind table1 to string
-                joinTableString($new_tables, $table1, $alias1);
-                joinTableString($new_tables, $table2, $alias2);
+                joinTableString($new_tables, $table1, $alias1, $join_type);
+                joinTableString($new_tables, $table2, $alias2, $join_type);
                 onTableString($new_tables, $tables);
             }else{
                 // only table names should assume ids of the tables
-                $new_tables = implode(" JOIN ", $tables);                
+                $join_type = empty($join_type) ? "JOIN" : strtoupper($join_type)." JOIN ";
+                $new_tables = implode(" $join_type ", $tables);
             }
         }else{
             $new_tables = $tables;
@@ -107,14 +109,17 @@
      * @param mixed $new_table The new table been formed
      * @param string $table The table from which to get details from
      * @param string $table_alias The alias of the said tables
+     * @param string $join_type This is the type of join
      * @return void all changes are done into the new_table variable
      */
-    function joinTableString(&$new_table, $table, $table_alias){
+    function joinTableString(&$new_table, $table, $table_alias, $join_type){
+        $join_type = empty($join_type) ? "JOIN" : strtoupper($join_type)." JOIN ";
+        
         if(!str_contains($new_table, $table)){
             if(empty($new_table)){
                 $new_table = $table;
             }else{
-                $new_table .= " JOIN " . $table;
+                $new_table .= " $join_type " . $table;
             }
 
             if(!empty($table_alias)){

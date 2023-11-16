@@ -610,8 +610,8 @@
     <?php } ?>
 </section>
 
-<script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>">
-</script><script src="<?php echo $url?>/admin/assets/scripts/notification.min.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js" async></script>
-<script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js" async></script>
-<script src="<?php echo $url?>/admin/assets/scripts/tinymce.min.js" async></script>
+<script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
+<script src="<?php echo $url?>/admin/assets/scripts/notification.min.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce.min.js"></script>

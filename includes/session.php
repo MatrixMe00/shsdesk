@@ -14,17 +14,15 @@ $host_password = $sqlServer["hostpassword"];
 $dbname = $sqlServer["db1"];
 $dbname2 = $sqlServer["db2"];
 
-@$connect = new mysqli($host,$hostname,$host_password, $dbname);
-@$connect2 = new mysqli($host,$hostname,$host_password, $dbname2);
+$connect = new mysqli($host,$hostname,$host_password, $dbname);
+$connect2 = new mysqli($host,$hostname,$host_password, $dbname2);
 
 if($connect->connect_error){
     die("Connection failed -> Port 1...".$connect->connect_error);
-    exit(1);
 }
 
 if($connect2->connect_error){
     die("Connection failed -> Port 2...".$connect2->connect_error);
-    exit(1);
 }
 
 //creating a default root path for finding php documents

@@ -624,6 +624,32 @@
             }
 
             echo $response;
+        }elseif($submit == "send_mail_admin"){
+            $recipients = $_POST["recipients"];
+            $template = $_POST["message"];
+            $sender_name = $_POST["sendas"];
+            $extra = $_POST["extra"];
+            $subject = $_POST["subject"];
+
+            if(empty($recipients) || is_null($recipients)){
+                $message = "No recipients were specified";
+            }elseif(empty($sender_name) || is_null($sender_name)){
+                $message = "Sender name has not been provided";
+            }elseif(empty($subject) || is_null($subject)){
+                $message = "Your mail has no subject";
+            }elseif(empty($template) || is_null($template)){
+                $message = "No message was specified";
+            }else{
+                require "mailer.php";
+
+                if($pass === $total){
+                    $message = "email sent";
+                }else{
+                    $message = "$pass of $total mails sent";
+                }
+            }
+            
+            echo $message;
         }else{
             echo "Submission value was not present";
         }

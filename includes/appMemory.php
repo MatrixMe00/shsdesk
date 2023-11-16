@@ -34,6 +34,10 @@
     $splitKey = [];
     $priceKey = "";
 
+    // mail server configuration
+    $server_email = "successinnovativehub@gmail.com";
+    $server_password = "wzap xjim dvpv bhfe";
+
     //determine development server and live server to determine how error codes are shown
     $developmentServer = null;
 

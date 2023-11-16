@@ -107,12 +107,12 @@
                             <span>USSD Management</span>
                         </div>
                     </div>
-                    <div class="item" name="broadcase" title="Broadcast Message" data-url="<?php echo $url?>/admin/superadmin/page_parts/broadcast.php">
+                    <div class="item" name="broadcast" title="Messaging" data-url="<?php echo $url?>/admin/superadmin/page_parts/broadcast.php">
                         <div class="icon">
                             <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="broadcast" />
                         </div>
                         <div class="menu_name">
-                            <span>Broadcast Message</span>
+                            <span>Messaging</span>
                         </div>
                     </div>
                 </div>

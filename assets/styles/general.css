@@ -1610,6 +1610,11 @@ td{
 /* forms */
 /* form general */
 form, .form{padding: 0.5em;}
+form.not-form, .form.not-form{
+    border-radius: unset;
+    box-shadow: inherit;
+    min-width: unset;
+}
 form .label.flex-column label, .form .label.flex-column label{
     width: inherit; margin: unset;
 }
@@ -1634,6 +1639,12 @@ form input[type=checkbox], .form input[type=checkbox]{
 form label.checkbox, .form label.checkbox,
 form label.radio, .form label.radio{
     align-items: center; justify-content: flex-start;
+    cursor: default;
+}
+
+form label.checkbox::selection, .form label.checkbox::selection,
+form label.radio::selection, .form label.radio::selection{
+    background-color: transparent;
 }
 
 textarea{min-height: 35px;}

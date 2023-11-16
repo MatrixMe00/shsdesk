@@ -2,13 +2,35 @@
 
     //add nav point session
     $_SESSION["nav_point"] = "ussd";
+
+    // page variables
+    $approved_ussds = decimalIndexArray(fetchData1(...[
+        "columns" => ["school_id", "sms_id"],
+        "table" => "school_ussds",
+        "where" => "status='approve'",
+        "limit" => 0
+    ]));
+
+    $rejected_ussds = decimalIndexArray(fetchData1(...[
+        "columns" => ["school_id", "sms_id"],
+        "table" => "school_ussds",
+        "where" => "status='rejected'",
+        "limit" => 0
+    ]));
+
+    $pending_ussds = decimalIndexArray(fetchData1(...[
+        "columns" => ["school_id", "sms_id"],
+        "table" => "school_ussds",
+        "where" => "status='pending'",
+        "limit" => 0
+    ]));
 ?>
 
 <section class="section_container">
     <div class="content green">
         <div class="head">
             <h2>
-                <?= fetchData1("COUNT(school_id) as total","school_ussds", "status='approve'")["total"] ?>
+                <?= is_array($approved_ussds) ? count($approved_ussds) : 0 ?>
             </h2>
         </div>
         <div class="body">
@@ -18,7 +40,7 @@
     <div class="content red">
         <div class="head">
             <h2>
-                <?= fetchData1("COUNT(school_id) as total","school_ussds", "status='reject'")["total"] ?>
+                <?= is_array($rejected_ussds) ? count($rejected_ussds) : 0 ?>
             </h2>
         </div>
         <div class="body">
@@ -28,7 +50,7 @@
     <div class="content secondary">
         <div class="head">
             <h2>
-                <?= fetchData1("COUNT(school_id) as total","school_ussds", "status='pending'")["total"] ?>
+                <?= is_array($pending_ussds) ? count($pending_ussds) : 0 ?>
             </h2>
         </div>
         <div class="body">
@@ -49,8 +71,7 @@
 <section id="pending" class="control_section sp-xlg-tp no_disp">
     <h3 class="txt-al-c">Pending SMS USSDs</h3>
     <?php
-        $ussds = fetchData1("school_id, sms_id", "school_ussds","status='pending'", 0);
-        if(is_array($ussds)) :
+        if(is_array($pending_ussds)) :
     ?>
     <div class="btn m-sm p-med">
         <button class="primary btn_all" disabled data-value="approve_all">Approve All</button>
@@ -58,11 +79,7 @@
     </div>
     <div class="body flex flex-wrap sp-med gap-sm">
         <?php
-            if(!array_key_exists(0, $ussds)){
-                $ussds = [$ussds];
-            }
-
-            foreach($ussds as $ussd) :
+            foreach($pending_ussds as $ussd) :
         ?>
         <div class="flex w-fit flex-column sm-rnd gap-sm lt-shade sp-med">
             <h4 class=""><?= getSchoolDetail($ussd["school_id"])["schoolName"] ?></h4>
@@ -84,16 +101,11 @@
 </section>
 
 <section id="approve" class="control_section sp-xlg-tp no_disp">
-    <h3 class="txt-al-c">Approved SMS USSDs</h3>
+    <h3 class="txt-al-c sm-xlg-b">Approved SMS USSDs</h3>
     <?php
-        $ussds = fetchData1("school_id, sms_id", "school_ussds","status='approve'", 0);
-        if(is_array($ussds)) :
-    
-        if(!array_key_exists(0, $ussds)){
-            $ussds = [$ussds];
-        }
+        if(is_array($approved_ussds)) :
 
-        foreach($ussds as $ussd) :
+        foreach($approved_ussds as $ussd) :
     ?>
         <div class="flex w-fit flex-column sm-rnd gap-sm lt-shade sp-med">
             <h4 class=""><?= getSchoolDetail($ussd["school_id"])["schoolName"] ?></h4>
@@ -114,16 +126,11 @@
 </section>
 
 <section id="reject" class="control_section sp-xlg-tp no_disp">
-    <h3 class="txt-al-c">Rejected SMS USSDs</h3>
+    <h3 class="txt-al-c sm-xlg-b">Rejected SMS USSDs</h3>
     <?php
-        $ussds = fetchData1("school_id, sms_id", "school_ussds","status='reject'", 0);
-        if(is_array($ussds)) :
-    
-        if(!array_key_exists(0, $ussds)){
-            $ussds = [$ussds];
-        }
+        if(is_array($rejected_ussds)) :
 
-        foreach($ussds as $ussd) :
+        foreach($rejected_ussds as $ussd) :
     ?>
         <div class="flex w-fit flex-column sm-rnd gap-sm lt-shade sp-med">
             <h4 class=""><?= getSchoolDetail($ussd["school_id"])["schoolName"] ?></h4>

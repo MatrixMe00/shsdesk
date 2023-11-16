@@ -438,17 +438,19 @@
      * @param string|array $where Receives a where clause command
      * @param int $limit Number of rows to deliver. Default is 1. Use 0 to fetch everything
      * @param array|string $where_binds This is used to bind where conditions
+     * @param string $join_type This is the type of join to be used in a table
      * 
      * @return string|array returns a(n) array|string of data or error
      */
     function fetchData(string|array $columns, string|array $table, 
-        string|array $where = "", int $limit = 1, string|array $where_binds = ""
+        string|array $where = "", int $limit = 1, string|array $where_binds = "",
+        string $join_type = ""
     ){
         global $connect;
 
         try{
             $columns = stringifyColumn($columns);
-            $table = stringifyTable($table);
+            $table = stringifyTable($table, $join_type);
             $where = stringifyWhere($where, $where_binds);
 
             $sql = "SELECT $columns FROM $table";
@@ -484,20 +486,21 @@
     /**
      * Function to directly query connect2 database
      * 
-     * @param string $columns This receives the roles to fetch
-     * @param string $table Receives table name
-     * @param string $where Receives a where clause command
+     * @param string|array $columns This receives the roles to fetch
+     * @param string|array $table Receives table name
+     * @param string|array $where Receives a where clause command
      * @param int $limit Number of rows to deliver. Default is 1. Use 0 to fetch everything
-     * @param string|array $where_binds 
+     * @param string|array $where_binds Conditions to bind
+     * @param string $join_type This is the type of join to be used in a table
      * 
      * @return string|array returns a(n) array|string of data or error
      */
-    function fetchData1(string $columns, string $table, string $where = "", int $limit = 1, string|array $where_binds = ""){
+    function fetchData1(string|array $columns, string|array $table, string|array $where = "", int $limit = 1, string|array $where_binds = "", string $join_type = ""){
         global $connect2;
 
         try{
             $columns = stringifyColumn($columns);
-            $table = stringifyTable($table);
+            $table = stringifyTable($table, $join_type);
             $where = stringifyWhere($where, $where_binds);
 
             $sql = "SELECT $columns FROM $table";
@@ -1416,5 +1419,52 @@
         }
 
         return $response;
+    }
+
+    /**
+     * Used to validate if a group of recipients are email addresses. Used for emailing
+     * @param string|array $recipients The recipient data
+     * @param null|mixed $message The message to be sent if there is an error
+     * @return bool true if everything is fine or false if otherwise
+     */
+    function checkRecipients(string|array $recipients, &$message = null){
+        $isValid = true;
+
+        if(!is_array($recipients)){
+            $recipients = [$recipients];
+        }
+
+        foreach($recipients as $recipient){
+            if(!filter_var(trim($recipient), FILTER_VALIDATE_EMAIL)){
+                $isValid = false;
+                $message = "'$recipient' is not a valid email";
+                break;
+            }
+        }
+
+        return $isValid;
+    }
+
+    /**
+     * This function is used to merge mails which are not in the database to the mailing list
+     * @param array $original This is the original data from the enduser
+     * @param array $db_data This is the data from the database
+     * @return array Returns the merged results
+     */
+    function mergeRecipients(array $original, array $db_data){
+        $found_emails = array_column($db_data, "email");
+        $emails_not_found = array_diff($original, $found_emails);
+
+        foreach($emails_not_found as $email){
+            $db_data[] = [
+                "email" => $email,
+                "name" => "No name",
+                "username" => "No username",
+                "school" => "No school",
+                "phone" => "No phone",
+            ];
+        }
+
+        return $db_data;
     }
 ?>
