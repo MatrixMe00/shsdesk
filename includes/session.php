@@ -52,9 +52,14 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     $user_id = $user_details['user_id'];
     $user_username = $user_details['username'];
     $user_school_id = $user_details['school_id'];
-    $user_role = getRole($user_details['role']);
     $user_email = $user_details['email'];
-    $admin_access = fetchData("access","roles","id={$user_details['role']}")["access"];
+
+    // user role details
+    list(
+        "id" => $role_id, "title" => $user_role, "price" => $role_price,
+        "access" => $admin_access, "is_system" => $role_is_system, 
+        "school_id" => $role_school_id
+    ) = getRole($user_details["role"], false);
 
     //check for admission mode and results mode
     if(!isset($_SESSION["admin_mode"])){

@@ -191,12 +191,12 @@
             $contact = $_POST["user_contact"];
             $role = $_POST["role"];
 
-            if(isset($_POST["username"]))
+            if(!empty($_POST["username"]))
                 $username = $_POST["username"];
             else
                 $username = "New User";
 
-            if(isset($_POST["password"]))
+            if(!empty($_POST["password"]))
                 $password = $_POST["password"];
             else
                 $password = MD5("Password@1");
@@ -229,17 +229,27 @@
                     $new_role = $_REQUEST["other_role"];
                     $price = 0;
                     $access = 1;
+                    $is_system_role = false;
 
-                    $sql = "INSERT INTO roles (title, price, access, school_id) VALUES (?,?,?,?)";
+                    //make school integer before inserting into roles
+                    $school = intval($school);
+
+                    //system privilege leveling
+                    if($school == 0){
+                        $is_system_role = true;
+                        $access = 3;
+                    }
+
+                    $sql = "INSERT INTO roles (title, price, access, is_system, school_id) VALUES (?,?,?,?,?)";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("siii", $new_role, $price, $access, $user_school_id);
+                    $stmt->bind_param("siii", $new_role, $price, $access, $is_systen_role, $school);
                     if($stmt->execute()){
                         //grab the current id for this role
-                        $role = fetchData("id","roles","title='$new_role' AND school_id=$user_school_id")["id"];
+                        $role = $connect->insert_id;
                     }else{
-                        echo "Problem adding new role";
-                        exit(1);
-                    }                    
+                        $message = "Problem adding new role";
+                        exit($message);
+                    }
                 }
 
                 $date_added = date("Y-m-d H:i:s");

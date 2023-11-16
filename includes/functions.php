@@ -29,24 +29,52 @@
      * This function will be used to retrieve the roles in the system
      * 
      * @param int $role_id This parameter receives the role id to be searched for
+     * @param bool $isTitle Determine if only the title should be displayed
      * 
-     * @return string The title of the role is retrieved
+     * @return string|array The title or full details of the role is retrieved
      */
-    function getRole($role_id):string{
+    function getRole($role_id, $isTitle = true):string|array{
         global $connect;
 
-        $sql = "SELECT title 
+        $title = $isTitle ? "title" : "*";
+
+        $sql = "SELECT $title 
             FROM roles 
             WHERE id=$role_id" or die($connect->error);
         $res = $connect->query($sql);
 
         if($res->num_rows > 0){
-            $row = $res->fetch_array()["title"];
+            if($isTitle){
+                $row = $res->fetch_assoc()["title"];
+            }else{
+                $row = formatRoleData($res->fetch_assoc());
+            }
         }else{
             $row = "error";
         }
 
         return $row;
+    }
+
+    /**
+     * This is used to format the results that come from the database for roles
+     * @param array $role_data The data retrieved
+     * @return array the formated data
+     */
+    function formatRoleData(array $role_data):array{
+        foreach($role_data as $key => $value){
+            switch($key){
+                case "id":
+                case "school_id":
+                case "access":
+                    $role_data[$key] = (int) $value; break;
+                case "price":
+                    $role_data[$key] = (float) $value; break;
+                case "is_system":
+                    $role_data[$key] = (bool) $value; break;
+            }
+        }
+        return $role_data;
     }
 
     /**
@@ -231,7 +259,7 @@
             //now upload the file
             if($uploadOk == 1){
                 if(move_uploaded_file($_FILES[$file_input_name]["tmp_name"], $file_name)){
-                    $file_name = $file_name;
+                    $file_name = trim($file_name);
                 }
             }else{
                 echo "<p>Upload failed</p>";

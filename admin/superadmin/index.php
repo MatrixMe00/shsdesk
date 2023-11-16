@@ -80,7 +80,8 @@
                             $result = $connect->query("SELECT *
                                 FROM notification
                                 WHERE Read_by NOT LIKE '%$user_username%'
-                                OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')");
+                                OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')
+                                AND '{$user_details['adYear']}' <= DATE");
                             $total += $result->num_rows;
 
                             //new replies
@@ -99,6 +100,7 @@
                         </div>
                         <?php }?>
                     </div>
+                    <?php if($role_id <= 2) : ?>
                     <div class="item" name="ussd" title="USSD" data-url="<?php echo $url?>/admin/superadmin/page_parts/ussd.php" data-current-tab="pending">
                         <div class="icon">
                             <img src="<?php echo $url?>/assets/images/icons/chatbox-outline.svg" alt="ussd" />
@@ -107,6 +109,7 @@
                             <span>USSD Management</span>
                         </div>
                     </div>
+                    <?php endif; ?>
                     <div class="item" name="broadcast" title="Messaging" data-url="<?php echo $url?>/admin/superadmin/page_parts/broadcast.php">
                         <div class="icon">
                             <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="broadcast" />
@@ -135,6 +138,7 @@
                             <span>Track Transactions</span>
                         </div>
                     </div>
+                    <?php if($admin_access > 3) : ?>
                     <div class="item" data-url="<?php echo $url?>/admin/trans.php" name="payment" title="Payments">
                         <div class="icon">
                             <img src="<?php echo $url?>/assets/images/icons/cash-outline.svg" alt="payment" />
@@ -151,9 +155,11 @@
                             <span>Transaction Splits</span>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </div>
     
                 <!--Page Setups-->
+                <?php if($admin_access > 3) : ?>
                 <div class="menu">
                     <div class="item" data-url="<?php echo $url?>/admin/superadmin/page_parts/home.php" name="Index" title="Home Page">
                         <div class="icon">
@@ -180,6 +186,7 @@
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
             <div id="foot">
                 <div class="menu">

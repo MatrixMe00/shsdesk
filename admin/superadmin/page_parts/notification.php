@@ -131,6 +131,7 @@
     FROM notification
     WHERE (Read_by NOT LIKE '%$user_username%' AND Audience='all')
     OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')
+    AND '{$user_details['adYear']}' <= DATE
     ORDER BY ID DESC");
 
     if($result->num_rows > 0){
@@ -374,6 +375,7 @@
                 WHERE n.Sender_id != $user_id
                 AND r.Read_by LIKE '%$user_username%'
                 AND n.Read_by LIKE '%$user_username%'
+                AND '{$user_details['adYear']}' <= n.DATE
                 ORDER BY ID DESC");
         if($result->num_rows > 0){
             

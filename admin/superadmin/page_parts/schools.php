@@ -62,6 +62,7 @@
                 <div class="reg_studs">Registered Students: <?php echo $reg?></div>
                 <div class="unreg_studs">Unregistered Students: <?php echo $unreg?></div>
             </div>
+            <?php if($admin_access > 3): ?>
             <div class="foot flex flex-wrap">
                 <div class="item-event edit" data-school-id="<?php echo $row['id'] ?>">Edit</div>
                 <div class="item-event deactivate" data-school-id="<?php echo $row['id']?>">Deactivate</div>
@@ -70,6 +71,7 @@
                 <?php } ?>
                 <div class="item-event clear" data-school-id="<?php echo $row['id'] ?>">Clear Records</div>
             </div>
+            <?php endif; ?>
         </div>
         <?php }
             }else{ 
@@ -108,6 +110,7 @@
                 <div class="reg_studs">Registered Students: <?php echo $reg?></div>
                 <div class="unreg_studs">Unregistered Students: <?php echo $unreg?></div>
             </div>
+            <?php if($admin_access > 3): ?>
             <div class="foot flex flex-wrap">
                 <div class="item-event edit" data-school-id="<?php echo $row['id'] ?>">Edit</div>
                 <div class="item-event activate" data-school-id="<?php echo $row['id']?>">Activate</div>
@@ -116,6 +119,7 @@
                 <?php } ?>
                 <div class="item-event clear" data-school-id="<?php echo $row['id'] ?>">Clear Records</div>
             </div>
+            <?php endif; ?>
         </div>
         <?php }
             }else{ 

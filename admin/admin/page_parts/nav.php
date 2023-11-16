@@ -279,6 +279,7 @@
                         FROM notification
                         WHERE (Read_by NOT LIKE '%$user_username%' AND Audience='all')
                         OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')
+                        AND '{$user_details['adYear']}' <= DATE
                         ORDER BY ID DESC");
                     $response += $result->num_rows;
 

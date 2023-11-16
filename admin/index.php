@@ -1,15 +1,14 @@
-<?php include_once("../includes/session.php");?>
-
-<?php
+<?php 
+    include_once("../includes/session.php");
+    
     //determine the page to show
     if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0) :
         //determine which page to show per user role
-        if($user_details["role"] <= 2){
+        if($role_is_system){
             require("superadmin/index.php");
         }else{
             require("admin/index.php");
         }
-        unset($_SESSION);
     else:
 ?>
 <!DOCTYPE html>
@@ -96,7 +95,7 @@
         </div>
         <div class="foot">
             <p>
-                @<?php echo date("Y")?> shsdesk.com
+                @<?php echo date("Y")." ".$_SERVER["SERVER_NAME"] ?>
             </p>
         </div>
     </form>

@@ -81,15 +81,10 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         <div class="head">
             <h2>Transaction Actions</h2>
         </div>
-        <div class="body flex flex-wrap">
-            <div class="btn">
-                <button class="cyan" id="transaction_new_btn">Make New</button>
-            </div>
-            <div class="btn">
-                <button class="teal" id="btn_search">Search a transaction</button>
-            </div>
-            <div class="btn">
-                <button class="red" id="btn_close" style="display: none">Close Container</button>
+        <div class="body flex flex-wrap btn p-lg gap-sm">
+                <button class="cyan wmax-3xs" id="transaction_new_btn">Make New</button>
+                <button class="teal wmax-3xs" id="btn_search">Search a transaction</button>
+                <button class="red wmax-3xs" id="btn_close" style="display: none">Close Container</button>
             </div>
         </div>
     </div>
@@ -161,7 +156,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     <button type="submit" name="submit" value="search_transaction">Search</button>
                 </label>
             </div>
-            <label for="contact" class="checkbox">
+            <label for="contact" class="checkbox gap-sm">
                 <input type="checkbox" name="contact" id="contact">
                 <span class="span_title">Search By Contact Number</span>
             </label>
@@ -183,98 +178,100 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 
 <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
 <script>
-    $("form[name=newTransactionForm]").submit(function(){
-        type = "error";
-        time = 5;
+    $(document).ready(function(){
+        var timer = null;
 
-        if($("#trans_id").val() === ""){
-            message = "Please enter a transaction ID";
-        }else if($("#trans_id").val().length < 14){
-            message = "Transaction id provides is invalid. Check the length";
-        }else if($("#trans_id").val()[0] != "T"){
-            message = "Valid transaction IDs begin with T.";
-        }else if($("#cont_name").val() === ""){
-            message = "Please provide the contact's name";
-        }else if($("#cont_number").val() === ""){
-            message = "Please provide the contact's number";
-        }else if($("#cont_number").val().length < 10){
-            message = "Please provide a valid phone number";
-        }else if($("#school").val() === ""){
-            message = "Please select the school which was bought";
-        }else{
-            dataString = $(this).serialize();
-            dataString += "&submit=" + $("form[name=newTransactionForm] button[name=submit]").val();
+        $("form[name=newTransactionForm]").submit(function(){
+            type = "error";
+            time = 5;
 
-            $.ajax({
-                url: $(this).attr("action"),
-                data: dataString,
-                dataType: "text",
-                beforeSend: function(){
-                    message = "Writing Data...";
-                    type = "load";
-                    time = 0;
-                },
-                success: function(data){
-                    message = data;
-                    time = 5;
+            if($("#trans_id").val() === ""){
+                message = "Please enter a transaction ID";
+            }else if($("#trans_id").val().length < 14){
+                message = "Transaction id provides is invalid. Check the length";
+            }else if($("#trans_id").val()[0] != "T"){
+                message = "Valid transaction IDs begin with T.";
+            }else if($("#cont_name").val() === ""){
+                message = "Please provide the contact's name";
+            }else if($("#cont_number").val() === ""){
+                message = "Please provide the contact's number";
+            }else if($("#cont_number").val().length < 10){
+                message = "Please provide a valid phone number";
+            }else if($("#school").val() === ""){
+                message = "Please select the school which was bought";
+            }else{
+                dataString = $(this).serialize();
+                dataString += "&submit=" + $("form[name=newTransactionForm] button[name=submit]").val();
 
-                    if(data == "success"){
-                        type = "success";
+                $.ajax({
+                    url: $(this).attr("action"),
+                    data: dataString,
+                    dataType: "text",
+                    beforeSend: function(){
+                        message = "Writing Data...";
+                        type = "load";
+                        time = 0;
+                    },
+                    success: function(data){
+                        message = data;
+                        time = 5;
 
-                        $("form[name=newTransactionForm] input, form[name=newTransactionForm] select").val("");
-                    }else{
-                        type = "error";
+                        if(data == "success"){
+                            type = "success";
+
+                            $("form[name=newTransactionForm] input, form[name=newTransactionForm] select").val("");
+                        }else{
+                            type = "error";
+                        }
+
+                        messageBoxTimeout("newTransactionForm", message, type, time);
+                    },
+                    error: function(data){
+                        message = data;
+                        time = 0;
                     }
+                })
+            }
 
-                    messageBoxTimeout("newTransactionForm", message, type, time);
-                },
-                error: function(data){
-                    message = data;
-                    time = 0;
-                }
-            })
-        }
+            messageBoxTimeout("newTransactionForm", message, type, time);
+        })
 
-        messageBoxTimeout("newTransactionForm", message, type, time);
-        // alert($(this).serialize());
-    })
+        $("section#search .search button[name=submit]").click(function(){
+            search = $("section#search .search input[name=txt_search]").val();
+            contactSearch = $("section#search .body label[for=contact] input").prop("checked");
 
-    $("section#search .search button[name=submit]").click(function(){
-        search = $("section#search .search input[name=txt_search]").val();
-        contactSearch = $("section#search .body label[for=contact] input").prop("checked");
-
-        $("section#results").show();
-        if(search === ""){
-            $("#results .empty").hide();
-            $("#results #response").show().html("<p style='text-align:center; padding: 0.5em'>Empty string provided</p>");
-        }else if(search.length < 3){
-            $("#results .empty").hide();
-            $("#results #response").show().html("<p style='text-align:center; padding: 0.5em'>Search will start with 3 or more characters</p>");
-        }else{
-            $.ajax({
-                url: "superadmin/submit.php",
-                data: "submit=search_transaction&txt_search=" + search + "&searchByContact=" + contactSearch,
-                dataType: "html",
-                beforeSend: function(){
-                    $("#results .empty").hide();
-                    $("#results #response").show().html("<p style='text-align:center; padding: 0.5em'>Searching...</p>");
-                },
-                success: function(data){
-                    if(data == "not-found"){
-                        $("#results .empty").show();
-                        $("#results #response").hide();
-                    }else{
+            $("section#results").show();
+            if(search === ""){
+                $("#results .empty").hide();
+                $("#results #response").show().html("<p style='text-align:center; padding: 0.5em'>Empty string provided</p>");
+            }else if(search.length < 3){
+                $("#results .empty").hide();
+                $("#results #response").show().html("<p style='text-align:center; padding: 0.5em'>Search will start with 3 or more characters</p>");
+            }else{
+                $.ajax({
+                    url: "superadmin/submit.php",
+                    data: "submit=search_transaction&txt_search=" + search + "&searchByContact=" + contactSearch,
+                    dataType: "html",
+                    beforeSend: function(){
                         $("#results .empty").hide();
-                        $("#results #response").show().html(data);
+                        $("#results #response").show().html("<p style='text-align:center; padding: 0.5em'>Searching...</p>");
+                    },
+                    success: function(data){
+                        if(data == "not-found"){
+                            $("#results .empty").show();
+                            $("#results #response").hide();
+                        }else{
+                            $("#results .empty").hide();
+                            $("#results #response").show().html(data);
+                        }
                     }
-                }
-            })
-        }
-    })
+                })
+            }
+        })
 
-    //function to autorefresh transaction box
-    function ajaxCall(name, data){
-        $.ajax({
+        //function to autorefresh transaction box
+        function ajaxCall(name, data){
+            $.ajax({
                 url: "superadmin/submit.php",
                 data: "submit=currentTransactionCount",
                 dataType: "json",
@@ -286,32 +283,37 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                 },
                 error: function(e){
                     alert_box("Network error encountered. Get internet access to continue")
-                    clearInterval(this);
                 }
-            })
-    }
+            })        
+        }
 
-    function autoRefresh(){
-        setInterval(ajaxCall,5000);
-    }
+        function autoRefresh(){
+            timer = setInterval(ajaxCall,5000);
+        }
 
-    //start the autorefresh
-    autoRefresh();
+        //start the autorefresh
+        autoRefresh();
 
-    //display or hide search or new transaction sections
-    $("button#transaction_new_btn, span#new_trans").click(function(){
-        $("section#new_transaction").show();
-        $("section#search, section#results").hide();
-        $("button#btn_close").show();
-    })
-    $("button#btn_search").click(function(){
-        $("section#new_transaction").hide();
-        $("section#search").show();
-        $("button#btn_close").show();
-    })
+        //display or hide search or new transaction sections
+        $("button#transaction_new_btn, span#new_trans").click(function(){
+            $("section#new_transaction").show();
+            $("section#search, section#results").hide();
+            $("button#btn_close").show();
+        })
+        $("button#btn_search").click(function(){
+            $("section#new_transaction").hide();
+            $("section#search").show();
+            $("button#btn_close").show();
+        })
 
-    $("button#btn_close").click(function(){
-        $("#new_transaction, section#search, section#results").hide();
-        $(this).hide();
+        $("button#btn_close").click(function(){
+            $("#new_transaction, section#search, section#results").hide();
+            $(this).hide();
+        })
+
+        // stop the timer
+        $("#lhs .item").click(function(){
+            clearInterval(timer);
+        })
     })
 </script>

@@ -132,6 +132,7 @@
         FROM notification
         WHERE (Read_by NOT LIKE '%$user_username%' AND Audience='all')
         OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')
+        AND '{$user_details['adYear']}' <= DATE
         ORDER BY ID DESC");
 
     if($result->num_rows > 0){
@@ -252,6 +253,7 @@
         $result = $connect->query("SELECT * 
             FROM notification
             WHERE Read_by LIKE '%$user_username%'
+            AND '{$user_details['adYear']}' <= DATE
             ORDER BY ID DESC");
 
         if($result->num_rows > 0){

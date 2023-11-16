@@ -51,6 +51,7 @@
     </div>
 </section>
 
+<?php if($user_details["role"] <= 2) : ?>
 <section class="section_container">
     <div class="content secondary">
         <div class="head">
@@ -150,3 +151,4 @@
         </div>
     </div>
 </section>
+<?php endif; ?>
