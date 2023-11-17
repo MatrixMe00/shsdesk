@@ -1,22 +1,38 @@
 <?php 
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\Exception;
+    
     require_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
     
     // require the phpmailer
-    require($rootPath."/phpmailer/PHPMailerAutoload.php");
+    require "$rootPath/phpmailer/src/Exception.php";
+    require "$rootPath/phpmailer/src/PHPMailer.php";
+    require "$rootPath/phpmailer/src/SMTP.php";
 
     $mail = new PHPMailer(true);
 
-    $sender_email = $server_email;
+    //depending on the sender name should provide sender email
+    switch(strtolower($sender_name)){
+        case "shsdesk":
+            $sender_email = "sysadmin@shsdesk.com"; break;
+        case "customer care":
+            $sender_email = "customercare@shsdesk.com"; break;
+        default:
+            if(str_contains($_SERVER["SERVER_NAME"], "local"))
+                $sender_email = "successinnovativehub@gmail.com";
+            else
+                $sender_email = "sysadmin@shsdesk.com";
+    }
 
     try {
         //Server settings
         $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
+        $mail->Host       = $mailserver;
         $mail->SMTPAuth   = true;
-        $mail->Username   = $server_email;
-        $mail->Password   = $server_password;
-        $mail->SMTPSecure = 'tls';
-        $mail->Port       = 587;
+        $mail->Username   = $mailserver_email;
+        $mail->Password   = $mailserver_password;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
+        $mail->Port       = 465;
     
         //Recipients
         $mail->setFrom($sender_email, $sender_name);

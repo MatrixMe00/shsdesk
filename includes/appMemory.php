@@ -34,10 +34,6 @@
     $splitKey = [];
     $priceKey = "";
 
-    // mail server configuration
-    $server_email = "successinnovativehub@gmail.com";
-    $server_password = "wzap xjim dvpv bhfe";
-
     //determine development server and live server to determine how error codes are shown
     $developmentServer = null;
 
@@ -65,6 +61,11 @@
 
                 $developmentServer = true;
 
+                // mail server configuration
+                $mailserver_email = "successinnovativehub@gmail.com";
+                $mailserver_password = "wzap xjim dvpv bhfe";
+                $mailserver = "smtp.gmail.com";
+
                 break;
             case "shsdesk.com":
             case "www.shsdesk.com":
@@ -87,6 +88,11 @@
 
                 $developmentServer = false;
 
+                // mail server configuration
+                $mailserver_email = "_mainaccount@shsdesk.com";
+                $mailserver_password = "Junior2020";
+                $mailserver = "server13.aveshost.net";
+
                 break;
             case "test.shsdesk.com":
             case "www.test.shsdesk.com":
@@ -106,6 +112,11 @@
                 $splitKey = $splitKeys["development"];
 
                 $developmentServer = true;
+
+                // mail server configuration
+                $mailserver_email = "_mainaccount@shsdesk.com";
+                $mailserver_password = "Junior2020";
+                $mailserver = "server13.aveshost.net";
 
                 break;
 

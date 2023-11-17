@@ -54,6 +54,10 @@
                     <input type="radio" name="sendas" id="sendas_successinn" value="S&S Innovative Hub">
                     <span class="label_title">S&S Inn Hub</span>
                 </label>
+                <label for="sendas_successinn" class="radio">
+                    <input type="radio" name="sendas" id="sendas_customer" value="Customer Care">
+                    <span class="label_title">Customer Care</span>
+                </label>
                 <input type="hidden" name="sendas_val" value="" readonly>
             </div>
         </div>
