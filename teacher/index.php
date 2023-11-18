@@ -13,7 +13,7 @@
     <style>
         body{
             background-color: #eee;
-            background-image: url("<?php echo $url?>/assets/images/backgrounds/HAN4890-web-sq_fb2957a9-958f-47c8-aeb1-8bf211bfbbfb.jpg");
+            background-image: url("<?php echo $url?>/assets/images/backgrounds/andrej-lisakov-3A4XZUopCJA-unsplash.jpg");
             background-position: center;
             height: 100vh;
             display: flex;
@@ -34,7 +34,7 @@
             }
 
             form{
-                margin-right: 45px;
+                right: 5em;
                 width: 45vw;
                 background-color: rgba(255,255,255,0.85);
             }

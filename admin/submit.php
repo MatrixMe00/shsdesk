@@ -190,14 +190,17 @@
             $email = $_POST["email"];
             $contact = $_POST["user_contact"];
             $role = $_POST["role"];
+            $new_user = true;
 
-            if(!empty($_POST["username"]))
-                $username = $_POST["username"];
-            else
+            if(!empty($_POST["new_username"])){
+                $username = $_POST["new_username"];
+                $new_user = false;
+            }else{
                 $username = "New User";
+            }
 
-            if(!empty($_POST["password"]))
-                $password = $_POST["password"];
+            if(!empty($_POST["new_password"]))
+                $password = $_POST["new_password"];
             else
                 $password = MD5("Password@1");
 
@@ -227,22 +230,30 @@
                 //insert current role if it does not exist in database
                 if(strtolower($role) == "others"){
                     $new_role = $_REQUEST["other_role"];
+                    
+                    //make school integer before inserting into roles
+                    $school_r = intval($school);
+                    
+                    // make sure role is not already in the database
+                    $role_is_found = fetchData("title","roles","LOWER(title) = '".strtolower($new_role)."' AND school_id = $school_r");
+                    
+                    if(is_array($role_is_found)){
+                        exit("Role provided has already been created");
+                    }
+                    
                     $price = 0;
                     $access = 1;
                     $is_system_role = false;
 
-                    //make school integer before inserting into roles
-                    $school = intval($school);
-
                     //system privilege leveling
-                    if($school == 0){
+                    if($school_r == 0){
                         $is_system_role = true;
                         $access = 3;
                     }
 
                     $sql = "INSERT INTO roles (title, price, access, is_system, school_id) VALUES (?,?,?,?,?)";
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("siii", $new_role, $price, $access, $is_systen_role, $school);
+                    $stmt->bind_param("siiii", $new_role, $price, $access, $is_system_role, $school_r);
                     if($stmt->execute()){
                         //grab the current id for this role
                         $role = $connect->insert_id;
@@ -251,11 +262,26 @@
                         exit($message);
                     }
                 }
+                
+                //make some integrity checks
+                if(strtolower($username) != "new user"){
+                    $username_exists = fetchData("username", "admins_table", "username='$username'");
+                    
+                    if(is_array($username_exists)){
+                        exit("The username provided already exists");
+                    }
+                }
+                
+                $email_exists = fetchData("email", "admins_table", "email='$email'");
+                if(is_array($email_exists)){
+                    exit("The email provided already exists");
+                }
 
                 $date_added = date("Y-m-d H:i:s");
-                $sql = "INSERT INTO admins_table (fullname, username, email, password, school_id, contact, role, adYear) VALUES (?,?,?,?,?,?,?,?)";
+                $password = MD5($password);
+                $sql = "INSERT INTO admins_table (fullname, username, email, password, school_id, contact, role, adYear, new_login) VALUES (?,?,?,?,?,?,?,?,?)";
                 $stmt = $connect->prepare($sql);
-                $stmt->bind_param("ssssisis", $fullname, $username,$email, $password, $user_school_id, $contact, $role, $date_added);
+                $stmt->bind_param("ssssisisi", $fullname, $username,$email, $password, $user_school_id, $contact, $role, $date_added, $new_user);
 
                 if($stmt->execute()){
                     $message = "success";

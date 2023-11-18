@@ -20,7 +20,7 @@
         $result = $connect->query("SELECT a.*, r.title AS roleTitle 
         FROM admins_table a JOIN roles r
         ON a.role = r.id 
-        WHERE r.access = TRUE AND a.username != 'New User'") or die($connect->error);
+        WHERE r.access > 0 AND a.username != 'New User'") or die($connect->error);
 
         if($result->num_rows > 0){
     ?>
@@ -34,7 +34,7 @@
                 <?php if($row["school_id"] != null){ ?>
                 <div class="school_name">
                     <span>
-                        <?php echo getSchoolDetail($row["school_id"])[0] ?>
+                        <?php echo getSchoolDetail($row["school_id"])["schoolName"] ?>
                     </span>
                 </div>
                 <?php } ?>
@@ -63,9 +63,6 @@
                     }
                 ?></span>
                 <span class="item-event delete" data-user-id="<?php echo $row["user_id"]?>">Delete</span>
-                <?php }?>
-                <?php if($user_details["role"] == 1){?>
-                <!-- <span class="item-event" data-user-id="<?php echo $row["user_id"]?>">Promote</span> -->
                 <?php }?>
             </div>
         </div>
