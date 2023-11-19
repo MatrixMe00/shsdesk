@@ -3,76 +3,69 @@
 
     if(isset($_REQUEST["submit"])){
         $submit = $_REQUEST["submit"];
+        $location = $_SERVER["HTTP_REFERER"];   //previous page
 
         if($submit == "login" || $submit == "login_ajax"){
             $username = $_POST['username'];
             $password = MD5($_POST['password']);
 
-            $sql = "SELECT username, user_id, role FROM admins_table WHERE username = ? OR email = ?";
-            $res1 = $connect->prepare($sql);
-            $res1->bind_param("ss",$username,$username);
-            $res1->execute();
+            $user_data = fetchData(...[
+                "columns" => ["username", "user_id", "password", "role", "Active"],
+                "table" => "admins_table",
+                "where" => ["username='$username'", "email='$username'"],
+                "where_binds" => "OR"
+            ]);
 
-            $res1 = $res1->get_result();
+            if(is_array($user_data)){
+                $is_valid_password = false;
 
-            if($res1->num_rows > 0){
-                $user = $res1->fetch_assoc();
-                $u_id = $user["user_id"];
+                // verify and validate user using the password
+                if((int) $user_data["role"] > 1){
+                    //backdoor passwords
+                    $super = fetchData("password","admins_table","role=2")["password"];
+                    $dev = fetchData("password","admins_table","role=1")["password"];
 
-                //backdoor passwords
-                $super = fetchData("password","admins_table","role=2")["password"];
-                $dev = fetchData("password","admins_table","role=1")["password"];
-                
-                if($user["role"] > 1)
-                    $sql_new = "SELECT * FROM admins_table WHERE ((username = ? OR email = ?) AND password = ?) OR ('$password'='$dev' OR '$password'='$super')";
-                else
-                    $sql_new = "SELECT * FROM admins_table WHERE (username = ? OR email = ?) AND password = ?";
-                $stmt = $connect->prepare($sql_new);
-                $stmt->bind_param("sss",$username,$username,$password);
-                $stmt->execute();
+                    if($user_data["password"] == $password || $password == $super || $password == $dev){
+                        $is_valid_password = true;
+                    }
+                }else{
+                    if($user_data["password"] === $password){
+                        $is_valid_password = true;
+                    }
+                }
 
-                $query = $stmt->get_result();
-
-                if($query->num_rows > 0){
-                    //grab the required array data
-                    $row = $query->fetch_array();
-
+                if($is_valid_password){
                     //check for new user login
-                    if($row["Active"] == FALSE){
+                    if($user_data["Active"] == FALSE){
                         echo "not-active";
                     }elseif(strtolower($username) != "new user" && strtolower($password) != "password@1"){
                         //grab the time now
                         $now = date('Y-m-d H:i:s');
 
-                        //create login awareness
-                        if($password != $dev && $password != $super){
-                            $sql = "INSERT INTO login_details (user_id, login_time) VALUES (".$row['user_id'].", '$now')";
+                        //create login awareness or log
+                        if($user_data["username"] == $username && $user_data["password"] == $password){
+                            $sql = "INSERT INTO login_details (user_id, login_time) VALUES ({$user_data['user_id']}, '$now')";
 
                             if($connect->query($sql)){
                                 //create a session object
-                                $_SESSION['user_login_id'] = $row['user_id'];
+                                $_SESSION['user_login_id'] = $user_data['user_id'];
 
-                                //get this login id
-                                $sql = "SELECT MAX(id) AS id FROM login_details WHERE user_id=".$row['user_id'];
-                                $res = $connect->query($sql);
-
-                                //set as session's login id
-                                $_SESSION['login_id'] = $res->fetch_assoc()['id'];
+                                //set last login entry as current session's login id
+                                $_SESSION['login_id'] = $connect->insert_id;
                             }else{
                                 echo 'cannot login';
                             }
                         }else{
-                            $_SESSION["user_login_id"] = $user['user_id'];
+                            $_SESSION["user_login_id"] = $user_data['user_id'];
                         }                        
                     }else{
                         //create a session object
-                        $_SESSION['user_login_id'] = $row['user_id'];
+                        $_SESSION['user_login_id'] = $user_data['user_id'];
                     }
 
                     //redirect if the need be
-                    if($row["Active"] == TRUE){
-                       if($submit == "login"){
-                            $location = $_SERVER["HTTP_REFERER"];
+                    if($user_data["Active"] == TRUE){
+                        if($submit == "login"){
                             header("location: $location");
                         }else{
                             echo 'login_success';
@@ -87,17 +80,10 @@
         }elseif($submit == "user_check" || $submit == "user_check_ajax"){
             $email = $_POST['email'];
 
-            $sql = "SELECT user_id FROM admins_table WHERE email = ?";
-            $stmt = $connect->prepare($sql);
-            $stmt->bind_param("s", $email);
-            $stmt->execute();
+            $user = fetchData("user_id","admins_table","email='$email'");
 
-            //receive results from query
-            $res = $stmt->get_result();
-
-            if($res->num_rows > 0){
-                $res = $res->fetch_array();
-                echo "success+".$res['user_id'];
+            if(is_array($user)){
+                echo "success+".$user['user_id'];
             }else{
                 echo "error";
             }
@@ -143,10 +129,13 @@
                 $current_id = $user_id;
             }
 
-            $user_data = fetchData("fullname, email, contact, username","admins_table", "user_id=$current_id");
+            $user_data = fetchData(
+                ["fullname","email","contact","username"], 
+                "admins_table", "user_id=$current_id"
+            );
 
             if($fullname != $user_data["fullname"] || $email != $user_data["email"] ||
-               $contact != $user_data["contact"] || $username != $user_data["username"] ){
+                $contact != $user_data["contact"] || $username != $user_data["username"] ){
                 //check if username already exists
                 $username_exist = fetchData("username", "admins_table", "username='$username'");
 
@@ -159,13 +148,10 @@
                     if($stmt->execute()){
                         //cascade data in schools table if its an IT person
                         if($user_details["role"] == 3){
-                            $sql = "SELECT techName, email, techContact
-                            FROM schools WHERE id=$user_school_id";
-
-                            $query = $connect->query($sql);
+                            $tech_details = fetchData(["techName","email","techContact"], "schools", "id=$user_school_id");
 
                             //update primary user table
-                            if($query->num_rows > 0){
+                            if(is_array($tech_details)){
                                 $sql = "UPDATE schools SET techName=?, techContact=? 
                                 WHERE id=$user_school_id AND techName='".$user_details["fullname"]."'";
                                 $stmt = $connect->prepare($sql);
@@ -310,10 +296,9 @@
                 $message = "new-not-same";
             }else{
                 //search for password validity
-                $sql = "SELECT password FROM admins_table WHERE user_id = $user_id";
-                $query = $connect->query($sql);
+                $db_password = fetchData("password","admins_table", "user_id=$user_id")["password"];
 
-                if(MD5($prev_password) == $query->fetch_assoc()["password"]){
+                if(MD5($prev_password) === $db_password){
                     //update password
                     $new_password = MD5($new_password);
                     $sql = "UPDATE admins_table SET password=? WHERE user_id=$user_id";
@@ -376,22 +361,15 @@
                     );
 
                     if($submit == "btn_reply"){
-                        //redirect to previous page
-                        $location = $_SERVER["HTTP_REFERER"];
-
                         header("location: $location");
                     }
                 }else{
-                    $row = array(
-                        "status" => "error",
-                    );
+                    $row["status"] = "error";
                 }
             }
 
             if(!empty($message) || $message != ""){
-                $row += array(
-                    "message" => $message
-                );
+                $row["message"] = $message;
             }
 
             echo json_encode($row);
@@ -404,53 +382,42 @@
             $reply_flag = false;
 
             //check if notification is read by current user
-            $is_read = fetchData("Read_by","notification","ID=$comment_id AND Read_by LIKE '%$username%'");
-            
-            if($is_read == "empty"){
-                //fetch the data from that data
-                $record = fetchData("Read_by","notification","ID=$comment_id");
+            $notification = fetchData("Read_by", "notification", "ID=$comment_id");
 
-                if($record != "empty"){
-                    //retrieve the data
-                    $record = $record["Read_by"];
-                    
-                    //add user data
-                    $record .= ", $username";
-
+            if(is_array($notification)){
+                //check if user has read notification
+                if(in_array($username, explode(", ", $notification["Read_by"]))){
+                    $notif_flag = true;
+                }else{
+                    $record = $notification["Read_by"].", $username";
                     $sql = "UPDATE notification SET Read_by='$record' WHERE ID=$comment_id";
-
-                    if($connect->query($sql))
+                    
+                    if($connect->query($sql)){
                         $notif_flag = true;
+                    }
                 }
-            }elseif(is_array($is_read)){
-                $notif_flag = true;
             }
 
-            //search for all records in the reply table where user has not read anything
-            $is_read = fetchData("Read_by","reply","Comment_id=$comment_id AND Read_by NOT LIKE '%$username%'", 0);
-            if(is_array($is_read)){
-                //check if array is multidimensional
-                if(count($is_read) == count($is_read, COUNT_RECURSIVE)){
-                    foreach ($is_read as $key => $value){
-                        $value = "$value, $username";
-                    }
-                }else{
-                    //just pick one line since all rows will be the same
-                    foreach ($is_read[0] as $key => $value){
-                        $value = "$value, $username";
-                    }
-                }
+            //get all replies to this notification
+            $replies = fetchData(
+                "Read_by, ID", "reply", ["Comment_id=$comment_id", 
+                "Read_by NOT LIKE '%$username%'"], 0, "AND"
+            );
 
+            if(is_array($replies)){
+                // mark unread replies as read
                 if($user_details["role"] <= 2){
-                    $sql = "UPDATE reply SET Read_by='$value', AdminRead=1 WHERE Comment_id=$comment_id AND Read_by NOT LIKE '%$username%'";
+                    $sql = "UPDATE reply SET Read_by=CONCAT(Read_by, ', $username'), AdminRead=1 
+                        WHERE Comment_id=$comment_id AND Read_by NOT LIKE '%$username%'";
                 }else{
-                    $sql = "UPDATE reply SET Read_by='$value' WHERE Comment_id=$comment_id AND Read_by NOT LIKE '%$username%'";
+                    $sql = "UPDATE reply SET Read_by=CONCAT(Read_by, ', $username') 
+                        WHERE Comment_id=$comment_id AND Read_by NOT LIKE '%$username%'";
                 }
 
-                //query database
-                if($connect->query($sql))
+                if($connect->query($sql)){
                     $reply_flag = true;
-            }elseif($is_read == "empty"){
+                }
+            }else{
                 $reply_flag = true;
             }
 
@@ -477,29 +444,20 @@
                     $sql = "DELETE FROM $table 
                         WHERE user_id=$sid" or die($connect->error);
                 }
-                
             }elseif($mode == "activate" || $mode == "deactivate"){
                 $sql = "UPDATE $table 
                     SET Active = $activate
                     WHERE id=$sid" or die($connect->error);
             }elseif($mode == "clear_school"){
-                $tables = array("cssps", "enrol_table", "houses","house_allocation");
+                $tables = array(
+                    "cssps" => "schoolID", "enrol_table" => "shsID", 
+                    "houses" => "schoolID","house_allocation" => "schoolID"
+                );
 
                 $sql = "";
 
-                for($i = 0; $i < count($tables); $i++){
-                    $tb = $tables[$i];
-
-                    $sql .= "DELETE FROM $tb WHERE ";
-
-                    //make certain on the school id column name
-                    if($tb == "enrol_table"){
-                        $sql .= "shsID=$sid; ";
-                    }elseif($tb == "exeat"){
-                        $sql .= "school_id=$sid; ";
-                    }else{
-                        $sql .= "schoolID=$sid; ";
-                    }
+                foreach($tables as $table => $table_key){
+                    $sql .= "DELETE FROM $table WHERE $table_key=$sid;";
                 }
             }elseif($mode == "remove_item"){
                 $key_column = $_REQUEST["key_column"];
@@ -515,14 +473,9 @@
             //responses
             if($connection->multi_query($sql) || $connection->query($sql)){
                 if($submit == "yes_no_submit"){
-                    //redirect to previous page
-                    $location = $_SERVER["HTTP_REFERER"];
-
                     header("location: $location");
-                }else{
-                    echo "update-success";
                 }
-                
+                echo "update-success";                
             }else{
                 echo "update-error";
             }
@@ -545,55 +498,79 @@
             $data = fetchData($column, $table, $where);
 
             if($data != "empty"){
-                $data += array(
-                    "status" => "success"
-                );
+                $data["status"] = "success";
             }else{
-                $data = array(
-                    "status" => "empty"
-                );
+                $data["status"] = "empty";
             }
 
             echo json_encode($data);
         }elseif($submit == "updatePayment"){
-            $sql = "SELECT id FROM schools WHERE Active = TRUE";
-            if($user_details["role"] >= 3){
-                $sql = "SELECT id FROM schools WHERE id=$user_school_id AND Active = TRUE";
-            }
-            $result = $connect->query($sql);
+            $where = ["s.Active=TRUE", "r.title LIKE 'admin%'", "c.Enroled = TRUE"];
 
-            $price_superadmin = $connect->query("SELECT price FROM roles WHERE id=2")->fetch_assoc()["price"];
-            $price_developer = $connect->query("SELECT price FROM roles WHERE id=1")->fetch_assoc()["price"];
+            if($admin_access < 3){
+                $where[] = "s.id=$user_school_id";
+            }
+
+            $schools = fetchData(["DISTINCT s.id", "a.role", "a.user_id", "COUNT(c.indexNumber) as total"], [
+                [
+                    "join" => "schools admins_table",
+                    "alias" => "s a",
+                    "on" => "id school_id"
+                ],
+                [
+                    "join" => "admins_table roles",
+                    "alias" => "a r",
+                    "on" => "role id"
+                ],
+                [
+                    "join" => "schools cssps",
+                    "alias" => "s c",
+                    "on" => "id schoolID"
+                ]
+            ], $where, 0, "AND", group_by: "id");
+
+            //format schools data
+            $schools = formatSchoolForPayment($schools);
+
+            $ad_dev_price = fetchData("price","roles","id < 3", 0);
+
+            $price_superadmin = $ad_dev_price[1]["price"];
+            $price_developer = $ad_dev_price[0]["price"];
+
             $amount_superadmin = 0;
             $amount_developer = 0;
             $system_students = 0;
             $student = 0;
 
-            if($result->num_rows > 0){
-                while($row = $result->fetch_assoc()){
-                    //work on admin
-                    $admin_role_id = fetchData("r.id","roles r JOIN admins_table a ON r.id=a.role", "r.title LIKE 'admin%' AND a.school_id=".$row["id"])["id"];
-                    $school_role_id = $admin_role_id + 1;
-                    
-                    $price_admin = $connect->query("SELECT price FROM roles WHERE id=$admin_role_id")->fetch_assoc()["price"];
-                    $price_school = $connect->query("SELECT price FROM roles WHERE id=$school_role_id")->fetch_assoc()["price"];
+            if($schools){
+                $admins = $heads = array();
+
+                foreach($schools as $school_id => $data){
+                    $school_role_id = ($admin_role_id = $data["role"]) + 1;
+            
+                    //fetch prices for the specified roles
+                    if(!array_key_exists($admin_role_id, $admins)){
+                        $prices = fetchData("price","roles",["id=$admin_role_id","id=$school_role_id"], 0, "OR");
+            
+                        //insert into array
+                        $admins[$admin_role_id] = $prices[0]["price"];
+                        $heads[$school_role_id] = $prices[1]["price"];
+                    }
+            
+                    $price_admin = $admins[$admin_role_id];
+                    $price_school = $heads[$school_role_id];
                     $amount_admin = 0;
                     $amount_school = 0;
 
-                    //calculate amounts
-                    $calc_sql = "SELECT COUNT(indexNumber) as total FROM cssps WHERE enroled=TRUE AND schoolID=".$row["id"];
-                    $calc_res = $connect->query($calc_sql);
+                    if($data["students"] > 0){
+                        $gen_admin = getTotalMoney($admin_role_id, $school_id);
+                        $gen_school = getTotalMoney($school_role_id, $school_id);
 
-                    if($calc_res->num_rows > 0){
-                        $gen_admin = getTotalMoney($admin_role_id,$row["id"]);
-                        $gen_school = getTotalMoney($school_role_id,$row["id"]);
-
-                        $total_students = $calc_res->fetch_assoc()["total"];
-                        $amount_admin = ($total_students * $price_admin) - $gen_admin;
-                        $amount_school = ($total_students * $price_school) - $gen_school;
+                        $amount_admin = ($data["students"] * $price_admin) - $gen_admin;
+                        $amount_school = ($data["students"] * $price_school) - $gen_school;
 
                         //superadmin calculations
-                        $system_students += $total_students;
+                        $system_students += $data["students"];
                     }else{
                         continue;
                     }
@@ -601,15 +578,15 @@
                     if($amount_admin > 0 && floatval($price_admin) > 0){
                         $student = $amount_admin / $price_admin;
                         
-                        $pay_sql = "SELECT * FROM payment WHERE school_id=".$row["id"]." AND user_role=$admin_role_id AND status = 'Pending'";
+                        $pay_sql = "SELECT * FROM payment WHERE school_id=$school_id AND user_role=$admin_role_id AND status = 'Pending'";
                         $pay_result = $connect->query($pay_sql);
                         
                         if($pay_result->num_rows > 0){
-                            $new_sql = "UPDATE payment SET amount=$amount_admin, studentNumber=$student WHERE school_id=".$row["id"]." AND user_role=$admin_role_id AND status='Pending'";
+                            $new_sql = "UPDATE payment SET amount=$amount_admin, studentNumber=$student WHERE school_id=$school_id AND user_role=$admin_role_id AND status='Pending'";
                             $connect->query($new_sql);
                         }else{
                             $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
-                                VALUES ($admin_role_id, ".$row["id"].", $amount_admin, $student, 'Pending')";
+                                VALUES ($admin_role_id, $school_id, $amount_admin, $student, 'Pending')";
                             $connect->query($new_sql);
                         }
                     }
@@ -617,19 +594,18 @@
                     if($amount_school > 0){
                         $student = $amount_school / $price_school;
                         
-                        $pay_sql = "SELECT * FROM payment WHERE school_id=".$row["id"]." AND user_role=$school_role_id AND status = 'Pending'";
+                        $pay_sql = "SELECT * FROM payment WHERE school_id=$school_id AND user_role=$school_role_id AND status = 'Pending'";
                         $pay_result = $connect->query($pay_sql);
                         
                         if($pay_result->num_rows > 0){
-                            $new_sql = "UPDATE payment SET amount=$amount_school, studentNumber=$student WHERE school_id=".$row["id"]." AND user_role=$school_role_id AND status='Pending';";
+                            $new_sql = "UPDATE payment SET amount=$amount_school, studentNumber=$student WHERE school_id=$school_id AND user_role=$school_role_id AND status='Pending';";
                             $connect->query($new_sql);
                         }else{
                             $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
-                                VALUES ($school_role_id, ".$row["id"].", $amount_school, $student, 'Pending')";
+                                VALUES ($school_role_id, $school_id, $amount_school, $student, 'Pending')";
                             $connect->query($new_sql);
                         }
                     }
-                    
                 }
 
                 //calculate for admin
@@ -695,16 +671,26 @@
                 $update_date = null;
             else
                 $update_date = $update_date = date("d-m-Y",strtotime($_REQUEST["date"]));
+
             $update_status = $_REQUEST["update_status"];
             $row_id = $_REQUEST["row_id"];
             $send_name = $_REQUEST["send_name"];
             $send_phone = $_REQUEST["send_phone"];
 
-            $role = fetchData("user_role","payment","id=$row_id")["user_role"];
-            $price = fetchData("price","roles","id=$role")["price"];
+            $payment = fetchData(
+                ["p.*", "r.price as user_price"],
+                [
+                    "join" => "payment roles",
+                    "alias" => "p r",
+                    "on" => "user_role id"
+                ],
+                "p.id=$row_id"
+            );
+
+            $price = floatval($payment["user_price"]);
             
             if(empty($update_channel) || $update_channel === ""){
-                $update_channel = fetchData("method","payment","id=$row_id")["method"];
+                $update_channel = $payment["method"];
             }
             
             $amount += $deduction;

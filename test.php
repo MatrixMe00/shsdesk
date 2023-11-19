@@ -300,7 +300,58 @@ $data = fetchData1("p.program_name, p.short_form as short_p, c.course_name, c.sh
 echo stringifyClassNames($data);*/
 
 // echo getStudentPosition("0012345621", 1, 1)
-$date = date("2021-09-06"); $semester = 1;
-echo getAcademicYear($date, $semester);
+// $date = date("2021-09-06"); $semester = 1;
+// echo getAcademicYear($date, $semester);
 
+$admin_access = 4;
+$user_school_id = 5;
+
+$where = ["s.Active=TRUE", "r.title LIKE 'admin%'", "c.Enroled = TRUE"];
+
+if($admin_access < 3){
+    $where[] = "s.id=$user_school_id";
+}
+
+$schools = fetchData(["DISTINCT s.id", "a.role", "a.user_id", "COUNT(c.indexNumber) as total"], [
+    [
+        "join" => "schools admins_table",
+        "alias" => "s a",
+        "on" => "id school_id"
+    ],
+    [
+        "join" => "admins_table roles",
+        "alias" => "a r",
+        "on" => "role id"
+    ],
+    [
+        "join" => "schools cssps",
+        "alias" => "s c",
+        "on" => "id schoolID"
+    ]
+], $where, 0, "AND", group_by: "id");
+
+$schools = formatSchoolForPayment($schools);
+
+if($schools){
+    $admins = $heads = array();
+
+    foreach($schools as $school_id => $data){
+        $school_role_id = ($admin_role_id = $data["role"]) + 1;
+
+        //fetch prices for the specified roles
+        if(!array_key_exists($admin_role_id, $admins)){
+            $prices = fetchData("price","roles",["id=$admin_role_id","id=$school_role_id"], 0, "OR");
+
+            //insert into array
+            $admins[$admin_role_id] = $prices[0]["price"];
+            $heads[$school_role_id] = $prices[1]["price"];
+        }
+
+        $price_admin = $admins[$admin_role_id];
+        $price_school = $heads[$school_role_id];
+
+        echo "<pre>"; var_dump($school_id, $price_admin, $price_school, $data["students"]); echo "</pre>";
+
+    }
+}
 ?>

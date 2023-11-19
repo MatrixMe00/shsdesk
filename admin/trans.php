@@ -2,15 +2,13 @@
 
     $_SESSION["nav_point"] = "payment";
 
-    if($user_details["role"] > 2 && str_contains(strtolower(getRole($user_details["role"])), 'admin') !== false && 
-        $admin_access == TRUE){
+    if($admin_access === 2){
         $isAdmin = true;
     }else{
         $isAdmin = false;
     }
 
-    if($user_details["role"] > 2 && str_contains(strtolower(getRole($user_details["role"])), 'head') !== false && 
-        $admin_access == TRUE){
+    if($admin_access === 1 && str_contains($user_role, "head")){
         $isHead = true;
     }else{
         $isHead = false;
@@ -125,7 +123,7 @@
 </section>
 <?php endif; ?>
 
-<?php if(($isAdmin || $isHead) || $user_details["role"] <= 2): ?>
+<?php if(($isAdmin || $isHead) || $role_id <= 2): ?>
 <section>
     <div class="head txt-al-c">
         <h3>Controls</h3>
@@ -150,15 +148,14 @@
     </div>
 </section>
 
-<?php if(isset($_SESSION["user_login_id"]) && $user_details["role"] <= 2){?>
+<?php if(isset($_SESSION["user_login_id"]) && $admin_access > 3){?>
 <section>
     <div class="head">
         <h3>Super Admins</h3>
     </div><?php
-        $sql = "SELECT * FROM payment WHERE user_role <= 2";
-        $result = $connect->query($sql);
+        $system_payments = decimalIndexArray(fetchData("*","payment","user_role <= 2", 0));
 
-        if($result->num_rows > 0){
+        if(is_array($system_payments)){
             $count = 1;
     ?>
     <div class="body">
@@ -177,45 +174,33 @@
                 </tr>
             </thead>
             <tbody><?php 
-                while($row = $result->fetch_assoc()){
+                foreach($system_payments as $row){
             ?>
                 <tr data-row-count="<?php echo $count?>"<?php
                     if($row["status"] == "Pending"){
                         echo " class=\"pending\"";
                     }
                 ?> data-row-id="<?php echo $row["id"]?>">
-                    <td class="td_transaction"><?php
-                        if(empty($row["transactionReference"])){
-                            echo "Not set";
-                        }else{
-                            echo $row["transactionReference"];
-                        }
-                    ?></td>
-                    <td class="td_name"><?php 
-                        if ($row["contactName"] == "-"){
-                            echo "Not set";
-                        }else{
-                            echo $row["contactName"];
-                        }
-                    ?></td>
-                    <td class="td_number"><?php 
-                        if(empty($row["contactNumber"])){
-                            echo "Not set";
-                        }else{
-                            echo $row["contactNumber"];
-                        }
-                    ?></td>
-                    <td class="td_role"><?php echo formatName(getRole($row["user_role"])); ?></td>
-                    <td class="td_student"><?php echo number_format($row["studentNumber"])?></td>
-                    <td class="td_channel"><?php
-                        if(empty($row["method"])){
-                                echo "Not set";
-                            }else{
-                                echo $row["method"];
-                            }
-                    ?></td>
-                    <td class="td_amount"><?php echo number_format(($row["amount"] - $row["deduction"]),2)?></td>
-                    <td class="td_deduction no_disp"><?php echo $row["deduction"]?></td>
+                    <td class="td_transaction">
+                        <?= empty($row["transactionReference"]) ? "Not set" : $row["transactionReference"] ?>
+                    </td>
+                    <td class="td_name">
+                        <?= $row["contactName"] == "-" ? "Not set" : $row["contactName"] ?>
+                    </td>
+                    <td class="td_number">
+                        <?= empty($row["contactNumber"]) ? "Not set" : $row["contactNumber"] ?>
+                    </td>
+                    <td class="td_role"><?= formatName(getRole($row["user_role"])) ?></td>
+                    <td class="td_student"><?= number_format($row["studentNumber"]) ?></td>
+                    <td class="td_channel">
+                        <?= empty($row["method"]) ? "Not set" : $row["method"] ?>
+                    </td>
+                    <td class="td_amount">
+                        <?= number_format(($row["amount"] - $row["deduction"]),2) ?>
+                    </td>
+                    <td class="td_deduction no_disp">
+                        <?= $row["deduction"]?>
+                    </td>
                     <td class="td_date"><?php
                         if(empty($row["date"])){
                             echo "Not set";
@@ -223,7 +208,7 @@
                             echo date("M d, Y",strtotime($row["date"]));
                         }
                     ?></td>
-                    <td><?php echo $row["status"]?></td>
+                    <td><?= $row["status"]?></td>
                 </tr><?php
                     $count++;
                 }
@@ -244,7 +229,7 @@
 </section>
 <?php }?>
 
-<?php if($isAdmin){?>
+<?php if($isAdmin || $admin_access > 3){?>
 <section class="section_block">
     <div class="head">
         <h3>Admin<?php if($user_details["role"] <= 2){echo "s"; }?></h3>

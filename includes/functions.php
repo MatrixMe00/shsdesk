@@ -467,12 +467,13 @@
      * @param int $limit Number of rows to deliver. Default is 1. Use 0 to fetch everything
      * @param array|string $where_binds This is used to bind where conditions
      * @param string $join_type This is the type of join to be used in a table
+     * @param string|array $group_by This is used in case there is a group function 
      * 
      * @return string|array returns a(n) array|string of data or error
      */
     function fetchData(string|array $columns, string|array $table, 
         string|array $where = "", int $limit = 1, string|array $where_binds = "",
-        string $join_type = ""
+        string $join_type = "", string|array $group_by = ""
     ){
         global $connect;
 
@@ -487,6 +488,11 @@
             //automatically detect that know that all data is been fetched if where is empty
             if(empty($where)){
                 $limit = 0;
+            }else{
+                if(!empty($group_by)){
+                    $sql .=" GROUP BY ";
+                    $sql .= is_array($group_by) ? implode(", ", $group_by) : $group_by;
+                }
             }
 
             //add the limit if the limit is set
@@ -520,10 +526,13 @@
      * @param int $limit Number of rows to deliver. Default is 1. Use 0 to fetch everything
      * @param string|array $where_binds Conditions to bind
      * @param string $join_type This is the type of join to be used in a table
+     * @param string|array $group_by This is used in case there is a group function 
      * 
      * @return string|array returns a(n) array|string of data or error
      */
-    function fetchData1(string|array $columns, string|array $table, string|array $where = "", int $limit = 1, string|array $where_binds = "", string $join_type = ""){
+    function fetchData1(string|array $columns, string|array $table, string|array $where = "", int $limit = 1, 
+        string|array $where_binds = "", string $join_type = "", string|array $group_by = ""
+    ){
         global $connect2;
 
         try{
@@ -537,6 +546,11 @@
             //automatically detect that know that all data is been fetched if where is empty
             if(empty($where)){
                 $limit = 0;
+            }else{
+                if(!empty($group_by)){
+                    $sql .=" GROUP BY ";
+                    $sql .= is_array($group_by) ? implode(", ", $group_by) : $group_by;
+                }
             }
 
             //add the limit if the limit is set
@@ -810,7 +824,7 @@
             $amount = $res->fetch_assoc()["amountSum"];
         }
 
-        if(is_null($amount)){
+        if(empty($amount) || is_null($amount)){
             $amount = 0;
         }
 
@@ -1495,4 +1509,28 @@
 
         return $db_data;
     }
+
+    /**
+     * Used to format school details in form ["school_id" => "admin_user_role"]
+     * @param array $schools The schools details in the form [0 => [school_id, admin_user_role]]
+     * @return array|false the new formated data or false if not an array
+     */
+    function formatSchoolForPayment(array $schools){
+        if(is_array($schools)){
+            //rearrange into form ["school_id" => "admin_role_id"]
+            $schools = decimalIndexArray($schools);
+            $schools_new = [];
+            foreach($schools as $school){
+                $schools_new[$school["id"]] = [
+                    "role" => (int) $school["role"],
+                    "students" => (int) $school["total"]
+                ];
+            }
+        }else{
+            $schools_new = false;
+        }
+
+        return $schools_new;
+    }
+
 ?>
