@@ -141,3 +141,20 @@ $(".item-event.clear").click(function(){
     $("#yes_no_form input[name=table]").val("schools");
     $("#yes_no_form input[name=mode]").val("clear_school");
 })
+
+$(".item-event.delete").click(function(){
+    const item_id = $(this).attr("data-school-id");
+
+    //display yes no modal box
+    $("#gen_del").removeClass("no_disp");
+
+    //message to display
+    item_header = $(this).parents(".user_container").find(".top").children("h3").html();
+    $("#gen_del p#warning_content").html("Do you want to delete school titled \"<b>" + 
+    item_header + "</b>\"");
+
+    //fill form with needed details
+    $("#gen_del input[name=sid]").val(item_id);
+    $("#gen_del input[name=mode]").val("delete");
+    $("#gen_del input[name=table]").val("schools");
+})

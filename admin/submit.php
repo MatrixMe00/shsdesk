@@ -437,12 +437,12 @@
 
             //sql statement
             if($mode == "delete"){
-                if($table != "admins_table"){
-                    $sql = "DELETE FROM $table 
-                        WHERE id=$sid" or die($connect->error);
-                }else{
+                if($table == "admins_table"){
                     $sql = "DELETE FROM $table 
                         WHERE user_id=$sid" or die($connect->error);
+                }else{
+                    $sql = "DELETE FROM $table 
+                        WHERE id=$sid" or die($connect->error);
                 }
             }elseif($mode == "activate" || $mode == "deactivate"){
                 $sql = "UPDATE $table 
@@ -472,6 +472,11 @@
             
             //responses
             if($connection->multi_query($sql) || $connection->query($sql)){
+                if($table == "schools"){
+                    //remove all details of the school from the admission section
+                    deleteSchoolDetails($sid);
+                }
+
                 if($submit == "yes_no_submit"){
                     header("location: $location");
                 }

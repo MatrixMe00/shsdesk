@@ -1533,4 +1533,39 @@
         return $schools_new;
     }
 
+    /**
+     * Delete every detail about a school from the database
+     * @param int|string $school_id The school id
+     */
+    function deleteSchoolDetails(int $school_id){
+        global $connect2, $connect;
+
+        //for admission database
+        $sql = "DELETE FROM admins_table WHERE school_id=$school_id; 
+                DELETE FROM admissiondetails WHERE schoolID=$school_id; 
+                DELETE FROM cssps WHERE schoolID=$school_id; 
+                DELETE FROM enrol_table WHERE shsID=$school_id;
+                DELETE FROM houses WHERE schoolID=$school_id;
+                DELETE FROM house_allocation WHERE schoolID=$school_id;
+                DELETE FROM transaction_splits WHERE schoolID=$school_id;";
+        mysqli_multi_query($connect, $sql);
+
+        $sql = array();
+
+        // for records database
+        $tables = [
+            "accesspay","accesstable","announcement","attendance","courses","exeat",
+            "program", "record_approval", "record_cleaning", "record_dates", "results",
+            "saved_results","school_ussds", "students_table", "teachers", "teacher_classes"
+        ];
+
+        foreach($tables as $table){
+            $sql[] = "DELETE FROM $table WHERE school_id=$school_id";
+        }
+
+        $sql = implode(";", $sql);
+
+        mysqli_multi_query($connect2, $sql);
+    }
+
 ?>

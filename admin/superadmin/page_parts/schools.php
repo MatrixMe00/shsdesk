@@ -4,7 +4,7 @@
     $_SESSION["nav_point"] = "Schools";
 ?>
 <section class="section_container">
-<div class="content primary">
+    <div class="content primary">
         <div class="head">
             <h2>
                 <?php
@@ -66,9 +66,7 @@
             <div class="foot flex flex-wrap">
                 <div class="item-event edit" data-school-id="<?php echo $row['id'] ?>">Edit</div>
                 <div class="item-event deactivate" data-school-id="<?php echo $row['id']?>">Deactivate</div>
-                <?php if($user_details["role"] == 1){?>
                 <div class="item-event delete" data-school-id="<?php echo $row['id'] ?>">Delete</div>
-                <?php } ?>
                 <div class="item-event clear" data-school-id="<?php echo $row['id'] ?>">Clear Records</div>
             </div>
             <?php endif; ?>
@@ -114,9 +112,7 @@
             <div class="foot flex flex-wrap">
                 <div class="item-event edit" data-school-id="<?php echo $row['id'] ?>">Edit</div>
                 <div class="item-event activate" data-school-id="<?php echo $row['id']?>">Activate</div>
-                <?php if($user_details["role"] == 1){?>
                 <div class="item-event delete" data-school-id="<?php echo $row['id'] ?>">Delete</div>
-                <?php } ?>
                 <div class="item-event clear" data-school-id="<?php echo $row['id'] ?>">Clear Records</div>
             </div>
             <?php endif; ?>
