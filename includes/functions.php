@@ -468,12 +468,14 @@
      * @param array|string $where_binds This is used to bind where conditions
      * @param string $join_type This is the type of join to be used in a table
      * @param string|array $group_by This is used in case there is a group function 
+     * @param string|array $order_by order results by some columns
+     * @param bool $asc order is in ascending order by default
      * 
      * @return string|array returns a(n) array|string of data or error
      */
     function fetchData(string|array $columns, string|array $table, 
         string|array $where = "", int $limit = 1, string|array $where_binds = "",
-        string $join_type = "", string|array $group_by = ""
+        string $join_type = "", string|array $group_by = "", string|array $order_by = "", bool $asc = true
     ){
         global $connect;
 
@@ -492,6 +494,17 @@
                 if(!empty($group_by)){
                     $sql .=" GROUP BY ";
                     $sql .= is_array($group_by) ? implode(", ", $group_by) : $group_by;
+                }
+            }
+
+            if(!empty($order_by)){
+                $sql .= " ORDER BY ";
+                $sql .= is_array($order_by) ? implode(", ", $order_by) : $order_by;
+
+                if($asc){
+                    $sql .= " ASC";
+                }else{
+                    $sql .= " DESC";
                 }
             }
 
@@ -527,11 +540,13 @@
      * @param string|array $where_binds Conditions to bind
      * @param string $join_type This is the type of join to be used in a table
      * @param string|array $group_by This is used in case there is a group function 
+     * @param string|array $order_by order results by some columns
+     * @param bool $asc order is in ascending order by default
      * 
      * @return string|array returns a(n) array|string of data or error
      */
     function fetchData1(string|array $columns, string|array $table, string|array $where = "", int $limit = 1, 
-        string|array $where_binds = "", string $join_type = "", string|array $group_by = ""
+        string|array $where_binds = "", string $join_type = "", string|array $group_by = "", string|array $order_by = "", bool $asc = true
     ){
         global $connect2;
 
@@ -550,6 +565,17 @@
                 if(!empty($group_by)){
                     $sql .=" GROUP BY ";
                     $sql .= is_array($group_by) ? implode(", ", $group_by) : $group_by;
+                }
+            }
+
+            if(!empty($order_by)){
+                $sql .= " ORDER BY ";
+                $sql .= is_array($order_by) ? implode(", ", $order_by) : $order_by;
+
+                if($asc){
+                    $sql .= " ASC";
+                }else{
+                    $sql .= " DESC";
                 }
             }
 
@@ -691,49 +717,62 @@
      * @return integer|null Returns the integer value for next room to be allocated to student or null if no room could be allocated
     */
     function setHouse($gender, $shs_placed, $ad_index, $house, $boardingStatus){
-        global $connect;
         $next_house = null;
     
         $total = count($house);
     
         //get last index number to successfully register
-        $last_student = fetchData("e.indexNumber",
-            "cssps c JOIN enrol_table e ON c.indexNumber = e.indexNumber",
-            "e.gender='$gender' AND e.indexNumber != '$ad_index' AND e.shsID=$shs_placed AND c.boardingStatus = '$boardingStatus' ORDER BY e.enrolDate DESC"
+        $last_student = fetchData(
+            ["h.houseID"],
+            [
+                ["join" => "cssps enrol_table", "alias" => "c e", "on" => "indexNumber indexNumber"],
+                ["join" => "cssps house_allocation", "alias" => "c h", "on" => "indexNumber indexNumber"]
+            ],
+            [
+                "e.gender='$gender'", "e.indexNumber != '$ad_index'", "e.shsID=$shs_placed", 
+                "c.boardingStatus='$boardingStatus'", "h.houseID IS NOT NULL"
+            ],
+            where_binds: "AND", order_by: "e.enrolDate", asc: false
         );
-        // $last_student = fetchData("indexNumber","enrol_table","shsID=$shs_placed AND gender='$ad_gender' AND indexNumber != '$ad_index' ORDER BY enrolDate DESC");
         
         if(is_array($last_student)){
-            $last_student = $last_student["indexNumber"];
-            
-            //search for last house allocation entry for this gender
-            $sql = "SELECT houseID
-                FROM house_allocation
-                WHERE indexNumber='$last_student'";
-            $result = $connect->query($sql);
-    
-            $hid = $result->fetch_assoc()["houseID"];
-            
-            if(is_null($hid) || $hid == "empty"){
-                //look for the last correctly placed student
-                $sql = "SELECT houseID FROM house_allocation 
-                    WHERE schoolID=$shs_placed AND studentGender='$gender' AND houseID IS NOT NULL 
-                    AND boardingStatus='$boardingStatus' ORDER BY indexNumber DESC LIMIT 1";
-                $result = $connect->query($sql);
-                
-                $hid = $result->fetch_assoc()["houseID"];
-            }
-    
-            if(!is_null($hid)){
+            $hid = (int) $last_student["houseID"];
+
+            if(!empty($hid)){
                 //retrieve last house id given out
                 $id = $hid;
                 $next_house = 0;
+
+                //get the total of all houses
+                $hs_ttl = decimalIndexArray(fetchData(...[
+                    "columns" => ["h.id", "COUNT(ho.indexNumber) as total"],
+                    "table" => [
+                        "join" => "house_allocation houses",
+                        "alias" => "ho h",
+                        "on" => "houseID id"
+                    ],
+                    "where" => ["ho.schoolID=$shs_placed","ho.studentGender='$gender'", "ho.boardingStatus='Boarder'"],
+                    "limit" => 0, "where_binds" => "AND", "group_by" => "h.id"
+                ]));
+
+                foreach($house as $house_value){
+                    $found = false;
+                    foreach($hs_ttl as $ttl){
+                        if($ttl["id"] == $house_value["id"]){
+                            $ttl_data[$house_value["id"]] = (int) $ttl["total"];
+                            $found = true;
+                        }
+                    }
+                
+                    if(!$found){
+                        $ttl_data[$house_value["id"]] = 0;
+                    }
+                }
                 
                 for($i = 0; $i < $total; $i++){                    
                     //try choosing the next, previous or current house
                     //start at the last house given out
                     if($house[$i]["id"] == $id){
-                        $ttl = null;
                         $check_count = 0;       //this variable would be used check if all houses have been checked at most once
                         
                         //select a house and check its availability
@@ -753,7 +792,7 @@
 
                                 //get house id, total epected membership and current total membership
                                 $nid = $house[$house_pointer]["id"];
-                                $ttl = fetchData("COUNT(indexNumber) AS total", "house_allocation", "schoolID=$shs_placed AND houseID=$nid AND studentGender='$gender' AND boardingStatus='Boarder'")["total"];
+                                $ttl = $ttl_data[$nid];
                                 $cur_ttl = $house[$house_pointer]["totalHeads"];
                                 
                                 //check immediate available houses
@@ -778,7 +817,6 @@
                                 }
                             }
                             
-                            
                             //increment i
                             $i++;
     
@@ -798,7 +836,7 @@
                 //this means it is the first entry
                 $next_house = $house[0]["id"];
             }
-        }elseif(strtolower($last_student) === "empty"){
+        }else{
             $next_house = $house[0]["id"];
         }
     
@@ -1568,4 +1606,21 @@
         mysqli_multi_query($connect2, $sql);
     }
 
-?>
+    /**
+     * Determine if the phone number provided is a valid phone number
+     * @param string $phone_number The phone number to be validated
+     * @param string|null $network_provider Optional network provider
+     * @return bool returns true if phone number is valid and false if otherwise
+     */
+    function checkPhoneNumber(string $phone_number, ?string $network_provider = null) :bool{
+        global $phoneNumbers;
+        global $phoneNumbers1;
+
+        $phone_number = remakeNumber($phone_number, false, false);
+
+        if(is_null($network_provider)){
+            return array_search(substr($phone_number,0,3), $phoneNumbers);
+        }else{
+            return array_search(substr($phone_number, 0, 3), $phoneNumbers1[strtolower($network_provider)]);
+        }        
+    }

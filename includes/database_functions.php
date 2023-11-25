@@ -29,6 +29,11 @@
             $new_where = $where;
         }else{
             if(is_array($bind)){
+                // bind should be one less than the where
+                while(count($bind) >= count($where)){
+                    array_pop($bind);
+                }
+                
                 foreach($bind as $key => $binder){
                     if(!empty($new_where)){
                         $new_where .= " ";
@@ -36,6 +41,9 @@
 
                     $new_where .= $where[$key]." ".$binder;
                 }
+
+                //add last parts of the where
+                $new_where .= " ". end($where);
             }else if(!empty($bind) && 
                 array_search(strtolower($bind), ["or", "and", "like"], true) !== false
             ){

@@ -675,11 +675,17 @@ $("form[name=admissionForm]").submit(function(e){
                 }else if(response == "p-p-long"){
                     message = "Primary phone number is longer than normal";
                     i = 2;
+                }else if(response == "p-p-invalid"){
+                    message = "Primary phone number is not a invalid phone number";
+                    i = 2;
                 }else if(response == "s-p-short"){
                     message = "Secondary phone number is shorter than normal";
                     i = 2;
                 }else if(response == "s-p-long"){
                     message = "Secondary phone number is longer than normal";
+                    i = 2;
+                }else if(response == "s-p-invalid"){
+                    message = "Secondary phone number is not a invalid phone number";
                     i = 2;
                 }else if(response == "no-interest-set"){
                     message = "Please select at least one interest";
@@ -695,6 +701,9 @@ $("form[name=admissionForm]").submit(function(e){
                     i = 2;
                 }else if(response == "witness-phone-short"){
                     message = "Witness' phone number is shorter than normal";
+                    i = 2;
+                }else if(response == "witness-phone-invalid"){
+                    message = "Witness' phone number is not a valid phone number";
                     i = 2;
                 }else{
                     message = response;

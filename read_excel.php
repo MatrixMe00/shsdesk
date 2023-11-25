@@ -52,8 +52,7 @@
 
                             if(strtolower($cellValue) != "index number" || strval(strpos(strtolower($cellValue), "index")) == "false"){
                                 //display error if the first column isnt the index number
-                                echo "First column not identified as 'index number'. Please follow the format directed in the documents above";
-                                exit(1);
+                                exit("First column not identified as 'index number'. Please follow the format directed in the documents above");
                             }
                         }
                     }elseif($max_column == "H" || $max_column == "G"){
@@ -70,13 +69,11 @@
                             $row_start = 2;
 
                             if(strval(strpos(strtolower($cellValue), "index")) == "false"){
-                                echo "The file you sent cannot be defined. Please send a valid file format. Make sure it begins with 'index'";
-                                exit(1);
+                                exit("The file you sent cannot be defined. Please send a valid file format. Make sure it begins with 'index'");
                             }
                         }
                     }elseif(array_search($max_column, $acceptable) === false){
-                        echo "Invalid file detected. Please send the correct file to continue";
-                        exit(1);
+                        exit("Invalid file detected. Please send the correct file to continue");
                     }
 
                     //last heading
@@ -128,12 +125,12 @@
                         foreach ($sheet->getMergeCells() as $row){
                             if($cell->isInRange($row)){
                                 //cell is merged
-                                return "true";
+                                return true;
                             }
                         }
 
                         //cell is by default defined as not merged
-                        return "false";
+                        return false;
                     }
                     
                     //display content
@@ -159,6 +156,10 @@
                                         break;
                                     case 4:
                                         $boardingStatus = formatName($cellValue);
+
+                                        if(str_contains($boardingStatus, "board")){
+                                            $boardingStatus = "Boarder";
+                                        }
                                         break;    
                                     case 5:
                                         $programme = formatName($cellValue);
@@ -186,8 +187,7 @@
                                         break;
     
                                     default:
-                                        "Buffer count is beyond expected input count";
-                                        exit(1);
+                                        exit("Buffer count is beyond expected input count");
                                 }
                             }
     
@@ -241,8 +241,7 @@
                                                 }
                                             }
                                         }else{
-                                            echo "Student's name could not be retrieved. Check your file and try again later, else report to admin for help";
-                                            exit(1);
+                                            exit("Student's name could not be retrieved. Check your file and try again later, else report to admin for help");
                                         }
                                         
                                         break;
