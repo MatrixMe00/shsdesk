@@ -1255,11 +1255,12 @@
         global $developmentServer;
         
         $message = "";
-        if($developmentServer){
+        /*if($developmentServer){
             $message = $throwable->getTraceAsString();
         }else{
             $message = $throwable->getMessage();
-        }
+        }*/
+        $message = $throwable->getMessage();
 
         return $message;
     }

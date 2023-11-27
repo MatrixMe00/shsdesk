@@ -4,13 +4,26 @@
         <span class="self-align-start">Total Subjects</span>
         <span class="txt-fl3 txt-bold self-align-end"><?php 
             if(!is_null($student["program_id"])){
-                $course_total = countProgramSubjects($student["program_id"]);
+                $subjects = fetchData1(...[
+                    "columns" => [
+                        "c.course_id", "c.course_name", "c.short_form", 
+                        "c.credit_hours", "CONCAT(t.lname, ' ', t.oname) as fullname"
+                    ],
+                    "table" => [
+                        ["join" => "courses teacher_classes", "alias" => "c tc", "on" => "course_id course_id"],
+                        ["join" => "teacher_classes teachers", "alias" => "tc t", "on" => "teacher_id teacher_id"],
+                        ["join" => "teacher_classes program", "alias" => "tc p", "on" => "program_id program_id"]
+                    ],
+                    "where" => [
+                        "tc.program_id={$student['program_id']}", "tc.class_year={$student['studentYear']}",
+                        "(p.course_ids LIKE CONCAT(tc.course_id,' %')", "p.course_ids LIKE CONCAT('% ',tc.course_id,' %')", "p.course_ids LIKE CONCAT('% ',tc.course_id))"
+                    ],
+                    "limit" => 0, "where_binds" => ["AND", "AND", "OR", "OR"],
+                    "join_type" => "left outer", "order_by" => "c.course_id"
+                ]);
+                $no_subjects = "<span class='txt-fl2'>No courses assigned</span>";
 
-                if($course_total === false){
-                    echo "<span class='txt-fl2'>No courses assigned</span>";
-                }else{
-                    echo $course_total;
-                }
+                echo is_array($subjects) ? count($subjects) : $no_subjects;
             }else{
                 echo "<span class='txt-fl2'>No class assigned</span>";
             }
@@ -20,7 +33,22 @@
         <span class="self-align-start">Total Program Teachers (Registered)</span>
         <span class="txt-fl3 txt-bold self-align-end"><?php 
             if(!is_null($student["program_id"])){
-                echo fetchData1("COUNT(DISTINCT teacher_id) as total","teacher_classes","program_id={$student['program_id']}")["total"];
+                // echo fetchData1("COUNT(DISTINCT teacher_id) as total","teacher_classes","program_id={$student['program_id']}")["total"];
+                if(is_array($subjects)){
+                    $teachers = array_column($subjects, "fullname");
+                    
+                    //count no null teachers
+                    $total = 0;
+                    foreach($teachers as $teacher){
+                        if(!empty($teacher) && strtolower($teacher) !== "null"){
+                            ++$total;
+                        }
+                    }
+
+                    echo $total;
+                }else{
+                    echo 0;
+                }
             }else{
                 echo "<span class='txt-fl2'>No class assigned</span>";
             }
@@ -49,19 +77,15 @@
                 <td colspan="5" class="txt-al-c sp-xxlg-tp">Your program has not been uploaded yet. Please contact your school administrator for aid.</td>
             </tr>
             <?php else :
-                // $subjects = getProgramSubjectNTeachers($student["program_id"]);
-                $table_columns = ["course_id","course_name","short_form", "credit_hours"];
-                $subjects = getProgramSubjects($student["program_id"], $table_columns);
-                $teachers = getProgramTeachers($student["program_id"]);
-                if(is_array($subjects) && count($subjects) > 0) :
-                    foreach($subjects as $counter=>$subject) :
+                if(is_array($subjects)) :
+                    foreach($subjects as $subject) :
             ?>
             <tr data-course-id="<?= $subject["course_id"] ?>" data-school-id="<?= $student["school_id"] ?>">
                 <td><?= formatItemId($subject["course_id"], "SID") ?></td>
                 <td><?= ucwords(strtolower($subject["course_name"])) ?></td>
-                <td><?= ucwords(strtolower($subject["short_form"])) ?></td>
-                <td><?= $teachers[$counter] != "none" ? ucwords(strtolower($teachers[$counter])) : "Teacher Not Set" ?></td>
-                <td><?= is_null($subject["credit_hours"]) ? "Not Set" : $subject["credit_hours"] ?></td>
+                <td><?= $subject["short_form"] ?></td>
+                <td><?= !empty($subject["fullname"]) ? ucwords(strtolower($subject["fullname"])) : "Teacher Not Set" ?></td>
+                <td><?= $subject["credit_hours"] ?? "Not Set" ?></td>
             </tr>
             <?php 
                     endforeach;

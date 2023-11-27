@@ -59,7 +59,7 @@
                 $pdf->SetSubject("Report Summary");
                 $pdf->SetKeywords("Report, SHSDesk, summary, document, ".getSchoolDetail($student["school_id"])['schoolName']);
 
-                $date_now = date("M j, Y")." at ".date("H:i:sa");
+                $date_now = date("M j, Y")." at ".date("h:i:sa");
 
                 //semester results table filters
                 $semester = $_REQUEST["semester"];
@@ -122,7 +122,7 @@
                     </thead>
                     <tbody>";
                 
-                $sql = "SELECT c.course_name, r.course_id, r.class_mark, r.exam_mark, r.mark
+                $sql = "SELECT DISTINCT c.course_name, r.course_id, r.class_mark, r.exam_mark, r.mark
                     FROM results r JOIN courses c ON r.course_id=c.course_id
                     WHERE r.indexNumber='{$student['indexNumber']}' AND r.exam_year=$exam_year AND r.semester=$semester";
                 $results = $connect2->query($sql);
@@ -171,6 +171,8 @@
                 $newqr = '<barcode code="Document digitally signed by '.$head_master.'" type="QR" class="barcode" size="1" error="M" disableborder="0"
                 style="background-color: yellow;" />';
 
+                $school_result_type = strtoupper($school_result_type);
+
                 $content = <<<HTML
                 <head>
                     <style>
@@ -182,7 +184,7 @@
                         .header{text-align: center}
                         .fl{font-size: large}
                         .fs{font-size: small}
-                        .school_name{margin-bottom: 10mm}
+                        .school_name{margin-bottom: 10mm; margin-top: 10mm;}
                         .half{width: 80.8mm}
                         .quarter{width: 40.4mm}
                         .third{width: 53.9mm}

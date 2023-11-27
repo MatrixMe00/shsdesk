@@ -4,10 +4,10 @@
     $submit = $_REQUEST["submit"];
 
     if($submit === "report_search" || $submit === "stat_search" || $submit === "report_search_ajax" || $submit === "stat_search_ajax"){
-        @$report_year = $_GET["report_year"];
-        @$report_term = $_GET["report_term"];
-        @$index_number = $_GET["index_number"];
-        @$distinct = $_GET["result_distinct"] ?? false;
+        $report_year = $_GET["report_year"];
+        $report_term = $_GET["report_term"];
+        $index_number = $_GET["index_number"];
+        $distinct = $_GET["result_distinct"] ?? false;
 
         $message = array();
 
@@ -22,8 +22,7 @@
         if(count($message) === 0){
             $message["error"] = true;
 
-            if($distinct){$distinct = "DISTINCT(r.exam_type)";}
-            else{$distinct = "r.exam_type";}
+            $distinct = "DISTINCT r.exam_type";
 
             if($submit == "report_search" || $submit == "report_search_ajax"){
                 $sql = "SELECT $distinct, c.course_name, r.class_mark, r.exam_mark, r.mark ";
@@ -32,8 +31,9 @@
             }
 
             $sql .= "FROM results r JOIN courses c ON r.course_id=c.course_id
-                WHERE indexNumber='$index_number' AND exam_year=$report_year AND semester=$report_term AND accept_status=1
+                WHERE r.indexNumber='$index_number' AND r.exam_year=$report_year AND r.semester=$report_term AND r.accept_status=1
                 ORDER BY r.exam_type ASC";
+            // echo $sql; return;
             $query = $connect2->query($sql);
 
             if($query->num_rows > 0){
@@ -94,9 +94,9 @@
 
         echo $message;
     }elseif($submit == "getCourseData" || $submit == "getCourseData_ajax"){
-        @$course_id = $_GET["cid"];
-        @$school_id = $_GET["sid"];
-        @$student_index = $_GET["stud_index"];
+        $course_id = $_GET["cid"];
+        $school_id = $_GET["sid"];
+        $student_index = $_GET["stud_index"];
         $error = true; $message = null; $return = array();
 
         if(empty($course_id)){

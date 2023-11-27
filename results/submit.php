@@ -124,10 +124,10 @@ if(isset($_REQUEST["submit"])){
 
         echo $message;
     }elseif($submit === "report_search" || $submit === "stat_search" || $submit === "report_search_ajax" || $submit === "stat_search_ajax"){
-        @$report_year = $_GET["report_year"];
-        @$report_term = $_GET["report_term"];
-        @$index_number = $_GET["index_number"];
-        @$distinct = $_GET["result_distinct"] ?? false;
+        $report_year = $_GET["report_year"];
+        $report_term = $_GET["report_term"];
+        $index_number = $_GET["index_number"];
+        $distinct = $_GET["result_distinct"] ?? false;
 
         $message = array();
 
@@ -142,8 +142,9 @@ if(isset($_REQUEST["submit"])){
         if(count($message) === 0){
             $message["error"] = true;
 
-            if($distinct){$distinct = "DISTINCT(r.exam_type)";}
-            else{$distinct = "r.exam_type";}
+            // if($distinct){$distinct = "DISTINCT r.exam_type";}
+            // else{$distinct = "r.exam_type";}
+            $distinct = "DISTINCT r.exam_type";
 
             if($submit == "report_search" || $submit == "report_search_ajax"){
                 $sql = "SELECT $distinct, c.course_name, r.class_mark, r.exam_mark, r.mark ";
