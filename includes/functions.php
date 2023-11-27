@@ -713,13 +713,32 @@
      * @param string $ad_index This is the index number of the student to be allocated a house
      * @param array $house Receives an array of house ids
      * @param string $boardingStatus Receives the boarding status to be checked on, defaults on boarder
+     * @param bool $is_new Check if the current entry is new or not
      * 
      * @return integer|null Returns the integer value for next room to be allocated to student or null if no room could be allocated
     */
-    function setHouse($gender, $shs_placed, $ad_index, $house, $boardingStatus){
+    function setHouse($gender, $shs_placed, $ad_index, $house, $boardingStatus, $is_new = true){
         $next_house = null;
+
+        //allow whole database details to be passed here
+        $house = decimalIndexArray($house);
+
+        if(!array_key_exists("totalHeads",$house[0])){
+            $houses = $house;
+            $house = array_map(function($data) use ($gender){
+                $gender_room = strtolower($gender)."HeadPerRoom";
+                $gender_total_room = strtolower($gender)."TotalRooms";
+
+                return [
+                    "id" => $data["id"],
+                    "totalHeads" => intval($data[$gender_room]) * intval($data[$gender_total_room])
+                ];
+            }, $houses);
+        }
     
         $total = count($house);
+
+        $last_student_order = $is_new ? "e.enrolDate" : "h.updated_at";
     
         //get last index number to successfully register
         $last_student = fetchData(
@@ -730,9 +749,9 @@
             ],
             [
                 "e.gender='$gender'", "e.indexNumber != '$ad_index'", "e.shsID=$shs_placed", 
-                "c.boardingStatus='$boardingStatus'", "h.houseID IS NOT NULL"
+                "c.boardingStatus='$boardingStatus'", "h.houseID IS NOT NULL", "h.houseID > 0"
             ],
-            where_binds: "AND", order_by: "e.enrolDate", asc: false
+            where_binds: "AND", order_by: $last_student_order, asc: false
         );
         
         if(is_array($last_student)){

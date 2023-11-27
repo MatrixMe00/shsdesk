@@ -5,82 +5,94 @@
     $_SESSION["nav_point"] = "programs";
 
     //check if current school is a day school
-    $isDay = getSchoolDetail($user_school_id, true)["residence_status"];
+    $isDay = $stat = getSchoolDetail($user_school_id, true)["residence_status"];
     if($isDay == "day"){
         $isDay = true;
     }else{
+        $stat = "boarder";
         $isDay = false;
+        $day_studs = (int) fetchData("COUNT(ho.indexNumber) as total",
+            ["join"=>"house_allocation houses", "alias" => "ho h", "on" => "houseID id"],
+            ["h.schoolID=$user_school_id", "boardingStatus='Day'", "current_data=1"],0,"AND"
+        )["total"];
+        $displaced_studs = (int) $connect->query(
+            "SELECT COUNT(indexNumber) AS total 
+                FROM house_allocation 
+                WHERE schoolID=$user_school_id AND current_data = 1 AND NOT EXISTS (
+                    SELECT 1 
+                    FROM houses 
+                    WHERE houses.id = house_allocation.houseID 
+                    AND houses.schoolID = $user_school_id
+                )"
+        )->fetch_assoc()["total"];
     }
+
+    $male_allocation = (int) fetchData("COUNT(ho.indexNumber) as total",
+        ["join"=>"house_allocation houses", "alias" => "ho h", "on" => "houseID id"],
+        ["h.schoolID=$user_school_id", "studentGender='Male'", "boardingStatus='$stat'", "current_data=1"],0,"AND"
+    )["total"];
+    $female_allocation = (int) fetchData("COUNT(ho.indexNumber) as total",
+        ["join"=>"house_allocation houses", "alias" => "ho h", "on" => "houseID id"],
+        ["h.schoolID=$user_school_id", "studentGender='Female'", "boardingStatus='$stat'", "current_data=1"],0,"AND"
+    )["total"];
 ?>
 
 <section class="section_container">
     <div class="content" style="background-color: #007bff;">
         <div class="head">
-            <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id");
-                    
-                    echo $res->num_rows;
-                ?>
-            </h2>
+            <h2><?php echo $male_allocation + $female_allocation + (int) $day_studs; ?></h2>
         </div>
         <div class="body">
-            <span>Students Registered</span>
+            <span>Students Registered Houses</span>
         </div>
     </div>
 
     <div class="content" style="background-color: #20c997">
         <div class="head">
             <h2>
-                <?php
-                    if($isDay){
-                        $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Male' AND boardingStatus = 'Day'");
-                    }else{
-                        $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Male' AND boardingStatus = 'Boarder'");
-                    }                    
-                    
-                    echo $res->num_rows;
-                ?>
+                <?= !$isDay ? ($male_allocation + $female_allocation) : $male_allocation ?>
             </h2>
         </div>
         <div class="body">
-            <span>Males Allocated Houses</span>
+            <span><?= !$isDay ? "Boarding Students" : "Males Allocated Houses" ?></span>
         </div>
     </div>
 
+    <?php if($isDay): ?>
     <div class="content" style="background-color: #ffc107">
         <div class="head">
             <h2>
-                <?php
-                    if($isDay){
-                        $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Female' AND boardingStatus = 'Day'");
-                    }else{
-                        $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND studentGender='Female' AND boardingStatus = 'Boarder'");
-                    }                    
-                    
-                    echo $res->num_rows;
-                ?>
+                <?= $female_allocation ?>
             </h2>
         </div>
         <div class="body">
             <span>Females Allocated Houses</span>
         </div>
     </div>
+    <?php endif; ?>
     
-    <?php if(!$isDay){?><div class="content" style="background-color: #dc3545">
+    <?php if(!$isDay):?>
+    <div class="content yellow">
         <div class="head">
             <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber FROM house_allocation WHERE schoolID = $user_school_id AND boardingStatus = 'Day'");
-                    
-                    echo $res->num_rows;
-                ?>
+                <?= $day_studs ?>
             </h2>
         </div>
         <div class="body">
             <span>Day Students</span>
         </div>
-    </div><?php } ?>
+    </div>
+    <div class="content red">
+        <div class="head">
+            <h2>
+                <?= $displaced_studs ?>
+            </h2>
+        </div>
+        <div class="body">
+            <span>Misplaced Housed Students</span>
+        </div>
+    </div>
+    <?php endif; ?>
 </section>
 
 <section>
@@ -99,13 +111,25 @@
 
 <section>
     <div class="head">
-        <h2>List of Houses in your school</h2>
+        <h2>House Status [Current Admission]</h2>
     </div>
     <div class="body">
         <?php
-            $res = $connect->query("SELECT * FROM houses WHERE schoolID = $user_school_id");
-
-            if($res->num_rows){
+            $houses = decimalIndexArray(fetchData(
+                [
+                    "h.id", "h.title", "h.maleTotalRooms", "h.maleHeadPerRoom", "h.femaleTotalRooms", "h.femaleHeadPerRoom", 
+                    "COUNT(ho.indexNumber) as total", "ho.studentGender", "ho.boardingStatus"
+                ],
+                ["join" => "houses house_allocation", "alias" => "h ho", "on" => "id houseID"],
+                ["h.schoolID=$user_school_id","(LOWER(ho.boardingStatus)='$stat'", "ho.boardingStatus IS NULL)"], 0, where_binds: ["AND", "OR"], 
+                group_by: [
+                    "h.id", "h.title", "h.maleTotalRooms", "h.maleHeadPerRoom", "h.femaleTotalRooms", "h.femaleHeadPerRoom",
+                    "h.title","ho.studentGender", "ho.boardingStatus"
+                ], join_type: "left outer"
+            ));
+            
+            // $houses = $connect->query("SELECT * FROM houses WHERE schoolID = $user_school_id")->fetch_all(MYSQLI_ASSOC);
+            if(is_array($houses)){
         ?>
         <table class="full">
             <thead>
@@ -120,144 +144,36 @@
                 </tr>
             </thead>
             <tbody>
-                <?php 
-                    $count = 0;
-                    while($row=$res->fetch_assoc()){
-                    
-                    if($row["gender"] == "Both"){
-                ?>
-                <tr data-item-id="<?php echo $row["id"] ?>">
-                    <td><?php echo ++$count ?></td>
-                    <td><?php echo $row["title"] ?></td>
-                    <td><?php echo "Male" ?></td>
-                    <td><?php echo $row["maleTotalRooms"] ?></td>
-                    <td><?php echo $row["maleHeadPerRoom"] ?></td>
-                    <td>
-                        <?php
-                            if($isDay){
-                                $sql = "SELECT COUNT(indexNumber) AS total
-                                    FROM house_allocation
-                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Day' AND studentGender='Male'";
-                            }else{
-                                $sql = "SELECT COUNT(indexNumber) AS total
-                                    FROM house_allocation
-                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Boarder' AND studentGender='Male'";
-                            }
-                            
-                            $query = $connect->query($sql);
-                            
-                            $tot = $query->fetch_assoc()["total"];
-                            echo $tot;
-                        ?>
-                    </td>
-                    <td><?php 
-                        if($tot == ($row["maleHeadPerRoom"] * $row["maleTotalRooms"])){
-                            echo "Full";
-                        }elseif($tot > ($row["maleHeadPerRoom"] * $row["maleTotalRooms"])){
-                            echo "Overboard";
-                        }else{
-                            echo "Not Full";
-                        }
-                    ?></td>
-                    <td class="flex flex-wrap">
-                        <span class="item-event edit">Edit</span>
-                        <span class="item-event delete">Delete</span>
-                    </td>
-                </tr>
-
-                <tr data-item-id="<?php echo $row["id"] ?>">
-                    <td><?php echo ++$count ?></td>
-                    <td><?php echo $row["title"] ?></td>
-                    <td><?php echo "Female" ?></td>
-                    <td><?php echo $row["femaleTotalRooms"] ?></td>
-                    <td><?php echo $row["femaleHeadPerRoom"] ?></td>
-                    <td>
-                        <?php 
-                            if($isDay){
-                                $sql = "SELECT COUNT(indexNumber) AS total
-                                    FROM house_allocation
-                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Boarder' AND studentGender='Female'";
-                            }else{
-                                $sql = "SELECT COUNT(indexNumber) AS total
-                                    FROM house_allocation
-                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Boarder' AND studentGender='Female'";
-                            }
-                            
-                            $query = $connect->query($sql);
-                            
-                            $tot = $query->fetch_assoc()["total"];
-                            echo $tot;
-                        ?>
-                    </td>
-                    <td><?php 
-                        if($tot == ($row["femaleHeadPerRoom"] * $row["femaleTotalRooms"])){
-                            echo "Full";
-                        }elseif($tot > ($row["femaleHeadPerRoom"] * $row["femaleTotalRooms"])){
-                            echo "Overboard";
-                        }else{
-                            echo "Not Full";
-                        }
-                    ?></td>
-                    <td class="flex flex-wrap">
-                        <span class="item-event edit">Edit</span>
-                        <span class="item-event delete">Delete</span>
-                    </td>
-                </tr>
                 <?php
-                    }else{
+                    $count = 0;
+                    foreach($houses as $house) : 
                 ?>
-                <tr data-item-id="<?php echo $row["id"] ?>">
-                    <?php 
-                        $totalRooms = 0;
-                        $headPerRoom = 0;
-
-                        if($row["gender"] == "Male"){
-                            $totalRooms = $row["maleTotalRooms"];
-                            $headPerRoom = $row["maleHeadPerRoom"];
-                        }else{
-                            $totalRooms = $row["femaleTotalRooms"];
-                            $headPerRoom = $row["femaleHeadPerRoom"];
-                        }
-                    ?>
+                <tr data-item-id="<?php echo $house["id"] ?>">
                     <td><?php echo ++$count ?></td>
-                    <td><?php echo $row["title"] ?></td>
-                    <td><?php echo $row["gender"] ?></td>
-                    <td><?php echo $totalRooms ?></td>
-                    <td><?php echo $headPerRoom ?></td>
-                    <td>
-                        <?php 
-                            if($isDay){
-                                $sql = "SELECT COUNT(indexNumber) AS total
-                                    FROM house_allocation
-                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Day'";
-                            }else{
-                                $sql = "SELECT COUNT(indexNumber) AS total
-                                    FROM house_allocation
-                                    WHERE schoolID=$user_school_id AND houseID=".$row["id"]." AND boardingStatus = 'Boarder'";
-                            }
-                            
-                            $query = $connect->query($sql);
-                            
-                            $tot = $query->fetch_assoc()["total"];
-                            echo $tot;
-                        ?>
-                    </td>
+                    <td><?php echo $house["title"] ?></td>
+                    <td><?php echo $house["studentGender"] ?></td>
+                    <td><?php echo !is_null($gen = $house["studentGender"]) ? $house[strtolower($gen)."TotalRooms"] : ($house["maleTotalRooms"] ?? $house["femaleTotalRooms"]) ?></td>
+                    <td><?php echo !is_null($gen = $house["studentGender"]) ? $house[strtolower($gen)."HeadPerRoom"] : ($house["maleHeadPerRoom"] ?? $house["femaleHeadPerRoom"]) ?></td>
+                    <td><?php echo $house["total"] ?></td>
                     <td><?php 
-                        if($tot == ($headPerRoom * $totalRooms)){
-                            echo "Full";
-                        }elseif($tot > ($headPerRoom * $totalRooms)){
-                            echo "Overboard";
+                        if(!is_null($house["studentGender"])){
+                            if($house["total"] == ($house["maleHeadPerRoom"] * $house["maleTotalRooms"])){
+                                echo "Full";
+                            }elseif($house["total"] > ($house["maleHeadPerRoom"] * $house["maleTotalRooms"])){
+                                echo "Overboard";
+                            }else{
+                                echo "Not Full";
+                            }
                         }else{
                             echo "Not Full";
-                        }
+                        }                            
                     ?></td>
                     <td class="flex flex-wrap">
                         <span class="item-event edit">Edit</span>
                         <span class="item-event delete">Delete</span>
                     </td>
                 </tr>
-                <?php } ?>
-                <?php } ?>
+                <?php endforeach ?>
             </tbody>
         </table>
         <?php }else{
@@ -266,6 +182,106 @@
         ?>
     </div>
 </section>
+
+<section>
+    <div class="head">
+        <h2>House Allocation Summary</h2>
+    </div>
+    <?php 
+        $houses_db = fetchData(
+            ["h.title", "COUNT(ho.indexNumber) as total", "ho.studentGender", "ho.boardingStatus"],
+            ["join" => "houses house_allocation", "alias" => "h ho", "on" => "id houseID"],
+            ["h.schoolID=$user_school_id"], 0, group_by: ["h.title","ho.studentGender", "ho.boardingStatus"], join_type: "left"
+        );
+
+        $house_title = "";
+        $ttl_m = $ttl_f = $ttl_b = $ttl_d = 0;
+        $houses = [];
+
+        foreach($houses_db as $house){
+            $house_title = $house["title"];
+            if(!in_array($house_title, array_column($houses, "title"))){
+                foreach($houses_db as $hs){
+                    if($house_title == $hs["title"]){
+                        if($hs["studentGender"] == "Male"){
+                            $ttl_m += (int) $hs["total"];
+                        }else{
+                            $ttl_f += (int) $hs["total"];
+                        }
+
+                        if($hs["boardingStatus"] == "Boarder"){
+                            $ttl_b += (int) $hs["total"];
+                        }else{
+                            $ttl_d += (int) $hs["total"];
+                        }
+                    }
+                }
+            }else{
+                continue;
+            }
+
+            //store data into houses array
+            $houses[] = [
+                "title" => $house_title, "border" => $ttl_b,
+                "males" => $ttl_m, "females" => $ttl_f, "day" => $ttl_d
+            ];
+
+            //reset variables
+            $house_title = "";
+            $ttl_m = $ttl_f = $ttl_b = $ttl_d = 0;
+        }
+    ?>
+    <div class="body">
+        <table>
+            <thead>
+                <tr>
+                    <td>No.</td>
+                    <td>House Name</td>
+                    <td>Males</td>
+                    <td>Females</td>
+                    <td>Boarders</td>
+                    <td>Day</td>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if(count($houses) > 0): 
+                    $count = 1;
+                    foreach($houses as $house) :
+                ?>
+                <tr>
+                    <td><?= $count++ ?></td>
+                    <td><?= $house["title"] ?></td>
+                    <td><?= $house["males"] ?></td>
+                    <td><?= $house["females"] ?></td>
+                    <td><?= $house["border"] ?></td>
+                    <td><?= $house["day"] ?></td>
+                </tr>
+                <?php endforeach; else: ?>
+                <tr class="empty">
+                    <td colspan="6">No results to display</td>
+                </tr>
+                <?php endif;?>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<?php if($displaced_studs > 0): ?>
+<section>
+    <div class="head">
+        <h2>Misplaced Students</h2>
+    </div>
+    <div class="body">
+        <div class="border b-warning txt-al-c sp-med-lr sp-xlg-tp">
+            <p>These are students who have registered but their houses have recently been deleted</p>
+            <p>You currently have <u><?= $displaced_studs ?></u> students in this category</p>
+        </div>
+        <div class="btn p-lg sm-auto wmax-3xs w-full w-fluid-child">
+            <button class="secondary" id="resolve">Resolve Issue</button>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
 
 <div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
     <?php include_once($rootPath."/admin/admin/page_parts/add_house.php")?>

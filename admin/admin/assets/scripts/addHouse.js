@@ -211,3 +211,31 @@ $("input[name=gender]").change(function(){
         $("form[name=" + formName + "] #male_house").show();
     }
 })
+
+//resolve misplaced students
+$("button#resolve").click(function(){
+    const btn = $(this);
+    const user_confirmation = window.confirm("Proceed with resolve?");
+
+    if(user_confirmation){
+        $.ajax({
+            url: "./admin/submit.php",
+            data: {submit: "resolve_students"},
+            beforeSend: function(){
+                btn.html("Resolving...");
+            },
+            success: function(response){
+                btn.html("Resolve Issue");
+    
+                if(response == "success"){
+                    alert_box("Placement issue resolved", "success", 3.5);
+                    $("#lhs .item.active").click();
+                }else{
+                    alert_box(response, "danger", 8);
+                }
+            }
+        })
+    }else{
+        alert_box("Process Canceled", "secondary", 2);
+    }
+})

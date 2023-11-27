@@ -2193,6 +2193,40 @@
             }
 
             echo $message;
+        }elseif($submit == "resolve_students"){
+            $displaced_studs = $connect->query(
+                "SELECT studentGender, indexNumber, boardingStatus 
+                    FROM house_allocation 
+                    WHERE schoolID=$user_school_id AND current_data = 1 AND NOT EXISTS (
+                        SELECT 1 
+                        FROM houses 
+                        WHERE houses.id = house_allocation.houseID 
+                        AND houses.schoolID = $user_school_id
+                    )"
+            )->fetch_all(MYSQLI_ASSOC);
+
+            $houses = decimalIndexArray(fetchData(...[
+                "columns" => ["id","maleHeadPerRoom", "maleTotalRooms", "femaleHeadPerRoom", "femaleTotalRooms"],
+                "table" => "houses",
+                "where" => ["schoolID=$user_school_id"],
+                "limit" => 0,
+            ]));
+
+            //add seconds to current time
+            $sec = 0;
+            foreach($displaced_studs as $student){
+                $student_house = setHouse($student["studentGender"], $user_school_id, $student["indexNumber"], $houses, $student["boardingStatus"], false);
+                $now = date("Y-m-d H:i:s", strtotime("+".$sec++." seconds"));
+
+                // update student data
+                try {
+                    $connect->query("UPDATE house_allocation SET houseID=$student_house, updated_at='$now' WHERE indexNumber='{$student['indexNumber']}'");
+                } catch (\Throwable $th) {
+                    exit(throwableMessage($th));
+                }
+            }
+
+            echo "success";
         }else{
             echo "Procedure for submit value '$submit' was not found";
         }
