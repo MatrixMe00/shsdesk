@@ -188,47 +188,50 @@
         <h2>House Allocation Summary</h2>
     </div>
     <?php 
-        $houses_db = fetchData(
+        $houses_db = decimalIndexArray(fetchData(
             ["h.title", "COUNT(ho.indexNumber) as total", "ho.studentGender", "ho.boardingStatus"],
             ["join" => "houses house_allocation", "alias" => "h ho", "on" => "id houseID"],
             ["h.schoolID=$user_school_id"], 0, group_by: ["h.title","ho.studentGender", "ho.boardingStatus"], join_type: "left"
-        );
+        ));
 
-        $house_title = "";
-        $ttl_m = $ttl_f = $ttl_b = $ttl_d = 0;
         $houses = [];
-
-        foreach($houses_db as $house){
-            $house_title = $house["title"];
-            if(!in_array($house_title, array_column($houses, "title"))){
-                foreach($houses_db as $hs){
-                    if($house_title == $hs["title"]){
-                        if($hs["studentGender"] == "Male"){
-                            $ttl_m += (int) $hs["total"];
-                        }else{
-                            $ttl_f += (int) $hs["total"];
-                        }
-
-                        if($hs["boardingStatus"] == "Boarder"){
-                            $ttl_b += (int) $hs["total"];
-                        }else{
-                            $ttl_d += (int) $hs["total"];
-                        }
-                    }
-                }
-            }else{
-                continue;
-            }
-
-            //store data into houses array
-            $houses[] = [
-                "title" => $house_title, "border" => $ttl_b,
-                "males" => $ttl_m, "females" => $ttl_f, "day" => $ttl_d
-            ];
-
-            //reset variables
+        
+        if($houses_db){
             $house_title = "";
             $ttl_m = $ttl_f = $ttl_b = $ttl_d = 0;
+
+            foreach($houses_db as $house){
+                $house_title = $house["title"];
+                if(!in_array($house_title, array_column($houses, "title"))){
+                    foreach($houses_db as $hs){
+                        if($house_title == $hs["title"]){
+                            if($hs["studentGender"] == "Male"){
+                                $ttl_m += (int) $hs["total"];
+                            }else{
+                                $ttl_f += (int) $hs["total"];
+                            }
+    
+                            if($hs["boardingStatus"] == "Boarder"){
+                                $ttl_b += (int) $hs["total"];
+                            }else{
+                                $ttl_d += (int) $hs["total"];
+                            }
+                        }
+                    }
+                }else{
+                    continue;
+                }
+    
+                //store data into houses array
+                $houses[] = [
+                    "title" => $house_title, "border" => $ttl_b,
+                    "males" => $ttl_m, "females" => $ttl_f, "day" => $ttl_d
+                ];
+    
+                //reset variables
+                $house_title = "";
+                $ttl_m = $ttl_f = $ttl_b = $ttl_d = 0;
+            }
         }
     ?>
     <div class="body">

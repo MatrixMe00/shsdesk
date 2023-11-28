@@ -8,6 +8,11 @@
         //set nav_point session
         $_SESSION["nav_point"] = "allocation";
     }
+
+    if($user_school_id > 0)
+        $autoHousePlace = (bool) getSchoolDetail($user_school_id, true)["autoHousePlace"];
+    else
+        $autoHousePlace = false;
 ?>
 <section class="section_container">
     <div class="content" style="background-color: #007bff;">
@@ -76,7 +81,6 @@
     </div>
     <div class="btn">
         <button onclick="$('#modal_2').removeClass('no_disp')" <?php
-            $autoHousePlace = getSchoolDetail($user_school_id, true)["autoHousePlace"];
             if($autoHousePlace)
                 echo "disabled";
         ?> class="orange sp-med">Import Allocation List</button>
