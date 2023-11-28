@@ -44,13 +44,13 @@
                         $cell =  $sheet->getCell("A1");
                         $cellValue = $cell->getValue();
 
-                        if(strtolower($cellValue) != "index number" || strval(strpos(strtolower($cellValue), "index")) == "false"){
+                        if(strtolower($cellValue) != "index number" || !str_contains($cellValue, "index")){
                             $cell =  $sheet->getCell("A2");
                             $cellValue = $cell->getValue();
 
                             $row_start = 3;
 
-                            if(strtolower($cellValue) != "index number" || strval(strpos(strtolower($cellValue), "index")) == "false"){
+                            if(strtolower($cellValue) != "index number" || !str_contains($cellValue, "index")){
                                 //display error if the first column isnt the index number
                                 exit("First column not identified as 'index number'. Please follow the format directed in the documents above");
                             }
@@ -213,7 +213,7 @@
                                 echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
                             }                            
                         }
-                    }elseif($max_column == "H" || $max_column == "G"){
+                    }elseif($max_column == "H" || $max_column == "G" || $max_column == "I"){
                         //make it end at G
                         $headerCounter = 6;
                         

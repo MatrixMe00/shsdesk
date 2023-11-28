@@ -748,7 +748,7 @@
                 ["join" => "cssps house_allocation", "alias" => "c h", "on" => "indexNumber indexNumber"]
             ],
             [
-                "e.gender='$gender'", "e.indexNumber != '$ad_index'", "e.shsID=$shs_placed", 
+                "e.gender='$gender'", "e.indexNumber != '$ad_index'", "h.current_data=1", "e.shsID=$shs_placed", 
                 "c.boardingStatus='$boardingStatus'", "h.houseID IS NOT NULL", "h.houseID > 0"
             ],
             where_binds: "AND", order_by: $last_student_order, asc: false
