@@ -121,15 +121,14 @@
                     "COUNT(ho.indexNumber) as total", "ho.studentGender", "ho.boardingStatus"
                 ],
                 ["join" => "houses house_allocation", "alias" => "h ho", "on" => "id houseID"],
-                ["h.schoolID=$user_school_id","(LOWER(ho.boardingStatus)='$stat'", "ho.boardingStatus IS NULL)"], 0, where_binds: ["AND", "OR"], 
+                ["h.schoolID=$user_school_id", "ho.current_data=1", "(LOWER(ho.boardingStatus)='$stat'", "ho.boardingStatus IS NULL)"], 0, where_binds: ["AND", "AND", "OR"], 
                 group_by: [
                     "h.id", "h.title", "h.maleTotalRooms", "h.maleHeadPerRoom", "h.femaleTotalRooms", "h.femaleHeadPerRoom",
                     "h.title","ho.studentGender", "ho.boardingStatus"
                 ], join_type: "left outer"
             ));
             
-            // $houses = $connect->query("SELECT * FROM houses WHERE schoolID = $user_school_id")->fetch_all(MYSQLI_ASSOC);
-            if(is_array($houses)){
+            if(is_array($houses)):
         ?>
         <table class="full">
             <thead>
@@ -151,7 +150,7 @@
                 <tr data-item-id="<?php echo $house["id"] ?>">
                     <td><?php echo ++$count ?></td>
                     <td><?php echo $house["title"] ?></td>
-                    <td><?php echo $house["studentGender"] ?></td>
+                    <td><?php echo $house["studentGender"] ?? "m/f" ?></td>
                     <td><?php echo !is_null($gen = $house["studentGender"]) ? $house[strtolower($gen)."TotalRooms"] : ($house["maleTotalRooms"] ?? $house["femaleTotalRooms"]) ?></td>
                     <td><?php echo !is_null($gen = $house["studentGender"]) ? $house[strtolower($gen)."HeadPerRoom"] : ($house["maleHeadPerRoom"] ?? $house["femaleHeadPerRoom"]) ?></td>
                     <td><?php echo $house["total"] ?></td>
@@ -176,9 +175,52 @@
                 <?php endforeach ?>
             </tbody>
         </table>
-        <?php }else{
+        <?php elseif($houses = decimalIndexArray($connect->query("SELECT * FROM houses WHERE schoolID = $user_school_id")->fetch_all(MYSQLI_ASSOC))): ?>
+        <table class="full">
+            <thead>
+                <tr>
+                    <td>No.</td>
+                    <td>House Name</td>
+                    <td>Gender</td>
+                    <td>Rooms</td>
+                    <td>Heads Per Room</td>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $count = 0; foreach($houses as $house): ?>
+                <tr data-item-id="<?php echo $house["id"] ?>">
+                    <td><?= ++$count ?></td>
+                    <td><?= $house["title"] ?></td>
+                    <td><?= strtolower($house["gender"]) == "both" ? "m/f" : ucfirst($house["gender"]) ?></td>
+                    <td>
+                        <?php 
+                            if(strtolower($house["gender"]) == "both"){
+                                echo "{$house['maleTotalRooms']} / {$house['femaleTotalRooms']}";
+                            }else{
+                                echo $house["maleTotalRooms"] ?? $house["femaleTotalRooms"];
+                            }
+                        ?>
+                    </td>
+                    <td>
+                        <?php 
+                            if(strtolower($house["gender"]) == "both"){
+                                echo "{$house['maleHeadPerRoom']} / {$house['femaleHeadPerRoom']}";
+                            }else{
+                                echo $house["maleHeadPerRoom"] ?? $house["femaleHeadPerRoom"];
+                            }
+                        ?>
+                    </td>
+                    <td class="flex flex-wrap">
+                        <span class="item-event edit">Edit</span>
+                        <span class="item-event delete">Delete</span>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php else:
                 echo "<p style=\"margin-top: 5px; padding: 5px; text-align: center; background-color: white; border: 1px dashed lightgrey;\">No data to be displayed</p>";
-            }
+            endif;
         ?>
     </div>
 </section>

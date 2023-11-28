@@ -537,9 +537,10 @@
             $id = $_REQUEST["id"];
             $result = fetchData("*","houses","id=$id");
             if($result == "empty"){
-                $result = array("status" => "error");
+                $result = array();
+                $result["status"] = "error";
             }else{
-                $result += array("status" => "success");
+                $result["status"] = "success";
             }
 
             echo json_encode($result);
