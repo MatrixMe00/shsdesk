@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php @include_once($rootPath.'/blocks/generalHead.php')?>
+    <?php include_once($rootPath.'/blocks/generalHead.php')?>
 
     <!--Document title-->
     <title>SHSDesk - Home Page</title>

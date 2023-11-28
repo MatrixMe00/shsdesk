@@ -479,5 +479,7 @@
                 exit(1);
             }
         }
+    }else{
+        echo "No submission was detected";
     }
 ?>

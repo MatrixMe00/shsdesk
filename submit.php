@@ -498,15 +498,17 @@
 
                 if(is_array($student)){
                     if($student["enroled"] == false){
-                        $active = fetchData("COUNT(id) as total","houses","schoolID=".$student["schoolID"])["total"];
+                        $active = (int) fetchData("COUNT(id) as total","houses","schoolID=".$student["schoolID"])["total"];
+                        
                         if($active > 0){
-                            $student["status"] = "success";
+                            $message = $student;
+                            $message["status"] = "success";
                             if(strtolower($student["Gender"]) == "male"){
                                 $sal = "Mr";
                             }else{
                                 $sal = "Mad";
                             }
-                            $message["successMessage"] = "Congratulations $sal. ".$message["Lastname"]." on your admission to ".$message["abbr"];
+                            $message["successMessage"] = "Congratulations $sal. ".$student["Lastname"]." on your admission to ".$student["abbr"];
                         }else{
                             $message["status"] = "Your school is not ready for admission. Please try again at another time";
                         }
@@ -518,6 +520,7 @@
                 }
             }
             
+            header("Content-type: application/json");
             echo json_encode($message);
         }elseif($submit == "getContact" || $submit == "getContact_ajax"){
             $schoolID = $_REQUEST["schoolID"];

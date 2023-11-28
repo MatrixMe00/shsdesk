@@ -302,7 +302,7 @@ echo stringifyClassNames($data);*/
 // echo getStudentPosition("0012345621", 1, 1)
 // $date = date("2021-09-06"); $semester = 1;
 // echo getAcademicYear($date, $semester);
-$r = "0";
 
-echo "<pre>"; var_dump((bool) $r == false ? "yea" : "ney"); echo "</pre>";
+$number = "+233275613298";
+var_dump(checkPhoneNumber($number));
 ?>

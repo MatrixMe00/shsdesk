@@ -10,7 +10,7 @@
                     "limit" => 0,
                     "where_binds" => "and"
                 ];
-                $carousels = fetchData(...$carousels);
+                $carousels = decimalIndexArray(fetchData(...$carousels));
 
                 if(is_array($carousels)):
                     foreach($carousels as $carousel) :

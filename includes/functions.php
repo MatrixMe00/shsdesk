@@ -899,7 +899,7 @@
      */
     function remakeNumber(string $number, bool $international = false, $space = true){
         //remove any space in number before editing
-        $number = str_replace(" ","", $number);
+        $number = str_replace([" ", "+"],"", $number);
 
         if($international){     //add +233
             if(substr($number, 0, 3) != "233"){
@@ -1637,10 +1637,10 @@
         global $phoneNumbers1;
 
         $phone_number = remakeNumber($phone_number, false, false);
-
+        
         if(is_null($network_provider)){
-            return array_search(substr($phone_number,0,3), $phoneNumbers);
+            return in_array(substr($phone_number,0,3), $phoneNumbers);
         }else{
-            return array_search(substr($phone_number, 0, 3), $phoneNumbers1[strtolower($network_provider)]);
+            return in_array(substr($phone_number, 0, 3), $phoneNumbers1[strtolower($network_provider)]);
         }        
     }

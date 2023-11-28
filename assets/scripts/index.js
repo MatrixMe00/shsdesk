@@ -83,10 +83,12 @@ $("button#student_check").click(function(){
         $("input#student_index_number").focus();
         return false;
     }
-    dataString = "indexNumber=" + index + "&submit=studentSchool";
+    // dataString = "indexNumber=" + index + "&submit=studentSchool";
     $.ajax({
         url: "submit.php",
-        data: dataString,
+        data: {
+            indexNumber: index, submit: "studentSchool"
+        },
         type: "GET",
         dataType: "json",
         timeout: 30000,
@@ -97,7 +99,8 @@ $("button#student_check").click(function(){
         success: function(response_data){
             this_element.prop("disabled", false).html("Check");
             
-            const data = JSON.parse(JSON.stringify(response_data));
+            const data = response_data;
+            
             if(data["status"] == "success"){                
                 //save student's selected school
                 $("#school_select option.selected").attr("value", data["schoolID"]).html(data["schoolName"]);
@@ -121,9 +124,12 @@ $("button#student_check").click(function(){
             if(textStatus == "timeout"){
                 message = "Connection was timed out due to a slow network. Please try again later"
             }else{
-                message = JSON.stringify(status)
+                message = status.responseText;
+                console.log(status);
             }
             alert_box(message, "danger", 10);
+
+            this_element.prop("disabled", false).html("Check");
         }
     })
 })
