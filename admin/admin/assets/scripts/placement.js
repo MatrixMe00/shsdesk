@@ -37,6 +37,7 @@ $("form[name=importForm").submit(async function(e){
     e.preventDefault();
     $("form[name=importForm] .message_box").css("overflow","auto");
     $("form[name=importForm] .message_box").css("max-height","300px");
+    $("form[name=importForm] .message_box").css("min-height","2em");
 
     if($("input#import").val() == ""){
         messageBoxTimeout("importForm","No file has been chosen", "error");

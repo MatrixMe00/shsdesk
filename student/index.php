@@ -142,8 +142,6 @@
                         messageBoxTimeout("studentForm", message, type, time);
                     },
                     success: function(json){
-                        json = JSON.parse(JSON.stringify(json));
-
                         if(json["status"] == "student_success"){
                             message = "Details were found";
                             type = "success";
@@ -173,6 +171,7 @@
                             time = 5;
                         }else{
                             message = json;
+                            console.log(json);
                         }
 
                         messageBoxTimeout("studentForm", message, type, time);

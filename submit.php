@@ -459,7 +459,7 @@
             if(is_array($student)){
                 if($student["enroled"] == true && !empty($school_id)){
                     $array["status"] = "already-registered";
-                }elseif(!empty($school_id)){
+                }elseif(empty($school_id)){
                     if($student["enroled"] == false){
                         $array["status"] = "not-registered";
                     }else{
@@ -478,6 +478,7 @@
                 $array["status"] = "wrong-index";
             }
 
+            header("Content-type: application/json");
             echo json_encode($array);
         }elseif($submit == "studentSchool" || $submit == "studentSchool_ajax"){
             $message = array();
@@ -489,18 +490,18 @@
                 $message["status"] = "Your index number should only be numeric";
             }else{
                 $indexNumber = $_GET["indexNumber"];
-                $message = fetchData(
+                $student = fetchData(
                     ["c.schoolID", "c.Gender", "c.enroled", "c.Lastname", "s.schoolName", "s.abbr"],
                     [ "join" => "schools cssps", "alias" => "s c", "on" => "id schoolID"],
                     "c.indexNumber='$indexNumber'"
                 );
 
-                if(is_array($message)){
-                    if($message["enroled"] == false){
-                        $active = fetchData("COUNT(id) as total","houses","schoolID=".$message["schoolID"])["total"];
+                if(is_array($student)){
+                    if($student["enroled"] == false){
+                        $active = fetchData("COUNT(id) as total","houses","schoolID=".$student["schoolID"])["total"];
                         if($active > 0){
-                            $message["status"] = "success";
-                            if(strtolower($message["Gender"]) == "male"){
+                            $student["status"] = "success";
+                            if(strtolower($student["Gender"]) == "male"){
                                 $sal = "Mr";
                             }else{
                                 $sal = "Mad";

@@ -62,13 +62,13 @@
 
                         $row_start = 3;
 
-                        if(strval(strpos(strtolower($cellValue), "index")) == "false"){
+                        if(!str_contains(strtolower($cellValue), "index")){
                             $cell =  $sheet->getCell("A1");
                             $cellValue = $cell->getValue();
 
                             $row_start = 2;
 
-                            if(strval(strpos(strtolower($cellValue), "index")) == "false"){
+                            if(!str_contains(strtolower($cellValue), "index")){
                                 exit("The file you sent cannot be defined. Please send a valid file format. Make sure it begins with 'index'");
                             }
                         }
@@ -221,25 +221,17 @@
                             //grab columns [reject last column, column H]
                             for($col = 0; $col <= $headerCounter; $col++){
                                 $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
-                                
                                 switch ($col) {
                                     case 0:
                                         $indexNumber = $cellValue;
                                         break;
                                     case 1:
                                         //extract lastname and othernames
-                                        $name = explode(' ', formatName($cellValue));
+                                        $name = explode(' ', formatName($cellValue), 2);
 
                                         if(is_array($name)){
                                             $Lastname = $name[0];
-                                            $Othernames = "";
-                                            for($i = 1; $i < count($name); $i++) {
-                                                if($Othernames != ""){
-                                                    $Othernames .= " ".$name[$i];
-                                                }else{
-                                                    $Othernames = $name[$i];
-                                                }
-                                            }
+                                            $Othernames = $name[1];
                                         }else{
                                             exit("Student's name could not be retrieved. Check your file and try again later, else report to admin for help");
                                         }
@@ -261,7 +253,7 @@
                                         $boardingStatus = formatName($cellValue);
 
                                         //convert to enum value
-                                        if(strtolower($boardingStatus) == "boarding"){
+                                        if(str_contains(strtolower($boardingStatus), "board")){
                                             $boardingStatus = 'Boarder';
                                         }
                                         break;
@@ -273,7 +265,7 @@
                             }
     
                             //check if index number exists and insert data into database
-                            if(!is_null($indexNumber)){
+                            if(!is_null($indexNumber) && !empty($indexNumber)){
                                 $index = fetchData("indexNumber","cssps","indexNumber='$indexNumber'");
     
                                 if($index == "empty"){

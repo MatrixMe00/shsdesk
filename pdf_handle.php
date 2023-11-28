@@ -129,7 +129,7 @@
     <div id="container">
         <div class="member_div">
             <a href="<?php echo $url."/".$_SESSION["ad_school_prospectus"] ?>" rel="nofollow">
-                <button id="btn_pros">Prospectus is ready for download | Download [PDF]</button>
+                <button id="btn_pros">Download School's Prospectus | Download [PDF]</button>
             </a>
         </div>
         <?php if($houses > 0){?>
