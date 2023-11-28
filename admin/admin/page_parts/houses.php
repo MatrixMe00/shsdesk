@@ -175,7 +175,7 @@
                 <?php endforeach ?>
             </tbody>
         </table>
-        <?php elseif($houses = decimalIndexArray($connect->query("SELECT * FROM houses WHERE schoolID = $user_school_id")->fetch_all(MYSQLI_ASSOC))): ?>
+        <?php elseif($houses = decimalIndexArray(fetchData("*","houses","schoolID=$user_school_id"))): ?>
         <table class="full">
             <thead>
                 <tr>

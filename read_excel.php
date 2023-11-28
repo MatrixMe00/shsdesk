@@ -72,7 +72,7 @@
                                 exit("The file you sent cannot be defined. Please send a valid file format. Make sure it begins with 'index'");
                             }
                         }
-                    }elseif(array_search($max_column, $acceptable) === false){
+                    }elseif(!in_array($max_column, $acceptable)){
                         exit("Invalid file detected. Please send the correct file to continue");
                     }
 
@@ -134,7 +134,7 @@
                     }
                     
                     //display content
-                    //--for placement
+                    //--for placement provided by system
                     if($max_column == "J" && $last_heading != "Guardian Contact"){
                         for($row=$row_start; $row <= $max_row; $row++){
                             //grab columns
@@ -233,7 +233,7 @@
                                             $Lastname = $name[0];
                                             $Othernames = $name[1];
                                         }else{
-                                            exit("Student's name could not be retrieved. Check your file and try again later, else report to admin for help");
+                                            exit("Student's name for '$indexNumber' could not be retrieved. Check your file and try again later, else report to admin for help");
                                         }
                                         
                                         break;
@@ -259,8 +259,7 @@
                                         break;
     
                                     default:
-                                        "Buffer count is beyond expected input count";
-                                        exit(1);
+                                        exit("Buffer count is beyond expected input count");
                                 }
                             }
     
@@ -473,13 +472,15 @@
                     }
                 }else{
                     $message = "extension-error";
+                    exit($message);
                 }
             }else{
-                echo "no-file";
-                exit(1);
+                exit("no-file");
             }
+        }else{
+            exit("Submission method '{$_REQUEST['submit']}' is invalid");
         }
     }else{
-        echo "No submission was detected";
+        exit("No submission was detected");
     }
 ?>

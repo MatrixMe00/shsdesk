@@ -1318,7 +1318,7 @@
      * @return array|false returns a decimal indexed array or false if not an array
      */
     function decimalIndexArray($array){
-        if(is_array($array)){
+        if(is_array($array) && !empty($array)){
             if(array_key_exists(0,$array)){
                 return $array;
             }else{
