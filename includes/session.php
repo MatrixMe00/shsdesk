@@ -86,8 +86,6 @@ if(isset($_SESSION["teacher_id"]) && !is_null($_SESSION["teacher_id"])){
         session_unset();
         exit(1);
     }
-}else{
-    $user_role = "guest";
 }
 
 ?>

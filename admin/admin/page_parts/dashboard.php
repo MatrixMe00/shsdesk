@@ -1,6 +1,4 @@
 <?php include_once("auth.php");
-    $price = fetchData("price","roles","id=".$user_details["role"])["price"];
-
     //set nav_point session
     $_SESSION["nav_point"] = "dashboard";
 ?>
@@ -33,52 +31,19 @@
 
     <div class="content teal">
         <div class="head">
-            <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE shsID=$user_school_id");
-                    
-                    echo $res->num_rows;
-                ?>
-            </h2>
+            <h2><?= $ttl = fetchData("COUNT(indexNumber) AS total", "cssps", ["schoolID=$user_school_id", "current_data=TRUE", "enroled=TRUE"], where_binds: "AND")["total"] ?></h2>
         </div>
         <div class="body">
-            <span><?php 
-                if($res->num_rows > 1){
-                    echo "Students";
-                }else{
-                    echo "Student";
-                }
-            ?> Registered</span>
-        </div>
-    </div>
-
-    <div class="content yellow">
-        <div class="head">
-            <h2>0</h2>
-        </div>
-        <div class="body">
-            <span>Vistors today</span>
+            <span><?= $ttl > 1 ? "Students" : "Student" ?> Registered</span>
         </div>
     </div>
 
     <div class="content red">
         <div class="head">
-            <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber FROM cssps WHERE enroled = FALSE AND schoolID = $user_school_id");
-                    
-                    echo $res->num_rows;
-                ?>
-            </h2>
+            <h2><?= $ttl = fetchData("COUNT(indexNumber) AS total", "cssps", ["schoolID=$user_school_id", "current_data=TRUE", "enroled=FALSE"], where_binds: "AND")["total"] ?></h2>
         </div>
         <div class="body">
-            <span><?php 
-                if($res->num_rows > 1){
-                    echo "Students";
-                }else{
-                    echo "Student";
-                }
-            ?> left to register</span>
+            <span><?= $ttl > 1 ? "Students" : "Student" ?> left to register</span>
         </div>
     </div>
 </section>
@@ -86,12 +51,12 @@
 <section class="section_container">
     <div class="content" style="background-color: #17a2b8;">
         <div class="head">
-            <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE interest LIKE '%Athletics%' AND shsID=$user_school_id");
-                    
-                    echo $res->num_rows;
-                ?>
+            <h2><?= fetchData("COUNT(e.indexNumber) AS total", [
+                "join" => "cssps enrol_table",
+                "alias" => "c e", "on" => "indexNumber indexNumber"
+                ], 
+                ["c.schoolID=$user_school_id", "e.interest LIKE '%Athletics%'", "c.current_data=TRUE"], 
+                where_binds: "AND")["total"] ?>
             </h2>
         </div>
         <div class="body">
@@ -101,13 +66,12 @@
 
     <div class="content" style="background-color: #28a745">
         <div class="head">
-            <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE interest LIKE '%Football%' AND shsID=$user_school_id");
-                    
-                    echo $res->num_rows;
-                ?>
-            </h2>
+            <h2><?= fetchData("COUNT(e.indexNumber) AS total", [
+                "join" => "cssps enrol_table",
+                "alias" => "c e", "on" => "indexNumber indexNumber"
+                ], 
+                ["c.schoolID=$user_school_id", "e.interest LIKE '%Football%'", "c.current_data=TRUE"], 
+                where_binds: "AND")["total"] ?></h2>
         </div>
         <div class="body">
             <span>Interested in Football</span>
@@ -117,11 +81,12 @@
     <div class="content" style="background-color: #fd7e14">
         <div class="head">
             <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE interest LIKE '%Debating Club%' AND shsID=$user_school_id");
-                    
-                    echo $res->num_rows;
-                ?>
+                <?= fetchData("COUNT(e.indexNumber) AS total", [
+                    "join" => "cssps enrol_table",
+                    "alias" => "c e", "on" => "indexNumber indexNumber"
+                    ], 
+                    ["c.schoolID=$user_school_id", "e.interest LIKE '%Debating Club%'", "c.current_data=TRUE"], 
+                    where_binds: "AND")["total"] ?>
             </h2>
         </div>
         <div class="body">
@@ -132,11 +97,12 @@
     <div class="content" style="background-color: #6610f2">
         <div class="head">
             <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber FROM enrol_table WHERE interest LIKE '%Others%' AND shsID=$user_school_id");
-                    
-                    echo $res->num_rows;
-                ?>
+                <?= fetchData("COUNT(e.indexNumber) AS total", [
+                    "join" => "cssps enrol_table",
+                    "alias" => "c e", "on" => "indexNumber indexNumber"
+                    ], 
+                    ["c.schoolID=$user_school_id", "e.interest LIKE '%Others%'", "c.current_data=TRUE"], 
+                    where_binds: "AND")["total"] ?>
             </h2>
         </div>
         <div class="body">
@@ -145,25 +111,22 @@
     </div>
 </section>
 
-<?php if(str_contains(strtolower(getRole($user_details["role"])), "admin") || str_contains(strtolower(getRole($user_details["role"])), "school head")){ ?>
+<?php if($admin_access < 3): ?>
 <section class="section_container">
-    <?php if(floatval(fetchData("price","roles","id=".$user_details["role"])["price"]) > 0){ ?>
+    <?php if(floatval($role_price) > 0): ?>
     <div class="content secondary">
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT enrolDate FROM enrol_table WHERE shsID=$user_school_id");
-                    
-                    $amount = 0;
-                    while($row = $res->fetch_array()){
-                        if(date("Y",strtotime($row["enrolDate"])) == date("Y")){
-                            $amount += $price;
-                        }else{
-                            continue;
-                        }
-                    }
-                    $amount = number_format(round($amount,2), 2);
-                    echo $amount;
+                    $year_res = fetchData("COUNT(e.enrolDate) as total",[
+                            "join" => "enrol_table cssps",
+                            "alias" => "e c", "on" => "indexNumber indexNumber"
+                        ], ["c.schoolID=$user_school_id", "c.current_data=TRUE", 
+                            "DATE_FORMAT(e.enrolDate, '%Y') = ". date("Y")], 
+                        where_binds: "AND")["total"];
+                    $amount = $year_res * $role_price;
+
+                    echo number_format(round($amount,2), 2);
                 ?>
             </h2>
         </div>
@@ -181,7 +144,7 @@
                     $amount = 0;
                     while($row = $res->fetch_array()){
                         if(date("W",strtotime($row["enrolDate"]) - 1) == date("W") - 1){
-                            $amount += $price;
+                            $amount += $role_price;
                         }else{
                             continue;
                         }
@@ -205,7 +168,7 @@
                     $amount = 0;
                     while($row = $res->fetch_array()){
                         if(date("W",strtotime($row["enrolDate"])) == date("W")){
-                            $amount += $price;
+                            $amount += $role_price;
                         }else{
                             continue;
                         }
@@ -219,27 +182,27 @@
             <span>Made This Week</span>
         </div>
     </div>
-    <?php } ?>
+    <?php endif; ?>
     
-    <?php if($user_details["role"] <= 3 || str_contains(strtolower(getRole($user_details["role"])), "admin")){?>
+    <?php if($admin_access >= 2) :?>
     <div class="content dark">
         <div class="head">
             <h2>GHC
                 <?php
-                    $head_title = str_replace("admin", "school head", getRole($user_details["role"]));
-                    $temp_price = fetchData("price","roles","title='$head_title'")["price"];
-                    $res = $connect->query("SELECT enrolDate FROM enrol_table WHERE shsID=$user_school_id");
-                    
-                    $amount = 0;
-                    while($row = $res->fetch_array()){
-                        if(date("Y",strtotime($row["enrolDate"])) == date("Y")){
-                            $amount += $temp_price;
-                        }else{
-                            continue;
-                        }
+                    if(empty($year_res)){
+                        $year_res = fetchData("COUNT(e.enrolDate) as total",[
+                            "join" => "enrol_table cssps",
+                            "alias" => "e c", "on" => "indexNumber indexNumber"
+                        ], ["c.schoolID=$user_school_id", "c.current_data=TRUE", 
+                            "DATE_FORMAT(e.enrolDate, '%Y') = ". date("Y")], 
+                        where_binds: "AND")["total"];
                     }
-                    $amount = number_format(round($amount,2), 2);
-                    echo $amount;
+                    
+                    $head_id = (int) $role_id + 1;
+                    $head_price = fetchData("price","roles","id=$head_id")["price"];
+                    $amount = $year_res * $head_price;
+                    
+                    echo number_format(round($amount,2), 2);
                 ?>
             </h2>
         </div>
@@ -247,6 +210,6 @@
             <span>Made By School This Year</span>
         </div>
     </div>
-    <?php } ?>
+    <?php endif; ?>
 </section>
-<?php } ?>
+<?php endif; ?>

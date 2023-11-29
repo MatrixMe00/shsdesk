@@ -319,7 +319,7 @@
             echo $message;
         }elseif($submit == "currentTransactionCount"){
             $response = array();
-            $sql = "SELECT COUNT(transactionID) as total FROM transaction";
+            $sql = "SELECT COUNT(transactionID) as total FROM transaction WHERE current_data=TRUE";
             $result = $connect->query($sql);
             
             //total transaction count
@@ -328,7 +328,7 @@
             );
 
             $sql = "SELECT COUNT(transactionID) as total FROM transaction
-                WHERE Transaction_Expired=TRUE";
+                WHERE current_data=TRUE AND Transaction_Expired=TRUE";
             $result = $connect->query($sql);
             
             //total transaction expired
@@ -337,7 +337,7 @@
             );
 
             $sql = "SELECT COUNT(transactionID) as total FROM transaction
-                WHERE Transaction_Expired=FALSE";
+                WHERE current_data=TRUE AND Transaction_Expired=FALSE";
             $result = $connect->query($sql);
             
             //total transaction not expired
@@ -352,7 +352,7 @@
 
             if($contactSearch == "true"){
                 $sql = "SELECT transactionID, contactName, contactNumber, contactEmail, schoolBought, Transaction_Date, Transaction_Expired, Transaction_Date
-                    FROM transaction WHERE contactNumber LIKE '%$search%'";
+                    FROM transaction WHERE current_data=TRUE AND contactNumber LIKE '%$search%'";
             }else{
                 $sql = "SELECT transactionID, contactName, contactNumber, contactEmail, schoolBought, Transaction_Date, Transaction_Expired, Transaction_Date
                 FROM transaction WHERE transactionID LIKE '%$search%'";

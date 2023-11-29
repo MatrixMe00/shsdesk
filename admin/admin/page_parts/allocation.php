@@ -17,13 +17,7 @@
 <section class="section_container">
     <div class="content" style="background-color: #007bff;">
         <div class="head">
-            <h2>
-                <?php
-                $res = $connect->query("SELECT indexNumber FROM cssps WHERE schoolID = $user_school_id AND enroled = TRUE");
-
-                echo $res->num_rows;
-                ?>
-            </h2>
+            <h2><?= fetchData("COUNT(indexNumber) as total","cssps", "schoolID=$user_school_id AND enroled=TRUE AND current_data=TRUE")["total"]; ?></h2>
         </div>
         <div class="body">
             <span>Registered Students</span>
@@ -33,10 +27,17 @@
     <div class="content" style="background-color: #20c997">
         <div class="head">
             <h2>
-                <?php
-                $res = $connect->query("SELECT indexNumber FROM cssps WHERE schoolID = $user_school_id AND boardingStatus = 'Boarder' AND enroled = TRUE");
+                <?php 
+                    $boarders = decimalIndexArray(fetchData(["DISTINCT a.indexNumber", "a.studentLname", "a.studentOname", "b.title", "c.programme"],
+                        [
+                            ["join" => "house_allocation cssps", "alias" => "a c", "on" => "indexNumber indexNumber"],
+                            ["join" => "house_allocation houses", "alias" => "a b", "on" => "houseID id"]
+                        ],
+                        ["a.schoolID=$user_school_id", "a.boardingStatus='Boarder'", "c.current_data=TRUE"],
+                        0, "AND"
+                    ));
 
-                echo $res->num_rows;
+                    echo $boarders ? count($boarders) : 0
                 ?>
             </h2>
         </div>
@@ -48,10 +49,17 @@
     <div class="content" style="background-color: #ffc107">
         <div class="head">
             <h2>
-                <?php
-                $res = $connect->query("SELECT indexNumber FROM cssps WHERE schoolID = $user_school_id AND boardingStatus = 'Day' AND enroled = TRUE");
+            <?php 
+                    $day = decimalIndexArray(fetchData(["DISTINCT a.indexNumber", "a.studentLname", "a.studentOname", "b.title", "c.programme"],
+                        [
+                            ["join" => "house_allocation cssps", "alias" => "a c", "on" => "indexNumber indexNumber"],
+                            ["join" => "house_allocation houses", "alias" => "a b", "on" => "houseID id"]
+                        ],
+                        ["a.schoolID=$user_school_id", "a.boardingStatus='Day'", "c.current_data=TRUE"],
+                        0, "AND"
+                    ));
 
-                echo $res->num_rows;
+                    echo $day ? count($day) : 0
                 ?>
             </h2>
         </div>
@@ -59,7 +67,7 @@
             <span>Registered Day Students</span>
         </div>
     </div>
-    <?php $not_allocated_houses = fetchData("COUNT(indexNumber) as total","house_allocation","houseID IS NULL AND schoolID=$user_school_id")["total"];
+    <?php $not_allocated_houses = fetchData("COUNT(indexNumber) as total","house_allocation","houseID IS NULL AND schoolID=$user_school_id AND current_data=TRUE")["total"];
     if($not_allocated_houses > 0){
     ?>
     <div class="content orange">
@@ -121,7 +129,7 @@
             ON a.indexNumber = c.indexNumber
             WHERE a.schoolID = $user_school_id AND a.houseID IS NULL");
      ?>
-     <div class="body year" id="year1">
+     <div class="body year" id="">
         <table class="sm-full">
             <thead>
                 <tr>
@@ -177,14 +185,7 @@
         </div>
     </div>
     <?php
-        $res = $connect->query("SELECT DISTINCT (a.indexNumber), a.studentLname, a.studentOname, b.title, c.programme 
-            FROM house_allocation a JOIN cssps c 
-            ON a.indexNumber = c.indexNumber
-            JOIN houses b
-            ON a.houseID = b.id
-            WHERE a.schoolID = $user_school_id AND a.boardingStatus = 'Boarder'");
-
-        if($res->num_rows > 0){
+        if($boarders):
     ?>
     <div class="form search sm-med-tp" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
         <div class="flex flex-center-align">
@@ -210,19 +211,19 @@
             </thead>
             <tbody>
             <?php
-                while($row = $res->fetch_assoc()){
+                foreach($boarders as $student):
             ?>
-                <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="true">
-                    <td><?php echo $row["indexNumber"] ?></td>
-                    <td class="fullname"><?php echo $row["studentLname"]." ".$row["studentOname"] ?></td>
-                    <td><?php echo $row["title"] ?></td>
-                    <td><?php echo $row["programme"] ?></td>
+                <tr data-index="<?php echo $student["indexNumber"] ?>" data-register="true">
+                    <td><?php echo $student["indexNumber"] ?></td>
+                    <td class="fullname"><?php echo $student["studentLname"]." ".$student["studentOname"] ?></td>
+                    <td><?php echo $student["title"] ?></td>
+                    <td><?php echo $student["programme"] ?></td>
                     <td class="flex flex-wrap">
                         <span class="item-event edit cssps">Edit</span>
                         <span class="item-event delete cssps">Delete</span>
                     </td>
                 </tr>
-                <?php } ?>
+                <?php endforeach; ?>
             </tbody>
             <tfoot>
                 <tr>
@@ -231,7 +232,7 @@
                             <div class="pagination">
                                 Page <span class="current"></span>  <strong>of</strong> <span class="last"></span>
                             </div>
-                            <?php if($res->num_rows > 0) : ?>
+                            <?php if($boarders) : ?>
                             <div class="navs">
                                 <span class="item-event prev" data-break-point="10">Prev</span>
                                 <span class="item-event next" data-break-point="10">Next</span>
@@ -244,12 +245,12 @@
             </tfoot>
         </table>  
     </div>
-    <?php }else{
+    <?php else:
         echo "
             <div class=\"body empty\">
                 <p>No results were found. Try adding some more data</p>
             </div>";
-        }
+        endif; 
     ?>
 </section>
 
@@ -261,14 +262,7 @@
         </div>
     </div>
     <?php
-        $res = $connect->query("SELECT DISTINCT (a.indexNumber), a.studentLname, a.studentOname, b.title, c.programme 
-            FROM house_allocation a JOIN cssps c 
-            ON a.indexNumber = c.indexNumber
-            JOIN houses b
-            ON a.houseID = b.id
-            WHERE a.schoolID = $user_school_id AND a.boardingStatus = 'Day'");
-
-        if($res->num_rows > 0){
+        if($day):
     ?>
     <div class="form search sm-med-tp" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
         <div class="flex flex-center-align">
@@ -294,19 +288,19 @@
             </thead>
             <tbody>
             <?php
-                while($row = $res->fetch_assoc()){
+                foreach($day as $student):
             ?>
-                <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="true">
-                    <td><?php echo $row["indexNumber"] ?></td>
-                    <td class="fullname"><?php echo $row["studentLname"]." ".$row["studentOname"] ?></td>
-                    <td><?php echo $row["title"] ?></td>
-                    <td><?php echo $row["programme"] ?></td>
+                <tr data-index="<?php echo $student["indexNumber"] ?>" data-register="true">
+                    <td><?php echo $student["indexNumber"] ?></td>
+                    <td class="fullname"><?php echo $student["studentLname"]." ".$student["studentOname"] ?></td>
+                    <td><?php echo $student["title"] ?></td>
+                    <td><?php echo $student["programme"] ?></td>
                     <td class="flex flex-wrap">
                         <span class="item-event edit cssps">Edit</span>
                         <span class="item-event delete cssps">Delete</span>
                     </td>
                 </tr>
-                <?php } ?>
+                <?php endforeach; ?>
             </tbody>
             <tfoot>
                 <tr>
@@ -315,7 +309,7 @@
                             <div class="pagination">
                                 Page <span class="current"></span>  <strong>of</strong> <span class="last"></span>
                             </div>
-                            <?php if($res->num_rows > 0) : ?>
+                            <?php if($day) : ?>
                             <div class="navs">
                                 <span class="item-event prev" data-break-point="10">Prev</span>
                                 <span class="item-event next" data-break-point="10">Next</span>
@@ -328,12 +322,12 @@
             </tfoot>
         </table>  
     </div>
-    <?php }else{
+    <?php else:
         echo "
             <div class=\"body empty\">
                 <p>No results were found. Try adding some more data</p>
             </div>";
-        }
+        endif;
     ?>
 </section>
 

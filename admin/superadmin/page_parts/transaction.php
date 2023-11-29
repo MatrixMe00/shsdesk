@@ -6,67 +6,94 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
 }else{
     //set nav_point session
     $_SESSION["nav_point"] = "Transactions";
-    }
+}
+$current_year = date("Y");
+
+$trans_this_year = [
+    "total" => (int) fetchData("COUNT(transactionID) as total", "transaction", "DATE_FORMAT(Transaction_Date, '%Y') = $current_year")["total"],
+    "expired" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["DATE_FORMAT(Transaction_Date, '%Y') = $current_year", "Transaction_Expired=TRUE"], where_binds: "AND")["total"],
+    "shsdesk" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["DATE_FORMAT(Transaction_Date, '%Y') = $current_year", "LOWER(contactName)='shsdesk'"], where_binds: "AND")["total"],
+];
+
+$trans_current = [
+    "total" => (int) fetchData("COUNT(transactionID) as total", "transaction", "current_data=TRUE")["total"],
+    "expired" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["current_data=TRUE", "Transaction_Expired=TRUE"], where_binds: "AND")["total"],
+    "shsdesk" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["current_data=TRUE", "LOWER(contactName)='shsdesk'"], where_binds: "AND")["total"],
+];
 ?>
 
-<section class="section_container" id="transaction_summary">
+<section class="section_container" id="transaction_summary_old">
     <div class="content" style="background-color: #007bff;">
-        <div class="head" id="trans_received">
-            <h2>
-                <?php
-                    $res = $connect->query("SELECT transactionID FROM transaction");
-                    
-                    echo $res->num_rows;
-                ?>
-            </h2>
+        <div class="head" id="trans_received_old">
+            <h2><?= $trans_this_year["total"] ?></h2>
         </div>
         <div class="body">
-            <span>Transactions Received</span>
+            <span>Transactions Received [<?= $current_year ?>]</span>
         </div>
     </div>
 
     <div class="content" style="background-color: #20c997">
-        <div class="head" id="trans_expired">
-            <h2>
-                <?php
-                    $res = $connect->query("SELECT transactionID FROM transaction WHERE Transaction_Expired = TRUE");
-                    
-                    echo $res->num_rows;
-                ?>
-            </h2>
+        <div class="head" id="trans_expired_old">
+            <h2><?= $trans_this_year["expired"] ?></h2>
         </div>
         <div class="body">
-            <span>Transactions Expired</span>
+            <span>Transactions Expired [<?= $current_year ?>]</span>
         </div>
     </div>
 
     <div class="content" style="background-color: #ffc107">
-        <div class="head" id="trans_left">
-            <h2>
-                <?php
-                    $res = $connect->query("SELECT transactionID FROM transaction WHERE Transaction_Expired = FALSE");
-                    
-                    echo $res->num_rows;
-                ?>
-            </h2>
+        <div class="head" id="trans_left_old">
+            <h2><?= $trans_this_year["total"] - $trans_this_year["expired"] ?></h2>
         </div>
         <div class="body">
-            <span>Transactions left to Expire</span>
+            <span>Transactions left to Expire [<?= $current_year ?>]</span>
         </div>
     </div>
 
     <div class="content" style="background-color: #dc3545">
         <div class="head">
-            <h2>
-                <?php
-                    $res = $connect->query("SELECT transactionID FROM transaction WHERE LOWER(contactName)='shsdesk'");
-                    
-                    echo $res->num_rows;
-                ?>
-            </h2>
+            <h2><?= $trans_this_year["shsdesk"] ?></h2>
         </div>
         <div class="body">
-            <span>SHSDesk Transactions</span>
+            <span>SHSDesk Transactions [<?= $current_year ?>]</span>
+        </div>
+    </div>
+</section>
+
+<section class="section_container" id="transaction_summary">
+    <div class="content" style="background-color: #007bff;">
+        <div class="head" id="trans_received">
+            <h2><?= $trans_current["total"] ?></h2>
+        </div>
+        <div class="body">
+            <span>Transactions Received [Current]</span>
+        </div>
+    </div>
+
+    <div class="content" style="background-color: #20c997">
+        <div class="head" id="trans_expired">
+            <h2><?= $trans_current["expired"] ?></h2>
+        </div>
+        <div class="body">
+            <span>Transactions Expired [Current]</span>
+        </div>
+    </div>
+
+    <div class="content" style="background-color: #ffc107">
+        <div class="head" id="trans_left">
+            <h2><?= $trans_current["total"] - $trans_current["expired"] ?></h2>
+        </div>
+        <div class="body">
+            <span>Transactions left to Expire [Current]</span>
+        </div>
+    </div>
+
+    <div class="content" style="background-color: #dc3545">
+        <div class="head">
+            <h2><?= $trans_current["shsdesk"] ?></h2>
+        </div>
+        <div class="body">
+            <span>SHSDesk Transactions [Current]</span>
         </div>
     </div>
 </section>

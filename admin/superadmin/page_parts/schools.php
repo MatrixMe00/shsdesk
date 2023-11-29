@@ -56,8 +56,8 @@
                 <div class="school_admin"><?php echo $row['techName']?></div>
                 <div class="head_master"><?php echo $row['headName']?></div>
                 <?php 
-                    $reg = fetchData("COUNT(indexNumber) AS total","cssps","schoolID=".$row["id"]." AND enroled=TRUE", 0)["total"];
-                    $unreg = fetchData("COUNT(indexNumber) AS total","cssps","schoolID=".$row["id"]." AND enroled=FALSE", 0)["total"];
+                    $reg = fetchData("COUNT(indexNumber) AS total","cssps","schoolID=".$row["id"]." AND enroled=TRUE AND current_data=TRUE", 0)["total"];
+                    $unreg = fetchData("COUNT(indexNumber) AS total","cssps","schoolID=".$row["id"]." AND enroled=FALSE AND current_data=TRUE", 0)["total"];
                 ?>
                 <div class="reg_studs">Registered Students: <?php echo $reg?></div>
                 <div class="unreg_studs">Unregistered Students: <?php echo $unreg?></div>
@@ -102,8 +102,8 @@
                 <div class="school_admin"><?php echo $row['techName']?></div>
                 <div class="head_master"><?php echo $row['headName']?></div>
                 <?php 
-                    $reg = fetchData("COUNT(indexNumber) AS total","cssps","schoolID=".$row["id"]." AND enroled=TRUE", 0)["total"];
-                    $unreg = fetchData("COUNT(indexNumber) AS total","cssps","schoolID=".$row["id"]." AND enroled=FALSE", 0)["total"];
+                    $reg = fetchData("COUNT(indexNumber) AS total","cssps","schoolID=".$row["id"]." AND enroled=TRUE AND current_data = TRUE", 0)["total"];
+                    $unreg = fetchData("COUNT(indexNumber) AS total","cssps","schoolID=".$row["id"]." AND enroled=FALSE AND current_data = TRUE", 0)["total"];
                 ?>
                 <div class="reg_studs">Registered Students: <?php echo $reg?></div>
                 <div class="unreg_studs">Unregistered Students: <?php echo $unreg?></div>

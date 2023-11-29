@@ -13,12 +13,15 @@
     <div class="content primary reg_comp">
         <div class="head">
             <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber 
-                    FROM cssps 
-                    WHERE enroled = TRUE AND schoolID = $user_school_id");
-                    
-                    echo $res->num_rows;
+                <?php 
+                    $students = decimalIndexArray(fetchData(...[
+                        "columns" => ["DISTINCT c.*", "e.enrolDate", "e.enrolCode"],
+                        "table" => ["join" => "cssps enrol_table", "alias" => "c e", "on" => "indexNumber indexNumber"],
+                        "where" => ["c.schoolID=$user_school_id", "c.current_data=TRUE", "c.enroled=TRUE"],
+                        "limit" => 0, "where_binds" => "AND", "order_by" => "e.enrolDate", "asc" => false
+                    ]));
+
+                    echo $students ? count($students) : 0;
                 ?>
             </h2>
         </div>
@@ -30,12 +33,8 @@
     <div class="content secondary reg_uncomp">
         <div class="head">
             <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber 
-                    FROM cssps 
-                    WHERE enroled = FALSE AND schoolID = $user_school_id");
-                    
-                    echo $res->num_rows;
+                <?= fetchData("COUNT(indexNumber) AS total", "cssps", 
+                    ["enroled=FALSE","schoolID=$user_school_id","current_data=TRUE"], 1, "AND")["total"];
                 ?>
             </h2>
         </div>
@@ -54,16 +53,7 @@
  <?php } ?>
 
 <section id="content" class="table_section">
-    <?php 
-        $sql = "SELECT DISTINCT c.*, e.enrolDate, e.enrolCode
-            FROM cssps c JOIN enrol_table e
-            ON c.indexNumber = e.indexNumber
-            WHERE c.schoolID = $user_school_id AND e.shsID = $user_school_id AND c.enroled = TRUE";
-
-        $res = $connect->query($sql);
-
-        if($res->num_rows > 0){
-    ?>
+    <?php if($students): ?>
     <div class="head">
         <div class="form search sm-med-tp" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
             <div class="flex flex-center-align">
@@ -101,22 +91,22 @@
                 </tr>
             </thead>
             <tbody>
-                <?php while($row=$res->fetch_assoc()){ ?>
-                <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="true">
-                    <td><?php echo $row["indexNumber"] ?></td>
-                    <td class="lname"><?php echo $row["Lastname"] ?></td>
-                    <td class="oname"><?php echo $row["Othernames"] ?></td>
-                    <td><?php echo $row["enrolCode"] ?></td>
-                    <td><?php echo $row["programme"] ?></td>
-                    <td><?php echo $row["aggregate"] ?></td>
-                    <td><?php echo $row["boardingStatus"] ?></td>
-                    <td><?php echo $row["enrolDate"] ?></td>
+                <?php foreach($students as $student): ?>
+                <tr data-index="<?php echo $student["indexNumber"] ?>" data-register="true">
+                    <td><?php echo $student["indexNumber"] ?></td>
+                    <td class="lname"><?php echo $student["Lastname"] ?></td>
+                    <td class="oname"><?php echo $student["Othernames"] ?></td>
+                    <td><?php echo $student["enrolCode"] ?></td>
+                    <td><?php echo $student["programme"] ?></td>
+                    <td><?php echo $student["aggregate"] ?></td>
+                    <td><?php echo $student["boardingStatus"] ?></td>
+                    <td><?php echo $student["enrolDate"] ?></td>
                     <td class="flex flex-wrap">
                         <span class="item-event edit cssps">Edit</span>
                         <span class="item-event delete studs">Delete</span>
                     </td>
                 </tr>
-                <?php } ?>
+                <?php endforeach; ?>
             </tbody>
             <tfoot>
                 <tr>
@@ -125,7 +115,7 @@
                             <div class="pagination">
                                 Page <span class="current"></span>  <strong>of</strong> <span class="last"></span>
                             </div>
-                            <?php if($res->num_rows > 0) : ?>
+                            <?php if($students) : ?>
                             <div class="navs">
                                 <span class="item-event prev" data-break-point="10">Prev</span>
                                 <span class="item-event next" data-break-point="10">Next</span>
@@ -133,24 +123,24 @@
                             <?php endif; ?>
                         </div>
                     </td>
-                    <td class="result" colspan="7"><?= $res->num_rows ?> results were returned</td>
+                    <td class="result" colspan="7"><?= count($students) ?> results were returned</td>
                 </tr>
             </tfoot>
         </table>
     </div>
-    <?php }else{ ?>
+    <?php else: ?>
     <div class="body empty">
         <p>No student has enroled the system</p>
     </div>
-    <?php } ?>
+    <?php endif; ?>
 </section>
 
 <div id="updateStudent" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-    <?php @include_once($rootPath."/admin/admin/page_parts/update_student.php")?>
+    <?php require($rootPath."/admin/admin/page_parts/update_student.php")?>
 </div>
 
 <div id="table_del" class="modal_yes_no fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-    <?php include_once($rootPath."/admin/admin/page_parts/table_del.php") ?>
+    <?php require($rootPath."/admin/admin/page_parts/table_del.php") ?>
 </div>
 
 <script src="<?php echo $url?>/admin/admin/assets/scripts/placement.min.js?v=<?php echo time()?>" async></script>

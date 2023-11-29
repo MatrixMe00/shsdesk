@@ -13,13 +13,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     <div class="content primary cssps">
         <div class="head">
             <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber 
-                    FROM cssps 
-                    WHERE schoolID = $user_school_id");
-                    
-                    echo $res->num_rows;
-                ?>
+                <?= $students_placed = (int) fetchData("COUNT(indexNumber) AS total", "cssps", ["schoolID=$user_school_id","current_data=TRUE"], where_binds: "AND")["total"]; ?>
             </h2>
         </div>
         <div class="body">
@@ -30,13 +24,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     <div class="content teal reg_comp">
         <div class="head">
             <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber 
-                    FROM cssps 
-                    WHERE enroled = TRUE AND schoolID = $user_school_id");
-                    
-                    echo $res->num_rows;
-                ?>
+                <?= $students_enroled = (int) fetchData("COUNT(indexNumber) AS total", "cssps", ["schoolID=$user_school_id","current_data=TRUE", "enroled=TRUE"], where_binds: "AND")["total"]; ?>
             </h2>
         </div>
         <div class="body">
@@ -47,13 +35,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     <div class="content danger reg_uncomp">
         <div class="head">
             <h2>
-                <?php
-                    $res = $connect->query("SELECT indexNumber 
-                    FROM cssps 
-                    WHERE enroled = FALSE AND schoolID = $user_school_id");
-                    
-                    echo $res->num_rows;
-                ?>
+                <?= $students_placed - $students_enroled ?>
             </h2>
         </div>
         <div class="body">
@@ -105,14 +87,12 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         </div>
         <div id="content">
             <?php 
-                $sql = "SELECT c.*, e.enrolCode 
-                    FROM cssps c JOIN enrol_table e
-                    ON c.indexNumber = e.indexNumber
-                    WHERE c.enroled=TRUE AND c.schoolID = $user_school_id
-                    ORDER BY e.enrolDate DESC";
-                $res = $connect->query($sql);
+                $students = decimalIndexArray(fetchData(["c.*","e.enrolCode"],[
+                    "join" => "cssps enrol_table", "on" => "indexNumber indexNumber", "alias" => "c e"
+                ], ["c.enroled=TRUE","c.schoolID=$user_school_id", "c.current_data=TRUE"],
+                order_by: "e.enrolDate", asc: false, limit: 20, where_binds: "AND"));
 
-                if($res->num_rows > 0){
+                if($students):
             ?>
             <div class="form search sm-med-tp" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
                 <div class="flex flex-center-align">
@@ -146,22 +126,22 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while($row = $res->fetch_assoc()){?>
-                        <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="true">
-                            <td><?php echo $row["indexNumber"] ?></td>
-                            <td><?php echo $row["enrolCode"] ?></td>
-                            <td class="fullname"><?php echo $row["Lastname"]." ".$row["Othernames"] ?></td>
-                            <td><?php echo $row["boardingStatus"] ?></td>
-                            <td><?php echo $row["programme"] ?></td>
-                            <td><?php echo $row["aggregate"]?></td>
-                            <td><?php echo $row["Gender"] ?></td>
-                            <td><?php echo $row["trackID"] ?></td>
+                        <?php foreach($students as $student): ?>
+                        <tr data-index="<?php echo $student["indexNumber"] ?>" data-register="true">
+                            <td><?php echo $student["indexNumber"] ?></td>
+                            <td><?php echo $student["enrolCode"] ?></td>
+                            <td class="fullname"><?php echo $student["Lastname"]." ".$student["Othernames"] ?></td>
+                            <td><?php echo $student["boardingStatus"] ?></td>
+                            <td><?php echo $student["programme"] ?></td>
+                            <td><?php echo $student["aggregate"]?></td>
+                            <td><?php echo $student["Gender"] ?></td>
+                            <td><?php echo $student["trackID"] ?></td>
                             <td class="flex flex-wrap">
                                 <span class="item-event edit cssps">Edit</span>
                                 <span class="item-event delete cssps">Delete</span>
                             </td>
                         </tr>
-                        <?php } ?>
+                        <?php endforeach; ?>
                     </tbody>
                     <tfoot>
                         <tr>
@@ -170,7 +150,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                                     <div class="pagination">
                                         Page <span class="current"></span>  <strong>of</strong> <span class="last"></span>
                                     </div>
-                                    <?php if($res->num_rows > 0) : ?>
+                                    <?php if($students) : ?>
                                     <div class="navs">
                                         <span class="item-event prev" data-break-point="10">Prev</span>
                                         <span class="item-event next" data-break-point="10">Next</span>
@@ -183,13 +163,14 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     </tfoot>
                 </table>
             </div>
-            <?php }else{ ?>
+            <?php else: ?>
             <div class="empty body" style="margin-top: 0.3em; padding-top: 1.3em; padding-bottom: 1.3em">
                 Nothing to show. Click the "Refresh" button to refresh the page
             </div>
-            <?php } ?> 
+            <?php endif; ?> 
         </div>
     </div>
+
     <div class="display">
         <div class="title_bar flex flex-space-content flex-center-align red">
             <div id="title">Unregistered Students</div>
@@ -199,11 +180,11 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
             </div>
         </div>
         <div id="content">
-            <?php 
-                $sql = "SELECT * FROM cssps WHERE enroled=FALSE AND schoolID = $user_school_id";
-                $res = $connect->query($sql);
+            <?php
+                $students = decimalIndexArray(fetchData("*", "cssps", ["enroled=FALSE", "schoolID=$user_school_id", "current_data=TRUE"], 
+                    0, "AND", order_by: "indexNumber"));                
 
-                if($res->num_rows > 0){
+                if($students):
             ?>
             <div class="form search sm-med-tp" role="form" data-action="<?php echo $url?>/admin/admin/submit.php">
                 <div class="flex flex-center-align">
@@ -236,21 +217,21 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while($row = $res->fetch_assoc()){?>
-                        <tr data-index="<?php echo $row["indexNumber"] ?>" data-register="false">
-                            <td><?php echo $row["indexNumber"] ?></td>
-                            <td class="fullname"><?php echo $row["Lastname"]." ".$row["Othernames"] ?></td>
-                            <td><?php echo $row["boardingStatus"] ?></td>
-                            <td><?php echo $row["programme"] ?></td>
-                            <td><?php echo $row["aggregate"]?></td>
-                            <td><?php echo $row["Gender"] ?></td>
-                            <td><?php echo $row["trackID"] ?></td>
+                        <?php foreach($students as $student):?>
+                        <tr data-index="<?php echo $student["indexNumber"] ?>" data-register="false">
+                            <td><?php echo $student["indexNumber"] ?></td>
+                            <td class="fullname"><?php echo $student["Lastname"]." ".$student["Othernames"] ?></td>
+                            <td><?php echo $student["boardingStatus"] ?></td>
+                            <td><?php echo $student["programme"] ?></td>
+                            <td><?php echo $student["aggregate"]?></td>
+                            <td><?php echo $student["Gender"] ?></td>
+                            <td><?php echo $student["trackID"] ?></td>
                             <td class="flex flex-wrap">
                                 <span class="item-event edit cssps">Edit</span>
                                 <span class="item-event delete cssps">Delete</span>
                             </td>
                         </tr>
-                        <?php } ?>
+                        <?php endforeach; ?>
                     </tbody>
                     <tfoot>
                         <tr>
@@ -259,7 +240,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                                     <div class="pagination">
                                         Page <span class="current"></span>  <strong>of</strong> <span class="last"></span>
                                     </div>
-                                    <?php if($res->num_rows > 0) : ?>
+                                    <?php if($students) : ?>
                                     <div class="navs">
                                         <span class="item-event prev" data-break-point="10">Prev</span>
                                         <span class="item-event next" data-break-point="10">Next</span>
@@ -272,11 +253,11 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                     </tfoot>
                 </table>
             </div>
-            <?php }else{ ?>
+            <?php else: ?>
             <div class="empty body" style="margin-top: 0.3em; padding-top: 1.3em; padding-bottom: 1.3em">
                 Nothing to show. Click the "Refresh" button to refresh this box
             </div>
-            <?php } ?>
+            <?php endif; ?>
         </div>
     </div>
 </section>
