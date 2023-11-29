@@ -100,17 +100,21 @@
             align-items: center;
             flex-direction: column;
         }
-        body{
-            overflow: hidden;
+        a:visited{
+            color: blue;
+        }
+        body, html{
+            padding: 0; margin: 0;
         }
         button{
+            max-width: 640px;
             width: 70vw;
             height: 10vh;
             padding: 0.3em 0.5em;
             cursor: pointer;
             outline: unset;
             border: 1px solid lightgrey;
-            transition: all 0.6s;
+            transition: all 0.5s;
             font-size: 13pt;
             background-color: #eee;
             color: #222;
@@ -147,7 +151,7 @@
         <?php } ?>
         <?php if(!isset($_GET["indexNumber"])){ ?>
         <div class="member_div">
-            <span>You can visit <a href="<?php echo "$url/student"?>">www.shsdesk.com/student</a> to download your documents at a later time.</span>
+            <span>You can visit <a href="<?php echo "$url/student"?>"><?php echo "$url/student"?></a> to download your documents at a later time.</span>
         </div>
         <?php } ?>
     </div>

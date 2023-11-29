@@ -532,7 +532,7 @@
                     "alias" => "s c",
                     "on" => "id schoolID"
                 ]
-            ], $where, 0, "AND", group_by: "id");
+            ], $where, 0, "AND", group_by: ["s.id", "a.user_id"]);
 
             //format schools data
             $schools = formatSchoolForPayment($schools);

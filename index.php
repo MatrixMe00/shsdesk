@@ -20,6 +20,22 @@
     <!--Payment and angular script-->
     <script src="https://js.paystack.co/v1/inline.js" defer></script>
     <script src="assets/scripts/angular/angular.min.js?v=<?= time()?>"></script>
+
+    <style>
+        @media print{
+            body *{
+                visibility: hidden;
+            }
+            #sumView, #sumView *{
+                visibility: visible;
+            }
+            #sumView{
+                position: absolute;
+                left: 0; right: 0;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body ng-app="index_application" id="index_main">
     <!-- navigation bar -->

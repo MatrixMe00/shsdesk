@@ -41,7 +41,7 @@
             ON h.id = ho.houseID
             JOIN cssps c
             ON e.indexNumber = c.indexNumber
-            WHERE e.shsID=$user_school_id
+            WHERE e.shsID=$user_school_id AND c.current_data=1
             ORDER BY e.enrolDate ASC";
 
             //exception headers, end it with an empty field
@@ -53,7 +53,7 @@
         $sql = "SELECT h.indexNumber, h.studentLname AS lastname, h.studentOname as `othername(s)`, h.studentYearLevel, h.studentGender, h.boardingStatus, h1.title AS `house name`
         FROM house_allocation h JOIN houses h1
         ON h.houseID=h1.id
-        WHERE h.schoolID=$user_school_id
+        WHERE h.schoolID=$user_school_id AND h.current_data=1
         ORDER BY h.boardingStatus DESC, h.houseID ASC, h.studentGender ASC";
 
         $exception_headers = array("");

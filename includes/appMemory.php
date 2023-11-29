@@ -14,6 +14,9 @@
     $serverName = $_SERVER['SERVER_NAME'];
     $serverDown = false;
 
+    // last figure of index number
+    $index_end = "23";
+
     $sqlServer = array();
     $priceKeys = array(
         "development"=>"pk_test_3a5dff723cbd3fe22c4770d9f924d05c77403fca",

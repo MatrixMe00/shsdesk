@@ -744,31 +744,66 @@ $(".tab_button").click(function(){
 
 //print summary on button click
 $("label[for=print_summary] button").click(function(){
-    html = $("#" + $("#sumView").attr("data-views")).html();
-    index = $("input#ad_index").val();
+    let html = $("#" + $("#sumView").attr("data-views")).html();
+    html = html.replace(/></g, ">Not Defined<");
+    
+    const index = $("input#ad_index").val();
+    const printStyle = "<style>\n" + 
+    "fieldset{display: block;margin-bottom: 1cm;border: 1px solid black;}\n" + 
+    ".joint{margin: 5px; display: flex; flex-wrap: wrap; gap: 5mm}\n" +
+    ".joint .label{flex: 1 1 auto; min-width: 40mm; border: 1px solid lightgrey;padding: 2mm 3mm;min-height: 1.25em;}\n" + 
+    ".label .value{color: #222;font-variant: small-caps;}\n" +
+    ".ng-hide{display: none;}\n" +
+    ".cur_time{margin-top: 5mm; text-align: center;}\n" +
+    ".checkbox{margin-top: 3mm; padding: 2mm 2mm 1mm}\n" +  
+    "</style>\n";
 
-    $.ajax({
-        url: "customPdfGenerator.php",
-        data: {
-            admission_print: true,
-            html: html,
-            ad_index: index
-        },
-        type: "POST",
-        cache: true,
-        timeout: 30000,
-        success: function(data){
-            alert_box("Your document is ready", "primary");
-            alert_box(data,"secondary");
-        },
-        error: function(p, textStatus){
-            p = JSON.stringify(p)
+    // set document title
+    const title = "Admission Summary | " + index;
 
-            if(textStatus == "timeout"){
-                p = "Connection was timed out due to a slow network. Please try again later"
-            }
-            
-            alert_box(p, "error", 10);
-        }
-    })
+    // add current date and time as print time
+    html += "\n<p class='cur_time'>Document Generated at " + printTime() + "</p>";
+
+    // open a print section
+    printSection(html, printStyle, title);
 })
+
+function printSection(content, style, title="Print View"){
+    const printWindow = window.open('', title);
+
+    printWindow.document.write('<html><head><title>' + title +'</title></head><body>');
+    printWindow.document.write(content);
+    printWindow.document.write('</body></html>');
+
+    // Optional: Add additional styles or scripts for the print window
+    printWindow.document.head.innerHTML += style;
+
+    printWindow.document.close(); // Important: Close the document stream before printing
+
+    printWindow.print();
+}
+
+function printTime(){
+    var currentDate = new Date();
+
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[currentDate.getMonth()];
+
+            var day = currentDate.getDate();
+            var year = currentDate.getFullYear();
+
+            var hours = currentDate.getHours();
+            var minutes = currentDate.getMinutes();
+            var seconds = currentDate.getSeconds();
+
+            var ampm = hours >= 12 ? 'pm' : 'am';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Handle midnight (0:00)
+
+            var formattedDate = month + ' ' + day + ', ' + year;
+            var formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds + ' ' + ampm;
+
+            var dateNow = formattedDate + ' at ' + formattedTime;
+
+            return dateNow;
+}

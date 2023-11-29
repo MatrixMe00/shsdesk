@@ -2,7 +2,7 @@
     include_once("auth.php");
 
     //set nav_point session
-    $_SESSION["nav_point"] = "programs";
+    $_SESSION["nav_point"] = "house";
 
     //check if current school is a day school
     $isDay = $stat = getSchoolDetail($user_school_id, true)["residence_status"];
@@ -175,7 +175,7 @@
                 <?php endforeach ?>
             </tbody>
         </table>
-        <?php elseif($houses = decimalIndexArray(fetchData("*","houses","schoolID=$user_school_id"))): ?>
+        <?php elseif($houses = decimalIndexArray(fetchData("*","houses","schoolID=$user_school_id",0))): ?>
         <table class="full">
             <thead>
                 <tr>
