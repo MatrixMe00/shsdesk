@@ -14,6 +14,17 @@
                 "admin_mode" => "admission"
             ],
             [
+                "item_class"=> "",
+                "name" => "issues",
+                "title" => "Admission Issues",
+                "data-url" => "/admin/admin/page_parts/issues.php",
+                "imgSrc" => "/assets/images/icons/person-outline.svg",
+                "imgAlt" => "issues",
+                "menu_class" => "",
+                "display_title" => "Admission Issues",
+                "admin_mode" => "admission"
+            ],
+            [
                 "item_class"=> "relative",
                 "name" => "notification",
                 "title" => "Notification",

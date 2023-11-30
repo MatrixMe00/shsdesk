@@ -318,7 +318,7 @@
     </div>
     <div class="body">
         <div class="border b-warning txt-al-c sp-med-lr sp-xlg-tp">
-            <p>These are students who have registered but their houses have recently been deleted</p>
+            <p>These are students who have registered but their houses have recently been deleted or not provided one</p>
             <p>You currently have <u><?= $displaced_studs ?></u> students in this category</p>
         </div>
         <div class="btn p-lg sm-auto wmax-3xs w-full w-fluid-child">

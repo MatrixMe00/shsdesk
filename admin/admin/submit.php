@@ -2228,6 +2228,16 @@
             }
 
             echo "success";
+        }elseif($submit == "resolve_issues"){
+            $school_id = $_POST["school_id"] ?? $user_school_id;
+
+            if(is_null($school_id) || empty($school_id)){
+                $message = "School Identifier is invalid or empty";
+            }else{
+                //grab all students with the issues
+            }
+
+            echo $message;
         }else{
             echo "Procedure for submit value '$submit' was not found";
         }

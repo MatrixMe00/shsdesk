@@ -7,7 +7,9 @@
         <div class="head">
             <h2>
                 <?php
-                    $res = $connect->query("SELECT enrolDate FROM enrol_table WHERE shsID=$user_school_id");
+                    $res = $connect->query("SELECT e.enrolDate 
+                        FROM enrol_table e JOIN cssps c ON e.indexNumber=c.indexNumber
+                        WHERE shsID=$user_school_id AND c.current_data=TRUE");
                     $i = 0;
 
                     if($res->num_rows > 0){
