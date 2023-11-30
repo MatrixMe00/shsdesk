@@ -154,11 +154,15 @@
                 }else{
                     if($result->execute()){
                         // update the cssps table that the student has enroled and also jhs attended and dob
+                        $retry = 0;
+
                         $sql = "UPDATE cssps 
-                            SET jhsAttended = '$ad_jhs', dob='$ad_birthdate', enroled = 1 
-                            WHERE indexNumber = '$ad_index'";
-                        $result = $connect->query($sql);
-                        
+                            SET jhsAttended = ?, dob=?, enroled = 1 
+                            WHERE indexNumber = ?";
+                        $stmt = $connect->prepare($sql);
+                        $stmt->bind_param("sss", $ad_jhs, $ad_birthdate, $ad_index);
+                        $stmt->execute();
+
                         //verify if transaction id can be found in database
                         $transaction_id = $_POST['ad_transaction_id'];
                         $db_transaction = fetchData("transactionID","transaction","transactionID='$transaction_id'");
@@ -461,7 +465,13 @@
                     $array["status"] = "already-registered";
                 }elseif(empty($school_id)){
                     if($student["enroled"] == false){
-                        $array["status"] = "not-registered";
+                        //cross check if user has no issue
+                        $has_issue = fetchData("COUNT(indexNumber) as total","enrol_table","indexNumber='$index_number'")["total"];
+                        if($has_issue > 0){
+                            $array["status"] = "student_success";
+                        }else{
+                            $array["status"] = "not-registered";
+                        }                        
                     }else{
                         $array["status"] = "student_success";
                     }

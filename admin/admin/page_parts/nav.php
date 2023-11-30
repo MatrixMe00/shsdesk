@@ -1,5 +1,13 @@
 <?php 
     $admin_mode = $_SESSION["admin_mode"];
+
+    //check if there are admission issues
+    $issues = decimalIndexArray(fetchData("c.indexNumber, c.Lastname, c.Othernames, e.enrolDate", 
+        ["join" => "enrol_table cssps", "on" => "indexNumber indexNumber", "alias" => "e c"],
+        ["c.schoolID=$user_school_id", "c.current_data=TRUE", "c.Enroled=FALSE"], 
+        0, "AND", "left"));
+    $issues = $issues ? "(".count($issues).")" : "";
+
     $navMiddle = [
         "Dashboard" => [
             [
@@ -14,14 +22,14 @@
                 "admin_mode" => "admission"
             ],
             [
-                "item_class"=> "",
+                "item_class"=> "relative",
                 "name" => "issues",
                 "title" => "Admission Issues",
                 "data-url" => "/admin/admin/page_parts/issues.php",
                 "imgSrc" => "/assets/images/icons/person-outline.svg",
                 "imgAlt" => "issues",
                 "menu_class" => "",
-                "display_title" => "Admission Issues",
+                "display_title" => "Admission Issues <span class='absolute right sm-med-r rounded hmax-fit'>$issues</span>",
                 "admin_mode" => "admission"
             ],
             [

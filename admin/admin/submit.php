@@ -2221,7 +2221,15 @@
 
                 // update student data
                 try {
-                    $connect->query("UPDATE house_allocation SET houseID=$student_house, updated_at='$now' WHERE indexNumber='{$student['indexNumber']}'");
+                    // $connect->query("UPDATE house_allocation SET houseID=$student_house, updated_at='$now' WHERE indexNumber='{$student['indexNumber']}'");
+                    $sql = "UPDATE house_allocation SET houseID=?, updated_at=? WHERE indexNumber=?";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("iss", $student_house, $now, $student["indexNumber"]);
+                    $response = $stmt->execute();
+
+                    if(!$response){
+                        exit("{$student['indexNumber']} could not be processed. Error: ".$connect->error);
+                    }
                 } catch (\Throwable $th) {
                     exit(throwableMessage($th));
                 }
@@ -2235,6 +2243,80 @@
                 $message = "School Identifier is invalid or empty";
             }else{
                 //grab all students with the issues
+                $students = decimalIndexArray(fetchData(
+                    [
+                        "c.indexNumber", "e.jhsName", "e.birthdate", "h.houseID",
+                        "c.Gender", "c.boardingStatus", "h.indexNumber AS h_indexNumber",
+                        "c.Lastname", "c.Othernames"
+                    ], 
+                    [
+                        ["join" => "enrol_table cssps", "on" => "indexNumber indexNumber", "alias" => "e c"],
+                        ["join" => "enrol_table house_allocation", "on" => "indexNumber indexNumber", "alias" => "e h"]
+                    ],
+                    ["c.schoolID=$user_school_id", "c.current_data=TRUE", "c.Enroled=FALSE"], 
+                    0, "AND", "left"));
+                
+                //school houses
+                $houses = decimalIndexArray(fetchData(...[
+                    "columns" => ["id","maleHeadPerRoom", "maleTotalRooms", "femaleHeadPerRoom", "femaleTotalRooms"],
+                    "table" => "houses",
+                    "where" => ["schoolID=$user_school_id"],
+                    "limit" => 0,
+                ]));
+                
+                if($students){
+                    foreach($students as $student){
+                        list(
+                            "indexNumber" => $indexNumber, "jhsName" => $jhsName, 
+                            "birthdate" => $birthdate, "houseID" => $houseID, "Gender" => $gender,
+                            "boardingStatus" => $boarding_status, "h_indexNumber" => $h_indexNumber,
+                            "Lastname" => $lname, "Othernames" => $oname
+                        ) = $student;
+
+                        try {
+                            // mark student as enroled
+                            $enrol_sql = "UPDATE cssps SET jhsAttended=?, dob=?, enroled=TRUE WHERE indexNumber=?";
+                            $enrol_stmt = $connect->prepare($enrol_sql);
+                            $enrol_stmt->bind_param("sss",$jhsName, $birthdate, $indexNumber);
+
+                            //get student's house if it hasnt been made
+                            if(empty($houseID) || is_null($houseID)){
+                                $house_id = setHouse($gender, $user_school_id, $indexNumber, $houses, $boarding_status);
+
+                                if(empty($h_indexNumber)){
+                                    $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus) 
+                                        VALUES (?,?,?,?,?,?,?)";
+                                    $stmt = $connect->prepare($sql);
+                                    $stmt->bind_param("sississ", $indexNumber,$user_school_id, $lname, $oname, $house_id, $gender, $boarding_status);
+                                }else{
+                                    $sql = "UPDATE house_allocation SET houseID=?, updated_at=NOW() WHERE indexNumber=?";
+                                    $stmt = $connect->prepare($sql);
+                                    $stmt->bind_param("is",$house_id, $indexNumber);
+                                }
+
+                                $response = $stmt->execute();
+
+                                if(!$response){
+                                    exit("'$indexNumber' could not have a valid house detail. Error: ".$connect->error);
+                                }
+                            }
+                            
+                            // parse sql with the enroled status
+                            $response = $enrol_stmt->execute();
+
+                            // send an error message if things are false
+                            if(!$response){
+                                exit("'$indexNumber' could not be marked as enroled. Error: ".$connect->error);
+                            }
+
+                            $message = "success";
+                        } catch (\Throwable $th) {
+                            $message = throwableMessage($th);
+                        }
+                    }
+                }else{
+                    $message = "No issues were found";
+                }
             }
 
             echo $message;

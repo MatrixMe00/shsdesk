@@ -3,10 +3,10 @@
 
     $_SESSION["nav_point"] = "issues";
 
-    $n_enroled = decimalIndexArray(fetchData("c.indexNumber, c.Lastname, c.Othernames", 
+    $n_enroled = decimalIndexArray(fetchData("c.indexNumber, c.Lastname, c.Othernames, e.enrolDate", 
         ["join" => "enrol_table cssps", "on" => "indexNumber indexNumber", "alias" => "e c"],
         ["c.schoolID=$user_school_id", "c.current_data=TRUE", "c.Enroled=FALSE"], 
-        1, "AND", "left"));
+        0, "AND", "left"));
     $enroled = fetchData("COUNT(indexNumber) as total", "enrol_table", "shsID=$user_school_id AND current_data = TRUE")["total"];
 ?>
 
@@ -47,6 +47,7 @@
                     <td>Index Number</td>
                     <td>Lastname</td>
                     <td>Othernames</td>
+                    <td>Time recorded</td>
                 </tr>
             </thead>
             <tbody>
@@ -55,6 +56,7 @@
                     <td><?= $student["indexNumber"] ?></td>
                     <td><?= $student["Lastname"] ?></td>
                     <td><?= $student["Othernames"] ?></td>
+                    <td><?= date("d M Y, H:i:sa" ,strtotime($student["enrolDate"])) ?></td>
                 </tr>
                 <?php endforeach ?>
             </tbody>
@@ -67,8 +69,6 @@
 <script>
     $(document).ready(function(){
         $("#resolve").click(function(){
-            alert_box("Feature in Progress", "orange");
-            return;
             const school_id = $(this).attr("data-school-id");
             const button = $(this);
 
@@ -80,8 +80,14 @@
                     button.html("Resolving...");
                 },
                 success: function(data){
-                    button.html("Resolve All Issues")
-                    alert_box(data);
+                    button.html("Resolve All Issues");
+
+                    if(data == "success"){
+                        alert_box("All issues resolved", "success");
+                        location.reload();
+                    }else{
+                        alert_box(data, "danger", 8);
+                    }
                 },
                 error: function(xhr, textStatus, errorThrown){
                     alert_box(errorThrown);
