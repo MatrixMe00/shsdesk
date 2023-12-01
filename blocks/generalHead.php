@@ -3,6 +3,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- favicon -->
+    <link rel="shortcut icon" href="<?= "$url/assets/favicon.png" ?>" type="image/x-icon">
+
     <!--General Scripts-->
     <script src="<?= "$url/assets/scripts/jquery/compressed_jquery.js?v=". time()?>"></script>
     <script src="<?= "$url/assets/scripts/functions.min.js?v=". time()?>"></script>

@@ -44,6 +44,9 @@ function payWithPaystack(){
                 ]
             },
             callback: function(response){
+                //clear any rechecks happening
+                clearInterval(trackKeeper);
+
                 //mark that payment has been received
                 payment_received = true;
 
@@ -96,7 +99,7 @@ function displayAdmissionForm(trans_ref){
     $("#admission button[name=continue]").prop("disabled", false).click();
 }
 
-//this is a retry approach for the transactions
+//this is a retry approach for the transactions to verify it has been inserted
 async function trackTransactions(reference = ""){
     if(!reference_parsed){
         const fullname = $("#pay_fullname").val();
@@ -126,29 +129,36 @@ async function trackTransactions(reference = ""){
                 cache: false,
                 timeout: 30000,
                 success: function(response){
-                    if(response.includes("success")){
+                    if(response == "success"){
                         //pass transaction id to admission form
                         $("#ad_transaction_id").val(reference);
 
                         //signal that reference has been parsed
                         reference_parsed = true;
+                        transaction_reference = "";
 
                         message = "Reference ID confirmed";
                         alert_box(message, "success", 3.5)
-                    }else if(response.includes("already-exist")){
+                    }else if(response == "already-exist"){
                         //signal that reference is already parsed
                         reference_parsed = true;
+                        transaction_reference = "";
+                    }else{
+                        console.log(response);
                     }
                 },
-                error: function(e, textStatus){
-                    e = JSON.parse(JSON.stringify(e))
-                    message = e["statusText"]
+                error: function(e, textStatus, errorThrown){
+                    message = "Error occured while tracking your transaction";
                     time = 5
 
                     if(textStatus == "timeout"){
                         message = "Connection was timed out due to a slow network. Please try again later"
-                        time = 8
+                        time = 8;
+                    }else if(e.responseText.indexOf("php") < 0){
+                        message = errorThrown;
                     }
+                    
+                    console.log(e);
 
                     //enable only the transaction_id section
                     $("#pay_fullname, #pay_email, #pay_phone").prop("disabled", true);
@@ -156,8 +166,6 @@ async function trackTransactions(reference = ""){
                     $("#pay_reference").prop("disabled", false);
 
                     messageBoxTimeout("paymentForm",message, "error", time);
-
-                    exit(1);
                 }
             })
         }
@@ -166,10 +174,10 @@ async function trackTransactions(reference = ""){
     return reference_parsed;
 }
 
-function reCheck(){
+async function reCheck(){
     if(transaction_reference != ""){
         ++retry_counter;                //indicate a retry count
-        reference_parsed = trackTransactions(transaction_reference);
+        reference_parsed = await trackTransactions(transaction_reference);
     }
 
     if(reference_parsed){
@@ -182,6 +190,7 @@ function reCheck(){
         //stop interval check
         clearInterval(trackKeeper);
     }else if(retry_counter == 3 && !reference_parsed){ alert_box("Slow network detected", "warning", 8)}
+    else{ await trackTransactions(transaction_reference); }
 }
 
 async function sendSMS(reference){
@@ -255,37 +264,40 @@ async function passPaymentToDatabase(reference){
                             "' style='color: blue'>" + cont + "</a></p>";
                     $("#admission #form_footer").html(html);
 
-                    message = "Transaction ID confirmed";
-                    alert_box(message, "success", 3.5)
+                    message = "Transaction ID parsed";
+                    reference_parsed = true;
+                    transaction_reference = "";
+
+                    alert_box(message, "success", 3);
                 }else if(response == "database_send_error"){
                     form_name = "paymentForm";
                     message = "Admin contact could not be retrieved";
-                    message_type = "warning";
                     
-                    alert_box(message, message_type)
+                    alert_box(message, "warning");
+                    console.log(response);
                 }else{
                     form_name = "paymentForm";
                     message = "An error prevented the admin contact to be retrieved";
-                    message_type = "warning";
-                    time = 10;
                     
-                    alert_box(message, message_type)
+                    alert_box(message, "warning", 10);
+                    console.log(response);
                 }
             },
-            error: function(xhr, textStatus){
+            error: function(xhr, textStatus, errorThrown){
                 message = "Error communicating with server. Validation failed on first try";
 
                 if(textStatus == "timeout"){
                     message = "Connection was timed out due to a slow network. Please try again later"
+                }else if(!xhr.responseText.indexOf("php") < 0){
+                    message = errorThrown;
                 }
+                
                 //enable only the transaction_id section
                 $("#pay_fullname, #pay_email, #pay_phone").prop("disabled", true);
 
                 $("#pay_reference").prop("disabled", false);
 
                 alert_box(message, "warning");
-
-                exit(1);
             }
         })
     }    

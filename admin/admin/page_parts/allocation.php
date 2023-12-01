@@ -127,7 +127,7 @@
         $res = $connect->query("SELECT DISTINCT (a.indexNumber), a.studentLname, a.studentOname, c.programme 
             FROM house_allocation a JOIN cssps c 
             ON a.indexNumber = c.indexNumber
-            WHERE a.schoolID = $user_school_id AND a.houseID IS NULL");
+            WHERE a.schoolID = $user_school_id AND a.houseID IS NULL AND c.current_data=TRUE");
      ?>
      <div class="body year" id="">
         <table class="sm-full">

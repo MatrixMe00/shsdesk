@@ -1,9 +1,6 @@
 <nav class="sp-xlg-tp <?= isset($start_sticky) && $start_sticky ? "sticky":"absolute no-sticky" ?> top">
-        <div id="logo">
-            <div id="name">
-                <span id="first">SHS</span>
-                <span id="last">Desk</span>
-            </div>
+        <div id="logo" class="sp-med-l" style="width: 150px">
+            <img src="<?= "$url/assets/logo.png" ?>" alt="">
         </div>
         <?php 
             $links = array();

@@ -425,17 +425,21 @@
                 echo "already-exist";
             }else{
                 //prepare and bind parameters
-                $query = "INSERT INTO transaction (transactionID, contactNumber, schoolBought, amountPaid, 
-                    contactName, contactEmail, Deduction, Transaction_Date) VALUES (?,?,?,?,?,?,?,?)";
-                $result = $connect->prepare($query);
-                $result->bind_param("ssidssds", $transaction_id, $contact_number, $school, $amount, 
-                    $contact_name, $contact_email, $deduction, $trans_time);
+                try {
+                    $query = "INSERT INTO transaction (transactionID, contactNumber, schoolBought, amountPaid, 
+                        contactName, contactEmail, Deduction, Transaction_Date) VALUES (?,?,?,?,?,?,?,?)";
+                    $result = $connect->prepare($query);
+                    $result->bind_param("ssidssds", $transaction_id, $contact_number, $school, $amount, 
+                        $contact_name, $contact_email, $deduction, $trans_time);
 
-                //check for successful execution
-                if($result->execute()){
-                    echo "success";
-                }else{
-                    echo "database_send_error";
+                    //check for successful execution
+                    if($result->execute()){
+                        echo "success";
+                    }else{
+                        echo "database_send_error";
+                    }
+                } catch (\Throwable $th) {
+                    echo throwableMessage($th);
                 }
             }            
         }elseif($submit == "compressimage"){

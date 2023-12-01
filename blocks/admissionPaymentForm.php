@@ -33,8 +33,8 @@
                     <span class="label_image">
                         <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="username_logo">
                     </span>
-                    <input type="text" name="pay_phone" id="pay_phone" class="text_input tel" placeholder="Your Phone Number" 
-                    title="Please provide your mobile money number" autocomplete="off" maxlength="10">
+                    <input type="tel" name="pay_phone" id="pay_phone" class="text_input" placeholder="Your Phone Number" 
+                    title="Please provide your mobile money number" autocomplete="off" maxlength="10" minlength="10">
                 </label>
                 <div class="label flex-column">
                 <label for="pay_amount">

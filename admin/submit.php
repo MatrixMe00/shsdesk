@@ -510,7 +510,7 @@
 
             echo json_encode($data);
         }elseif($submit == "updatePayment"){
-            $where = ["s.Active=TRUE", "r.title LIKE 'admin%'", "c.Enroled = TRUE"];
+            $where = ["s.Active=TRUE", "r.title LIKE 'admin%'", "r.school_id=0" , "c.enroled = TRUE", "c.current_data=TRUE"];
 
             if($admin_access < 3){
                 $where[] = "s.id=$user_school_id";
@@ -562,8 +562,11 @@
                         $heads[$school_role_id] = $prices[1]["price"];
                     }
             
+                    // pass individual prices for admin and head
                     $price_admin = $admins[$admin_role_id];
                     $price_school = $heads[$school_role_id];
+
+                    // variables to hold total for both
                     $amount_admin = 0;
                     $amount_school = 0;
 
@@ -574,13 +577,14 @@
                         $amount_admin = ($data["students"] * $price_admin) - $gen_admin;
                         $amount_school = ($data["students"] * $price_school) - $gen_school;
 
-                        //superadmin calculations
+                        //superadmin calculations - increase student count
                         $system_students += $data["students"];
                     }else{
                         continue;
                     }
 
-                    if($amount_admin > 0 && floatval($price_admin) > 0){
+                    if($amount_admin > 0){
+                        // get the number of students to be processed
                         $student = $amount_admin / $price_admin;
                         
                         $pay_sql = "SELECT * FROM payment WHERE school_id=$school_id AND user_role=$admin_role_id AND status = 'Pending'";
@@ -614,9 +618,9 @@
                 }
 
                 //calculate for admin
-                if($user_details["role"] <= 2){
-                    $amount_developer = ($system_students * $price_developer) - getTotalMoney(1, 0);
-                    $amount_superadmin = ($system_students * $price_superadmin) - getTotalMoney(2, 0);
+                if($admin_access > 3){
+                    $amount_developer = (float) (($system_students * $price_developer) - getTotalMoney(1, 0));
+                    $amount_superadmin = (float) (($system_students * $price_superadmin) - getTotalMoney(2, 0));
     
                     if($amount_developer > 0){
                         $pay_sql = "SELECT * FROM payment WHERE user_role=1 AND status = 'Pending'";

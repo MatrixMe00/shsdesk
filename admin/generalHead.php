@@ -2,6 +2,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- favicon -->
+    <?php 
+        if(!empty($admin_access) && $admin_access > 3){
+            $logo = fetchData("logoPath","schools","id=$user_school_id")["logoPath"] ?? "";
+        }
+
+        if(empty($logo) || !is_file("$url/$logo")){
+            $logo = "assets/favicon.png";
+        }
+    ?>
+    <link rel="shortcut icon" href="<?= "$url/$logo" ?>" type="image/x-icon">
+
     <!--Scripts-->
     <script src="<?php echo $url?>/assets/scripts/jquery/uncompressed_jquery.js"></script>
     <script src="<?php echo $url?>/assets/scripts/functions.min.js?v=<?php echo time()?>"></script>
