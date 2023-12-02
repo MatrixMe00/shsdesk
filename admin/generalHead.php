@@ -1,14 +1,14 @@
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- favicon -->
     <?php 
-        if(!empty($admin_access) && $admin_access > 3){
+        if(!empty($admin_access) && $admin_access < 3){
             $logo = fetchData("logoPath","schools","id=$user_school_id")["logoPath"] ?? "";
         }
 
-        if(empty($logo) || !is_file("$url/$logo")){
+        if(empty($logo) || !is_file("$rootPath/$logo")){
             $logo = "assets/favicon.png";
         }
     ?>

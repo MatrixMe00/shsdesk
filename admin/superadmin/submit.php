@@ -1,5 +1,5 @@
 <?php
-    @include_once("../../includes/session.php");
+    include_once("page_parts/session.php");
 
     if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != NULL){
         $submit = $_REQUEST["submit"];

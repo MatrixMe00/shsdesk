@@ -874,11 +874,11 @@
         global $connect;
         $amount = 0;
 
-        $sql = "SELECT SUM(amount) as amountSum FROM payment WHERE user_role = $user_role AND school_id = $schoolID AND status = 'Sent'";
+        $sql = "SELECT SUM(amount) as amountSum FROM payment WHERE user_role = $user_role AND school_id = $schoolID AND status = 'Sent' AND current_data=TRUE";
         $res = $connect->query($sql);
 
         if($res->num_rows > 0){
-            $amount = $res->fetch_assoc()["amountSum"];
+            $amount = (float) round($res->fetch_assoc()["amountSum"], 2);
         }
 
         if(empty($amount) || is_null($amount)){
@@ -1643,4 +1643,16 @@
         }else{
             return in_array(substr($phone_number, 0, 3), $phoneNumbers1[strtolower($network_provider)]);
         }        
+    }
+
+    /**
+     * Present a dumped data in a more readable format
+     * @param mixed $data The data to be checked
+     */
+    function formatDump(...$data) {
+        echo "<pre>";
+        foreach ($data as $item) {
+            var_dump($item);
+        }
+        echo "</pre>";
     }
