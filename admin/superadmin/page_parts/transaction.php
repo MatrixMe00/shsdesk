@@ -144,6 +144,10 @@ $trans_current = [
                     <input type="text" class="text_input" id="cont_email" name="cont_email" placeholder="Contact's email"
                     title="Contact's email address. You can leave it blank if none was provided during transaction" />
                 </label>
+                <label for="pay_price">
+                    <input type="number" class="text_input" id="pay_price" name="pay_price" placeholder="Amount paid [Keep blank if price is <?= $system_usage_price ?>]"
+                    title="Amount Paid" data-default="<?= $system_usage_price ?>" />
+                </label>
             </div>
             <label for="school">
                 <select name="school" id="school">
@@ -227,6 +231,10 @@ $trans_current = [
             }else if($("#school").val() === ""){
                 message = "Please select the school which was bought";
             }else{
+                if($("#pay_price").val() == ""){
+                    $("#pay_price").val($("#pay_price").attr("data-default"));
+                }
+                
                 dataString = $(this).serialize();
                 dataString += "&submit=" + $("form[name=newTransactionForm] button[name=submit]").val();
 

@@ -276,8 +276,8 @@
             $cont_number = $_REQUEST["cont_number"];
             $cont_email = $_REQUEST["cont_email"];
             $school = $_REQUEST["school"];
-            $amount = 30.00;
-            $deduction = 0.59;
+            $amount = empty($_REQUEST["pay_price"]) ? $_REQUEST["pay_price"] : $system_usage_price;
+            $deduction = round(((1.95 / 100) * $amount), 2, PHP_ROUND_HALF_UP);
             $cont_name = $_REQUEST["cont_name"];
             $trans_date = date("Y-m-d H:i:s");
 

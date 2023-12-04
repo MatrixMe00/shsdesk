@@ -42,7 +42,7 @@
 
     if($serverDown === false){
         // cost of using the system
-        $system_usage_price = 30;
+        $system_usage_price = 35;
         
         switch($serverName){
             case "localhost":
