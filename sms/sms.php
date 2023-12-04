@@ -1,4 +1,6 @@
 <?php
+include_once "../includes/session.php";
+
 if(isset($_REQUEST['submit'])){
     $submit = $_REQUEST['submit'];
     $jsonFormat = true;

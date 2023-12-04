@@ -24,7 +24,8 @@
     );
     $splitKeys = array(
         "live" => [
-            "matrix_admission" => "SPL_U6mW80wZNH",
+            // "matrix_admission" => "SPL_U6mW80wZNH",
+            "matrix_admission" => "SPL_kQPErth3bc",
             "matrix_school_management" => "SPL_nDjVFzSGVb",
             "matrix_admission_bulk" => "SPL_3VlEyxtLgF"
         ],

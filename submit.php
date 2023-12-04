@@ -601,7 +601,7 @@
                     $message .= " | $priceKey";
                 }*/
 
-                $message = "{$splitKey['matrix_school_management']} | $priceKey";
+                $message = "{$splitKey['matrix_admission']} | $priceKey";
             }
 
             echo $message;
