@@ -719,7 +719,7 @@
     */
     function setHouse($gender, $shs_placed, $ad_index, $house, $boardingStatus, $is_new = true){
         $next_house = null;
-
+    
         //allow whole database details to be passed here
         $house = decimalIndexArray($house);
 
@@ -770,7 +770,8 @@
                         "alias" => "ho h",
                         "on" => "houseID id"
                     ],
-                    "where" => ["ho.schoolID=$shs_placed","ho.studentGender='$gender'", "ho.boardingStatus='Boarder'"],
+                    "where" => ["ho.schoolID=$shs_placed","ho.studentGender='$gender'", 
+                        "ho.boardingStatus='Boarder'", "ho.current_data=TRUE"],
                     "limit" => 0, "where_binds" => "AND", "group_by" => "h.id"
                 ]));
 
