@@ -1,5 +1,5 @@
 <?php include_once("session.php");
-    $system_price = fetchData("price","roles","title='system'")["price"];
+    $system_price = fetchData("price","roles","title='system'")["price"] / 100;
     $this_year = date("Y");
 
     //add nav point session
@@ -60,9 +60,10 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $ttl_this_year = fetchData("COUNT(indexNumber) as total","enrol_table","current_data=TRUE")["total"];
-                    
-                    $amount = $role_price * $ttl_this_year;
+                    //get current sum of prices
+                    $amount = $role_price * fetchData("SUM(amountPaid) as ttl",
+                        "transaction", "current_data=TRUE AND Transaction_Expired=TRUE"
+                    )["ttl"];
                     $amount = number_format(round($amount,2), 2);
                     echo $amount;
                 ?>
@@ -77,16 +78,18 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT enrolDate FROM enrol_table");
-                    
+                    $wk_amt = $connect->query("SELECT Transaction_Date as enrolDate, amountPaid FROM transaction WHERE current_data=TRUE AND Transaction_Expired = TRUE");
                     $amount = 0;
-                    while($row = $res->fetch_array()){
-                        if(date("W",strtotime($row["enrolDate"]) - 1) == date("W") - 1){
-                            $amount += $price;
-                        }else{
-                            continue;
+                    if($wk_amt->num_rows > 0){
+                        while($row = $wk_amt->fetch_array()){
+                            if(date("W",strtotime($row["enrolDate"]) - 1) == date("W") - 1){
+                                $amount += ($role_price * $row["amountPaid"]);
+                            }else{
+                                continue;
+                            }
                         }
                     }
+                    
                     $amount = number_format(round($amount,2), 2);
                     echo $amount;
                 ?>
@@ -101,14 +104,14 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT enrolDate FROM enrol_table");
-                    
                     $amount = 0;
-                    while($row = $res->fetch_array()){
-                        if(date("W",strtotime($row["enrolDate"])) == date("W")){
-                            $amount += $role_price;
-                        }else{
-                            continue;
+                    if($wk_amt->num_rows > 0){
+                        while($row = $wk_amt->fetch_array()){
+                            if(date("W",strtotime($row["enrolDate"])) == date("W")){
+                                $amount += ($role_price * $row["amountPaid"]);
+                            }else{
+                                continue;
+                            }
                         }
                     }
                     $amount = number_format(round($amount,2), 2);
@@ -125,7 +128,9 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $amount = fetchData("SUM(Deduction) as deduction, COUNT(Deduction) as total", "transaction", "Transaction_Expired=TRUE AND current_data=TRUE AND DATE_FORMAT(Transaction_Date, '%Y')=$this_year");
+                    $amount = fetchData("SUM(amountPaid) as total, SUM(deduction) as deduction",
+                        "transaction", "current_data=TRUE AND Transaction_Expired = TRUE"
+                    );
                     $amount = ($system_price * $amount["total"]) - $amount["deduction"];
                     $amount = number_format(round($amount,2), 2);
                     echo $amount;
@@ -143,9 +148,8 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $ttl_this_year = fetchData("COUNT(indexNumber) as total","enrol_table","DATE_FORMAT(enrolDate, '%Y')=$this_year")["total"];
-                    
-                    $amount = $role_price * $ttl_this_year;
+                    $amt = fetchData("SUM(amountPaid) as total, SUM(Deduction) AS deduction", "transaction", "DATE_FORMAT(Transaction_Date, '%Y') = $this_year AND Transaction_Expired=TRUE");
+                    $amount = $role_price * $amt["total"];
                     $amount = number_format(round($amount,2), 2);
                     echo $amount;
                 ?>
@@ -159,8 +163,8 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $amount = fetchData("SUM(Deduction) as deduction, COUNT(Deduction) as total", "transaction", "Transaction_Expired=TRUE AND DATE_FORMAT(Transaction_Date, '%Y')=$this_year");
-                    $amount = ($system_price * $amount["total"]) - $amount["deduction"];
+                    // $amount = fetchData("SUM(Deduction) as deduction, COUNT(Deduction) as total", "transaction", "Transaction_Expired=TRUE AND DATE_FORMAT(Transaction_Date, '%Y')=$this_year");
+                    $amount = ($system_price * $amt["total"]) - $amt["deduction"];
                     $amount = number_format(round($amount,2), 2);
                     echo "$amount";
                 ?>

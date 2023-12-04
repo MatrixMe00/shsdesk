@@ -61,6 +61,9 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
         "school_id" => $role_school_id
     ) = getRole($user_details["role"], false);
 
+    //convert role price into percentage
+    $role_price /= 100;
+
     //check for admission mode and results mode
     if(!isset($_SESSION["admin_mode"])){
         $_SESSION["admin_mode"] = "admission";

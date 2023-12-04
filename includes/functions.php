@@ -1581,7 +1581,7 @@
             foreach($schools as $school){
                 $schools_new[$school["id"]] = [
                     "role" => (int) $school["role"],
-                    "students" => (int) $school["total"]
+                    "amountPaid" => (int) $school["amountPaid"]
                 ];
             }
         }else{

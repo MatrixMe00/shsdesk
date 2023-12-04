@@ -120,15 +120,12 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $year_res = fetchData("COUNT(e.enrolDate) as total",[
-                            "join" => "enrol_table cssps",
-                            "alias" => "e c", "on" => "indexNumber indexNumber"
-                        ], ["c.schoolID=$user_school_id", "c.current_data=TRUE", 
-                            "DATE_FORMAT(e.enrolDate, '%Y') = ". date("Y")], 
-                        where_binds: "AND")["total"];
-                    $amount = $year_res * $role_price;
-
-                    echo number_format(round($amount,2), 2);
+                    //get current sum of prices
+                    $amount = $role_price * fetchData("SUM(amountPaid) as ttl",
+                        "transaction", "current_data=TRUE AND schoolBought=$user_school_id AND Transaction_Expired=TRUE"
+                    )["ttl"];
+                    $amount = number_format(round($amount,2), 2);
+                    echo $amount;
                 ?>
             </h2>
         </div>
@@ -141,11 +138,13 @@
         <div class="head">
             <h2>GHC
             <?php
-                    $res = $connect->query("SELECT enrolDate FROM enrol_table WHERE shsID=$user_school_id");
+                    $wk_amt = $connect->query("SELECT Transaction_Date as enrolDate, amountPaid 
+                        FROM transaction WHERE current_data=TRUE AND Transaction_Expired = TRUE
+                        AND schoolBought=$user_school_id AND DATE_FORMAT(Transaction_Date, '%Y-%m')");
                     
                     $amount = 0;
-                    while($row = $res->fetch_array()){
-                        if(date("W",strtotime($row["enrolDate"]) - 1) == date("W") - 1){
+                    while($wk_amt = $res->fetch_array()){
+                        if(date("W",strtotime($wk_amt["enrolDate"]) - 1) == date("W") - 1){
                             $amount += $role_price;
                         }else{
                             continue;
@@ -165,11 +164,9 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $res = $connect->query("SELECT enrolDate FROM enrol_table WHERE shsID=$user_school_id");
-                    
                     $amount = 0;
-                    while($row = $res->fetch_array()){
-                        if(date("W",strtotime($row["enrolDate"])) == date("W")){
+                    while($wk_amt = $res->fetch_array()){
+                        if(date("W",strtotime($wk_amt["enrolDate"])) == date("W")){
                             $amount += $role_price;
                         }else{
                             continue;
@@ -191,18 +188,13 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    if(empty($year_res)){
-                        $year_res = fetchData("COUNT(e.enrolDate) as total",[
-                            "join" => "enrol_table cssps",
-                            "alias" => "e c", "on" => "indexNumber indexNumber"
-                        ], ["c.schoolID=$user_school_id", "c.current_data=TRUE", 
-                            "DATE_FORMAT(e.enrolDate, '%Y') = ". date("Y")], 
-                        where_binds: "AND")["total"];
-                    }
+                    $amount = fetchData("SUM(amountPaid) as total",
+                        "transaction", "current_data=TRUE AND schoolBought=$user_school_id AND Transaction_Expired = TRUE"
+                    );
                     
                     $head_id = (int) $role_id + 1;
                     $head_price = fetchData("price","roles","id=$head_id")["price"];
-                    $amount = $year_res * $head_price;
+                    $amount = $amount["total"] * ($head_price / 100);
                     
                     echo number_format(round($amount,2), 2);
                 ?>

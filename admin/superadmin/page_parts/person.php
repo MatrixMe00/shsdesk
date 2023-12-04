@@ -34,7 +34,7 @@
                 <?php if($row["school_id"] != null){ ?>
                 <div class="school_name">
                     <span>
-                        <?php echo getSchoolDetail($row["school_id"])["schoolName"] ?>
+                        <?php echo getSchoolDetail($row["school_id"])["schoolName"] ?? "school deleted" ?>
                     </span>
                 </div>
                 <?php } ?>

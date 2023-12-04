@@ -510,41 +510,35 @@
 
             echo json_encode($data);
         }elseif($submit == "updatePayment"){
-            $where = ["s.Active=TRUE", "r.title LIKE 'admin%'", "r.school_id=0" , "c.enroled = TRUE", "c.current_data=TRUE"];
+            $where = [
+                "t.current_data=TRUE", "t.Transaction_Expired=TRUE", "s.Active=TRUE", "r.school_id=0",
+                "r.title LIKE 'admin%'"
+            ];
 
             if($admin_access < 3){
                 $where[] = "s.id=$user_school_id";
             }
 
-            $schools = fetchData(["DISTINCT s.id", "a.role", "a.user_id", "COUNT(c.indexNumber) as total"], [
-                [
-                    "join" => "schools admins_table",
-                    "alias" => "s a",
-                    "on" => "id school_id"
-                ],
-                [
-                    "join" => "admins_table roles",
-                    "alias" => "a r",
-                    "on" => "role id"
-                ],
-                [
-                    "join" => "schools cssps",
-                    "alias" => "s c",
-                    "on" => "id schoolID"
-                ]
-            ], $where, 0, "AND", group_by: ["s.id", "a.user_id"]);
+            $columns = ["DISTINCT s.id", "SUM(t.amountPaid) as amountPaid", "a.role"];
+            $tables = [
+                ["join" => "schools transaction", "alias" => "s t", "on" => "id schoolBought"],
+                ["join" => "schools admins_table", "alias" => "s a", "on" => "id school_id"],
+                ["join" => "admins_table roles", "alias" => "a r", "on" => "role id"]
+            ];
+
+            $schools = fetchData($columns, $tables, $where, 0, "AND", group_by: ["s.id", "a.user_id"]);
 
             //format schools data
             $schools = formatSchoolForPayment($schools);
 
             $ad_dev_price = fetchData("price","roles","id < 3", 0);
 
-            $price_superadmin = $ad_dev_price[1]["price"];
-            $price_developer = $ad_dev_price[0]["price"];
+            $price_superadmin = $ad_dev_price[1]["price"] / 100;
+            $price_developer = $ad_dev_price[0]["price"] / 100;
 
             $amount_superadmin = 0;
             $amount_developer = 0;
-            $system_students = 0;
+            $total_cash = 0;
             $student = 0;
 
             if($schools){
@@ -562,30 +556,31 @@
                         $heads[$school_role_id] = $prices[1]["price"];
                     }
             
-                    // pass individual prices for admin and head
-                    $price_admin = $admins[$admin_role_id];
-                    $price_school = $heads[$school_role_id];
+                    // pass individual percentage prices for admin and head
+                    $price_admin = $admins[$admin_role_id] / 100;
+                    $price_school = $heads[$school_role_id] / 100;
 
                     // variables to hold total for both
                     $amount_admin = 0;
                     $amount_school = 0;
 
-                    if($data["students"] > 0){
+                    if($data["amountPaid"] > 0){
                         $gen_admin = getTotalMoney($admin_role_id, $school_id);
                         $gen_school = getTotalMoney($school_role_id, $school_id);
 
-                        $amount_admin = ($data["students"] * $price_admin) - $gen_admin;
-                        $amount_school = ($data["students"] * $price_school) - $gen_school;
+                        $amount_admin = ($data["amountPaid"] * $price_admin) - $gen_admin;
+                        $amount_school = ($data["amountPaid"] * $price_school) - $gen_school;
 
-                        //superadmin calculations - increase student count
-                        $system_students += $data["students"];
+                        //superadmin calculations - increase total cash
+                        $total_cash += $data["amountPaid"];
                     }else{
                         continue;
                     }
 
                     if($amount_admin > 0){
                         // get the number of students to be processed
-                        $student = $amount_admin / $price_admin;
+                        $price_admin = round(($price_admin * $system_usage_price), 2);
+                        $student = round($amount_admin / $price_admin);
                         
                         $pay_sql = "SELECT * FROM payment WHERE school_id=$school_id AND user_role=$admin_role_id AND status = 'Pending'";
                         $pay_result = $connect->query($pay_sql);
@@ -601,7 +596,9 @@
                     }
                     
                     if($amount_school > 0){
-                        $student = $amount_school / $price_school;
+                        // get the number of students to be processed
+                        $price_school = round(($price_school * $system_usage_price), 2);
+                        $student = round($amount_school / $price_school);
                         
                         $pay_sql = "SELECT * FROM payment WHERE school_id=$school_id AND user_role=$school_role_id AND status = 'Pending'";
                         $pay_result = $connect->query($pay_sql);
@@ -619,19 +616,23 @@
 
                 //calculate for admin
                 if($admin_access > 3){
-                    $amount_developer = (float) (($system_students * $price_developer) - getTotalMoney(1, 0));
-                    $amount_superadmin = (float) (($system_students * $price_superadmin) - getTotalMoney(2, 0));
+                    $amount_developer = ($total_cash * $price_developer) - getTotalMoney(1, 0);
+                    $amount_superadmin = ($total_cash * $price_superadmin) - getTotalMoney(2, 0);
+
+                    //get their original prices
+                    $price_developer = round(($price_developer * $system_usage_price), 2);
+                    $price_superadmin = round(($price_superadmin * $system_usage_price), 2);
     
                     if($amount_developer > 0){
                         $pay_sql = "SELECT * FROM payment WHERE user_role=1 AND status = 'Pending'";
                         $pay_result = $connect->query($pay_sql);
                         
                         if($pay_result->num_rows > 0){
-                            $student = $amount_developer / $price_developer;
+                            $student = round($amount_developer / $price_developer);
                             $new_sql = "UPDATE payment SET amount=$amount_developer, studentNumber=$student WHERE school_id=0 AND user_role=1 AND status='Pending'";
                             $connect->query($new_sql);
                         }else{
-                            $student = $amount_developer / $price_developer;
+                            $student = round($amount_developer / $price_developer);
                             $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
                                 VALUES (1, 0, $amount_developer, $student, 'Pending')";
                             $connect->query($new_sql);
@@ -643,11 +644,11 @@
                         $pay_result = $connect->query($pay_sql);
                         
                         if($pay_result->num_rows > 0){
-                            $student = $amount_superadmin / $price_superadmin;
+                            $student = round($amount_superadmin / $price_superadmin);
                             $new_sql = "UPDATE payment SET amount=$amount_superadmin, studentNumber=$student WHERE school_id=0 AND user_role=2 AND status='Pending'";
                             $connect->query($new_sql);
                         }else{
-                            $student = $amount_superadmin / $price_superadmin;
+                            $student = round($amount_superadmin / $price_superadmin);
                             $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
                                 VALUES (2, 0, $amount_superadmin, $student, 'Pending')";
                             $connect->query($new_sql);

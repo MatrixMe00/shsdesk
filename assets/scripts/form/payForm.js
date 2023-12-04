@@ -12,13 +12,13 @@ const selectedSchool = $("#school_select");
 //variable to be used for tracking
 trackKeeper = null;
 
-function payWithPaystack(){
+async function payWithPaystack(){
     let cust_amount = $("#pay_amount").val().split(" ");
     cust_amount = parseInt(cust_amount[1]) * 100;
     const cust_email = paymentForm.find("#pay_email").val();
 
     try {
-        var handler = PaystackPop.setup({
+        var handler = await PaystackPop.setup({
             key: api_key,
             email: cust_email,
             amount: cust_amount,
@@ -56,7 +56,6 @@ function payWithPaystack(){
                 //pass a message that payment has been made
                 message = "Transaction was made successfully";
                 messageBoxTimeout("paymentForm", message, "success");
-                alert_box(message, "success", 3.5)
     
                 //pull out admission form right after payment
                 displayAdmissionForm(response.reference);
@@ -304,7 +303,7 @@ async function passPaymentToDatabase(reference){
 }
 
 //what should happen when the payment form is submitted
-paymentForm.submit(function(){
+paymentForm.submit(async function(){
     const form_name = "paymentForm";
 
     //check if only the reference was given else, make payment to system
@@ -321,7 +320,7 @@ paymentForm.submit(function(){
             messageBoxTimeout("paymentForm", "Please provide your phone number", "error");
         }else{
             //go to paystack payment method
-            payWithPaystack();
+            await payWithPaystack();
         }        
     }else{
         //disable other input elements
@@ -386,7 +385,7 @@ paymentForm.submit(function(){
                 }
                 messageBoxTimeout(form_name, message, messageType, time);
             },
-            error: function(xhr, textStatus){
+            error: function(xhr, textStatus, errorThrown){
                 message = "Error communicating with server. Please check your internet connection and try again later";
                 
                 if(textStatus === "timeout"){
@@ -394,6 +393,7 @@ paymentForm.submit(function(){
                 }
                 messageType = "error";
                 time = 5;
+                console.log(errorThrown);
                 messageBoxTimeout(form_name, message, messageType, time);
             }
         })

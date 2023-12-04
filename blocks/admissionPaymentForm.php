@@ -42,10 +42,10 @@
                         <img src="<?php echo $url?>/assets/images/icons/cash-outline.svg" alt="money">
                     </span>
                     <input type="text" name="pay_amount" id="pay_amount" 
-                    title="This is the amount you will be charged from your mobile money wallet" value="GHC 30" data-init="30" readonly>
+                    title="This is the amount you will be charged from your mobile money wallet" value="GHC <?= $system_usage_price ?>" data-init="<?= $system_usage_price ?>" readonly>
                 </label>
                     <span class="item-event info" style="color:red">NB: This is only complementing the manual admission procedure
-                    (you will be charged GHC 30.45 as processing fee [e-tax inclusive])</span>
+                    (you will be charged at most GHC <?= $system_usage_price ?>.45 as processing fee [e-tax inclusive])</span>
                 </label>
             </div>
         </section>
@@ -56,7 +56,7 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="">
                 </span>
-                <input type="text" name="pay_reference" id="pay_reference" class="text_input" placeholder="Enter your Reference ID" autocomplete="off">
+                <input type="text" name="pay_reference" id="pay_reference" class="text_input" placeholder="Enter your Transaction Reference [Sent via SMS by SHSDesk]" autocomplete="off">
             </label>
         </section>
     </div>

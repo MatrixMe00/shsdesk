@@ -56,11 +56,11 @@
                 <?php 
                     if($user_school_id != null){
                         //check if there is a headmaster account
-                        $has_head = fetchData("COUNT(user_id) AS total","admins_table","role=4 AND school_id=$user_school_id")["total"];
+                        $has_head = fetchData("COUNT(user_id) AS total","admins_table","role=".($role_id+1)." AND school_id=$user_school_id")["total"];
                         if($has_head == 0){
-                            $sql = "SELECT id, title FROM roles WHERE id > 2 AND (school_id = 0 OR school_id = $user_school_id) AND title != 'system'";
+                            $sql = "SELECT id, title FROM roles WHERE id=".($role_id+1);
                         }else{
-                            $sql = "SELECT id, title FROM roles WHERE id > 2 AND (school_id = 0 OR school_id = $user_school_id) AND title != 'system' AND title != 'school head'";
+                            $sql = "SELECT id, title FROM roles WHERE id > 2 AND school_id = $user_school_id";
                         }
                     }else{
                         $sql = "SELECT id, title FROM roles WHERE id > 2 AND school_id = 0 AND title != 'system'";
@@ -71,7 +71,13 @@
                     if($result->num_rows > 0){
                         while($row = $result->fetch_assoc()){
                 ?>
-                <option value="<?php echo $row["id"] ?>"><?php echo formatName($row["title"])?></option>
+                <option value="<?php echo $row["id"] ?>"><?php 
+                    if($admin_access >= 3){
+                        echo formatName($row["title"]);
+                    }else{
+                        echo str_contains(strtolower($row["title"]), "head") ? "School Head" : formatName($row["title"]);
+                    }
+                ?></option>
                 <?php 
                         }
                     }

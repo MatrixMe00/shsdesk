@@ -41,6 +41,9 @@
     $developmentServer = null;
 
     if($serverDown === false){
+        // cost of using the system
+        $system_usage_price = 30;
+        
         switch($serverName){
             case "localhost":
             case "shsdesk.local":
