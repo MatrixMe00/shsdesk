@@ -94,6 +94,7 @@
                 $splitKey = $splitKeys["live"];
 
                 $developmentServer = false;
+                $server_secret = "sk_live_daaa39f38fa9b693c96a479afd2308d1ee9c2c74";
 
                 // mail server configuration
                 $mailserver_email = "_mainaccount@shsdesk.com";
@@ -119,6 +120,7 @@
                 $splitKey = $splitKeys["development"];
 
                 $developmentServer = true;
+                $server_secret = "sk_test_32ddfd2d85a0bc1c9bbe946c28ac9f82069a766f";
 
                 // mail server configuration
                 $mailserver_email = "_mainaccount@shsdesk.com";

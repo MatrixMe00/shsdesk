@@ -45,6 +45,8 @@
             include_once('./password.php');
         }elseif($actual_path == "/test"){
             include "./test.php";
+        }elseif($actual_path == "/paystack/webhook"){
+            include "./paystack/webhook.php";
         }
         else {
             $page_title = "error 404 not found!";

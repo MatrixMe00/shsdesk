@@ -12,77 +12,75 @@ const selectedSchool = $("#school_select");
 //variable to be used for tracking
 trackKeeper = null;
 
-async function payWithPaystack(){
-    let cust_amount = $("#pay_amount").val().split(" ");
-    cust_amount = parseInt(cust_amount[1]) * 100;
-    const cust_email = paymentForm.find("#pay_email").val();
+function payWithPaystack(){
+    return new Promise((resolve, reject) => {
+        let cust_amount = $("#pay_amount").val().split(" ");
+        cust_amount = parseInt(cust_amount[1]) * 100;
+        const cust_email = paymentForm.find("#pay_email").val();
 
-    try {
-        var handler = await PaystackPop.setup({
-            key: api_key,
-            email: cust_email,
-            amount: cust_amount,
-            currency: "GHS",
-            split_code: school_split_code,
-            metadata: {
-                custom_fields: [
-                    {
-                        display_name: "Mobile Number",
-                        variable_name: "mobile_number",
-                        value: $("#pay_phone").val()
-                    },
-                    {
-                        display_name: "Customer's Name",
-                        variable_name: "customer_name",
-                        value: $("#pay_fullname").val()
-                    },
-                    {
-                        display_name: "School Name",
-                        variable_name: "school_name",
-                        value: $("#school_admission_case #school_select option:selected").html()
-                    }
-                ]
-            },
-            callback: function(response){
-                //clear any rechecks happening
-                clearInterval(trackKeeper);
+        try {
+            var handler = PaystackPop.setup({
+                key: api_key,
+                email: cust_email,
+                amount: cust_amount,
+                currency: "GHS",
+                split_code: school_split_code,
+                metadata: {
+                    custom_fields: [
+                        {
+                            display_name: "Mobile Number",
+                            variable_name: "mobile_number",
+                            value: $("#pay_phone").val()
+                        },
+                        {
+                            display_name: "Customer's Name",
+                            variable_name: "customer_name",
+                            value: $("#pay_fullname").val()
+                        },
+                        {
+                            display_name: "School Name",
+                            variable_name: "school_name",
+                            value: $("#school_admission_case #school_select option:selected").html()
+                        }
+                    ]
+                },
+                callback: function(response){
+                    //clear any rechecks happening
+                    clearInterval(trackKeeper);
 
-                //mark that payment has been received
-                payment_received = true;
+                    //mark that payment has been received
+                    payment_received = true;
 
-                //store reference into memory
-                transaction_reference = response.reference;
-    
-                //pass a message that payment has been made
-                message = "Transaction was made successfully";
-                messageBoxTimeout("paymentForm", message, "success");
-    
-                //pull out admission form right after payment
-                displayAdmissionForm(response.reference);
-                
-                //send an sms
-                sendSMS(response.reference);
-    
-                //parse data into database in the background
-                passPaymentToDatabase(response.reference);
-    
-                //check if transaction id is present in db after 3.5 seconds
-                trackKeeper = setInterval(reCheck, 3500);
-            },
-            onClose: function(){
-                alert_box('Transaction has been canceled by user', "secondary", 10);
+                    //send an sms
+                    sendSMS(response);
+
+                    //store reference into memory
+                    transaction_reference = response.reference;
+        
+                    //pass a message that payment has been made
+                    message = "Transaction was made successfully";
+                    messageBoxTimeout("paymentForm", message, "success");
+        
+                    resolve(response.reference);
+                },
+                onClose: function(){
+                    alert_box('Transaction has been canceled by user', "secondary", 10);
+                    reject(false);
+                }
+            });
+            handler.openIframe();   
+        } catch (error) {
+            error = error.toString();
+
+            if(error.indexOf("PaystackPop is not defined") > -1){
+                alert_box("You are currently offline. Please check your internet connection and try again later", "danger", 7);
+            }else{
+                alert_box(error, "danger")
             }
-        });
-        handler.openIframe();   
-    } catch (error) {
-        error = error.toString();
 
-        if(error.indexOf("PaystackPop is not defined") > -1){
-            alert_box("You are currently offline. Please check your internet connection and try again later", "danger", 7)
-        }else{
-            alert_box(error, "danger")
+            reject(false);
         }
-    }
+    })
 }
 
 //function to display the admission form
@@ -173,23 +171,29 @@ async function trackTransactions(reference = ""){
     return reference_parsed;
 }
 
-async function reCheck(){
-    if(transaction_reference != ""){
-        ++retry_counter;                //indicate a retry count
+async function reCheck() {
+    if (transaction_reference != "") {
+        ++retry_counter; // indicate a retry count
         reference_parsed = await trackTransactions(transaction_reference);
     }
 
-    if(reference_parsed){
-        //reset references
+    if (reference_parsed) {
+        // reset references
         reference_parsed = false;
         payment_received = false;
         transaction_reference = "";
-        retry_counter = 0
+        retry_counter = 0;
 
-        //stop interval check
+        // stop interval check
         clearInterval(trackKeeper);
-    }else if(retry_counter == 3 && !reference_parsed){ alert_box("Slow network detected", "warning", 8)}
-    else{ await trackTransactions(transaction_reference); }
+    } else if (retry_counter == 3 && !reference_parsed) {
+        alert_box("Slow network detected", "warning", 8);
+    } else {
+        // Retry after a short delay (e.g., 3 seconds)
+        setTimeout(async function () {
+            await reCheck();
+        }, 3000);
+    }
 }
 
 async function sendSMS(reference){
@@ -319,8 +323,25 @@ paymentForm.submit(async function(){
         }else if($("#pay_phone").val() === "" || $("pay_phone").val() === null){
             messageBoxTimeout("paymentForm", "Please provide your phone number", "error");
         }else{
-            //go to paystack payment method
-            await payWithPaystack();
+            try {
+                //go to paystack payment method
+                const response = await payWithPaystack();
+
+                if(response){
+                    //pull out admission form right after payment
+                    displayAdmissionForm(response);
+        
+                    //parse data into database in the background
+                    passPaymentToDatabase(response);
+        
+                    //check if transaction id is present in db after 3.5 seconds
+                    trackKeeper = setInterval(reCheck, 3500);
+                }else{
+                    console.log(response);
+                }
+            } catch (error) {
+                console.log("Payment Error: ", error);
+            }
         }        
     }else{
         //disable other input elements

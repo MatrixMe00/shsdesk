@@ -56,7 +56,7 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/information-outline.svg" alt="">
                 </span>
-                <input type="text" name="pay_reference" id="pay_reference" class="text_input" placeholder="Enter your Transaction Reference [Sent via SMS by SHSDesk]" autocomplete="off">
+                <input type="text" name="pay_reference" id="pay_reference" class="text_input" placeholder="Enter your Transaction Reference [Sent via SMS by SHSDesk - TXXXXXXXXXXXXXXX]" autocomplete="off">
             </label>
         </section>
     </div>
