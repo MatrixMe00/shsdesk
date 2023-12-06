@@ -1,22 +1,17 @@
 <?php
-    include_once $_SERVER["DOCUMENT_ROOT"]."/includes/session.php";
+    include_once "./includes/session.php";
     
     // only a post with paystack signature header gets our attention
-    if ((strtoupper($_SERVER['REQUEST_METHOD']) != 'POST' ) || !array_key_exists('HTTP_X_PAYSTACK_SIGNATURE', $_SERVER) ) 
-          exit("Method Disallowed");
+    if ((strtoupper($_SERVER['REQUEST_METHOD']) != 'POST' ) ){
+        exit("Method Disallowed");
+    } 
     
     // Read the raw POST data from the webhook
     $payload = file_get_contents("php://input");
     
-    define('PAYSTACK_SECRET_KEY',$server_secret);
-
-    // validate event do all at once to avoid timing attack
-    if($_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] !== hash_hmac('sha512', $input, PAYSTACK_SECRET_KEY))
-      exit("Process Disallowed");
-    
     // Log the raw payload (for debugging purposes)
-    file_put_contents("paystack_webhook.log", $payload . PHP_EOL, FILE_APPEND);
-    
+    file_put_contents("./paystack/paystack_webhook.log", $payload . PHP_EOL, FILE_APPEND);
+
     // Decode the JSON payload
     $event = json_decode($payload, true);
     
@@ -42,27 +37,49 @@
     function handleSuccessfulPayment($event)
     {
         // Logic for successful payment
-        $reference = $event['data']['reference'];
-        $amount = $event['data']['amount'] / 100; // Amount is in kobo, convert to naira
-        // Implement your business logic here, e.g., update database, send email, etc.
-        // Example: Update a database record with the payment status
-        // $sql = "UPDATE orders SET payment_status = 'success' WHERE reference = '$reference'";
-        // mysqli_query($connection, $sql);
-        // Example: Send a thank you email to the customer
-        // mail($event['data']['customer']['email'], 'Payment Received', 'Thank you for your payment!');
+        $data = $event["data"];
+        $metadata = $data["metadata"]["custom_fields"];
+        $reference = $data["reference"];
+        $amount = (float) $data['amount'] / 100; 
+        $customer_name = $metadata[1]["value"];
+        $school_id = getSchoolDetail($metadata[2]["value"]);
+        $school_id = $school_id == "error" ? 0 : $school_id["id"];
+        $customer_email = $data["customer"]["email"];
+        $deduction = round($data["fees"] / 100, 2);
+        $paid_at = date("Y-m-d H:i:s", strtotime($data["paidAt"]));
+        $customer_number = $metadata[0]["value"];
+
+        // for admissions
+        if($amount > 10){
+            //use the connection that is set
+            global $connect;
+    
+            //pass data if its not in the database
+            $exist = fetchData("transactionID","transaction", "transactionID='$reference'");
+    
+            if(!is_array($exist)){
+                $query = "INSERT INTO transaction (transactionID, contactNumber, schoolBought, amountPaid, contactName, 
+                    contactEmail, Deduction, Transaction_Date) VALUES (?,?,?,?,?,?,?,?)";
+                $result = $connect->prepare($query);
+                $result->bind_param("ssidssds", $reference, $customer_number, $school_id, $amount, $customer_name, $customer_email, 
+                    $deduction, $paid_at);
+                
+                // pass payment to database
+                $result->execute();
+            }   
+        }
     }
     
     function handleFailedPayment($event)
     {
         // Logic for failed payment
-        $reference = $event['data']['reference'];
-        // Implement your business logic here for failed payments
+        file_put_contents("./paystack/failed_webhook.log", json_encode($event, JSON_PRETTY_PRINT) . PHP_EOL, FILE_APPEND);
     }
     
     function handleUnknownEvent($event)
     {
-        // Logic for unknown event types
-        // Implement your business logic here for unknown events
+        // pass them into unknown
+        file_put_contents("./paystack/unknown_webhook.log", json_encode($event, JSON_PRETTY_PRINT) . PHP_EOL, FILE_APPEND);
     }
 
 ?>

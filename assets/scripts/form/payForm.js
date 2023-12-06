@@ -52,7 +52,7 @@ function payWithPaystack(){
                     payment_received = true;
 
                     //send an sms
-                    sendSMS(response);
+                    sendSMS(response.reference);
 
                     //store reference into memory
                     transaction_reference = response.reference;
@@ -338,6 +338,7 @@ paymentForm.submit(async function(){
                     trackKeeper = setInterval(reCheck, 3500);
                 }else{
                     console.log(response);
+                    alert_box("Message: " + response);
                 }
             } catch (error) {
                 console.log("Payment Error: ", error);

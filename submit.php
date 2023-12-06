@@ -351,20 +351,27 @@
             $contact_name = $_POST["contact_name"];
             $trans_time = date("Y-m-d H:i:s");
 
-            //prepare and bind parameters
-            $query = "INSERT INTO transaction (transactionID, contactNumber, schoolBought, amountPaid, contactName, 
-                contactEmail, Deduction, Transaction_Date) VALUES (?,?,?,?,?,?,?,?)";
-            $result = $connect->prepare($query);
-            $result->bind_param("ssidssds", $transaction_id, $contact_number, $school, $amount, $contact_name, $contact_email, $deduction, $trans_time);
+            //check if webhook has already entered the detail
+            $trans_data = fetchData("transactionID", "transaction", "transactionID='$transaction_id'");
 
-            //check for successful execution
-            if($result->execute()){
-                echo "success";
-
-                //add admin number
-                echo "-".getSchoolDetail($school, true)["techContact"];
+            if(is_array($trans_data)){
+                echo "success-".getSchoolDetail($school, true)["techContact"];
             }else{
-                echo "database_send_error";
+                //prepare and bind parameters
+                $query = "INSERT INTO transaction (transactionID, contactNumber, schoolBought, amountPaid, contactName, 
+                    contactEmail, Deduction, Transaction_Date) VALUES (?,?,?,?,?,?,?,?)";
+                $result = $connect->prepare($query);
+                $result->bind_param("ssidssds", $transaction_id, $contact_number, $school, $amount, $contact_name, $contact_email, $deduction, $trans_time);
+
+                //check for successful execution
+                if($result->execute()){
+                    echo "success";
+
+                    //add admin number
+                    echo "-".getSchoolDetail($school, true)["techContact"];
+                }else{
+                    echo "database_send_error";
+                }
             }
         }else if($submit == "checkReference" || $submit == "checkReference_ajax"){
             $reference = $_POST["reference_id"];

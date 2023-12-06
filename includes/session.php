@@ -6,7 +6,7 @@ if($serverDown === true){
     header("Location: ./shutdown");
 }
 
-@include_once("functions.php");
+include_once("functions.php");
 
 $host = $sqlServer["host"];
 $hostname = $sqlServer["hostname"];
