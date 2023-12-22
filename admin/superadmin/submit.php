@@ -659,7 +659,7 @@
             if(empty($search)){
                 $message = "Please provide a search term";
             }else{
-                $where[] = $enrolCode ? "e.enrolCode='$search'" : "c.indexNumber='%$search%'";
+                $where[] = $enrolCode ? "e.enrolCode='$search'" : "c.indexNumber LIKE '%$search%'";
                 
                 if($current){
                     $where[] = "c.current_data=TRUE";

@@ -5,3 +5,5 @@ admin/admin/assets/images/schools/*
 student/assets/images/icons/pn/*
 student/assets/images/icons/sv/*
 *.zip
+*.log
+paystack/test.json

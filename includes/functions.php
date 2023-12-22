@@ -869,24 +869,22 @@
      * @param integer $user_role This takes the role of the user or admin
      * @param integer $schoolID This is the ID of the school of the user
      * 
-     * @return float returns the total amount of money made by the user
+     * @return array returns an array with the total amount of money and students assigned
      */
-    function getTotalMoney($user_role,$schoolID):float{
+    function getTotalMoney($user_role,$schoolID):array{
         global $connect;
         $amount = 0;
 
-        $sql = "SELECT SUM(amount) as amountSum FROM payment WHERE user_role = $user_role AND school_id = $schoolID AND status = 'Sent' AND current_data=TRUE";
+        $sql = "SELECT SUM(amount) as amountSum, SUM(studentNumber) AS students FROM payment WHERE user_role = $user_role AND school_id = $schoolID AND status = 'Sent' AND current_data=TRUE";
         $res = $connect->query($sql);
 
         if($res->num_rows > 0){
-            $amount = (float) round($res->fetch_assoc()["amountSum"], 2);
+            $data = $res->fetch_assoc();
+            $amount = $data["amountSum"];
+            $students = $data["students"];
         }
 
-        if(empty($amount) || is_null($amount)){
-            $amount = 0;
-        }
-
-        return $amount;
+        return ["amount" => $amount ?? 0, "students" => $students ?? 0];
     }
 
     /**
@@ -1582,7 +1580,8 @@
             foreach($schools as $school){
                 $schools_new[$school["id"]] = [
                     "role" => (int) $school["role"],
-                    "amountPaid" => (int) $school["amountPaid"]
+                    "amountPaid" => (float) $school["amountPaid"],
+                    "students" => (int) $school["ttl"]
                 ];
             }
         }else{

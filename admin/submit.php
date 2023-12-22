@@ -519,7 +519,7 @@
                 $where[] = "s.id=$user_school_id";
             }
 
-            $columns = ["DISTINCT s.id", "SUM(t.amountPaid) as amountPaid", "a.role"];
+            $columns = ["DISTINCT s.id", "SUM(t.amountPaid) as amountPaid, COUNT(t.transactionID) as ttl", "a.role"];
             $tables = [
                 ["join" => "schools transaction", "alias" => "s t", "on" => "id schoolBought"],
                 ["join" => "schools admins_table", "alias" => "s a", "on" => "id school_id"],
@@ -527,6 +527,10 @@
             ];
 
             $schools = fetchData($columns, $tables, $where, 0, "AND", group_by: ["s.id", "a.user_id"]);
+            
+            //total details for admins
+            $total_students = array_sum(array_column($schools, "ttl"));
+            $total_cash = array_sum(array_column($schools, "amountPaid"));
 
             //format schools data
             $schools = formatSchoolForPayment($schools);
@@ -538,8 +542,6 @@
 
             $amount_superadmin = 0;
             $amount_developer = 0;
-            $total_cash = 0;
-            $student = 0;
 
             if($schools){
                 $admins = $heads = array();
@@ -568,21 +570,18 @@
                         $gen_admin = getTotalMoney($admin_role_id, $school_id);
                         $gen_school = getTotalMoney($school_role_id, $school_id);
 
-                        $amount_admin = ($data["amountPaid"] * $price_admin) - $gen_admin;
-                        $amount_school = ($data["amountPaid"] * $price_school) - $gen_school;
-
-                        //superadmin calculations - increase total cash
-                        $total_cash += $data["amountPaid"];
+                        $amount_admin = ($data["amountPaid"] * $price_admin) - $gen_admin["amount"];
+                        $amount_school = ($data["amountPaid"] * $price_school) - $gen_school["amount"];
                     }else{
                         continue;
                     }
 
                     if($amount_admin > 0){
                         // get the number of students to be processed
-                        $price_admin = round(($price_admin * $system_usage_price), 2);
-                        $student = round($amount_admin / $price_admin);
+                        $price_admin = round($amount_admin, 2);
+                        $student = $data["students"] - $gen_admin["students"];
                         
-                        $pay_sql = "SELECT * FROM payment WHERE school_id=$school_id AND user_role=$admin_role_id AND status = 'Pending'";
+                        $pay_sql = "SELECT * FROM payment WHERE school_id=$school_id AND user_role=$admin_role_id AND status = 'Pending' AND current_data=TRUE";
                         $pay_result = $connect->query($pay_sql);
                         
                         if($pay_result->num_rows > 0){
@@ -597,8 +596,8 @@
                     
                     if($amount_school > 0){
                         // get the number of students to be processed
-                        $price_school = round(($price_school * $system_usage_price), 2);
-                        $student = round($amount_school / $price_school);
+                        $price_school = round($amount_school, 2);
+                        $student = $data["students"] - $gen_school["students"];
                         
                         $pay_sql = "SELECT * FROM payment WHERE school_id=$school_id AND user_role=$school_role_id AND status = 'Pending'";
                         $pay_result = $connect->query($pay_sql);
@@ -616,23 +615,26 @@
 
                 //calculate for admin
                 if($admin_access > 3){
-                    $amount_developer = ($total_cash * $price_developer) - getTotalMoney(1, 0);
-                    $amount_superadmin = ($total_cash * $price_superadmin) - getTotalMoney(2, 0);
+                    $gen_developer = getTotalMoney(1,0);
+                    $gen_superadmin = getTotalMoney(2,0);
+                    
+                    $amount_developer = ($total_cash * $price_developer) - $gen_developer["amount"];
+                    $amount_superadmin = ($total_cash * $price_superadmin) - $gen_superadmin["amount"];
 
                     //get their original prices
-                    $price_developer = round(($price_developer * $system_usage_price), 2);
-                    $price_superadmin = round(($price_superadmin * $system_usage_price), 2);
+                    $price_developer = round($amount_developer, 2);
+                    $price_superadmin = round($amount_superadmin, 2);
     
                     if($amount_developer > 0){
+                        $student = $total_students - $gen_developer["students"];
+
                         $pay_sql = "SELECT * FROM payment WHERE user_role=1 AND status = 'Pending'";
                         $pay_result = $connect->query($pay_sql);
                         
                         if($pay_result->num_rows > 0){
-                            $student = round($amount_developer / $price_developer);
                             $new_sql = "UPDATE payment SET amount=$amount_developer, studentNumber=$student WHERE school_id=0 AND user_role=1 AND status='Pending'";
                             $connect->query($new_sql);
                         }else{
-                            $student = round($amount_developer / $price_developer);
                             $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
                                 VALUES (1, 0, $amount_developer, $student, 'Pending')";
                             $connect->query($new_sql);
@@ -640,15 +642,15 @@
                     }
     
                     if($amount_superadmin > 0){
+                        $student = $total_students - $gen_superadmin["students"];
+
                         $pay_sql = "SELECT * FROM payment WHERE user_role=2 AND status = 'Pending'";
                         $pay_result = $connect->query($pay_sql);
                         
                         if($pay_result->num_rows > 0){
-                            $student = round($amount_superadmin / $price_superadmin);
                             $new_sql = "UPDATE payment SET amount=$amount_superadmin, studentNumber=$student WHERE school_id=0 AND user_role=2 AND status='Pending'";
                             $connect->query($new_sql);
                         }else{
-                            $student = round($amount_superadmin / $price_superadmin);
                             $new_sql = "INSERT INTO payment(user_role, school_id, amount, studentNumber, status) 
                                 VALUES (2, 0, $amount_superadmin, $student, 'Pending')";
                             $connect->query($new_sql);
