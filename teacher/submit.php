@@ -333,7 +333,7 @@
                             $message = "Error inserting result";
                         }
 
-                        if($isFinal == "true" || $isFinal === true){
+                        if($isFinal == "true" || $isFinal === true || $isFinal == 1){
                             $sql = "INSERT INTO recordapproval (school_id, teacher_id, program_id, course_id, result_token, submission_date) 
                             VALUES ({$teacher["school_id"]}, {$teacher["teacher_id"]}, $program_id, $course_id, '$result_token', NOW())";
                             
