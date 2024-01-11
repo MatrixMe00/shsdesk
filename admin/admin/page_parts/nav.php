@@ -7,6 +7,18 @@
         ["c.schoolID=$user_school_id", "c.current_data=TRUE", "c.Enroled=FALSE"], 
         0, "AND", "left"));
     $issues = $issues ? "(".count($issues).")" : "";
+    
+    $displaced_studs = (int) $connect->query(
+            "SELECT COUNT(indexNumber) AS total 
+                FROM house_allocation 
+                WHERE schoolID=$user_school_id AND current_data = 1 AND NOT EXISTS (
+                    SELECT 1 
+                    FROM houses 
+                    WHERE houses.id = house_allocation.houseID 
+                    AND houses.schoolID = $user_school_id
+                )"
+        )->fetch_assoc()["total"];
+    $displaced_studs = $displaced_studs ? "($displaced_studs)" : "";
 
     $navMiddle = [
         "Dashboard" => [
@@ -29,7 +41,7 @@
                 "imgSrc" => "/assets/images/icons/person-outline.svg",
                 "imgAlt" => "issues",
                 "menu_class" => "",
-                "display_title" => "Admission Issues <span class='absolute right sm-med-r rounded hmax-fit'>$issues</span>",
+                "display_title" => "Admission Issues <span class='absolute right txt-bold sm-med-r rounded hmax-fit'>$issues</span>",
                 "admin_mode" => "admission"
             ],
             [
@@ -106,14 +118,14 @@
                 "admin_mode" => "admission"
             ],
             [
-                "item_class"=> "",
+                "item_class"=> "relative",
                 "name" => "house",
                 "title" => "House and Bed Declarations",
                 "data-url" => "/admin/admin/page_parts/houses.php",
                 "imgSrc" => "/assets/images/icons/bed-outline.svg",
                 "imgAlt" => "house n bed",
                 "menu_class" => "",
-                "display_title" => "House & Bed Declarations",
+                "display_title" => "House & Bed Declarations <span class='absolute right color-red txt-bold sm-med-r rounded hmax-fit'>$displaced_studs</span>",
                 "admin_mode" => "admission"
             ]
         ],
@@ -396,4 +408,3 @@
         endforeach; ?>
     </div>
 </div>
-

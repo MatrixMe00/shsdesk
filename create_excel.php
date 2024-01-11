@@ -45,7 +45,7 @@
             ORDER BY e.enrolDate ASC";
 
             //exception headers, end it with an empty field
-            $exception_headers = array("shsID","transactionID","schoolName","");
+            $exception_headers = array("shsID","transactionID","schoolName","current_data");
 
             //title
             $filename = "Enrolment Details | ";
