@@ -8,13 +8,31 @@
         //set nav_point session
         $_SESSION["nav_point"] = "students";
     }
+
+    // retrieve all houses
+    $houses = decimalIndexArray(fetchData(["id","title"],"houses","schoolId=$user_school_id", 0));
+    $year1 = decimalIndexArray(fetchData1(
+        ["s.*, p.program_name"],
+        ["join" => "students_table program", "alias" => "s p", "on" => "program_id program_id"], 
+        ["s.school_id=$user_school_id", "s.studentYear=1"], 0, "AND", "LEFT"
+    ));
+    $year2 = decimalIndexArray(fetchData1(
+        ["s.*, p.program_name"],
+        ["join" => "students_table program", "alias" => "s p", "on" => "program_id program_id"], 
+        ["s.school_id=$user_school_id", "s.studentYear=2"], 0, "AND", "LEFT"
+    ));
+    $year3 = decimalIndexArray(fetchData1(
+        ["s.*, p.program_name"],
+        ["join" => "students_table program", "alias" => "s p", "on" => "program_id program_id"], 
+        ["s.school_id=$user_school_id", "s.studentYear=3"], 0, "AND", "LEFT"
+    ));
 ?>
 
 <section class="section_container">
     <div class="content purple">
         <div class="head">
             <h2>
-                <?= $year1 = fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id AND studentYear=1")["total"] ?>
+                <?= $y1 = is_array($year1) ? count($year1) : 0 ?>
             </h2>
         </div>
         <div class="body">
@@ -25,7 +43,7 @@
     <div class="content purple">
         <div class="head">
             <h2>
-                <?= $year2 = fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id AND studentYear=2")["total"] ?>
+                <?= $y2 = is_array($year2) ? count($year2) : 0 ?>
             </h2>
         </div>
         <div class="body">
@@ -36,7 +54,7 @@
     <div class="content purple">
         <div class="head">
             <h2>
-                <?= $year3 = fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id AND studentYear=3")["total"] ?>
+                <?= $y3 = is_array($year3) ? count($year3) : 0 ?>
             </h2>
         </div>
         <div class="body">
@@ -47,7 +65,7 @@
     <div class="content secondary">
         <div class="head">
             <h2>
-                <?= fetchData1("COUNT(indexNumber) as total","students_table","school_id=$user_school_id")["total"] ?>
+                <?= $y1 + $y2 + $y3 ?>
             </h2>
         </div>
         <div class="body">
@@ -56,6 +74,7 @@
     </div>
 </section>
 
+<?php if(is_array($houses)): ?>
 <section>
     <div class="display light">
         <p style="text-align: center; padding: 1em">This section holds data on all students in the system. You can manually 
@@ -81,7 +100,7 @@
                     if($user_details["role"] != 2 && ($user_details["role"] <= 5 || str_contains(strtolower(getRole($user_details["role"])), "admin"))){ 
             ?>
                 <button id="del_all" title="This clears all third years from the system, and in turn promote all students in the system currently to the next class";
-                class="red studs">Clean Records</button>
+                class="red studs">Promote Students</button>
             <?php   } ?>
                 <button type="button" class="" id="addFirstYears">Transfer First Years</button>
             <?php } ?>
@@ -111,8 +130,10 @@
         </label>
     </div>
     <div class="body">        
-        <?php $i=1; while($i <= 3) : ?>
-        <div id="year<?= $i ?>" class="year">
+        <?php $i=1; while($i <= 3) : 
+            $year = "year$i";
+        ?>
+        <div id="<?= $year ?>" class="year">
             <table class="full">
                 <thead>
                     <tr>
@@ -126,27 +147,21 @@
                 </thead>
                 <tbody>
                     <?php 
-                        $query = $connect2->query("SELECT * FROM students_table WHERE school_id = $user_school_id AND studentYear = $i");
-                        if($query->num_rows > 0){
-                            while($row=$query->fetch_assoc()){
+                        if(is_array($$year)){
+                            foreach($$year as $row){
                     ?>
-                    <tr data-index="<?php echo $row["indexNumber"] ?>">
-                        <td class="index"><?php echo $row["indexNumber"] ?></td>
-                        <td class="lname"><?php echo $row["Lastname"] ?></td>
-                        <td class="oname"><?php echo $row["Othernames"]?></td>
+                    <tr data-index="<?= $row["indexNumber"] ?>">
+                        <td class="index"><?= $row["indexNumber"] ?></td>
+                        <td class="lname"><?= $row["Lastname"] ?></td>
+                        <td class="oname"><?= $row["Othernames"]?></td>
                         <td class="house"><?php 
-                            $house = fetchData("title", "houses", "id=".$row["houseID"]);
-                            $house = is_array($house) ? $house["title"] : "Invalid House index";
-                            echo $house;
-                        ?></td>
-                        <td><?php
-                            $program = fetchData1("program_name", "program", "program_id=".$row["program_id"]);
-                            if($program == "empty"){
-                                echo "Not Set";
+                            if(($key = array_search($row["houseID"], array_column($houses, "id"))) !== false){
+                                echo $houses[$key]["title"];
                             }else{
-                                echo $program["program_name"];
+                                echo "Invalid House Index";
                             }
                         ?></td>
+                        <td><?= empty($row["program_name"]) || is_null($row["program_name"]) ? "Not Set" : $row["program_name"] ?></td>
                         <td class="board_stat"><?php echo $row["boardingStatus"]?></td>
                         <td>
                             <span class="item-event edit studs db2">Edit</span>
@@ -168,7 +183,7 @@
                                 <div class="pagination">
                                     Page <span class="current"></span>  <strong>of</strong> <span class="last"></span>
                                 </div>
-                                <?php if($query->num_rows > 0) : ?>
+                                <?php if(is_array($$year)) : ?>
                                 <div class="navs">
                                     <span class="item-event prev" data-break-point="10">Prev</span>
                                     <span class="item-event next" data-break-point="10">Next</span>
@@ -177,7 +192,7 @@
                             </div>
                         </td>
                         <td colspan="4" class="result">
-                            <?= $query->num_rows ?> results were returned
+                            <?= is_array($$year) ? count($$year) : 0 ?> results were returned
                         </td>
                     </tr>
                 </tfoot>
@@ -186,6 +201,11 @@
         <?php $i++; endwhile; ?>
     </div>
 </section>
+<?php else: ?>
+<section>
+    <p class="txt-al-c sp-xlg">Please upload at least one (1) house in the admission interface to proceed</p>
+</section>
+<?php endif; ?>
 
 <div id="modal_2" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
     <?php @include_once($rootPath."/admin/admin/page_parts/file_upload1.php"); ?>
