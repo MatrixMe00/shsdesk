@@ -113,13 +113,13 @@
         <h2>Student Year</h2>
         <div class="flex flex-wrap wrap-half gap-sm flex-eq wmax-sm">
             <div class="btn w-full sm-unset sp-unset">
-                <button class="primary year_btn w-full table_btn" data-year="1" data-break-point="10" data-max-value="<?= $year1 ?>">Year One</button>
+                <button class="primary year_btn w-full table_btn" data-year="1" data-break-point="10" data-max-value="<?= $y1 ?>">Year One</button>
             </div>
             <div class="btn w-full sm-unset sp-unset">
-                <button class="light year_btn w-full table_btn" data-year="2" data-break-point="10" data-max-value="<?= $year2 ?>">Year Two</button>
+                <button class="light year_btn w-full table_btn" data-year="2" data-break-point="10" data-max-value="<?= $y2 ?>">Year Two</button>
             </div>
             <div class="btn w-full sm-unset sp-unset">
-                <button class="light year_btn w-full table_btn" data-year="3" data-break-point="10" data-max-value="<?= $year3 ?>">Year Three</button>
+                <button class="light year_btn w-full table_btn" data-year="3" data-break-point="10" data-max-value="<?= $y3 ?>">Year Three</button>
             </div>
         </div>
     </div>
