@@ -1,5 +1,5 @@
 <?php
-include_once "../includes/session.php";
+include_once $_SERVER["DOCUMENT_ROOT"]."/includes/session.php";
 
 if(isset($_REQUEST['submit'])){
     $submit = $_REQUEST['submit'];
