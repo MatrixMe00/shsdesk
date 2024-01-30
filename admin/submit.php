@@ -519,11 +519,12 @@
                 $where[] = "s.id=$user_school_id";
             }
 
-            $columns = ["DISTINCT s.id", "SUM(t.amountPaid) as amountPaid, COUNT(t.transactionID) as ttl", "a.role"];
+            $columns = ["DISTINCT s.id", "SUM(t.amountPaid) as amountPaid", "COUNT(t.transactionID) as ttl", "a.role"];
             $tables = [
                 ["join" => "schools transaction", "alias" => "s t", "on" => "id schoolBought"],
                 ["join" => "schools admins_table", "alias" => "s a", "on" => "id school_id"],
-                ["join" => "admins_table roles", "alias" => "a r", "on" => "role id"]
+                ["join" => "admins_table roles", "alias" => "a r", "on" => "role id"],
+                ["join" => "transaction enrol_table", "alias" => "t e", "on" => "indexNumber indexNumber"]
             ];
 
             $schools = fetchData($columns, $tables, $where, 0, "AND", group_by: ["s.id", "a.user_id"]);
@@ -663,18 +664,7 @@
         }elseif($submit == "updateSelectedPayment"){
             $trans_ref = $_REQUEST["trans_ref"];
             $update_channel = $_REQUEST["update_channel"];
-            $amount = explode(",",$_REQUEST["amount"]);
-
-            if(is_array($amount)){
-                $n_amount = "";
-                foreach($amount as $key=>$val){
-                    $n_amount .= $val;
-                }
-                $amount = floatval($n_amount);
-            }else{
-                $amount = floatval($amount);
-            }
-            
+            $amount = floatval(str_replace([","," "], "", $_REQUEST["amount"]));
             $deduction = floatval($_REQUEST["deduction"]);
             
             if(!empty($_REQUEST["update_date"]))
@@ -682,7 +672,7 @@
             elseif(strtolower($_REQUEST["date"]) == "not set")
                 $update_date = null;
             else
-                $update_date = $update_date = date("d-m-Y",strtotime($_REQUEST["date"]));
+                $update_date = date("d-m-Y",strtotime($_REQUEST["date"]));
 
             $update_status = $_REQUEST["update_status"];
             $row_id = $_REQUEST["row_id"];
@@ -706,7 +696,16 @@
             }
             
             $amount += $deduction;
-            $number = round($amount / $price);
+            // $number = round($amount / $price);
+            if(is_integer($_REQUEST["student_count"])){
+                $number = $_REQUEST["student_count"];
+            }elseif(str_contains(strtolower($_REQUEST["student_count"]), " enroled students")){
+                $number = str_replace(" enroled students","",strtolower($_REQUEST["student_count"]));
+                $number = (int) $number;
+            }else{
+                exit("number-invalid");
+            }
+            
 
             if(!empty($update_status)){
                 $sql = "UPDATE payment SET transactionReference=?, contactName=?, contactNumber=?, method=?, amount=?, deduction=?, studentNumber=?, date=?, status=? WHERE id=?";

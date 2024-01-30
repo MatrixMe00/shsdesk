@@ -69,13 +69,23 @@ $("table tbody tr").click(function(){
     $("#data_details input[name=deduction]").val($(this).children("td.td_deduction").html());
     $("#data_details input[name=send_name]").val($(this).children("td.td_name").html());
     $("#data_details input[name=send_phone]").val($(this).children("td.td_number").html());
-    $("#data_details input[name=student_count]").val("Money below is a collective for " + $(this).children("td.td_student").html() + " enroled students");
+    $("#data_details input[name=student_count]").val($(this).children("td.td_student").html() + " enroled students");
 
     
     if($(this).children("td:last-child").html().toLocaleLowerCase() == "sent"){
         $("#data_details input[name=status]").val("Transaction was successful");
     }else{
         $("#data_details input[name=status]").val("Transaction is pending send or approval");
+    }
+})
+
+// input variable for number of students should be selected when focused
+$("#data_details input[name=student_count]").on({
+    focus: function(){
+        $(this).select();
+    },
+    blur: function(){
+        $(this).val($(this).val() + " enroled students");
     }
 })
 
@@ -181,10 +191,13 @@ $("#data_details button[name=submit]").click(function(){
     send_name = $("#data_details input[name=send_name]").val();
     send_phone = $("#data_details input[name=send_phone]").val();
     date = $("#data_details input[name=date]").val();
+    student_count = $("#data_details input[name=student_count]").val();
 
-    dataString = "trans_ref=" + trans_ref + "&update_date=" + update_date + "&update_channel=" + update_channel +
-     "&amount=" + amount + "&deduction=" + deduction + "&update_status=" + update_status + "&row_id=" + row_id + "&submit=updateSelectedPayment" + 
-     "&send_name=" + send_name + "&send_phone=" + send_phone + "&date=" + date;
+    dataString = {
+        trans_ref: trans_ref, update_date: update_date, update_channel: update_channel, amount: amount,
+        deduction: deduction, update_status: update_status, row_id: row_id, submit: "updateSelectedPayment",
+        send_name: send_name, send_phone: send_phone, date: date, student_count: student_count
+    }
 
     $.ajax({
         url: "submit.php",
@@ -199,8 +212,11 @@ $("#data_details button[name=submit]").click(function(){
                 setTimeout(function(){
                     $("#lhs .item.active").click();
                 }, 3000);
+            }else if(data == "number-invalid"){
+                $("label[for=form_load] span").html("Number of students could not be determined");
             }else{
                 $("label[for=form_load] span").html("Update could not be made. Please try again!");
+                console.log(data);
             }
         },
         error: function(request, status, errorText){

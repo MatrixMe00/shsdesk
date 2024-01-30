@@ -467,8 +467,7 @@
 
 <?php if($isAdmin): 
     //check if user is taking a share from the system
-    $adminIsPaid = fetchData("price","roles","id={$user_details['role']}")["price"];
-    if($adminIsPaid > 0){
+    if($role_price > 0){
         $adminIsPaid = true;
     }else{
         $adminIsPaid = false;
@@ -662,9 +661,12 @@
         </div>
         <div class="body">
             <div class="joint">
-                <?php if($user_details["role"] == 1){?>
+                <?php
+                    $editable = $role_id <= 2;
+                    if($editable): 
+                ?>
                 <label for="send_name" class="flex-wrap flex-column">
-                    <span class="label_title">Send Name</span>
+                    <span class="label_title">Sender Name</span>
                     <input type="text" name="send_name" id="send_name">
                 </label>
                 <label for="send_phone" class="flex-wrap flex-column">
@@ -674,23 +676,19 @@
                 <label for="student_count" class="flex-wrap flex-column">
                     <span class="label_title">Students Cleared</span>
                     <input type="text" name="student_count" id="student_count">
-                </label><?php } ?>
+                </label><?php endif; ?>
             </div>
             <div class="joint">
                 <label for="trans_ref" class="flex-wrap flex-column">
                     <span class="label_title">Transaction Reference</span>
-                    <input type="text" name="trans_ref" id="trans_ref" style="width:100%" <?php 
-                        if($user_details["role"] != 1){
-                            echo "disabled";
-                        }
-                    ?>>
+                    <input type="text" name="trans_ref" id="trans_ref" style="width:100%" <?= !$editable ? "disabled" : "" ?> />
                 </label>
                 <label for="channel" class="flex-wrap flex-column">
                     <span class="label_title">Channel</span>
                     <input type="text" name="channel" id="channel" style="width:100%" disabled>
-                    <?php if($user_details["role"] == 1){ ?>
+                    <?php if($editable): ?>
                     <span class="item-event info" id="change_channel">Update Channel</span>
-                    <?php } ?>
+                    <?php endif; ?>
                 </label>
                 <label for="update_channel" class="no_disp flex-wrap flex-column">
                     <span class="label_title">Update Channel</span>
@@ -704,51 +702,39 @@
             <div class="joint">
                 <label for="amount" class="flex-wrap flex-column">
                     <span class="label_title">Amount Sent</span>
-                    <input type="text" name="amount" id="amount" style="width:100%" <?php 
-                        if($user_details["role"] != 1){
-                            echo "disabled";
-                        }
-                    ?>>
+                    <input type="text" name="amount" id="amount" style="width:100%" <?= !$editable ? "disabled" : "" ?> />
                     <span class="item-event date">Amount above is the full amount sent, this is without the deduction</span>
                 </label>
                 <label for="deduction" class="flex-wrap flex-column">
                     <span class="label_title">Deduction for Transaction</span>
-                    <input type="text" name="deduction" id="deduction" style="width:100%" <?php 
-                        if($user_details["role"] != 1){
-                            echo "disabled";
-                        }
-                    ?>>
+                    <input type="text" name="deduction" id="deduction" style="width:100%" <?= !$editable ? "disabled" : "" ?>>
                     <span class="item-event date">Amount above is the amount deducted by service provider during transfer</span>
                 </label>
             </div>
             <div class="joint">
                 <label for="date" class="flex-wrap flex-column">
                     <span class="label_title">Date Sent</span>
-                    <input type="text" name="date" id="date" style="width:100%" <?php 
-                        if($user_details["role"] != 1){
-                            echo "disabled";
-                        }
-                    ?>>
-                    <?php if($user_details["role"] == 1){?>
+                    <input type="text" name="date" id="date" style="width:100%" <?= !$editable ? "disabled" : "" ?> />
+                    <?php if($editable):?>
                     <span class="item-event info" id="change_date">Update Date</span>
-                    <?php } ?>
+                    <?php endif; ?>
                 </label>
-                <?php if($user_details["role"] == 1){?>
+                <?php if($editable): ?>
                 <label for="update_date" class="flex-wrap flex-column no_disp">
                     <span class="label_title">Update Date</span>
                     <input type="date" name="update_date" id="update_date" style="width: 100%">
                 </label>
-                <?php } ?>
+                <?php endif; ?>
                 <label for="status" class="flex-wrap flex-column">
                     <span class="label_title">Status</span>
                     <input type="text" name="status" id="status" style="width:100%" disabled>
                     <?php 
-                        if($user_details["role"] == 1){
+                        if($editable){
                             echo "<span id='change_status' class='item-event info'>Change Status</span>";
                         }
                     ?>
                 </label>
-                <?php if($user_details["role"] == 1){?>
+                <?php if($editable):?>
                 <label for="update_status" class="flex-wrap flex-column no_disp">
                     <span class="label_title">Update Status</span>
                     <select name="update_status" id="update_status" style="width:100%">
@@ -757,16 +743,16 @@
                         <option value="Pending">Pending</option>
                     </select>
                 </label>
-                <?php } ?>
+                <?php endif; ?>
             </div>
-            <?php if($user_details["role"] == 1){ ?>
+            <?php if($editable): ?>
             <label for="submit" class="btn">
                 <button type="submit" name="submit" id="submit">Update</button>
             </label>
             <label for="form_load">
                 <span></span>
             </label>
-            <?php } ?>
+            <?php endif; ?>
         </div>
     </div>
     <div class="btn">
