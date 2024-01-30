@@ -45,7 +45,7 @@
                             $cell =  $sheet->getCell("A1");
                             $cellValue = $cell->getValue();
     
-                            if(strtolower($cellValue) != "index number" || !str_contains($cellValue, "index")){
+                            if(strtolower($cellValue) != "index number" && str_contains(strtolower($cellValue), "index") === false){
                                 $cell =  $sheet->getCell("A2");
                                 $cellValue = $cell->getValue();
     
