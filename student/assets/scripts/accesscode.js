@@ -82,6 +82,11 @@ $(document).ready(function(){
                             display_name: "School Name",
                             variable_name: "school_name",
                             value: $("input[name=school_name]").val()
+                        },
+                        {
+                            display_name: "Index Number",
+                            variable_name: "index_number",
+                            value: $("input[name=indexNumber]").val()
                         }
                     ]
                 },
@@ -97,6 +102,7 @@ $(document).ready(function(){
                         },
                         success: function(response){
                             $("form[name=payForm]").find("button[name=submit]").html("Make Payment");
+                            alert_box("Waiting for page reload...");
                             if(response == "success"){
                                 alert("Payment successful")
                                 location.reload()

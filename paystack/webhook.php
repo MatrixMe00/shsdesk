@@ -50,7 +50,7 @@
         $customer_number = $metadata[0]["value"];
 
         // for admissions
-        if($amount > 10){
+        if($amount > 15){
             //use the connection that is set
             global $connect;
     
@@ -67,6 +67,45 @@
                 // pass payment to database
                 $result->execute();
             }   
+        }else{
+            // use connection set
+            global $connect2;
+
+            // pass data if its not in the database
+            $exist = fetchData1("transactionID", "transaction", "transactionID='$reference'");
+
+            if(!is_array($exist)){
+                $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email) VALUES (?,?,?,?,?,?)";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("siddss", $reference, $school_id, $amount, $deduction, $customer_phone, $customer_email);
+                
+                // pass payment to database
+                $stmt->execute();
+
+                $index_number = $metadata[3]["value"];
+
+                do{
+                    $accessToken = generateToken(rand(1,9), $school_id);
+                }while(is_array(fetchData1("accessToken","accesstable","accessToken='$accessToken'")));
+
+                $purchaseDate = date("Y-m-d H:i:s");
+                $expiryDate = date("Y-m-d 23:59:59",strtotime($purchaseDate." +4 months +1 day"));
+
+                $transaction_id = $reference;
+                $phoneNumber = $customer_phone;
+
+                $sql = "INSERT INTO accesstable(indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("ssisss", $index_number, $accessToken, $school_id, $purchaseDate, $expiryDate, $transaction_id);
+
+                if($stmt->execute()){
+                    $status = true;
+                    $message = "success";
+                }else{
+                    $status = false;
+                    $message = "Student token was not captured appropriately. Token ID is <b>$accessToken</b>";
+                }
+            }            
         }
     }
     

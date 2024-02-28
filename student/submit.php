@@ -171,35 +171,43 @@
                 $deduction = number_format($price * (1.95/100), 2);
                 $price -= $deduction;
 
-                $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email) VALUES (?,?,?,?,?,?)";
-                $stmt = $connect2->prepare($sql);
-                $stmt->bind_param("siddss", $transaction_id, $school_id, $price, $deduction, $phoneNumber, $email);
+                $exist = fetchData1("transactionID", "transaction", "transactionID='$reference'");
 
-                if($stmt->execute()){
-                    do{
-                        $accessToken = generateToken(rand(1,9), $school_id);
-                    }while(is_array(fetchData1("accessToken","accesstable","accessToken='$accessToken'")));
-
-                    $sql = "INSERT INTO accesstable(indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
+                if(!is_array($exist)){
+                    $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email) VALUES (?,?,?,?,?,?)";
                     $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("ssisss", $indexNumber, $accessToken, $school_id, $purchaseDate, $expiryDate, $transaction_id);
+                    $stmt->bind_param("siddss", $transaction_id, $school_id, $price, $deduction, $phoneNumber, $email);
+                    $inserted = $stmt->execute();
 
-                    if($stmt->execute()){
-                        $status = true;
-                        $message = "success";
+                    if($inserted){
+                        do{
+                            $accessToken = generateToken(rand(1,9), $school_id);
+                        }while(is_array(fetchData1("accessToken","accesstable","accessToken='$accessToken'")));
+    
+                        $sql = "INSERT INTO accesstable(indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param("ssisss", $indexNumber, $accessToken, $school_id, $purchaseDate, $expiryDate, $transaction_id);
+    
+                        if($stmt->execute()){
+                            $status = true;
+                            $message = "success";
+                        }else{
+                            $status = false;
+                            $message = "Student token was not captured appropriately. Token ID is <b>$accessToken</b>";
+                        }
                     }else{
                         $status = false;
-                        $message = "Student token was not captured appropriately. Token ID is <b>$accessToken</b>";
+                        $message = "Transaction was processed but not stored. Transaction Reference is <b>$transaction_id</b>";
+                    }
+    
+                    include_once("../sms/sms.php");
+    
+                    if(isset($_SESSION["system_message"]) && $_SESSION["system_message"] != ""){
+                        $message = "Details were successful but an sms could not be sent. SMS Error: {$_SESSION['system_message']}";
                     }
                 }else{
-                    $status = false;
-                    $message = "Transaction was processed but not stored. Transaction Reference is <b>$transaction_id</b>";
-                }
-
-                include_once("../sms/sms.php");
-
-                if(isset($_SESSION["system_message"]) && $_SESSION["system_message"] != ""){
-                    $message = "Details were successful but an sms could not be sent. SMS Error: {$_SESSION['system_message']}";
+                    $inserted = true;
+                    $message = "success";
                 }
             } catch (\Throwable $th) {
                 $message = "Error: ".$th->getMessage();
