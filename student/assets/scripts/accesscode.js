@@ -108,6 +108,7 @@ $(document).ready(function(){
                                 location.reload()
                             }else{
                                 if(response.indexOf("success") !== -1){
+                                    console.log(response);
                                     alert_box("Details were saved, but an sms could not be sent. Please refresh the page", "primary", 10);
                                 }else{
                                     alert_box(response, "danger", 12)

@@ -171,7 +171,7 @@
                 $deduction = number_format($price * (1.95/100), 2);
                 $price -= $deduction;
 
-                $exist = fetchData1("transactionID", "transaction", "transactionID='$reference'");
+                $exist = fetchData1("transactionID", "transaction", "transactionID='$transaction_id'");
 
                 if(!is_array($exist)){
                     $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email) VALUES (?,?,?,?,?,?)";
@@ -202,12 +202,21 @@
     
                     include_once("../sms/sms.php");
     
-                    if(isset($_SESSION["system_message"]) && $_SESSION["system_message"] != ""){
+                    if(isset($_SESSION["system_message"]) && $_SESSION["system_message"] != "sms sent"){
                         $message = "Details were successful but an sms could not be sent. SMS Error: {$_SESSION['system_message']}";
                     }
                 }else{
-                    $inserted = true;
+                    $status = true;
                     $message = "success";
+
+                    $accessToken = fetchData1("accessToken","accesstable","indexNumber='$indexNumber'", order_by: "datePurchased", asc: false)["accessToken"];
+
+                    // send an sms
+                    include_once("../sms/sms.php");
+    
+                    if(isset($_SESSION["system_message"]) && $_SESSION["system_message"] != "sms sent"){
+                        $message = "Details were successful but an sms could not be sent. SMS Error: {$_SESSION['system_message']}";
+                    }
                 }
             } catch (\Throwable $th) {
                 $message = "Error: ".$th->getMessage();

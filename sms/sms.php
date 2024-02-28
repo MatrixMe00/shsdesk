@@ -1,5 +1,5 @@
 <?php
-include_once $_SERVER["DOCUMENT_ROOT"]."/includes/session.php";
+include_once "../includes/session.php";
 
 if(isset($_REQUEST['submit'])){
     $submit = $_REQUEST['submit'];
@@ -181,6 +181,7 @@ if(isset($_REQUEST['submit'])){
             }
             $senderId = "SHSDesk";
             $recipients = [remakeNumber($phoneNumber, true, false)];
+            $jsonFormat = false;
         }
     }elseif($submit == "add_split" || $submit == "add_split_ajax"){
         $recipients = ["233279284896"];

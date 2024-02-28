@@ -75,35 +75,43 @@
             $exist = fetchData1("transactionID", "transaction", "transactionID='$reference'");
 
             if(!is_array($exist)){
-                $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email) VALUES (?,?,?,?,?,?)";
-                $stmt = $connect2->prepare($sql);
-                $stmt->bind_param("siddss", $reference, $school_id, $amount, $deduction, $customer_phone, $customer_email);
-                
-                // pass payment to database
-                $stmt->execute();
+                try{
+                    $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email) VALUES (?,?,?,?,?,?)";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("siddss", $reference, $school_id, $amount, $deduction, $customer_number, $customer_email);
+                    
+                    // pass payment to database
+                    $stmt->execute();
 
-                $index_number = $metadata[3]["value"];
+                    $index_number = $metadata[3]["value"];
 
-                do{
-                    $accessToken = generateToken(rand(1,9), $school_id);
-                }while(is_array(fetchData1("accessToken","accesstable","accessToken='$accessToken'")));
+                    do{
+                        $accessToken = generateToken(rand(1,9), $school_id);
+                    }while(is_array(fetchData1("accessToken","accesstable","accessToken='$accessToken'")));
 
-                $purchaseDate = date("Y-m-d H:i:s");
-                $expiryDate = date("Y-m-d 23:59:59",strtotime($purchaseDate." +4 months +1 day"));
+                    $purchaseDate = date("Y-m-d H:i:s");
+                    $expiryDate = date("Y-m-d 23:59:59",strtotime($purchaseDate." +4 months +1 day"));
 
-                $transaction_id = $reference;
-                $phoneNumber = $customer_phone;
+                    $transaction_id = $reference;
+                    $phoneNumber = $customer_number;
 
-                $sql = "INSERT INTO accesstable(indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
-                $stmt = $connect2->prepare($sql);
-                $stmt->bind_param("ssisss", $index_number, $accessToken, $school_id, $purchaseDate, $expiryDate, $transaction_id);
+                    $sql = "INSERT INTO accesstable(indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("ssisss", $index_number, $accessToken, $school_id, $purchaseDate, $expiryDate, $transaction_id);
 
-                if($stmt->execute()){
-                    $status = true;
-                    $message = "success";
-                }else{
-                    $status = false;
-                    $message = "Student token was not captured appropriately. Token ID is <b>$accessToken</b>";
+                    if($stmt->execute()){
+                        $status = true;
+                        $message = "success";
+                    }else{
+                        $status = false;
+                        $message = "Student token was not captured appropriately. Token ID is <b>$accessToken</b>";
+                    }
+
+                    include "../sms/sms.php";
+                    
+                    file_put_contents("./paystack/paystack_check.log", $reference." confirmed entry for connect2 with message => $message" . PHP_EOL, FILE_APPEND);
+                }catch(Throwable $th){
+                    file_put_contents("./paystack/paystack_check.log", $reference." has error -> ". $th->getMessage() . PHP_EOL, FILE_APPEND);
                 }
             }            
         }
