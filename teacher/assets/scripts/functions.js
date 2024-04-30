@@ -725,6 +725,18 @@ async function deleteTokenResults(token){
     const response = await $.ajax({
         url: "./submit.php",
         data: {submit: "delete_token", token: token},
-        timeout: 30000
+        timeout: 30000,
+        success: function(response){
+            if(response == "success"){
+                alert_box("Result ready for re-entry", "secondary");
+            }else{
+                alert_box(response, "danger");
+                console.log(response);
+            }
+        },
+        error: function(xhr){
+            console.log(xhr);
+            alert_box("Unknown error occured", "danger");
+        }
     })
 }

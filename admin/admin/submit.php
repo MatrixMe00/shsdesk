@@ -760,7 +760,7 @@
                     try{
                         if($indexNumber == "all"){
                             //delete third years
-                            $sql = "UPDATE SET students_table SET studentYear=4 WHERE school_id=$school_id AND studentYear=3";
+                            $sql = "UPDATE students_table SET studentYear=4 WHERE school_id=$school_id AND studentYear=3";
                         }elseif($indexNumber == "wipe"){
                             $sql = "DELETE FROM students_table WHERE school_id=$school_id";
                         }else{
@@ -1272,7 +1272,12 @@
                 $db = $connect2;
             }
 
-            $sql = "DELETE FROM $table_name WHERE $column_name=?";
+            if(in_array(strtolower($table_name), ["teachers"])){
+                $sql = "UPDATE $table_name SET status=-1 WHERE $column_name=?";
+            }else{
+                $sql = "DELETE FROM $table_name WHERE $column_name=?";
+            }
+
             try{
                 $stmt = $db->prepare($sql);
                 $stmt->bind_param("s", $item_id);
