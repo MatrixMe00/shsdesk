@@ -2010,7 +2010,7 @@
                         $stmt = $connect2->prepare($sql);
                         $stmt->bind_param("id",$user_school_id, $total_price);
                     }else{
-                        $sql = "UPDATE accesspay SET access_price=? WHERE school_id=?";
+                        $sql = "UPDATE accesspay SET access_price=?, last_update=current_update, current_update=NOW() WHERE school_id=?";
                         $stmt = $connect2->prepare($sql);
                         $stmt->bind_param("di",$total_price, $user_school_id);
                     }
