@@ -32,7 +32,6 @@ $(".item").click(function(){
             type: "GET",
             cache: false,
             dataType: "html",
-            timeout: 30000,
             beforeSend: function(){
                 element = "<div class=\"relative\" style=\"height: " + rhs_height + "px\">" + 
                             loadDisplay({

@@ -1223,9 +1223,10 @@
     /**
      * This function is used to generate the academic year for a selected period
      * @param string $date This takes the date of which academic calendar is presented
+     * @param bool $spaced Verifies if there should be spaces between
      * @return string the academic year
      */
-    function getAcademicYear($date){
+    function getAcademicYear($date, $spaced = true){
         //providing a value according to a calculated algorithm
         $this_year = date("Y", strtotime($date));
 
@@ -1242,7 +1243,21 @@
             $next_year = intval($this_year) + 1;
         }
 
-        return "$prev_year / $next_year";
+        return $spaced ? "$prev_year / $next_year" : "$prev_year/$next_year";
+    }
+
+    /**
+     * formats the academic year
+     * @param string $academic_year The academic year to format
+     * @param bool $spaced If there should be spaces
+     */
+    function formatAcademicYear($academic_year, $spaced = true){
+        if(is_null($academic_year) || !str_contains($academic_year, "/")){
+            return "";
+        }
+        $academic_year = str_replace(" ", "", $academic_year);
+
+        return $spaced ? str_replace("/", " / ", $academic_year) : $academic_year;
     }
 
     /**

@@ -740,3 +740,34 @@ async function deleteTokenResults(token){
         }
     })
 }
+
+/**
+ * Creates a result header for the current result slip
+ * @param {string} token The token to be used
+ * @param {number} course_id The subject id
+ * @param {number} program_id The class
+ * @param {number} semester The current semester
+ * @param {number} exam_year The class year
+ */
+async function create_result_head(token, course_id, program_id, semester, exam_year){
+    await $.ajax({
+        url:"./submit.php",
+        data: {
+            result_token: token, course_id: course_id, program_id: program_id,
+            semester: semester, exam_year: exam_year, submit: "submit_result_head"
+        },
+        method: "POST",
+        success:function(response){
+            if(response == "success"){
+                console.log("result slip head created");
+            }else{
+                alert_box("Result slip head failed to create on init", "danger");
+                console.log(response);
+            }
+        },
+        error: function(xhr){
+            console.log(xhr);
+            alert_box("Unknown error! Refer to logs", "danger");
+        }
+    })
+}

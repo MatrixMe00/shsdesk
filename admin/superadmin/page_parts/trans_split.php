@@ -3,6 +3,22 @@
 
     //add nav point session
     $_SESSION["nav_point"] = "trans_splits";
+
+    function payable_amount(){
+        // get the id and price of the yet to enter
+        $data = decimalIndexArray(fetchData1(["school_id", "access_price"], "accesspay", "active=1", 0));
+        if($data){
+            foreach($data as $d){
+                $response[$d["school_id"]] = $d["access_price"];
+            }
+        }else{
+            $response = null;
+        }
+
+        return $response;
+    }
+
+    $payable_amount = payable_amount();
 ?>
 
 <section class="section_container">
@@ -55,6 +71,7 @@
                 <td>School Name</td>
                 <td>Split Code [Admission]</td>
                 <td>Split Code [Management]</td>
+                <td>Payable Amount</td>
                 <td>Bank Name [Admin]</td>
                 <td>Bank Number [Admin]</td>
                 <td>Bank Name [Head]</td>
@@ -70,6 +87,7 @@
                     <td><?= $row["schoolName"] ?></td>
                     <td class="admission_code white" contenteditable="true"><?= $row["split_code_admission"] ?></td>
                     <td class="management_code white" contenteditable="true"><?= $row["split_code_management"] ?></td>
+                    <td><?= $payable_amount[$row["schoolID"]] ?? 0 ?></td>
                     <td><?= $row["admin_bank"] ?></td>
                     <td><?= $row["admin_number"] ?></td>
                     <td><?= $row["head_bank"] ?></td>
@@ -98,6 +116,7 @@
                 <td>School Name</td>
                 <td>Split Code [Admission]</td>
                 <td>Split Code [Management]</td>
+                <td>Payable Amount</td>
                 <td>Bank Name [Admin]</td>
                 <td>Bank Number [Admin]</td>
                 <td>Bank Name [Head]</td>
@@ -113,6 +132,7 @@
                     <td><?= $row["schoolName"] ?></td>
                     <td><?= $row["split_code_admission"] ?></td>
                     <td><?= $row["split_code_management"] ?></td>
+                    <td><?= $payable_amount[$row["schoolID"]] ?? 0 ?></td>
                     <td><?= $row["admin_bank"] ?></td>
                     <td><?= $row["admin_number"] ?></td>
                     <td><?= $row["head_bank"] ?></td>

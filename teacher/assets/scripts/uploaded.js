@@ -143,6 +143,7 @@ function pageChange({index = 0, program_name="", token="", type="", table_id=""}
 }
 
 $("#submit_result").click(async function(){
+    $(this).prop("disabled", true);
     let isHaveToken = false; let token = ""
     let c_id = 0, p_id = 0, e_year = 0, sem = 0;
 
@@ -171,6 +172,11 @@ $("#submit_result").click(async function(){
     if(isHaveToken){
         let success = 0; let fail = 0; let failIndex = []
         const total = $("#save_data_table tbody tr").length;
+
+        // create a header slip
+        await create_result_head(
+            token, c_id, p_id, sem, e_year
+        );
         
         for(let i = 0; i < total; i++){
             const element = $("#save_data_table tbody tr").eq(i);
@@ -223,9 +229,12 @@ $("#submit_result").click(async function(){
             alert_box(fail + " results could not be submitted", "error", 8);
         }
     }
+
+    $(this).prop("disabled", false);
 })
 
 $("#save_result").click(async function(){
+    $(this).prop("disabled", true);
     let isHaveToken = false; let token = saved_token
     let c_id = 0, p_id = 0, e_year = 0, sem = 0;
     const new_save = false;
@@ -305,6 +314,8 @@ $("#save_result").click(async function(){
             alert_box(fail + " results could not be saved", "error", 8);
         }
     }
+
+    $(this).prop("disabled", false);
 })
 
 function getAToken(response_id){

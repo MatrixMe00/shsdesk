@@ -302,6 +302,7 @@
                 $isFinal = $_POST["isFinal"] ?? false;
                 $program_id = $_POST["program_id"] ?? null;
                 $prev_token = isset($_POST["prev_token"]) ? $_POST["prev_token"] : null;
+                $academic_year = getAcademicYear(date("d-m-Y"), false);
 
                 if(empty($student_index) || is_null($student_index) ||
                     empty($result_token) || is_null($course_id) || 
@@ -318,14 +319,15 @@
                         "COUNT(indexNumber) as total",
                         "results",
                         "indexNumber='$student_index' AND course_id=$course_id 
-                        AND exam_year=$exam_year AND semester=$semester"
+                        AND exam_year=$exam_year AND semester=$semester AND
+                        academic_year='$academic_year'"
                     )["total"];
                     if(intval($isInserted) > 0){
                         $message = "Results already exist";
                     }else{
-                        $sql = "INSERT INTO results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, result_token, teacher_id, exam_year, semester, date) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?, NOW())";
+                        $sql = "INSERT INTO results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, result_token, teacher_id, exam_year, semester, academic_year, date) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?,?, NOW())";
                         $stmt = $connect2->prepare($sql);
-                        $stmt->bind_param("siiidddsiii",$student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, $mark, $result_token, $teacher["teacher_id"], $exam_year, $semester);
+                        $stmt->bind_param("siiidddsiiis",$student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, $mark, $result_token, $teacher["teacher_id"], $exam_year, $semester, $academic_year);
 
                         if($stmt->execute()){
                             $message = "true";
@@ -334,10 +336,16 @@
                         }
 
                         if($isFinal == "true" || $isFinal === true || $isFinal == 1){
-                            $sql = "INSERT INTO recordapproval (school_id, teacher_id, program_id, course_id, result_token, submission_date) 
-                            VALUES ({$teacher["school_id"]}, {$teacher["teacher_id"]}, $program_id, $course_id, '$result_token', NOW())";
+                            $found = fetchData1("result_token", "recordapproval", "result_token='$result_token'");
+
+                            if($found == "empty"){
+                                $sql = "INSERT INTO recordapproval (result_token, school_id, teacher_id, program_id, course_id, exam_year, semester, academic_year) VALUES (?,?,?,?,?,?,?,?)";
+                                $stmt = $connect2->prepare($sql);
+                                $stmt->bind_param("siiiiiis", $result_token, $teacher["school_id"], $teacher["teacher_id"], $program_id, $course_id, $exam_year, $semester, $academic_year);
+                                $found = $stmt->execute();
+                            }
                             
-                            if($connect2->query($sql)){
+                            if($found){
                                 if(!is_null($prev_token)){
                                     $connect2->query("DELETE FROM saved_results WHERE token='$prev_token'");
                                 }
@@ -350,6 +358,23 @@
                 }
 
                 echo $message;
+
+                break;
+
+                case "submit_result_head":
+                    $result_token = $_POST["result_token"];
+                    $course_id = $_POST["course_id"];
+                    $program_id = $_POST["program_id"]; 
+                    $semester = $_POST["semester"];
+                    $exam_year = $_POST["exam_year"];
+                    $academic_year = getAcademicYear(date("d-m-Y"), false);
+
+                    $sql = "INSERT INTO recordapproval (result_token, school_id, teacher_id, program_id, course_id, exam_year, semester, academic_year) VALUES (?,?,?,?,?,?,?,?)";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("siiiiiis", $result_token, $teacher["school_id"], $teacher["teacher_id"], $program_id, $course_id, $exam_year, $semester, $academic_year);
+
+                    $message = $stmt->execute();
+                    echo $message === true ? "success" : "fail";
 
                 break;
             
@@ -365,6 +390,7 @@
                     $isFinal = $_POST["isFinal"] ?? false;
                     $program_id = $_POST["program_id"] ?? null;
                     $new_save = $_POST["saved"] ?? null;
+                    $academic_year = getAcademicYear(date('d-m-Y'), false);
                     
                     if(empty($student_index) || is_null($student_index) ||
                         empty($result_token) || is_null($course_id) || 
@@ -389,9 +415,9 @@
                                     $stmt = $connect2->prepare($sql);
                                     $stmt->bind_param("dddss", $class_mark, $exam_mark, $mark, $student_index, $result_token);
                                 }else{
-                                    $sql = "INSERT INTO saved_results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, token, save_date) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?, NOW())";
+                                    $sql = "INSERT INTO saved_results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, token, save_date, academic_year) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?, NOW(),?)";
                                     $stmt = $connect2->prepare($sql);
-                                    $stmt->bind_param("siiidddiiis",$student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, $mark, $teacher["teacher_id"], $exam_year, $semester, $result_token);
+                                    $stmt->bind_param("siiidddiiiss",$student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, $mark, $teacher["teacher_id"], $exam_year, $semester, $result_token, $academic_year);
                                 }                            
         
                                 if($stmt->execute()){
@@ -643,6 +669,8 @@
                         $message = "Error occured";
                     }
                 }
+
+                echo $message;
 
                 break;
 

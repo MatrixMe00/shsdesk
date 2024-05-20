@@ -145,6 +145,7 @@ $("select[name=subject], select[name=semester]").change(function(){
 })
 
 $("#submit_result").click(async function(){
+    $(this).prop("disabled", true);
     let isHaveToken = false; let token = ""
     const c_id = $("select[name=subject]").val()
 
@@ -181,6 +182,11 @@ $("#submit_result").click(async function(){
         const c_id = $("select[name=subject]").val();
         const p_id = $("select[name=class]").attr("data-selected-class");
         const e_year = $("select[name=year]").attr("data-selected-year");
+
+        // create the result head first
+        await create_result_head(
+            token, c_id, p_id, sem, e_year
+        );
         
         for(let i = 0; i < total; i++){
             const element = $("#result_slip tbody tr").eq(i);
@@ -235,9 +241,12 @@ $("#submit_result").click(async function(){
             deleteTokenResults(token);
         }
     }
+
+    $(this).prop("disabled", false);
 })
 
 $("#save_result").click(async function(){
+    $(this).prop("disabled", true);
     let isHaveToken = false; let token = ""
     const c_id = $("select[name=subject]").val()
     const new_save = true;
@@ -330,4 +339,6 @@ $("#save_result").click(async function(){
             deleteTokenResults(token);
         }
     }
+
+    $(this).prop("disabled", false);
 })

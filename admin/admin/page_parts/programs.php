@@ -20,6 +20,14 @@
         JOIN results re ON re.result_token=r.result_token",
         "r.school_id=$user_school_id AND r.result_status != 'pending' ORDER BY r.submission_date DESC", 0
     );
+    $brokenResults = fetchData1(
+        "DISTINCT r.result_token, r.exam_year, r.semester, r.academic_year, t.lname, t.oname, p.program_name, p.short_form, c.course_name, c.short_form as short_form_c, MIN(r.date) as date",
+        "results r JOIN teachers t ON t.teacher_id = r.teacher_id
+        JOIN program p ON p.program_id = r.program_id
+        JOIN courses c ON c.course_id = r.course_id
+        LEFT JOIN recordapproval re ON r.result_token=re.result_token",
+        "ISNULL(re.result_token)", 0, join_type:"LEFT"
+    );
 ?>
 
 <section class="section_container">
@@ -34,7 +42,7 @@
         </div>
     </div>
 
-    <div class="content <?= $resultPending == "empty" ? "green" : "red" ?>">
+    <div class="content <?= $resultPending == "empty" ? "teal" : "pink" ?>">
         <div class="head">
             <h2>
                 <?= is_array($resultPending) ? (isset($resultPending[0]) ? count($resultPending) : 1) : 0; ?>
@@ -42,6 +50,17 @@
         </div>
         <div class="body">
             <span>Pending Result Approvals</span>
+        </div>
+    </div>
+
+    <div class="content <?= $brokenResults == "empty" ? "secondary" : "red" ?>">
+        <div class="head">
+            <h2>
+                <?= is_array($brokenResults) ? (isset($brokenResults[0]) ? count($brokenResults) : 1) : 0; ?>
+            </h2>
+        </div>
+        <div class="body">
+            <span>Broken Results</span>
         </div>
     </div>
 </section>
@@ -53,6 +72,7 @@
         <button class="control_btn sp-lg xs-rnd plain secondary" data-section="newProgram">Add new Class</button>
         <button class="control_btn sp-lg xs-rnd plain yellow color-dark" data-section="pendingResults">Pending results</button>
         <button class="control_btn sp-lg xs-rnd plain teal" data-section="reviewedResults">Reviewed results</button>
+        <button class="control_btn sp-lg xs-rnd plain red" data-section="brokenResults">Broken results</button>
     </div>
 </section>
 
@@ -177,7 +197,7 @@
             <?php for($counter = 0; $counter < (isset($resultAttended[0]) ? count($resultAttended) : 1); $counter++) : $result = isset($resultAttended[0]) ? $resultAttended[$counter] : $resultAttended ?>
             <tr <?= $result["result_status"] === "rejected" ? 'style="background-color:tomato; color: white"' : '' ?>>
                 <td><?= ($counter+1) ?></td>
-                <td><?= is_null($result["short_form"]) ? $result["program_name"] : $result["short_form"] ?></td>
+                <td><?= $result["short_form"] ?? $result["program_name"] ?></td>
                 <td><?= $result["exam_year"] ?></td>
                 <td><?= empty($result["short_form_c"]) ? $result["course_name"] : $result["short_form_c"] ?></td>
                 <td><?= $result["lname"]." ".$result["oname"] ?></td>
@@ -209,6 +229,54 @@
     <?php else : ?>
     <div class="empty txt-al-c p-xxlg p-med">
         <p class="border b-secondary">There are no reviewed results yet</p>
+    </div>
+    <?php endif; ?>
+</section>
+
+<section id="brokenResults" class="section_box no_disp">
+<?php
+        if(is_array($brokenResults)) :
+    ?>
+    <div class="form sm-lg-tp">
+        <label for="search_broken" class="flex-column gap-sm search-label" data-table="broken_table">
+            <span class="title_label">Search for any data in the table below</span>
+            <input type="search" name="search" id="search_broken" placeholder="Type your search here...">
+        </label>
+    </div>
+    <table class="relative" id="broken_table">
+        <thead>
+            <td>No.</td>
+            <td>Class</td>
+            <td>Form Year</td>
+            <td>Subject</td>
+            <td>Teacher</td>
+            <td>Academic Year</td>
+            <td>Submission Date</td>
+        </thead>
+        <tbody>
+            <?php for($counter = 0; $counter < (isset($brokenResults[0]) ? count($brokenResults) : 1); $counter++) : $result = isset($brokenResults[0]) ? $brokenResults[$counter] : $brokenResults ?>
+            <tr>
+                <td><?= ($counter+1) ?></td>
+                <td><?= $result["short_form"] ?? $result["program_name"] ?></td>
+                <td><?= $result["exam_year"] ?></td>
+                <td><?= empty($result["short_form_c"]) ? $result["course_name"] : $result["short_form_c"] ?></td>
+                <td><?= $result["lname"]." ".$result["oname"] ?></td>
+                <td><?= $result["academic_year"] ?></td>
+                <td><?= date("M d, Y H:i:s", strtotime($result["date"])) ?></td>
+                <td>
+                    <span class="item-event view" data-p-year="<?= $result["exam_year"] ?>" data-p-sem="<?= $result["semester"] ?>" data-item-id="<?= $result["result_token"] ?>">View</span>
+                    <span class="item-event remove" data-item-id="<?= $result["result_token"] ?>">Delete</span>                    
+                </td>
+            </tr>
+            <?php endfor; ?>
+        </tbody>
+        <tfoot>
+            <td colspan="5" class="res_stat">Status: </td>
+        </tfoot>
+    </table>
+    <?php else : ?>
+    <div class="empty txt-al-c p-xxlg p-med">
+        <p class="border b-secondary">No broken results found</p>
     </div>
     <?php endif; ?>
 </section>
