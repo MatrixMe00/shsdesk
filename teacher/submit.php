@@ -601,13 +601,13 @@
                     $message = "Result token was not specified";
                 }elseif(is_null($mode) || empty($mode)){
                     $message = "Mode of operation was not specified";
-                }elseif(array_search($mode, $modes) === false){
+                }elseif(in_array($mode, $modes) === false){
                     $message = "Wrong mode was specified $mode";
                 }else{
                     try {
                         if($mode == "transfer"){
-                            $sql = "INSERT INTO saved_results(indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, token, from_reject, save_date)
-                                SELECT indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, result_token, 1, NOW()
+                            $sql = "INSERT INTO saved_results(indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, token, from_reject, academic_year, save_date)
+                                SELECT indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, result_token, 1, academic_year, NOW()
                                 FROM results
                                 WHERE result_token=?";
                             $stmt = $connect2->prepare($sql);

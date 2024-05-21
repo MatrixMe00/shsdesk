@@ -227,6 +227,11 @@ $("#submit_result").click(async function(){
             $("#table_status").append("<br>Failed Submission: " + failIndex.join(", "));
             deleteTokenResults(token);
             alert_box(fail + " results could not be submitted", "error", 8);
+        }else{
+            // reload page
+            setTimeout(function(){
+                $(".nav_links .tab.active").click();
+            }, 2000);
         }
     }
 
