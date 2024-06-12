@@ -114,13 +114,38 @@
             $included_headers = ["Semester","Attendance","Total Attendance"];
             $title = "Attendance List";
         }
+    }elseif($submit == "get_enrolment_data"){
+        $academic_year = reverseYearURL($_REQUEST["academic_year"]);
+        $error = true;
+
+        if(is_null($academic_year)){
+            $message = "No Year value provided";
+        }else{
+            $sql = "SELECT e.indexNumber, e.lastname, e.othername, e.enrolCode, e.aggregateScore, e.program, 
+                        e.gender, e.jhsName, e.jhsTown, e.jhsDistrict, e.birthdate, e.birthPlace, e.fatherName,
+                        e.fatherOccupation, e.motherName, e.motherOccupation, e.guardianName, e.residentAddress,
+                        e.postalAddress, e.primaryPhone, e.secondaryPhone, e.interest, e.award, e.position, e.witnessName,
+                        e.witnessPhone
+                    FROM enrol_table e JOIN cssps c ON e.indexNumber = c.indexNumber
+                    WHERE e.shsID = $user_school_id AND c.academic_year = '$academic_year'";
+            $results = $connect->query($sql);
+            
+            $title = "Student Records $academic_year";
+            $error = false;
+        }
     }
 
+    $results = $results->fetch_all(MYSQLI_ASSOC);
+
+    if(count($results) == 0){
+        $message = "No results were returned. File not created";
+        $error = true;
+    }
+    
     if($error === true){
         echo "Error: $message"; return;
     }
 
-    $results = $results->fetch_all(MYSQLI_ASSOC);
     $field_names = array_keys($results[0]);
 
     $current_col_names = array();

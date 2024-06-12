@@ -189,6 +189,17 @@
             ],
             [
                 "item_class"=> "",
+                "name" => "admission-settings",
+                "title" => "History and Settings",
+                "data-url" => "/admin/admin/page_parts/admission-settings.php",
+                "imgSrc" => "/assets/images/icons/folder-outline.svg",
+                "imgAlt" => "admission settings",
+                "menu_class" => "",
+                "display_title" => "History and Settings",
+                "admin_mode" => "admission"
+            ],
+            [
+                "item_class"=> "",
                 "name" => "admission",
                 "title" => "School Details",
                 "data-url" => "/admin/admin/page_parts/admission.php",

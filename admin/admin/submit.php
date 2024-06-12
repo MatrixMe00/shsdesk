@@ -126,10 +126,11 @@
                 $valid = fetchData("indexNumber","cssps","indexNumber='$student_index'");
 
                 if($valid == "empty"){
+                    $academic_year = getAcademicYear(date("d-m-Y"), false);
                     //insert data into CSSPS table
                     $sql = "INSERT INTO cssps (indexNumber,Lastname,Othernames,Gender,
-                            boardingStatus,programme, aggregate, jhsAttended, dob, trackID, schoolID) 
-                            VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+                            boardingStatus,programme, aggregate, jhsAttended, dob, trackID, schoolID, academic_year) 
+                            VALUES (?,?,?,?,?,?,?,?,?,?,?,'$academic_year')";
                     $stmt = $connect->prepare($sql);
                     $stmt->bind_param("ssssssisssi",$student_index,$lname,$oname,$gender,$boarding_status,$student_course,
                         $aggregate,$jhs,$dob,$track_id,$school_id);

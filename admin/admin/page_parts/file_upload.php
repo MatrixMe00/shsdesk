@@ -17,6 +17,10 @@
                 <span class="message">Here is a test message</span>
                 <div class="close"><span>&cross;</span></div>
             </div>
+            <label for="academic_year" class="flex-wrap flex-column">
+                <span class="label_title">Acadamic Year</span>
+                <input type="text" name="academic_year" class="text_input" value="<?= getAcademicYear(date("d-m-Y")) ?>" placeholder="Current Acadmic Year" >
+            </label>
             <label for="import" class="file_label">
                 <span class="label_title">Upload your file here</span>
                 <div class="fore_file_display">

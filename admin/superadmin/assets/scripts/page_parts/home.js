@@ -19,8 +19,7 @@ $("form[name=carouselForm]").submit(function(e){
     e.preventDefault();
 
     //upload form with files
-    response = fileUpload($("form[name=carouselForm] input[name=item_img]"), 
-    $("form[name=carouselForm]"), $("form[name=carouselForm] button[name=submit]"));
+    response = fileUpload($("form[name=carouselForm]"), $("form[name=carouselForm] button[name=submit]"));
 
     if(response == true){
         alert_box("Carousel Was Added Successfully");

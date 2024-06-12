@@ -228,14 +228,7 @@
                         title = "Attendance List"
                         break;
                 }
-
-                let dataString = JSON.stringify(form_data)
-                //format
-                dataString = dataString.replace(/[{}"]/g, "")
-                dataString = dataString.replace(/[:,]/g, function (match) {
-                            return match === ':' ? '=' : '&';
-                            });
-                location.href = "./admin/excelFile.php?" + dataString
+                location.href = "./admin/excelFile.php?" + jsonToURL($form_data);
             }else if($(this).val() == "upload_document"){
                 $("form[name=upload_form]").submit()
             }
@@ -268,7 +261,7 @@
         $("form[name=upload_form]").submit(async function(e){
             e.preventDefault();
 
-            response = await fileUpload($(this).find("input[type=file]"),$(this), $("button.upload_btn"), false)
+            response = await fileUpload($(this), $("button.upload_btn"), false)
             if(response == true){
                 alert_box("upload finish")
             }else{

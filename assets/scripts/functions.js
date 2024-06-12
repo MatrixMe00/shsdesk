@@ -346,6 +346,23 @@ function toFormData(form){
 }
 
 /**
+ * Converts formdata format to json object
+ * @param {FormData} form_data The form data to be converted
+ * @return {JSON}
+ */
+function FormDataToJSON(form_data){
+    // Create an empty object to store the form data
+    const jsonObject = {};
+
+    // Iterate over the FormData entries and store them in the jsonObject
+    for (var pair of form_data.entries()) {
+        jsonObject[pair[0]] = pair[1];
+    }
+
+    return jsonObject;
+}
+
+/**
 * This function will be used to parse any file type into the database
 * 
 * @param {string} file_element This takes the element name of the file
@@ -356,30 +373,12 @@ function toFormData(form){
 * @return {boolean|string} Returns a boolean value or an error message
 */
 
-async function fileUpload(file_element, form_element, submit_element, messageBox = true){
-    formData = new FormData();
- 
-     if(!$(form_element).attr("name")){
-         alert_box("Your form has no attribute name", "danger")
-         return false
-     }
- 
-    //preparing file and submit values
-    file = $(file_element).prop("files")[0];
-    file_name = $(file_element).attr("name");
-    submit_value = $(submit_element).prop("value");
- 
-    //strip form data into array form and attain total data
-    form_data = $(form_element).serializeArray();
-    formData = toFormData(form_data)
- 
-    //append name and value of file
-    formData.append(file_name, file);
- 
-    //append submit if not found
-    if(!$(form_element).serialize().includes("&submit=")){
-        formData.append("submit", submit_value + "_ajax");
+async function fileUpload(form_element, submit_element, messageBox = true){
+    if(!checkFormElement(form_element, submit_element)){
+        return false;
     }
+
+    const formData = new FormData(form_element[0], submit_element[0]);
  
     response = null;
     
@@ -437,30 +436,12 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
  * @return {boolean|array} Returns a boolean value or an array
  */
  
- async function jsonFileUpload(file_element, form_element, submit_element, messageBox = true){
-    formData = new FormData();
- 
-     if(!$(form_element).attr("name")){
-         alert_box("Your form has no attribute name", "danger")
-         return false
-     }
- 
-    //preparing file and submit values
-    file = $(file_element).prop("files")[0];
-    file_name = $(file_element).attr("name");
-    submit_value = $(submit_element).prop("value");
- 
-    //strip form data into array form and attain total data
-    form_data = $(form_element).serializeArray();
-    formData = toFormData(form_data)
- 
-    //append name and value of file
-    formData.append(file_name, file);
- 
-    //append submit if not found
-    if(!$(form_element).serialize().includes("&submit=")){
-        formData.append("submit", submit_value + "_ajax");
+ async function jsonFileUpload(form_element, submit_element, messageBox = true){
+    if(!checkFormElement(form_element, submit_element)){
+        return false;
     }
+
+    const formData = new FormData(form_element[0], submit_element[0]);
  
     response = null;
     
@@ -511,6 +492,31 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
  
     return response;
  }
+
+ /**
+  * This checks if a form element has necessary devices
+  * @param {jQuery} form_element This take the form element object
+  * @param {jQuery} submit_element This takes the submit element
+  * @return {boolean}
+  */
+ function checkFormElement(form_element, submit_element){
+    if(!(form_element instanceof jQuery)){
+        alert_box("Form is not a jquery object", "danger");
+        return false;
+    }
+ 
+    if(!(submit_element instanceof jQuery)){
+        alert_box("Button element is not a jquery object", "danger");
+        return false;
+    }
+
+    if(!$(form_element).attr("name")){
+        alert_box("Your form has no attribute name", "danger")
+        return false
+   }
+
+   return true;
+ }
  
  /**
  * This function will be used to send textual information from forms
@@ -522,54 +528,18 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
  * @return {boolean|string} returns a boolean value or a string
  */
  function formSubmit(form_element, submit_element, messageBox = true){
-    // formData = new FormData();
- 
-    if(!$(form_element).attr("name")){
-         alert_box("Your form has no attribute name", "danger")
-         return false
+    if(!checkFormElement(form_element, submit_element)){
+        return false;
     }
- 
-    //submit value
-    submit = $(submit_element).val();
- 
-    //strip form data into array form and attain total data
-    form_data = $(form_element).serializeArray();
-    split_lenght = form_data.length;
- 
-    //variable to hold all user data
-    formData = "";
- 
-    //loop and fill form data
-    counter = 0;
-    while(counter < split_lenght){
-        //grab each array data
-        new_data = form_data[counter];
- 
-        key = new_data["name"];
-        value = new_data["value"];
- 
-        //append to form data
-        if(formData != ""){
-            formData += "&" + key + "=" + value;
-        }else{
-            formData = key + "=" + value;
-        }
- 
-        //move to next data
-        counter++;
-    }
- 
-    //append submit if not found
-    if(!$(form_element).serialize().includes("&submit=")){
-        formData += "&submit=" + submit + "_ajax";
-    }
+
+    const formData = new FormData(form_element[0], submit_element[0]);
  
     response = null;
     
     $.ajax({
-        url: $(form_element).attr("action"),
+        url: form_element.attr("action"),
         data: formData,
-        method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
+        method: form_element.attr("method") ? form_element.attr("method") : "POST",
         dataType: "text",
         cache: false,
         async: false,
@@ -585,7 +555,7 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
         },
         success: function(text){
             if(messageBox){
-                 $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+                 $("form[name=" + form_element.prop("name") + "] .message_box").addClass("no_disp");
             }
             if(text == "success" || text.includes("success")){
                 response = true;
@@ -598,13 +568,13 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
             type = "error";
  
             if(textStatus == "timeout"){
-             message = "Connection was timed out due to a slow network. Please try again later"
+                message = "Connection was timed out due to a slow network. Please try again later"
             }
  
             if(messageBox){
-             messageBoxTimeout(form_element.prop("name"), message, type);
+                messageBoxTimeout(form_element.prop("name"), message, type);
             }else{
-             return message;
+                return message;
             }
         }
     })
@@ -622,51 +592,18 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
  * @return {Promise<boolean|array>} returns a boolean value or an array
  */
  async function jsonFormSubmit(form_element, submit_element, messageBox = true){
-     if(!$(form_element).attr("name")){
-         alert_box("Your form has no attribute name", "danger")
-         return false
+    if(!checkFormElement(form_element, submit_element)){
+        return false;
     }
-     //submit value
-    submit = $(submit_element).val();
+
+    const formData = new FormData(form_element[0], submit_element[0]);
  
-    //strip form data into array form and attain total data
-    form_data = $(form_element).serializeArray();
-    split_lenght = form_data.length;
- 
-    //variable to hold all user data
-    formData = "";
- 
-    //loop and fill form data
-    counter = 0;
-    while(counter < split_lenght){
-        //grab each array data
-        new_data = form_data[counter];
- 
-        key = new_data["name"];
-        value = new_data["value"];
- 
-        //append to form data
-        if(formData != ""){
-            formData += "&" + key + "=" + value;
-        }else{
-            formData = key + "=" + value;
-        }
- 
-        //move to next data
-        counter++;
-    }
- 
-    //append submit if not found
-    if(!$(form_element).serialize().includes("&submit=")){
-        formData += "&submit=" + submit + "_ajax";
-    }
- 
-    let response = null;
+    response = null;
     
     await $.ajax({
-        url: $(form_element).attr("action"),
+        url: form_element.attr("action"),
         data: formData,
-        method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
+        method: form_element.attr("method") ? form_element.attr("method") : "POST",
         dataType: "json",
         cache: false,
         timeout: 30000,
@@ -681,7 +618,7 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
         },
         success: function(text){
             if(messageBox){
-                 $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
+                 $("form[name=" + form_element.prop("name") + "] .message_box").addClass("no_disp");
             }
             text = JSON.parse(JSON.stringify(text));
             
@@ -706,7 +643,7 @@ async function fileUpload(file_element, form_element, submit_element, messageBox
             if(messageBox){
                 messageBoxTimeout(form_element.prop("name"), message, type, 0)
             }else{
-                 alert_box(message, "danger")
+                alert_box(message, "danger")
             }
         }
     })
@@ -833,10 +770,10 @@ function touchDragElement(element) {
 
 /**
  * The function is used to format the id of a program into the form PID XXXX
- * @param string|int $subject_id This is the id to be converted
- * @param string $prefix The prefix is used to provide the pre-text of the identifier
- * @param bool $reverse This tells if it should convert the item id to integer
- * @return string|int Returns the formatted program id (string or int)
+ * @param {string}|int $subject_id This is the id to be converted
+ * @param {string} $prefix The prefix is used to provide the pre-text of the identifier
+ * @param {boolean} $reverse This tells if it should convert the item id to integer
+ * @return {string|int} Returns the formatted program id (string or int)
  */
 function formatItemId(subject_id, prefix, reverse = false) {
     if (!reverse) {
@@ -849,5 +786,22 @@ function formatItemId(subject_id, prefix, reverse = false) {
     }
   
     return subject_id;
+}
+
+/**
+ * This changes a json object to url string data
+ * @param {object} json_object The json object
+ * @return {string}
+ */
+function jsonToURL(json_object){
+    json_object = JSON.stringify(json_object);
+
+    let dataString = json_object.replace(/[{}"]/g, "");
+    dataString = dataString.replace(/[:,]/g, function (match) {
+                return match === ':' ? '=' : '&';
+                });
+    dataString = dataString.replace(/\//g, "_");
+
+    return dataString;
 }
   

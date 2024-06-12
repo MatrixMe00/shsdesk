@@ -137,6 +137,8 @@
                         //display content
                         //--for placement provided by system
                         if($max_column == "J" && $last_heading != "Guardian Contact"){
+                            $academic_year = $_REQUEST["academic_year"] ?? getAcademicYear(date("d-m-Y"), false);
+                            $academic_year = formatAcademicYear($academic_year, false);
                             for($row=$row_start; $row <= $max_row; $row++){
                                 //grab columns
                                 for($col = 0; $col <= $headerCounter; $col++){
@@ -191,28 +193,22 @@
                                             exit("Buffer count is beyond expected input count");
                                     }
                                 }
-        
-                                //check if index number exists and insert data into database
-                                $index = fetchData("indexNumber","cssps","indexNumber='$indexNumber'");
-        
-                                if($index == "empty"){
-                                    $sql = "INSERT INTO cssps(indexNumber,Lastname,Othernames,Gender,boardingStatus,programme,aggregate,jhsAttended,dob,trackID,schoolID)
-                                        VALUES (?,?,?,?,?,?,?,?,?,?,?)
+
+                                // insert data but ignore any existing student
+                                $sql = "INSERT IGNORE INTO cssps(indexNumber,Lastname,Othernames,Gender,boardingStatus,programme,aggregate,jhsAttended,dob,trackID,schoolID, academic_year)
+                                        VALUES (?,?,?,?,?,?,?,?,?,?,?,'$academic_year')
                                     ";
-                                    $stmt = $connect->prepare($sql);
-                                    $stmt->bind_param("ssssssisssi",$indexNumber,$Lastname,$Othernames,$Gender,$boardingStatus,$programme,$aggregate,$jhsAttended,$dob,$trackID,$user_school_id);
-                                    if($stmt->execute()){
-                                        if($row == $max_row){
-                                            echo "success";
-                                        }
-                                    }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
-                                        echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
-                                    }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
-                                        echo "Detail for $indexNumber not written. Gender must either be Male or Female";
-                                    }                                
-                                }else{
-                                    echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
-                                }                            
+                                $stmt = $connect->prepare($sql);
+                                $stmt->bind_param("ssssssisssi",$indexNumber,$Lastname,$Othernames,$Gender,$boardingStatus,$programme,$aggregate,$jhsAttended,$dob,$trackID,$user_school_id);
+                                if($stmt->execute()){
+                                    if($row == $max_row){
+                                        echo "success";
+                                    }
+                                }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
+                                    echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
+                                }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
+                                    echo "Detail for $indexNumber not written. Gender must either be Male or Female";
+                                }                         
                             }
                         }elseif($max_column == "H" || $max_column == "G" || $max_column == "I"){
                             //make it end at G

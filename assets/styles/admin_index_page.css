@@ -165,15 +165,13 @@ nav.light .menu .item:hover{
 }
 
 .menu .item .icon{
-    width: 4.5vh;
-    height: 4.5vh;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .menu .item img{
-    width: 80%;
+    padding: 0.1em;
 }
 
 .menu .item .menu_name{

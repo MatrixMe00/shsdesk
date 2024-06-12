@@ -1671,3 +1671,11 @@
         }
         echo "</pre>";
     }
+
+    /**
+     * This reverses a year (usually academic year) value to its original state
+     * @param ?string $year_value The year value
+     */
+    function reverseYearURL(?string $year_value) :?string{
+        return !is_null($year_value) && !empty($year_value) ? str_replace("_", "/", $year_value) : null;
+    }
