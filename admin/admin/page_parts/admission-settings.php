@@ -52,15 +52,84 @@
 </div>
 
 <div class="main_section no_disp" id="settings">
-    <section class="btn_section txt-al-c p-xlg-lr p-lg-tp">
-        <p>Use this section to make settings to for the next admission phase</p>
+    <section class="txt-al-c p-xlg-lr p-lg-tp">
+        <p>Use this section to make settings to for your school's admission section</p>
+    </section>
+
+    <section>
+        <?php 
+            $new_admission = in_array(1, settingsArrayConvert($students, "current_data"));
+            $clean_data = in_array(0, settingsArrayConvert($students, "enroled"));
+            $cleanable_data = count(settingsArrayConvert($students, "enroled", false));
+            $settings = [
+                [
+                    "settings" => "New Admission",
+                    "info" => "This will prepare your school to take new set of CSSPS data. Use this when its a new admission year",
+                    "alert_message" => "Are you sure you want make this update?",
+                    "submit_value" => "reset_admission",
+                    "action" => [
+                        "name" => "Reset Admission",
+                        "status" => $new_admission
+                    ]
+                ],
+                [
+                    "settings" => "Clean Data",
+                    "info" => "Use this when an admission period has ended and you want to tally the number of received students with those enroled. Thus if you registered 1000 students but only 500 enroled at the end of the admission process, the 500 which did not enrol via the system will be removed so that it can tally 500 to 500.",
+                    "alert_message" => "This will clean a maximum of $cleanable_data results from your list of records",
+                    "submit_value" => "clean_data",
+                    "action" => [
+                        "name" => "Clean Data",
+                        "status" => !$new_admission && $clean_data
+                    ]
+                ],
+                /*[
+                    "settings" => "",
+                    "info" => "",
+                    "alert_message" => "",
+                    "submit_value" => "",
+                    "action" => [
+                        "name" => "",
+                        "status" => ""
+                    ]
+                ],*/
+                
+            ];
+        ?>
+        <table class="full">
+            <thead>
+                <tr>
+                    <td>Settings</td>
+                    <td>Info</td>
+                    <td></td>
+                </tr>
+            </thead>
+
+            <tbody>
+                <?php foreach($settings as $setting): ?>
+                    <tr>
+                        <td><?= $setting["settings"] ?></td>
+                        <td><?= $setting["info"] ?></td>
+                        <td>
+                            <?php if($setting["action"]["status"]): ?>
+                            <span class="item-event action" data-submit="<?= $setting["submit_value"] ?>" data-alert-message="<?= $setting["alert_message"] ?>"><?= $setting["action"]["name"] ?></span>
+                            <?php else: ?>
+                                <span class="item-event info">No Action</span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                
+            </tbody>
+        </table>
     </section>
 </div>
 
 <div class="main_section no_disp" id="student">
-    <section class="btn_section txt-al-c p-xlg-lr p-lg-tp">
+    <section class="txt-al-c p-xlg-lr p-lg-tp">
         <p>Use this section to search for the details of a specific student</p>
     </section>
+
+    <?php require_once "$rootPath/admin/student-search.php" ?>
 </div>
 
 <script>
@@ -73,18 +142,50 @@
             $(this).removeClass("plain-r");
         })
 
-        $("form").submit(function(e){
+        $("form:not(.student_search)").submit(function(e){
             e.preventDefault();
             const button = $(this).find("button[name=submit]");
-
-            // const response = formSubmit($(this), button, false);
             const form_data = new FormData($(this)[0], button[0]);
+
             if($(this).attr("name") == "enrolment-data"){
                 location.href = "./admin/excelFile.php?" + jsonToURL(FormDataToJSON(form_data));
             }
         })
+
+        $(".action").click(function(){
+            const submit_value = $(this).attr("data-submit");
+            const alert_message = $(this).attr("data-alert-message");
+            console.log(submit_value, alert_message);
+
+            const confirmed = confirm(alert_message);
+
+            if(confirmed){
+                $.ajax({
+                    url: "./admin/submit.php",
+                    data: {submit: submit_value},
+                    method: "GET",
+                    success: function(response){
+                        response = JSON.parse(response);
+
+                        if(response.status == true){
+                            alert_box(response.message, "success");
+                            $("#lhs .item.active").click();
+                        }else{
+                            alert_box(response.message, "danger");
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown){
+                        alert(errorThrown);
+                        console.log(xhr);
+                    }
+                })
+            }else{
+                alert_box("Operation canceled by user", "secondary");
+            }
+        })
     })
 </script>
+<script src="<?= "$url/admin/assets/scripts/student-search.js?v=".time() ?>"></script>
 
 <?php else: ?>
     <section class="txt-al-c p-xlg-lr p-xxlg-tp stud_list">

@@ -1679,3 +1679,15 @@
     function reverseYearURL(?string $year_value) :?string{
         return !is_null($year_value) && !empty($year_value) ? str_replace("_", "/", $year_value) : null;
     }
+
+    /**
+     * This is used to get special case values for an array. Typically used for the admin settings page
+     * @param array $subject The subject array
+     * @param string|int $column_name The column name in the string
+     * @param bool $unique This will return the specified column without making the results unique
+     * @return array
+     */
+    function settingsArrayConvert(array $subject, string|int $column_name, bool $unique = true) :array{
+        return $unique ? array_unique(array_values(array_column($subject,$column_name))) : 
+                array_values(array_column($subject,$column_name));
+    }

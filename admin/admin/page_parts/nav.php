@@ -194,7 +194,7 @@
                 "data-url" => "/admin/admin/page_parts/admission-settings.php",
                 "imgSrc" => "/assets/images/icons/folder-outline.svg",
                 "imgAlt" => "admission settings",
-                "menu_class" => "",
+                "menu_class" => "admission_settings",
                 "display_title" => "History and Settings",
                 "admin_mode" => "admission"
             ],

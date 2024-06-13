@@ -56,12 +56,13 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         <div class="head txt-al-c">
             <h3>Placement Actions</h3>
         </div>
-        <div class="body btn flex flex-wrap wrap-half w-full-child w-full wmax-sm sm-auto gap-sm p-med flex-eq">
+        <div class="body btn flex flex-wrap wrap-half w-full-child w-full wmax-med sm-auto gap-sm p-med flex-eq">
                 <button onclick="$('#modal').removeClass('no_disp')" class="cyan">Add New Student</button>
             <?php if($user_details["role"] != 2 && ($user_details["role"] <= 5 || str_contains(strtolower(getRole($user_details["role"])), "admin"))){?>
                 <button onclick="$('#lhs .menu .item.active').click()" class="secondary">Refresh</button>
             <?php } ?>
                 <button type="button" onclick="$('#modal_2').removeClass('no_disp')" class="teal">Import From Excel</button>
+                <button type="button" onclick="$('#lhs .admission_settings').click()" class="orange">New Admission Phase</button>
             <?php 
                 $res = $connect->query("SELECT COUNT(indexNumber) AS total FROM cssps WHERE schoolID = $user_school_id")->fetch_assoc()["total"];
                 if(intval($res) > 0){

@@ -2326,6 +2326,24 @@
             }
 
             echo $message;
+        }elseif($submit == "reset_admission"){
+            $sql = "UPDATE cssps SET current_data = FALSE WHERE schoolID=$user_school_id AND current_data = TRUE";
+            $response = $connect->query($sql);
+
+            if($response === true){
+                $message = "Admission has been reset. $connect->affected_rows results were updated";
+            }else{
+                $message = "Error: $connect->error";
+            }
+
+            echo json_encode(["status" => $response, "message" => $message]);
+        }elseif($submit == "clean_data"){
+            $sql = "DELETE FROM cssps WHERE schoolID=$user_school_id AND enroled = FALSE AND current_data = FALSE";
+            $response = $connect->query($sql);
+
+            $message = $response ? "$connect->affected_rows records have been cleaned" : "Error: $connect->error";
+
+            echo json_encode(["status" => $response, "message" => $message]);
         }else{
             echo "Procedure for submit value '$submit' was not found";
         }
