@@ -26,7 +26,8 @@
         JOIN program p ON p.program_id = r.program_id
         JOIN courses c ON c.course_id = r.course_id
         LEFT JOIN recordapproval re ON r.result_token=re.result_token",
-        "ISNULL(re.result_token)", 0, join_type:"LEFT"
+        "re.result_token IS NULL AND r.school_id=$user_school_id", 0, join_type:"LEFT", 
+        group_by: "r.result_token, r.exam_year, r.semester, r.academic_year, t.lname, t.oname, p.program_name, p.short_form, c.course_name, c.short_form"
     );
 ?>
 
