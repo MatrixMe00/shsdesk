@@ -64,7 +64,7 @@ $("form").submit(function(e){
     const formName = $(this).attr("name")
 
     if(formName === "delete_form"){
-        const response = formSubmit($(this), $(this).find("input[name=submit]"), false)
+        const response = formSubmit($(this), null, false)
         
         if(response === true || response === "true"){
             $("tr.remove_marker").remove()

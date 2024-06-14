@@ -378,7 +378,8 @@ async function fileUpload(form_element, submit_element, messageBox = true){
         return false;
     }
 
-    const formData = new FormData(form_element[0], submit_element[0]);
+    submit_element = submit_element === null ? null : submit_element[0];
+    const formData = FormDataToJSON(new FormData(form_element[0], submit_element));
  
     response = null;
     
@@ -441,7 +442,8 @@ async function fileUpload(form_element, submit_element, messageBox = true){
         return false;
     }
 
-    const formData = new FormData(form_element[0], submit_element[0]);
+    submit_element = submit_element === null ? null : submit_element[0];
+    const formData = FormDataToJSON(new FormData(form_element[0], submit_element));
  
     response = null;
     
@@ -505,7 +507,7 @@ async function fileUpload(form_element, submit_element, messageBox = true){
         return false;
     }
  
-    if(!(submit_element instanceof jQuery)){
+    if(submit_element !== null && !(submit_element instanceof jQuery)){
         alert_box("Button element is not a jquery object", "danger");
         return false;
     }
@@ -532,7 +534,8 @@ async function fileUpload(form_element, submit_element, messageBox = true){
         return false;
     }
 
-    const formData = new FormData(form_element[0], submit_element[0]);
+    submit_element = submit_element === null ? null : submit_element[0];
+    const formData = FormDataToJSON(new FormData(form_element[0], submit_element));
  
     response = null;
     
@@ -596,7 +599,8 @@ async function fileUpload(form_element, submit_element, messageBox = true){
         return false;
     }
 
-    const formData = new FormData(form_element[0], submit_element[0]);
+    submit_element = submit_element === null ? null : submit_element[0];
+    const formData = FormDataToJSON(new FormData(form_element[0], submit_element));
  
     response = null;
     

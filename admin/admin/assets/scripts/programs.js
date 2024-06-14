@@ -257,7 +257,7 @@ $(".item-event").click(function(){
 $("form[name=delete_form]").submit(function(e){
     e.preventDefault();
 
-    const response = formSubmit($(this), $(this).find("input[name=submit]"), false)
+    const response = formSubmit($(this), null, false)
     
     if(response === true || response === "true"){
         $("tr.remove_marker").remove()
