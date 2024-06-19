@@ -134,8 +134,8 @@
                             return false;
                         }
                         
-                        //display content
-                        //--for placement provided by system
+                        // display content
+                        // for placement provided by system
                         if($max_column == "J" && $last_heading != "Guardian Contact"){
                             $academic_year = $_REQUEST["academic_year"] ?? getAcademicYear(date("d-m-Y"), false);
                             $academic_year = formatAcademicYear($academic_year, false);
@@ -306,6 +306,7 @@
                                 }             
                             }
                         }elseif($max_column == "J" && $last_heading == "Guardian Contact"){
+                            $message = ""; $insert_count = 0;
                             for($row=$row_start; $row <= $max_row; $row++){
                                 $skip_row = 0;
                                 //grab columns
@@ -377,6 +378,11 @@
                                 }
     
                                 if($skip_row >= 2){
+                                    if($row == $max_row && $insert_count > 0){
+                                        $message = "success";
+                                    }elseif($row == $max_row){
+                                        $message = "No student was inserted";
+                                    }
                                     continue;
                                 }
         
@@ -392,13 +398,15 @@
                                             $guardianContact,$programme, $program_id, $boardingStatus);
                                         if($stmt->execute()){
                                             if($row == $max_row){
-                                                echo "success";
+                                                $message = "success";
                                             }
+
+                                            ++$insert_count;
                                         }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
-                                            echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
-                                        }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
-                                            echo "Detail for $indexNumber not written. Gender must either be Male or Female";
-                                        }                                
+                                            $message = "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
+                                        }elseif(strtolower($Gender) != "male" && strtolower($Gender) != "female"){
+                                            $message = "Detail for $indexNumber not written. Gender must either be Male or Female";
+                                        }
                                     }elseif($index["program_id"] == 0 || empty($index["program_id"])){
                                         $sql = "UPDATE students_table SET program_id=? WHERE indexNumber=?";
                                         $stmt = $connect2->prepare($sql);
@@ -406,16 +414,16 @@
     
                                         if($stmt->execute()){
                                             if($row == $max_row){
-                                                echo "success";
+                                                $message = "success";
                                             }
+                                            ++$insert_count;
                                         }
-                                    }else{
-                                        echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
-                                    }     
+                                    }
                                 } catch (\Throwable $th) {
-                                    echo $th->getMessage();
-                                }                          
+                                    $message = $th->getMessage();
+                                }
                             }
+                            echo $message;
                         }else{
                             for($row=$row_start; $row <= $max_row; $row++){
                                 //grab columns
@@ -496,7 +504,8 @@
                 exit("Submission method '{$_REQUEST['submit']}' is invalid");
             }
         }else{
-            exit("No submission was detected");
+            $message = print_r((array) file_get_contents("php://input"));
+            exit("No submission was detected " .$message);
         }
     } catch (\Throwable $th) {
         echo throwableMessage($th);

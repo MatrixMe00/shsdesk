@@ -43,7 +43,8 @@ $("form[name=importForm").submit(async function(e){
         messageBoxTimeout("importForm","No file has been chosen", "error");
     }else{
         //submit the form
-        const response = await fileUpload($(this), $("form[name=importForm] button[name=submit]"));
+        const submit_btn = $(this).find("button[name=submit]");
+        const response = await fileUpload($(this), submit_btn);
 
         if(response == true){
             message = "Data has been recorded successfully";

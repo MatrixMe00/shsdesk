@@ -378,9 +378,7 @@ async function fileUpload(form_element, submit_element, messageBox = true){
         return false;
     }
 
-    submit_element = submit_element === null || form_element.find("input[name=submit]") ? null : submit_element[0];
-    const formData = FormDataToJSON(new FormData(form_element[0], submit_element));
- 
+    const formData = new FormData(form_element[0], submit_element[0]);
     response = null;
     
     $.ajax({
@@ -442,8 +440,8 @@ async function fileUpload(form_element, submit_element, messageBox = true){
         return false;
     }
 
-    submit_element = submit_element === null || form_element.find("input[name=submit]") ? null : submit_element[0];
-    const formData = FormDataToJSON(new FormData(form_element[0], submit_element));
+    // submit_element = submit_element === null || form_element.find("input[name=submit]") ? null : submit_element[0];
+    const formData = new FormData(form_element[0], submit_element);
  
     response = null;
     

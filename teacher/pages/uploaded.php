@@ -115,7 +115,10 @@
                 <div class="self-align-start flex gap-sm flex-column">
                     <h2><?= $result["program_name"] ?></h2>
                     <h4><?= $result["course_name"] ?></h4>
-                    <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?= fetchData1("CONCAT('Sem ',semester,' | Year ',exam_year) as year_sem","results","result_token='{$result['result_token']}'")["year_sem"] ?></p>
+                    <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?php 
+                    $sem_year = fetchData1("CONCAT('Sem ',semester,' | Year ',exam_year) as year_sem","results","result_token='{$result['result_token']}'");
+                    echo $sem_year == "empty" ?"Invalid" : $sem_year["year_sem"];
+                    ?></p>
                 </div>
                 <div class="foot btn self-align-end">
                     <button class="light plain-r sp-lg class_single" 
