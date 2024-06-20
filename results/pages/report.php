@@ -110,7 +110,7 @@ if($code !== "empty"): ?>
     <canvas id="stats" class="wmax-md" style="max-height: 40vh"></canvas>
 </section>
 
-<script src="assets/scripts/functions.js?v=<?php echo time()?>"></script>
+<script src="assets/scripts/functions.min.js?v=<?php echo time()?>"></script>
 <script src="assets/scripts/chartJS/chart.min.js"></script>
 <script>
     $(document).ready(function(){
