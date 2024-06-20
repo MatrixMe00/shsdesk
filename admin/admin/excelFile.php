@@ -125,8 +125,10 @@
                         e.gender, e.jhsName, e.jhsTown, e.jhsDistrict, e.birthdate, e.birthPlace, e.fatherName,
                         e.fatherOccupation, e.motherName, e.motherOccupation, e.guardianName, e.residentAddress,
                         e.postalAddress, e.primaryPhone, e.secondaryPhone, e.interest, e.award, e.position, e.witnessName,
-                        e.witnessPhone
+                        e.witnessPhone, ho.title AS 'House Name'
                     FROM enrol_table e JOIN cssps c ON e.indexNumber = c.indexNumber
+                    LEFT JOIN house_allocation h ON h.indexNumber = c.indexNumber
+                    LEFT JOIN houses ho ON ho.id = h.houseID
                     WHERE e.shsID = $user_school_id AND c.academic_year = '$academic_year'";
             $results = $connect->query($sql);
             
