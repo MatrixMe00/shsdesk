@@ -388,7 +388,7 @@
         
                                 try {
                                     //check if index number exists and insert data into database
-                                    $index = fetchData1("indexNumber, program_id","students_table","indexNumber='$indexNumber'");
+                                    $index = fetchData1("indexNumber, program_id","students_table","indexNumber='$indexNumber' OR (Lastname='$Lastname' AND Othernames='$Othernames')");
             
                                     if($index == "empty"){
                                         $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, guardianContact, programme, program_id, boardingStatus)
