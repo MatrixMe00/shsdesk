@@ -42,8 +42,8 @@ $(document).ready(function(){
     $(".section_btn[data-section-id=" + current_tab + "]").click()
 })
 
-function viewData(element){
-    const tr = $(element).parents("tr")
+$("body").on("click", ".item-event.view-data", function(){
+    const tr = $(this).parents("tr");
     const index = $(tr).children("td:nth-child(1)").html()
     const name = $(tr).children("td:nth-child(2)").html()
     const gender = $(tr).children("td:nth-child(3)").html()
@@ -58,19 +58,27 @@ function viewData(element){
     $("#class_single .grade").html(grade)
 
     $('section#class_single').removeClass('no_disp')
-}
+})
 
 //function to change the page from main view to single view and vice versa
-function pageChange({index = 0, program_name="", token="", type="", table_id=""}){
-    $("#page_title, #classes, #single_class, #cards-section").toggleClass("no_disp")
-    $("#cards-section").toggleClass("flex")
-    $("#content_wrapper").toggleClass("no_disp")
-    $("span#single_class_name").html("")
-    $("#table_status").html("")
+$("button.class_single, .back.class_single").click(function(){
+    const index = parseInt($(this).attr("data-index"));
+    const program_name = $(this).attr("data-program-name");
+    const token = $(this).attr("data-token");
+    const table_id = $(this).attr("data-table-id");
+    const type = $(this).attr("data-type");
+    const program_year = $(this).attr("data-student-year");
+
+    $("#page_title, #classes, #single_class, #cards-section").toggleClass("no_disp");
+    $("#cards-section").toggleClass("flex");
+    $("#content_wrapper").toggleClass("no_disp");
+    $("span#single_class_name").html("");
+    $("#table_status").html("");
     // $("#class_list_table tbody").html(insertEmptyTableLabel("Make a search on your class year to proceed", columns))
 
-    $("#single_class table:not(.no_disp)").addClass("no_disp")
-    $("#single_class table#" + table_id).removeClass("no_disp")
+    $("#single_class table:not(.no_disp)").addClass("no_disp");
+    if(table_id !== "")
+        $("#single_class table#" + table_id).removeClass("no_disp");
 
     if(index > 0){
         $("span#single_class_name").html(program_name + " | " + formatItemId(index, "PID"))
@@ -82,7 +90,7 @@ function pageChange({index = 0, program_name="", token="", type="", table_id=""}
         $.ajax({
             url: "./submit.php",
             data: {
-                submit: "pull_results", token_id: token, response_type: type
+                submit: "pull_results", token_id: token, response_type: type, program_id: index, program_year: program_year
             },
             timeout: 30000,
             method: "POST",
@@ -121,7 +129,7 @@ function pageChange({index = 0, program_name="", token="", type="", table_id=""}
                         })
     
                         //add a view td
-                        $("#class_list_table tbody tr").append("<td><span class=\"item-event view\" onclick=\"viewData($(this))\">View</span></td>")
+                        $("#class_list_table tbody tr").append("<td><span class=\"item-event view view-data\">View</span></td>")
                     }
                 }else{
                     tbody.html(insertEmptyTableLabel(response, cols))
@@ -140,7 +148,7 @@ function pageChange({index = 0, program_name="", token="", type="", table_id=""}
     }else{
         $("button[name=reset], label[for=search_table]").addClass("no_disp")
     }
-}
+})
 
 $("#submit_result").click(async function(){
     $(this).prop("disabled", true);

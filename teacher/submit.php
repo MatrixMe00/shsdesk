@@ -541,6 +541,34 @@
                             if($results->num_rows > 1){
                                 $message = $results->fetch_all(MYSQLI_ASSOC);
                                 $error = false;
+
+                                if($response_type == "saved"){
+                                    // get all students in the class
+                                    $students = decimalIndexArray(fetchData1(["indexNumber", "Lastname", "Othernames"], "students_table", 
+                                        ["program_id={$_POST['program_id']}", "studentYear={$_POST['program_year']}"],
+                                        0, "AND"
+                                    ));
+
+                                    if($students){
+                                        // compare the index number counts
+                                        $is_equal = count(array_column($students, "indexNumber")) == count($listed = array_column($message, "indexNumber"));
+                                        
+                                        // merge with new data if they are not equal
+                                        if(!$is_equal){
+                                            $new_students = array_filter(array_map(function($student) use ($listed){
+                                                foreach($listed as $listed_student){
+                                                    if($listed_student == $student["indexNumber"]){
+                                                        return null;
+                                                    }
+                                                }
+
+                                                return array_merge($student, ["class_mark" => "0.0", "exam_mark" => "0.0", "mark" => 0]);
+                                            }, $students));
+
+                                            $message = array_merge($message, $new_students);
+                                        }
+                                    }
+                                }
                             }elseif($results->num_rows == 1){
                                 $message = [$results->fetch_assoc()];
                                 $error = false;

@@ -39,22 +39,22 @@
     </section>
     <?php 
         $approved_results = decimalIndexArray(fetchData1(
-            "r.result_token, r.program_id, p.program_name, c.course_name, r.submission_date",
+            "r.result_token, r.program_id, r.exam_year, p.program_name, c.course_name, r.submission_date",
             "recordapproval r JOIN program p ON r.program_id = p.program_id JOIN courses c ON r.course_id = c.course_id",
             "r.teacher_id={$teacher['teacher_id']} AND r.result_status='accepted'", 0
         ));
         $pending_results = decimalIndexArray(fetchData1(
-            "r.result_token, r.program_id, p.program_name, c.course_name, r.submission_date",
+            "r.result_token, r.program_id, r.exam_year, p.program_name, c.course_name, r.submission_date",
             "recordapproval r JOIN program p ON r.program_id = p.program_id JOIN courses c ON r.course_id = c.course_id",
             "r.teacher_id={$teacher['teacher_id']} AND r.result_status='pending'", 0
         ));
         $rejected_results = decimalIndexArray(fetchData1(
-            "r.result_token, r.program_id, p.program_name, c.course_name, r.submission_date",
+            "r.result_token, r.program_id, r.exam_year, p.program_name, c.course_name, r.submission_date",
             "recordapproval r JOIN program p ON r.program_id = p.program_id JOIN courses c ON r.course_id = c.course_id",
             "r.teacher_id={$teacher['teacher_id']} AND r.result_status='rejected'", 0
         ));
         $saved_results = decimalIndexArray(fetchData1(
-            "DISTINCT s.token, p.program_name, s.program_id, s.exam_year, s.semester, c.course_name, s.from_reject, DATE(s.save_date) as submission_date",
+            "DISTINCT s.token, p.program_name, s.exam_year, s.program_id, s.exam_year, s.semester, c.course_name, s.from_reject, DATE(s.save_date) as submission_date",
             "saved_results s JOIN program p ON p.program_id = s.program_id JOIN courses c ON c.course_id = s.course_id",
             "s.teacher_id={$teacher['teacher_id']}",0
         ));
@@ -80,8 +80,10 @@
                     <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?= fetchData1("CONCAT('Sem ',semester,' | Year ',exam_year) as year_sem","results","result_token='{$result['result_token']}'")["year_sem"] ?></p>
                 </div>
                 <div class="foot btn self-align-end">
-                    <button class="light plain-r sp-lg class_single" 
-                        onclick="pageChange({table_id: 'class_list_table', type:'approved', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['result_token'] ?>'})">
+                    <button class="light plain-r sp-lg class_single"
+                        data-table-id="class_list_table" data-type="approved" 
+                        data-index="<?= $result['program_id'] ?>" data-program-name="<?= $result['program_name'] ?>" 
+                        data-token="<?= $result['result_token'] ?>" data-student-year="<?= $result["exam_year"] ?>">
                         View Data
                     </button>
                 </div>
@@ -122,7 +124,9 @@
                 </div>
                 <div class="foot btn self-align-end">
                     <button class="light plain-r sp-lg class_single" 
-                        onclick="pageChange({table_id: 'class_list_table', type:'pending', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['result_token'] ?>'})">
+                        data-table-id="class_list_table" data-type="pending" 
+                        data-index="<?= $result['program_id'] ?>" data-program-name="<?= $result['program_name'] ?>" 
+                        data-token="<?= $result['result_token'] ?>" data-student-year="<?= $result["exam_year"] ?>" >
                         View Data
                     </button>
                 </div>
@@ -160,8 +164,10 @@
                 </div>
                 <div class="foot btn self-align-end">
                     <button class="primary plain-r sp-lg pass_to_save" data-token="<?= $result["result_token"] ?>">Save For Editing</button>
-                    <button class="light plain-r sp-lg class_single" 
-                        onclick="pageChange({table_id: 'class_list_table', type:'rejected', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['result_token'] ?>'})">
+                    <button class="light plain-r sp-lg class_single"
+                        data-table-id="class_list_table" data-type="rejected" 
+                        data-index="<?= $result['program_id'] ?>" data-program-name="<?= $result['program_name'] ?>" 
+                        data-token="<?= $result['result_token'] ?>" data-student-year="<?= $result["exam_year"] ?>" >
                         View Data
                     </button>
                 </div>
@@ -198,8 +204,10 @@
                     <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?= "Sem {$result['semester']} | Year {$result['exam_year']}" ?></p>
                 </div>
                 <div class="foot btn self-align-end">
-                    <button class="light plain-r sp-lg class_single" 
-                        onclick="pageChange({table_id:'save_data_table', type:'saved', index: <?= $result['program_id'] ?>, program_name: '<?= $result['program_name'] ?>', token: '<?= $result['token'] ?>'})">
+                    <button class="light plain-r sp-lg class_single"
+                        data-table-id="save_data_table" data-type="saved" 
+                        data-index="<?= $result['program_id'] ?>" data-program-name="<?= $result['program_name'] ?>" 
+                        data-token="<?= $result['token'] ?>" data-student-year="<?= $result["exam_year"] ?>" >
                         View Data
                     </button><?php if($result["from_reject"] == false): ?>
                     <button class="red plain-r sp-lg del_save" data-token="<?= $result["token"] ?>">Delete</button><?php endif; ?>
@@ -257,7 +265,8 @@
 
 <section id="single_class" class="d-section lt-shade no_disp">
     <div class="head flex flex-space-content sp-med-lr sp-lg-tp">
-        <div class="back" onclick="pageChange({})">Back</div>
+        <div class="back class_single" data-table-id="" data-type="" 
+            data-index="0" data-student-year="" data-program-name="" data-token="">Back</div>
         <div class="title"><span id="single_class_name"></span> Records</div>
     </div>
     <div class="form-element flex-eq sm-auto w-fit flex-all-center gap-sm flex-wrap">
