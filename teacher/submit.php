@@ -411,9 +411,15 @@
                                 $message = "Results for $student_index already exist";
                             }else{
                                 if($new_save == "false"){
-                                    $sql = "UPDATE saved_results SET class_mark=?, exam_mark=?, mark=? WHERE indexNumber=?  AND token=?";
-                                    $stmt = $connect2->prepare($sql);
-                                    $stmt->bind_param("dddss", $class_mark, $exam_mark, $mark, $student_index, $result_token);
+                                    if(intval($isInserted) > 0){
+                                        $sql = "UPDATE saved_results SET class_mark=?, exam_mark=?, mark=? WHERE indexNumber=?  AND token=?";
+                                        $stmt = $connect2->prepare($sql);
+                                        $stmt->bind_param("dddss", $class_mark, $exam_mark, $mark, $student_index, $result_token);
+                                    }else{
+                                        $sql = "INSERT INTO saved_results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, token, save_date, academic_year) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?, NOW(),?)";
+                                        $stmt = $connect2->prepare($sql);
+                                        $stmt->bind_param("siiidddiiiss",$student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, $mark, $teacher["teacher_id"], $exam_year, $semester, $result_token, $academic_year);
+                                    }
                                 }else{
                                     $sql = "INSERT INTO saved_results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, teacher_id, exam_year, semester, token, save_date, academic_year) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?, NOW(),?)";
                                     $stmt = $connect2->prepare($sql);
@@ -422,6 +428,15 @@
         
                                 if($stmt->execute()){
                                     $message = "true";
+
+                                    if($new_save == "false" && $isFinal == "true"){
+                                        // take reject status the group
+                                        $reject_status = decimalIndexArray(fetchData1("DISTINCT from_reject", "saved_results", "token='$result_token'", 0));
+
+                                        if($reject_status && count($reject_status) > 1){
+                                            $connect2->query("UPDATE saved_results SET from_reject=1 WHERE token='$result_token' AND from_reject=0");
+                                        }
+                                    }
                                 }else{
                                     $message = "Error inserting result";
                                 }
@@ -680,11 +695,12 @@
             
             case "delete_token":
                 $token = $_GET["token"] ?? null;
+                $table = $_GET["table"] ?? null;
 
                 if(empty($token) || is_null($token)){
                     $message = "Please provide a token to continue";
                 }else{
-                    $sql = "DELETE FROM results WHERE result_token=?";
+                    $sql = $table == "save" ? "DELETE FROM saved_results WHERE result_token=? AND from_reject=0" : "DELETE FROM results WHERE result_token=?";
                     $stmt = $connect2->prepare($sql);
                     $stmt->bind_param("s", $token);
                     

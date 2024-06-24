@@ -63,9 +63,9 @@
             }
         })
 
-        $("form").submit(function(e){
+        $("form").submit(async function(e){
             e.preventDefault();
-            const response = formSubmit($(this), $(this).find("button[name=submit]"));
+            const response = await formSubmit($(this), $(this).find("button[name=submit]"));
 
             if(response == true){
                 messageBoxTimeout("reset_password_form", "Password reset was successful", "success")

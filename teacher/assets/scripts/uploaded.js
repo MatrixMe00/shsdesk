@@ -13,28 +13,66 @@ $(document).ready(function(){
         $("#"+section_id).removeClass("no_disp");
     })
     
+    // search field functionality
     $("input[name=search]").keyup(function(){
-        const parent = $(this).parents(".btn_section")
-        const val = $(this).val()
-        const cards = parent.find(".card")
-        
-        if(val !== ""){
-            var displays = 0
-            cards.filter(function(){
-                const switch_ = $(this).text().toLowerCase().indexOf(val) == -1
-                displays = !switch_ ? displays + 1 : displays
-                $(this).toggleClass("no_disp", switch_);
-            })
+        const val = $(this).val();
+        const search_type = $(this).attr("data-search-type");
 
-            if(displays == 0){
-                parent.find(".no-result").removeClass("no_disp")
+        if(search_type == "card"){
+            const parent = $(this).parents(".btn_section");
+            const cards = parent.find(".card");
+
+            if(val !== ""){
+                var displays = 0
+                cards.filter(function(){
+                    const switch_ = $(this).text().toLowerCase().indexOf(val) == -1
+                    displays = !switch_ ? displays + 1 : displays
+                    $(this).toggleClass("no_disp", switch_);
+                })
+    
+                if(displays == 0){
+                    parent.find(".no-result").removeClass("no_disp")
+                }else{
+                    parent.find(".no-result").addClass("no_disp")
+                }
             }else{
+                cards.removeClass("no_disp")
                 parent.find(".no-result").addClass("no_disp")
             }
-        }else{
-            cards.removeClass("no_disp")
-            parent.find(".no-result").addClass("no_disp")
+        }else if(search_type == "table"){
+            const parent = $("#" + $(this).attr("data-active-table"));
+            const rows = parent.find("tbody tr:not(.empty)");
+            const empty_row = parent.find("tbody tr.empty");
+            const tfoot = parent.find("tfoot");
+
+            if(val !== ""){
+                let found = false;
+                rows.each(function(){
+                    const rowData = $(this).text().toLowerCase()
+                    if(rowData.indexOf(val) === -1){
+                        $(this).hide()
+                    }else{
+                        found = true;
+                        $(this).show()
+                    }
+                })
+                
+                // show not found message
+                if(found){
+                    empty_row.addClass("no_disp");
+                }else{
+                    empty_row.removeClass("no_disp");
+                }
+
+                tfoot.hide();
+            }else{
+                rows.show();
+                empty_row.addClass("no_disp");
+                tfoot.show();
+            }            
         }
+        
+        
     })
 
     //hide all containers
@@ -60,7 +98,7 @@ $("body").on("click", ".item-event.view-data", function(){
     $('section#class_single').removeClass('no_disp')
 })
 
-//function to change the page from main view to single view and vice versa
+//change the page from main view to single view and vice versa
 $("button.class_single, .back.class_single").click(function(){
     const index = parseInt($(this).attr("data-index"));
     const program_name = $(this).attr("data-program-name");
@@ -77,6 +115,7 @@ $("button.class_single, .back.class_single").click(function(){
     // $("#class_list_table tbody").html(insertEmptyTableLabel("Make a search on your class year to proceed", columns))
 
     $("#single_class table:not(.no_disp)").addClass("no_disp");
+    $("#search_table_label input[type=search]").attr("data-active-table", table_id);
     if(table_id !== "")
         $("#single_class table#" + table_id).removeClass("no_disp");
 
@@ -86,6 +125,8 @@ $("button.class_single, .back.class_single").click(function(){
         const tbody = $("#" + table_id).find("tbody");
         const tfoot = tbody.siblings("tfoot");
         const result_type = $("input#result_type").val();
+
+        $("button[name=data_search], #search_table_label").removeClass("no_disp")
 
         $.ajax({
             url: "./submit.php",
@@ -122,6 +163,9 @@ $("button.class_single, .back.class_single").click(function(){
 
                             tbody.append(tr)
                         }
+
+                        // add a field for empty searches and hide when created
+                        tbody.append(insertEmptyTableLabel("No records match your search", cols, true))
                     }else{
                         fillTable({
                             table_id: "class_list_table", result_data: response["message"], first_countable: false,
@@ -129,7 +173,10 @@ $("button.class_single, .back.class_single").click(function(){
                         })
     
                         //add a view td
-                        $("#class_list_table tbody tr").append("<td><span class=\"item-event view view-data\">View</span></td>")
+                        $("#class_list_table tbody tr").append("<td><span class=\"item-event view view-data\">View</span></td>");
+                        
+                        // add a field for empty searches and hide when created
+                        tbody.append(insertEmptyTableLabel("No records match your search", cols, true))
                     }
                 }else{
                     tbody.html(insertEmptyTableLabel(response, cols))
@@ -146,7 +193,7 @@ $("button.class_single, .back.class_single").click(function(){
             }
         })
     }else{
-        $("button[name=reset], label[for=search_table]").addClass("no_disp")
+        $("button[name=reset], #search_table_label").addClass("no_disp")
     }
 })
 
@@ -273,7 +320,7 @@ $("#save_result").click(async function(){
 
     if(isHaveToken){
         let success = 0; let fail = 0; let failIndex = []
-        const total = $("#save_data_table tbody tr").length;
+        const total = $("#save_data_table tbody tr:not(.empty)").length;
         
         for(let i = 0; i < total; i++){
             const element = $("#save_data_table tbody tr").eq(i);
@@ -323,7 +370,7 @@ $("#save_result").click(async function(){
 
         if(fail > 0){
             $("#table_status").append("<br>Failed Saves: " + failIndex.join(", "));
-            deleteTokenResults(token);
+            deleteTokenResults(token, "save");
             alert_box(fail + " results could not be saved", "error", 8);
         }
     }

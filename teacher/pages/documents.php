@@ -135,9 +135,9 @@
         }
     })
 
-    $("form").submit(function(e){
+    $("form").submit(async function(e){
         if($(this).prop("name") == "getDocument"){
-            const response = formSubmit($(this), $(this).find("button[name=submit]"), false);
+            const response = await formSubmit($(this), $(this).find("button[name=submit]"), false);
             
             if(response.includes("Error")){
                 const message = response.replace("Error: ","");

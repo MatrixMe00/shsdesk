@@ -65,9 +65,9 @@
             <h3 class="txt-al-c">Approved Records</h3>
             <?php 
                 if(is_array($approved_results) && count($approved_results) > 0) :
-            ?><label for="search" class="flex sp-med-tp sp-xlg-lr flex-column gap-sm white">
+            ?><label for="approve_search" class="flex sp-med-tp sp-xlg-lr flex-column gap-sm white">
                 <span class="label_title">Search</span>
-                <input type="search" name="search" class="sp-med b-secondary border" placeholder="Enter your search here...">
+                <input type="search" id="approve_search" name="search" data-search-type="card" class="sp-med b-secondary border" placeholder="Enter your search here...">
             </label><?php endif; ?>
         </div>
         <?php if(is_array($approved_results) && count($approved_results) > 0) : ?>
@@ -105,9 +105,9 @@
             <h3 class="txt-al-c">Pending Records</h3>
             <?php 
                 if(is_array($pending_results) && count($pending_results) > 0) :
-            ?><label for="search" class="flex sp-med-tp sp-xlg-lr flex-column gap-sm white">
+            ?><label for="pending_search" class="flex sp-med-tp sp-xlg-lr flex-column gap-sm white">
                 <span class="label_title">Search</span>
-                <input type="search" name="search" class="sp-med b-secondary border" placeholder="Enter your search here...">
+                <input type="search" id="pending_search" name="search" data-search-type="card" class="sp-med b-secondary border" placeholder="Enter your search here...">
             </label><?php endif; ?>
         </div>
         <?php if(is_array($pending_results) && count($pending_results) > 0) : ?>
@@ -148,9 +148,9 @@
             <h3 class="txt-al-c">Rejected Records</h3>
             <?php 
                 if(is_array($rejected_results) && count($rejected_results) > 0) :
-            ?><label for="search" class="flex sp-med-tp sp-xlg-lr flex-column gap-sm white">
+            ?><label for="rejected_search" class="flex sp-med-tp sp-xlg-lr flex-column gap-sm white">
                 <span class="label_title">Search</span>
-                <input type="search" name="search" class="sp-med b-secondary border" placeholder="Enter your search here...">
+                <input type="search" id="rejected_search" name="search" data-search-type="card" class="sp-med b-secondary border" placeholder="Enter your search here...">
             </label><?php endif; ?>
         </div>
         <?php if(is_array($rejected_results) && count($rejected_results) > 0) : ?>
@@ -189,9 +189,9 @@
             <h3 class="txt-al-c">Saved Records</h3>
             <?php 
                 if(is_array($saved_results) && count($saved_results) > 0) :
-            ?><label for="search" class="flex sp-med-tp sp-xlg-lr flex-column gap-sm white">
+            ?><label for="saved_search" class="flex sp-med-tp sp-xlg-lr flex-column gap-sm white">
                 <span class="label_title">Search</span>
-                <input type="search" name="search" class="sp-med b-secondary border" placeholder="Enter your search here...">
+                <input type="search" id="saved_search" name="search" data-search-type="card" class="sp-med b-secondary border" placeholder="Enter your search here...">
             </label><?php endif; ?>
         </div>
         <?php if(is_array($saved_results) && count($saved_results) > 0) : ?>
@@ -269,16 +269,12 @@
             data-index="0" data-student-year="" data-program-name="" data-token="">Back</div>
         <div class="title"><span id="single_class_name"></span> Records</div>
     </div>
-    <div class="form-element flex-eq sm-auto w-fit flex-all-center gap-sm flex-wrap">
-        <label for="search_table" class="w-full w-fluid-child no_disp flex-column">
-            <span class="label_title">Search for anything in the table</span>
-            <input type="search" name="search_table" id="search_table" placeholder="Search..." autocomplete="off"
-                class="w-full sp-lg">
+    <div class="form-element w-full sm-auto flex-all-center gap-sm flex-wrap">
+        <label for="search_table" id="search_table_label" class="w-fluid-child w-fit no_disp flex-column">
+            <span class="label_title">Make your search </span>
+            <input type="search" name="search" data-search-type="table" id="search_table" placeholder="Search..." autocomplete="off"
+                class="w-full sp-lg" data-active-table = "">
         </label>
-        <div class="btn sp-unset p-lg wmax-sm flex-eq flex gap-sm flex-wrap self-align-end" style="flex-basis: 320px">
-            <button name="data_search" type="button" class="teal no_disp">Search Student</button>
-            <button type="reset" name="reset" class="red no_disp">Reset</button>
-        </div>
     </div>
     <div class="body sm-xlg-t">
         <table class="full no_disp" id="class_list_table">
