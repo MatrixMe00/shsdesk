@@ -589,19 +589,26 @@ function isJSON(jsonData){
  * @property {boolean} has_mark This checks if the table has a mark
  * @property {number} mark_index This is the initial index of the mark so it is added automatically [not in array format]
  * @property {string} mark_result_type This is the type of grade that should be used for the marks
+ * @property {Array} options This is an extra options to be added to specific indexes. Has the attribute and the value
+ * @property {string[]} reject This is the columns not to be displayed. Usually can be found in the options
  * @param {TableOptions} tableOptions The table's options
  */
-function fillTable({table_id, result_data, first_countable=true, has_mark, mark_index, mark_first=false, mark_result_type="wassce"}){
+function fillTable({
+        table_id, result_data, first_countable=true, has_mark,
+        mark_index, mark_first=false, mark_result_type="wassce",
+        options = [], reject = null
+    }){
     const tbody = $("#" + table_id).find("tbody")
     $(tbody).html("")
     const isArray = typeof result_data[0] === "object" ? true : false
     let reduceMarkIndex = false
 
     if(isArray !== null && isArray){
-        const keys = Object.keys(result_data[0])
+        const keys = removeKeys(Object.keys(result_data[0]), reject);
+        const indexes = getIndexes(options, mark_index);
 
         for(i = 0; i < result_data.length; i++){
-            tr = "<tr>"
+            let tr = "<tr>"
 
             if(first_countable){
                 tr += "<td>" + (i+1) + "</td>"
@@ -610,15 +617,39 @@ function fillTable({table_id, result_data, first_countable=true, has_mark, mark_
             }
 
             for(j = 0; j < keys.length; j++){
+                if((has_mark && (mark_index - 1) == j) && mark_first === true){
+                    tr += "<td>" + giveGrade(result_data[i][keys[j]], mark_result_type) + "</td>\n"
+                }
+                
+                if(indexes && indexes.some(item => item.indexKey === j)){
+                    const index = indexes.find(item => item.indexKey === j);
+                    const actual = options[index.position];
+                    let text = result_data[i][keys[j]];
+
+                    tr += "<td";
+                    tr += (actual.class || actual.class != "" ? " class=\"" + actual.class + "\"" : "");
+
+                    if(actual.attributes){
+                        for(k = 0; k < actual.attributes.length; k++){
+                            const attr_text = actual.attributes[k].value;
+                            tr += " " + actual.attributes[k].name + " = \"" + result_data[i][attr_text] + "\""
+                        }
+                    }
+
+                    if(actual.format_function && typeof window[actual.format_function] == "function"){
+                        text = window[actual.format_function](text);
+                    }
+
+                    tr += ">" + text + "</td>\n";
+                    
+                }else{
+                    tr += "<td>" + result_data[i][keys[j]] + "</td>\n"
+                }
+
                 if((has_mark && (mark_index - 1) == j) && mark_first === false){
                     tr += "<td>" + giveGrade(result_data[i][keys[j]], mark_result_type) + "</td>"
                 }
-
-                tr += "<td>" + result_data[i][keys[j]] + "</td>"
-
-                if((has_mark && (mark_index - 1) == j) && mark_first === true){
-                    tr += "<td>" + giveGrade(result_data[i][keys[j]], mark_result_type) + "</td>"
-                }
+                
             }
 
             tr += "</tr>"
@@ -628,6 +659,54 @@ function fillTable({table_id, result_data, first_countable=true, has_mark, mark_
     }else{
         alert_box("Table cannot be populated because there are no keys to generate for a table", "warning color-black", 10)
     }
+}
+
+/**
+ * This is used to remove keys from an array of keys
+ * @prop {object} keys
+ * @prop {object} reject
+ * @return {object}
+ */
+function removeKeys(keys, reject){
+    if(reject !== null || (Array.isArray(reject) && reject.length > 0))
+        return keys.filter(key => !reject.includes(key));
+    else
+        return keys;
+}
+
+/**
+ * This gets the indexes of the table options
+ * @param {Array} options The options array or object to be used
+ * @return {Array|null}
+ */
+function getIndexes(options, mark_index){
+    let result = null;
+
+    if(Array.isArray(options) && options.length > 0){
+        result = [];
+
+        options.forEach((item, i) => {
+            if ('index' in item) {
+                if(item.index == "mark_index"){
+                    item.index = mark_index;
+                }
+
+                item.index = item.index - 1;
+                result.push({ indexKey: item.index, position: i });
+            }
+        });
+    }
+
+    return result;
+}
+
+/**
+ * This creates a table data with some options
+ * @param {object} data The option data 
+ * @return {string}
+ */
+function createOptionsTD(data){
+
 }
 
 /**
@@ -714,4 +793,66 @@ async function create_result_head(token, course_id, program_id, semester, exam_y
             alert_box("Unknown error! Refer to logs", "danger");
         }
     })
+}
+
+/**
+ * Convert a number to position
+ * @param {*} number The number to be formated
+ * @returns {string}
+ */
+function positionFormat(number) {
+    number = parseInt(number, 10);
+    let suffix = "";
+
+    switch (number % 10) {
+        case 1: suffix = (number > 20 || number < 10) ? "st" : "th"; break;
+        case 2: suffix = (number > 20 || number < 10) ? "nd" : "th"; break;
+        case 3: suffix = (number > 20 || number < 10) ? "rd" : "th"; break;
+        default: suffix = "th";
+    }
+
+    return number + suffix;
+}
+
+/**
+ * Get the next available editable content
+ * @param {*} $current The current element
+ * @param {string} editable_elements The editabke element group
+ * @returns 
+ */
+function getNextEditableElement($current, editable_elements = ".class_score, .exam_score") {
+    let $allEditableElements = $(editable_elements);
+    let currentIndex = $allEditableElements.index($current);
+    let nextIndex = (currentIndex + 1) % $allEditableElements.length;
+    return $allEditableElements.eq(nextIndex);
+}
+
+/**
+ * This gets all the total scores and then provides positions for them
+ * @param {jQuery} table_element The table element
+ */
+function assignPositions(table_element){
+    // Extract scores and their indices
+    const total_scores = table_element.find("td.total_score").map(function() {
+        return {
+            score: parseFloat($(this).text()),
+            index: $(this).closest('tr').index()
+        };
+    }).get();
+
+    // Sort scores in descending order
+    total_scores.sort((a, b) => b.score - a.score);
+
+    // successfully provides the position value
+    let current_position = 0;
+    let last_grade = -1;
+
+    // Assign positions based on sorted scores
+    total_scores.forEach((item, position) => {
+        if(item.score != last_grade){
+            last_grade = item.score;
+            current_position = position + 1;
+        }
+        table_element.find("tr").eq(item.index + 1).find("td.position").text(positionFormat(current_position)).attr("data-position-value",current_position);
+    });
 }

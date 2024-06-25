@@ -1691,3 +1691,71 @@
         return $unique ? array_unique(array_values(array_column($subject,$column_name))) : 
                 array_values(array_column($subject,$column_name));
     }
+
+    /**
+     * This is used to provide the subject positions to students
+     * 
+     * @param string $token The result token
+     */
+    function assignPositions(string $token) {
+        global $connect2;
+
+        $results = decimalIndexArray(fetchData1(["id", "indexNumber", "mark as total"], "results", "result_token='$token'", 0));
+
+        if($results){
+            // Sort scores in descending order
+            usort($results, function ($a, $b) {
+                return $b['total'] <=> $a['total'];
+            });
+
+            // Assign positions based on sorted scores
+            $current_position = 0;
+            $last_grade = -1;
+            $success = $failed = 0;
+
+            // set positions
+            foreach ($results as $key => $result) {
+                if ($result['total'] != $last_grade) {
+                    $last_grade = $result['total'];
+                    $current_position = $key + 1;
+                }
+                
+                $sql = "UPDATE results SET position=$current_position WHERE id={$result['id']}";
+                $status = $connect2->query($sql);
+
+                if($status)
+                    $success += 1;
+                else
+                    $failed += 1;
+            }
+
+            return [
+                "token" => $token, "initial" => count($results),
+                "success" => $success, "failed" => $failed
+            ];
+        }
+    }
+
+    /**
+     * Used to set up the output buffer
+     */
+    function flush_php_start(){
+        // Turn off output buffering
+        ini_set('output_buffering', 'off');
+        ini_set('zlib.output_compression', false);
+
+        // Disable implicit flush
+        ini_set('implicit_flush', true);
+        ob_implicit_flush(true);
+
+        // Set a higher time limit if necessary
+        set_time_limit(0);
+    }
+
+    /**
+     * This flushes an output
+     */
+    function flush_output(){
+        ob_flush();
+        flush();
+    }

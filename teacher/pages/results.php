@@ -110,6 +110,7 @@
             <td>Exam Score (70)</td>
             <td>Total Score</td>
             <td>Grade</td>
+            <td>Position</td>
         </thead>
         <tbody>
             <tr class="p-lg empty">

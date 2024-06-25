@@ -1,35 +1,54 @@
-function examScoreBlur(element){
-    const tr = $(element).parents("tr")
-    const class_score = $(tr).find(".class_score")
-    const exam_mark = $(tr).find(".exam_score")
-    const total_mark = $(tr).find(".total_score")
-    const grade = $(tr).find(".grade")
+$("body").on("blur",".class_score, .exam_score", function(){
+    const element = $(this);
+    const tr = element.parents("tr");
+    const class_score = tr.find(".class_score")
+    const exam_mark = tr.find(".exam_score")
+    const total_mark = tr.find(".total_score")
+    const grade = tr.find(".grade")
     const result_type = $("input#result_type").val()
     
-    if($(element).html() === ""){
-        $(element).html("0")
-    }else if(parseInt($(element).html()) < 0){
+    if(element.html() === ""){
+        element.html("0")
+    }else if(parseInt(element.html()) < 0){
         alert_box("Lower than 0 value rejected", "red")
-        $(element).html("0")
-    }else if(parseInt($(element).html()) > parseInt($(element).attr("data-max"))){
-        alert_box("Value greater than " + $(element).attr("data-max") + " rejected", "red")
-        $(element).html("0")
+        element.html("0")
+    }else if(parseInt(element.html()) > parseInt(element.attr("data-max"))){
+        alert_box("Value greater than " + element.attr("data-max") + " rejected", "red")
+        element.html("0")
     }
 
-    const total_score = parseFloat($(class_score).html()) + parseFloat($(exam_mark).html())
+    const total_score = parseFloat(class_score.html()) + parseFloat(exam_mark.html())
     //grab total mark
-    $(total_mark).html(total_score)
-    $(grade).html(giveGrade(total_score, result_type))
-}
+    total_mark.html(total_score)
+    grade.html(giveGrade(total_score, result_type))
 
-function blurOnEnter(element){
-    $(element).keydown(function(event){
-        if(event.key === "Enter"){
-            event.preventDefault()
-            $(this).blur()
+    // assign positions
+    assignPositions(element.parents("table"));
+})
+
+$("body").on("keydown", ".class_score, .exam_score", function(event){
+    if(event.key === "Enter"){
+        event.preventDefault()
+        let $next = getNextEditableElement($(this));
+        if ($next.length) {
+            $next.focus();
+        } else {
+            $(this).blur();
         }
-    })
-}
+    }
+})
+
+$("body").on("focus", ".class_score, .exam_score", function(){
+    var element = this;
+    setTimeout(function() {
+        var range = document.createRange();
+        range.selectNodeContents(element);
+        
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }, 1);
+})
 
 $(".reset_table").click(function(){
     $("#result_slip").find(".class_score, .exam_score").html("0")
@@ -83,20 +102,24 @@ $("form").submit(function(e){
                 $("#table_section").addClass("no_disp")
                 $("#result_slip tbody").html("")
                 for(var i=0; i < tableData.length; i++){
-                    let tr = "<tr class=\"p-lg\">"
-                        tr += "<td>" + tableData[i]["indexNumber"] + "</td>"
-                        tr += "<td>" + tableData[i]["Lastname"] + " " + tableData[i]["Othernames"] + "</td>"
-                        tr += "<td contenteditable=\"true\" class=\"white class_score\" data-max=\"30\" onblur=\"examScoreBlur($(this))\" onkeydown=\"blurOnEnter($(this))\">0</td>"
-                        tr += "<td contenteditable=\"true\" class=\"white exam_score\" data-max=\"70\" onblur=\"examScoreBlur($(this))\" onkeydown=\"blurOnEnter($(this))\">0</td>"
-                        tr += "<td class=\"total_score\">0</td>"
-                        tr += "<td class=\"grade\">" + giveGrade(0,$("input#result_type").val()) + "</td>"
-                    tr += "</tr>"
+                    let tr = "<tr class=\"p-lg\">\n"
+                        tr += " <td>" + tableData[i]["indexNumber"] + "</td>\n"
+                        tr += " <td>" + tableData[i]["Lastname"] + " " + tableData[i]["Othernames"] + "</td>\n"
+                        tr += " <td contenteditable=\"true\" class=\"white class_score\" data-max=\"30\">0</td>\n"
+                        tr += " <td contenteditable=\"true\" class=\"white exam_score\" data-max=\"70\">0</td>\n"
+                        tr += " <td class=\"total_score\">0</td>\n"
+                        tr += " <td class=\"grade\">" + giveGrade(0,$("input#result_type").val()) + "</td>\n"
+                        tr += " <td class=\"position\"></td>"
+                        tr += "</tr>\n"
 
                     $("#result_slip tbody").append(tr)
                 }
 
                 //reset form fields
-                $("form select").prop("selectedIndex", 0)
+                $("form select").prop("selectedIndex", 0);
+
+                // fill the positions
+                assignPositions($("#result_slip"))
             }
         },
         error: function(xhr){
@@ -176,7 +199,7 @@ $("#submit_result").click(async function(){
 
     if(isHaveToken){
         let success = 0; let fail = 0; let failIndex = []
-        const total = $("#result_slip tbody tr").length;
+        const total = $("#result_slip tbody tr:not(.empty)").length;
 
         const sem = $("select[name=semester]").val();
         const c_id = $("select[name=subject]").val();
@@ -195,6 +218,7 @@ $("#submit_result").click(async function(){
             const c_mark = parseFloat(element.children(".class_score").html()).toFixed(1);
             const e_mark = parseFloat(element.children(".exam_score").html()).toFixed(1);
             const isLast = (success+fail+1) == total ? true : false;
+            const position = parseInt(element.children(".position").attr("data-position-value"));
             
             try{
                 const response = await $.ajax({
@@ -202,7 +226,8 @@ $("#submit_result").click(async function(){
                     data: {
                         submit: "submit_result", student_index: stud_index, mark: score,
                         exam_mark: e_mark, class_mark: c_mark, course_id: c_id, result_token: token,
-                        exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id
+                        exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id,
+                        position: position,
                     },
                     type: "POST",
                     timeout: 5000
@@ -279,7 +304,7 @@ $("#save_result").click(async function(){
 
     if(isHaveToken){
         let success = 0; let fail = 0; let failIndex = []
-        const total = $("#result_slip tbody tr").length;
+        const total = $("#result_slip tbody tr:not(.empty)").length;
 
         const sem = $("select[name=semester]").val();
         const c_id = $("select[name=subject]").val();

@@ -82,18 +82,24 @@ $(document).ready(function(){
 
 $("body").on("click", ".item-event.view-data", function(){
     const tr = $(this).parents("tr");
-    const index = $(tr).children("td:nth-child(1)").html()
-    const name = $(tr).children("td:nth-child(2)").html()
-    const gender = $(tr).children("td:nth-child(3)").html()
-    const mark = $(tr).children("td:nth-child(4)").html()
-    const grade = $(tr).children("td:nth-child(5)").html()
+    const index = tr.find("td.index_number").html()
+    const name = tr.find("td.name").html()
+    const gender = tr.find("td.gender").html()
+    const mark = tr.find("td.mark")
+    const grade = tr.children("td:nth-child(4)").html();
+    const position = tr.find("td.position").html();
+    const class_mark = mark.attr("data-class-mark");
+    const exam_mark = mark.attr("data-exam-mark");
 
     //fill single student  
     $("#class_single .name").html(name)
     $("#class_single .index").html(index)
     $("#class_single .gender").html(gender)
-    $("#class_single .mark").html(mark)
+    $("#class_single .mark").html(mark.html())
     $("#class_single .grade").html(grade)
+    $("#class_single .exam_mark").html(exam_mark)
+    $("#class_single .class_mark").html(class_mark)
+    $("#class_single .position").html(position)
 
     $('section#class_single').removeClass('no_disp')
 })
@@ -152,24 +158,37 @@ $("button.class_single, .back.class_single").click(function(){
                         const tableData = response["message"];
 
                         for(var i=0; i < tableData.length; i++){
-                            let tr = "<tr class=\"p-lg\">"
-                                tr += "<td>" + tableData[i]["indexNumber"] + "</td>"
-                                tr += "<td>" + tableData[i]["Lastname"] + " " + tableData[i]["Othernames"] + "</td>"
-                                tr += "<td contenteditable=\"true\" class=\"white class_score\" data-max=\"30\" data-initial=\"" + tableData[i]["class_mark"] + "\" onblur=\"examScoreBlur($(this))\" onkeydown=\"blurOnEnter($(this))\">" + tableData[i]["class_mark"] + "</td>"
-                                tr += "<td contenteditable=\"true\" class=\"white exam_score\" data-max=\"70\" data-initial=\"" + tableData[i]["exam_mark"] + "\" onblur=\"examScoreBlur($(this))\" onkeydown=\"blurOnEnter($(this))\">"+ tableData[i]["exam_mark"] +"</td>"
-                                tr += "<td class=\"total_score\">" + tableData[i]["mark"] + "</td>"
-                                tr += "<td class=\"grade\">" + giveGrade(tableData[i]["mark"],$("input#result_type").val()) + "</td>"
-                            tr += "</tr>"
+                            let tr = "<tr class=\"p-lg\">\n"
+                                tr += " <td>" + tableData[i]["indexNumber"] + "</td>\n"
+                                tr += " <td>" + tableData[i]["Lastname"] + " " + tableData[i]["Othernames"] + "</td>\n"
+                                tr += " <td contenteditable=\"true\" class=\"white class_score\" data-max=\"30\" data-initial=\"" + tableData[i]["class_mark"] + "\">" + tableData[i]["class_mark"] + "</td>\n"
+                                tr += " <td contenteditable=\"true\" class=\"white exam_score\" data-max=\"70\" data-initial=\"" + tableData[i]["exam_mark"] + "\">"+ tableData[i]["exam_mark"] +"</td>\n"
+                                tr += " <td class=\"total_score\">" + tableData[i]["mark"] + "</td>\n"
+                                tr += " <td class=\"grade\">" + giveGrade(tableData[i]["mark"],$("input#result_type").val()) + "</td>\n"
+                                tr += " <td class=\"position\"></td>\n"
+                                tr += "</tr>\n";
 
-                            tbody.append(tr)
+                            tbody.append(tr);
                         }
 
+                        // assign positions
+                        assignPositions($("#" + table_id));
+
                         // add a field for empty searches and hide when created
-                        tbody.append(insertEmptyTableLabel("No records match your search", cols, true))
+                        tbody.append(insertEmptyTableLabel("No records match your search", cols, true));
                     }else{
                         fillTable({
                             table_id: "class_list_table", result_data: response["message"], first_countable: false,
-                            has_mark: true, mark_index: 4, mark_first: true, mark_result_type: result_type
+                            has_mark: true, mark_index: 4, mark_first: true, mark_result_type: result_type,
+                            reject: ['class_mark', 'exam_mark'], options: [
+                                {index: "mark_index", class: "mark", attributes: [
+                                    {name: "data-class-mark", value: "class_mark"},
+                                    {name: "data-exam-mark", value: "exam_mark"}
+                                ]},
+                                {index: 5, class: "position", format_function: "positionFormat"},
+                                {index: 1, class: "index_number"}, {index: 2, class: "name"},
+                                {index: 3, class: "gender"}
+                            ]
                         })
     
                         //add a view td
@@ -226,7 +245,7 @@ $("#submit_result").click(async function(){
 
     if(isHaveToken){
         let success = 0; let fail = 0; let failIndex = []
-        const total = $("#save_data_table tbody tr").length;
+        const total = $("#save_data_table tbody tr:not(.empty)").length;
 
         // create a header slip
         await create_result_head(
@@ -239,7 +258,8 @@ $("#submit_result").click(async function(){
             const score = parseFloat(element.children(".total_score").html()).toFixed(1);
             const c_mark = parseFloat(element.children(".class_score").html()).toFixed(1);
             const e_mark = parseFloat(element.children(".exam_score").html()).toFixed(1);
-            const isLast = (success+fail+1) == total ? true : false
+            const isLast = (success+fail+1) == total ? true : false;
+            const position = parseInt(element.children(".position").attr("data-position-value"));
             
             try{
                 const response = await $.ajax({
@@ -248,6 +268,7 @@ $("#submit_result").click(async function(){
                         submit: "submit_result", student_index: stud_index, mark: score,
                         exam_mark: e_mark, class_mark: c_mark, course_id: c_id, result_token: token,
                         exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id, prev_token: saved_token,
+                        position: position
                     },
                     type: "POST",
                     timeout: 5000
@@ -509,35 +530,53 @@ $("form[name=confirm_box]").submit(function(e){
     }
 })
 
-function blurOnEnter(element){
-    $(element).keydown(function(event){
-        if(event.key === "Enter"){
-            event.preventDefault()
-            $(this).blur()
+$("body").on("keydown", ".class_score, .exam_score", function(event){
+    if(event.key === "Enter"){
+        event.preventDefault()
+        let $next = getNextEditableElement($(this));
+        if ($next.length) {
+            $next.focus();
+        } else {
+            $(this).blur();
         }
-    })
-}
+    }
+})
 
-function examScoreBlur(element){
-    const tr = $(element).parents("tr")
-    const class_score = $(tr).find(".class_score")
-    const exam_mark = $(tr).find(".exam_score")
-    const total_mark = $(tr).find(".total_score")
-    const grade = $(tr).find(".grade")
-    const result_type = $("input#result_type").val()
+$("body").on("focus", ".class_score, .exam_score", function(){
+    var element = this;
+    setTimeout(function() {
+        var range = document.createRange();
+        range.selectNodeContents(element);
+        
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }, 1);
+})
+
+$("body").on("blur",".class_score, .exam_score", function(){
+    const element = $(this);
+    const tr = element.parents("tr");
+    const class_score = tr.find(".class_score");
+    const exam_mark = tr.find(".exam_score");
+    const total_mark = tr.find(".total_score");
+    const grade = tr.find(".grade");
+    const result_type = $("input#result_type").val();
     
-    if($(element).html() === ""){
-        $(element).html("0")
-    }else if(parseInt($(element).html()) < 0){
+    if(element.html() === ""){
+        element.html("0")
+    }else if(parseInt(element.html()) < 0){
         alert_box("Lower than 0 value rejected", "red")
-        $(element).html("0")
-    }else if(parseInt($(element).html()) > parseInt($(element).attr("data-max"))){
-        alert_box("Value greater than " + $(element).attr("data-max") + " rejected", "red")
-        $(element).html("0")
+        element.html("0")
+    }else if(parseInt(element.html()) > parseInt(element.attr("data-max"))){
+        alert_box("Value greater than " + element.attr("data-max") + " rejected", "red")
+        element.html("0")
     }
 
-    const total_score = parseFloat($(class_score).html()) + parseFloat($(exam_mark).html())
+    const total_score = parseFloat(class_score.html()) + parseFloat(exam_mark.html())
     //grab total mark
-    $(total_mark).html(total_score)
-    $(grade).html(giveGrade(total_score, result_type))
-}
+    total_mark.html(total_score)
+    grade.html(giveGrade(total_score, result_type));
+
+    assignPositions(element.parents("table"));
+})

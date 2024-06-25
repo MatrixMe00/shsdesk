@@ -303,6 +303,7 @@
                 $program_id = $_POST["program_id"] ?? null;
                 $prev_token = isset($_POST["prev_token"]) ? $_POST["prev_token"] : null;
                 $academic_year = getAcademicYear(date("d-m-Y"), false);
+                $position = $_POST["position"] ?? 0;
 
                 if(empty($student_index) || is_null($student_index) ||
                     empty($result_token) || is_null($course_id) || 
@@ -325,9 +326,9 @@
                     if(intval($isInserted) > 0){
                         $message = "Results already exist";
                     }else{
-                        $sql = "INSERT INTO results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, result_token, teacher_id, exam_year, semester, academic_year, date) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?,?, NOW())";
+                        $sql = "INSERT INTO results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, result_token, teacher_id, exam_year, semester, academic_year, date, position) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?,?, NOW(),?)";
                         $stmt = $connect2->prepare($sql);
-                        $stmt->bind_param("siiidddsiiis",$student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, $mark, $result_token, $teacher["teacher_id"], $exam_year, $semester, $academic_year);
+                        $stmt->bind_param("siiidddsiiisi",$student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, $mark, $result_token, $teacher["teacher_id"], $exam_year, $semester, $academic_year, $position);
 
                         if($stmt->execute()){
                             $message = "true";
@@ -346,6 +347,7 @@
                             }
                             
                             if($found){
+                                // delete the records in the save results table
                                 if(!is_null($prev_token)){
                                     $connect2->query("DELETE FROM saved_results WHERE token='$prev_token'");
                                 }
@@ -547,9 +549,9 @@
                                 FROM saved_results s JOIN students_table st ON s.indexNumber=st.indexNumber
                                 WHERE token='$token_id'";
                         }else{
-                            $sql = "SELECT s.indexNumber, CONCAT(s.Lastname, ' ', s.Othernames) AS fullname, s.gender, ROUND(r.mark, 1)
+                            $sql = "SELECT s.indexNumber, CONCAT(s.Lastname, ' ', s.Othernames) AS fullname, s.gender, r.mark, r.class_mark, r.exam_mark, r.position
                             FROM results r JOIN students_table s ON r.indexNumber = s.indexNumber
-                            WHERE r.result_token='$token_id'";
+                            WHERE r.result_token='$token_id' ORDER BY position ASC";
                         }
 
                         if($results = $connect2->query($sql)){

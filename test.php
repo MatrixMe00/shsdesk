@@ -13,7 +13,7 @@
     // header("Cache-Control: no-cache, must-revalidate");
     // header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
     
-    $user_school_id = 3;
+    /*$user_school_id = 3;
     
     function setHouse1($gender, $shs_placed, $ad_index, $house, $boardingStatus, $is_new = true){
             $next_house = null;
@@ -188,17 +188,51 @@
                     // update student data
                     try {
                         // $connect->query("UPDATE house_allocation SET houseID=$student_house, updated_at='$now' WHERE indexNumber='{$student['indexNumber']}'");
-                        /*$sql = "UPDATE house_allocation SET houseID=?, updated_at=? WHERE indexNumber=?";
+                        $sql = "UPDATE house_allocation SET houseID=?, updated_at=? WHERE indexNumber=?";
                         $stmt = $connect->prepare($sql);
                         $stmt->bind_param("iss", $student_house, $now, $student["indexNumber"]);
                         $response = $stmt->execute();
     
                         if(!$response){
                             exit("{$student['indexNumber']} could not be processed. Error: ".$connect->error);
-                        }*/
+                        }
                     } catch (\Throwable $th) {
                         exit(throwableMessage($th));
                     }
-                }
+                }*/
+        $affected = decimalIndexArray(fetchData1("DISTINCT result_token", "results", "position = 0", 0));
+        
+        if($affected){
+            flush_php_start();
+            
+            $affected = array_column($affected, "result_token");
+            
+            echo "<table border='1'>\n
+                    <thead>\n
+                        <td>Token</td>\n
+                        <td>Total Results</td>\n
+                        <td>Success</td>\n
+                        <td>Failed</td>\n
+                    </thead>\n
+                    <tbody>\n
+            ";
+            foreach($affected as $token){
+                $data = assignPositions($token);
+
+                echo "<tr>\n
+                        <td>{$data['token']}</td>\n
+                        <td>{$data['initial']}</td>\n
+                        <td>{$data['success']}</td>\n
+                        <td>{$data['failed']}</td>\n
+                    </tr>\n
+                ";
+                
+                // Flush the output buffer
+                flush_output();
+            }
+            echo "</tbody>\n</table>";
+        }else{
+            echo "no affected tokens to be processed";
+        }
     ?>
 </html>

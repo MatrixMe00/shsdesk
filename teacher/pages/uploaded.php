@@ -238,24 +238,36 @@
                 </div>
             </div>
         </div>
-        <div class="body white sp-lg flex flex-column gap-md">
-            <div class="flex flex-space-content">
+        <div class="body white sp-lg flex flex-wrap gap-md">
+            <div class="flex flex-column sp-med gap-sm">
                 <span class="txt-bold">Name</span>
                 <span class="name"></span>
             </div>
-            <div class="flex flex-space-content">
+            <div class="flex flex-column sp-med gap-sm">
                 <span class="txt-bold">Index Number</span>
                 <span class="index"></span>
             </div>
-            <div class="flex flex-space-content">
-                <span class="txt-bold">Mark</span>
+            <div class="flex flex-column sp-med gap-sm">
+                <span class="txt-bold">Class Score</span>
+                <span class="class_mark"></span>
+            </div>
+            <div class="flex flex-column sp-med gap-sm">
+                <span class="txt-bold">Exam Score</span>
+                <span class="exam_mark"></span>
+            </div>
+            <div class="flex flex-column sp-med gap-sm">
+                <span class="txt-bold">Total Score</span>
                 <span class="mark"></span>
             </div>
-            <div class="flex flex-space-content">
+            <div class="flex flex-column sp-med gap-sm">
+                <span class="txt-bold">Subject Position</span>
+                <span class="position"></span>
+            </div>
+            <div class="flex flex-column sp-med gap-sm">
                 <span class="txt-bold">Grade</span>
                 <span class="grade"></span>
             </div>
-            <div class="flex flex-space-content">
+            <div class="flex flex-column sp-med gap-sm">
                 <span class="txt-bold">Gender</span>
                 <span class="gender"></span>
             </div>
@@ -284,6 +296,7 @@
                 <td>Gender</td>
                 <td>Total Score</td>
                 <td>Grade</td>
+                <td>Position</td>
             </thead>
             <tbody>
                 <tr class="empty">
@@ -300,6 +313,7 @@
                 <td>Exam Score (70)</td>
                 <td>Total Score</td>
                 <td>Grade</td>
+                <td>Position</td>
             </thead>
             <tbody>
                 <tr class="p-lg empty">
