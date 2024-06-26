@@ -352,5 +352,4 @@
             </form>
 </section>
 
-<script src="<?= "$url/assets/scripts/functions.min.js?v=".time() ?>"></script>
 <script src="<?= "$url/assets/scripts/uploaded.js?v=".time() ?>"></script>

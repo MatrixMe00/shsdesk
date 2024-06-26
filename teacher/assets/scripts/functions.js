@@ -105,31 +105,16 @@ function loadDisplay(element = {
 }
 
 /**
-* This function converts serialized form into formdata element
-* @param {any} form This is the serialized form data to be coverted
+* This function converts an object into a formadata object
+* @param {any} object This is the object to be processed
 * @return {FormData} returns a FormData value
 */
-function toFormData(form){
-   const split_lenght = form.length
-   let formData = new FormData()
-
-   //loop and fill form data
-   let counter = 0;
-   while(counter < split_lenght){
-       //grab each array data
-       new_data = form_data[counter]
-
-       key = new_data["name"]
-       value = new_data["value"]
-
-       //append to form data
-       formData.append(key, value)
-
-       //move to next data
-       counter++
+function toFormData(object){
+   if(object instanceof FormData){
+        return object;
    }
 
-   return formData
+   return JSONtoFormData(object);
 }
 
 /**
@@ -147,6 +132,23 @@ function FormDataToJSON(form_data){
     }
 
     return jsonObject;
+}
+
+/**
+ * Converts json to formdata
+ * @param {object} json The json object
+ * @return {FormData}
+ */
+function JSONtoFormData(json){
+    const formData = new FormData();
+
+    for (const key in json) {
+        if (json.hasOwnProperty(key)) {
+          formData.append(key, json[key]);
+        }
+    }
+
+    return formData;
 }
 
 /**
@@ -168,13 +170,12 @@ async function fileUpload(form_element, submit_element, messageBox = true){
     const formData = new FormData(form_element[0], submit_element[0]);
     response = null;
     
-    $.ajax({
+    await $.ajax({
         url: $(form_element).attr("action"),
         data: formData,
         method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
         dataType: "text",
         cache: false,
-        async: false,
         contentType: false,
         processData: false,
         timeout: 30000,
@@ -221,7 +222,6 @@ async function fileUpload(form_element, submit_element, messageBox = true){
  * 
  * @return {boolean|array} Returns a boolean value or an array
  */
- 
  async function jsonFileUpload(form_element, submit_element, messageBox = true){
     if(!checkFormElement(form_element, submit_element)){
         return false;
@@ -229,16 +229,16 @@ async function fileUpload(form_element, submit_element, messageBox = true){
 
     // submit_element = submit_element === null || form_element.find("input[name=submit]") ? null : submit_element[0];
     const formData = new FormData(form_element[0], submit_element[0]);
+    formData.append("response_type", "json");
  
     response = null;
     
-    $.ajax({
+    await $.ajax({
         url: $(form_element).attr("action"),
         data: formData,
         method: $(form_element).attr("method") ? $(form_element).attr("method") : "POST",
         dataType: "json",
         cache: false,
-        async: false,
         contentType: false,
         processData: false,
         timeout: 30000,
@@ -251,17 +251,12 @@ async function fileUpload(form_element, submit_element, messageBox = true){
                 messageBoxTimeout(form_element.prop("name"), message, type, time);
             }            
         },
-        success: function(text){
+        success: function(response_){
             if(messageBox){
                  $("form[name=" + $(form_element).prop("name") + "] .message_box").addClass("no_disp");
             }
-            text = JSON.parse(JSON.stringify(text));
  
-            if(text["status"] == "success" || text["status"].includes("success")){
-                response = true;
-            }else{
-                response = text;
-            }
+            response = response_;
         },
         error: function(xhr, textStatus){
             message = "Please check your internet connection and try again";
@@ -278,6 +273,53 @@ async function fileUpload(form_element, submit_element, messageBox = true){
     })
  
     return response;
+ }
+
+ /**
+  * This is used for formless transactions
+  * @typedef {Object} AJAXOptions
+  * @property {string} url The url of the form
+  * @property {FormData} formData The form data to be sent
+  * @property {string} returnType The return type the request
+  * @property {string} method The method of the request
+  * @property {bool} sendRaw Set this to true if the call contains a file
+  * @property {Function} beforeSend A method to be run when beforeSend is called
+  * @param {AJAXOptions} ajaxOptions
+  * @return
+  */
+ async function ajaxCall({url, formData, returnType = "text", method = "GET", sendRaw = false, beforeSend = null}){
+    let response_ = false;
+    try {
+        if(formData instanceof FormData){
+            formData.append("response_type", returnType);
+        }else{
+            formData.response_type = returnType;
+        }
+
+        await $.ajax({
+            type: method,
+            url: url,
+            data: formData,
+            dataType: returnType,
+            contentType: sendRaw ? false : 'application/x-www-form-urlencoded; charset=UTF-8',
+            processData: !sendRaw,
+            beforeSend: function(){
+                beforeSend();
+            },
+            success: function (response) {
+                response_ = response;
+            },
+            error: function (xhr, status, error) {
+                console.error(`Error: ${error}`, xhr);
+                alert_box(status != "" ? status : error, "danger");
+            }
+        });
+    } catch (error) {
+        alert_box(error.toString(), "danger");
+        console.log(error);
+    }
+
+    return response_;
  }
 
  /**
@@ -386,6 +428,7 @@ async function fileUpload(form_element, submit_element, messageBox = true){
 
     submit_element = submit_element === null || form_element.find("input[name=submit]").length > 0 ? null : submit_element[0];
     const formData = FormDataToJSON(new FormData(form_element[0], submit_element));
+    formData.append("response_type", "json");
  
     response = null;
     
@@ -773,6 +816,7 @@ async function deleteTokenResults(token, table="results"){
  * @param {number} exam_year The class year
  */
 async function create_result_head(token, course_id, program_id, semester, exam_year){
+    let response_  = false;
     await $.ajax({
         url:"./submit.php",
         data: {
@@ -782,6 +826,7 @@ async function create_result_head(token, course_id, program_id, semester, exam_y
         method: "POST",
         success:function(response){
             if(response == "success"){
+                response_ = true;
                 console.log("result slip head created");
             }else{
                 alert_box("Result slip head failed to create on init", "danger");
@@ -793,6 +838,8 @@ async function create_result_head(token, course_id, program_id, semester, exam_y
             alert_box("Unknown error! Refer to logs", "danger");
         }
     })
+
+    return response_;
 }
 
 /**
@@ -855,4 +902,13 @@ function assignPositions(table_element){
         }
         table_element.find("tr").eq(item.index + 1).find("td.position").text(positionFormat(current_position)).attr("data-position-value",current_position);
     });
+}
+
+/**
+ * Returns a promise
+ * @param {*} ms Time in miliseconds
+ * @returns {Promise}
+ */
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }

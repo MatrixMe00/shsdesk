@@ -286,7 +286,7 @@
                 }
 
                 $response = array("error"=>$error??true, "data"=>$message);
-                header("Content-Type: application/json");
+                header("Content-type: application/json");
                 echo json_encode($response);
                 break;
 
@@ -302,7 +302,7 @@
                 $isFinal = $_POST["isFinal"] ?? false;
                 $program_id = $_POST["program_id"] ?? null;
                 $prev_token = isset($_POST["prev_token"]) ? $_POST["prev_token"] : null;
-                $academic_year = getAcademicYear(date("d-m-Y"), false);
+                $academic_year = $_POST["academic_year"] ?? getAcademicYear(now(), false);
                 $position = $_POST["position"] ?? 0;
 
                 if(empty($student_index) || is_null($student_index) ||
@@ -338,6 +338,11 @@
 
                         if($isFinal == "true" || $isFinal === true || $isFinal == 1){
                             $found = fetchData1("result_token", "recordapproval", "result_token='$result_token'");
+
+                            // if request to assign position is provided
+                            if(isset($_POST["assign_positions"]) && $_POST["assign_positions"] == 1){
+                                assignPositions($result_token);
+                            }
 
                             if($found == "empty"){
                                 $sql = "INSERT INTO recordapproval (result_token, school_id, teacher_id, program_id, course_id, exam_year, semester, academic_year) VALUES (?,?,?,?,?,?,?,?)";

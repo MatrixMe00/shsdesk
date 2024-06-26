@@ -64,16 +64,49 @@
 </section>
 
 <section id="upload" class="d-section sm-lg-t lt-shade white section_block no_disp">
-    <form action="<?= "$url/docs.php" ?>" method="post" class="m-lg-tp wmax-md sm-auto" enctype="multipart/form-data">
+    <form action="<?= "$url/docs.php" ?>" method="post" class="m-lg-tp wmax-md sm-auto" name="upload_results_form" enctype="multipart/form-data">
         <h2 class="txt-al-c">Upload your document here</h2>
-        <label for="semester" class="flex flex-column gap-sm">
-            <span class="label_title">Select the Semester</span>
-            <select name="semester" id="semester">
-                <option value="">Select Semester</option>
-                <option value="1">Semester 1</option>
-                <option value="2">Semester 2</option>
-            </select>
-        </label>
+        <div class="joint gap-sm">
+            <label for="semester_u" class="flex flex-column gap-sm">
+                <span class="label_title">Select the Semester</span>
+                <select name="semester" id="semester_u">
+                    <option value="">Select Semester</option>
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                </select>
+            </label>
+            <label for="program_u" class="flex-column gap-sm flex">
+                <span class="label_title">Select Class</span>
+                <select name="program" id="program_u" class="w-full">
+                    <option value="">Select Class</option>
+                    <?php foreach($classes as $class): ?>
+                    <option value="<?= $class["program_id"] ?>"><?= $class["program_name"] ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label for="course_u" class="flex-column gap-sm flex">
+                <span class="label_title">Select Subject</span>
+                <select name="course" id="course_u" class="w-full">
+                    <option value="" class="first-child">Select Subject</option>
+                    <?php foreach($subjects as $subject): ?>
+                    <option value="<?= $subject["course_id"] ?>" data-program-id="<?= $subject["program_id"] ?>" class="no_disp"><?= $subject["course_name"] ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label for="class_year_u" class="flex-column gap-sm flex">
+                <span class="label_title">Select Year</span>
+                <select name="class_year" id="class_year_u" class="w-full">
+                    <option value="" class="first-child">Select Year</option>
+                    <option value="1" class="no_disp">Year 1</option>
+                    <option value="2" class="no_disp">Year 2</option>
+                    <option value="3" class="no_disp">Year 3</option>
+                </select>
+            </label>
+            <label for="academic_year" class="flex flex-column gap-sm">
+                <span class="label_title">Academic Year</span>
+                <input type="text" readonly name="academic_year" value="<?= getAcademicYear(now(), false) ?>">
+            </label>
+        </div>
         <label for="document_file" class="relative gap-md flex flex-column">
             <span class="label_title self-align-center">Provide the document to upload</span>
             <div class="fore_file_display flex-all-center flex-column lda-border sp-lg-tp light">
@@ -89,67 +122,4 @@
     </form>
 </section>
 
-<script>
-    $(".section_btn").click(function(){
-        $(".section_btn:not(.plain-r)").addClass("plain-r");
-        $(this).removeClass("plain-r");
-
-        //display respective block
-        const section = $("#" + $(this).attr("data-section"));
-        $(".section_block:not(.no_disp)").addClass("no_disp");
-        section.removeClass("no_disp");
-    })
-    $("select#program").change(function(){
-        const value = $(this).val();
-
-        if(value == ""){
-            $("select#course, select#class_year").prop("selectedIndex", 0);
-            $("select#course option:not(.first-child), select#class_year option:not(.first-child)").addClass("no_disp");
-        }else{
-            $("select#course option:not(.first-child)").each((i, e) => {
-                const program_id = $(e).attr("data-program-id")
-                if(program_id == value){
-                    $(e).removeClass("no_disp")
-                }
-            })
-
-            $("select#class_year option").removeClass("no_disp")
-        }
-    })
-
-    //concerning the files that will be chosen
-    $("input[type=file]").change(function(){
-        //get the value of the image name
-        const image_path = $(this).val();
-
-        //strip the path name to file name only
-        const image_name = image_path.split("C:\\fakepath\\");
-
-        //store the name of the file into the display div
-        if(image_path != ""){
-            $(this).siblings(".plus").hide();
-            $(this).siblings(".display_file_name").html(image_name);       
-        }else{
-            $(this).siblings(".plus").css("display","initial");
-            $(this).siblings(".display_file_name").html("Choose or drag your file here");
-        }
-    })
-
-    $("form").submit(async function(e){
-        if($(this).prop("name") == "getDocument"){
-            const response = await formSubmit($(this), $(this).find("button[name=submit]"), false);
-            
-            if(response.includes("Error")){
-                const message = response.replace("Error: ","");
-                alert_box(message, "danger")
-                e.preventDefault();
-            }else{
-                return true;
-            }
-        }else{
-            e.preventDefault();
-            alert_box("Feature not ready. Please wait")
-        }
-        // $(this).unbind("submit").submit()
-    })
-</script>
+<script src="<?= "$url/assets/scripts/docs.js?v=".time() ?>"></script>
