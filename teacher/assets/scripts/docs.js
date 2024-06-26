@@ -73,65 +73,74 @@ $(document).ready(function(){
                     submit_btn.html("Upload Results").prop("disabled", false);
                 }else{
                     token = token.data;
-                    
-                    // delete records and status so that they can be easily 
-                    // passed into the individual records
-                    delete response.data.records;
-                    delete response.status;
 
                     // create the result token head
                     const head_created = await create_result_head(token, response.data.course_id, response.data.program_id, response.data.semester, response.data.exam_year);
-                    let complete = true;
+                    let complete = true; const total_data = response.data.records.length;
+                    
+                    try {
+                        if (head_created) {
+                            const data = response.data.records;
+                            const submit_value = "submit_result";
 
-                    if (head_created) {
-                        const total_data = data.length;
-                        const data = response.data.records;
-                        const submit_value = "submit_result";
-                
-                        for (let i = 0; i < total_data; i++) {
-                            const record = data[i];
-                            const isFinal = i + 1 === total_data;
-                            const assign_positions = isFinal ? 1 : 0;
-                            const data_ = { 
-                                ...record, ...response.data, 
-                                isFinal: isFinal, submit: submit_value, 
-                                result_token: token, assign_positions: assign_positions 
-                            };
-                                            
-                            // upload resource
-                            const response_ = await ajaxCall({
-                                url: "./submit.php",
-                                formData: data_,
-                                method: "POST",
-                                beforeSend: function(){
-                                    submit_btn.html(`Uploading ${record.indexNumber} [${i + 1} of ${total_data}]`);
+                            // delete records and status so that they can be easily 
+                            // passed into the individual records
+                            delete response.data.records;
+                            delete response.status;
+
+                            for (let i = 0; i < total_data; i++) {
+                                const record = data[i];
+                                const isFinal = i + 1 === total_data;
+                                const assign_positions = isFinal ? 1 : 0;
+                                const data_ = { 
+                                    ...record, ...response.data, 
+                                    isFinal: isFinal, submit: submit_value, 
+                                    result_token: token, assign_positions: assign_positions 
+                                };
+                                                
+                                // upload resource
+                                const response_ = await ajaxCall({
+                                    url: "./submit.php",
+                                    formData: data_,
+                                    method: "POST",
+                                    beforeSend: function(){
+                                        submit_btn.html(`Uploading ${record.student_index} [${i + 1} of ${total_data}]`);
+                                    }
+                                })
+    
+                                if(response_ != "true"){
+                                    alert_box(response_ == "false" ? record.student_index + " could not be saved for unknown reason" : response_);
+                                    complete = false;
+                                    break;
                                 }
-                            })
-
-                            if(response_ != "true"){
-                                alert_box(response_ == "false" ? record.indexNumber + " could not be saved for unknown reason" : response_);
-                                complete = false;
-
-                                // remove the token and its results
-                                deleteTokenResults(token);
-                                break;
+    
+                                // mimic a delay
+                                await delay(300);
                             }
 
-                            // mimic a delay
-                            await delay(300);
+                            complete = true;
                         }
-                        
-                        if(complete){
-                            submit_btn.html(`All ${total_data} records successfully added`);
-                        }else{
-                            submit_btn.html(`Upload was not completed`);
-                        }
-
-                        setTimeout(() => {
-                            submit_btn.html("Upload Results").prop("disabled", false);
-                        }, 3000);
-                        
+                    } catch (error) {
+                        alert_box(error.toString(), "danger");
+                        complete = false;
                     }
+
+                    if(complete){
+                        submit_btn.html(`All ${total_data} records successfully added`);
+                    }else{
+                        // remove the token and its results
+                        deleteTokenResults(token);
+                        submit_btn.html(`Upload was not completed`).prop("disabled", false);
+                    }
+        
+                    setTimeout(() => {
+                        // reset form
+                        form[0].reset();
+                        form.find("input[type=file]").change();
+
+                        // enable
+                        submit_btn.html("Upload Results").prop("disabled", false);
+                    }, 3000);
                 }
             }else{
                 alert_box(response.data, "danger", 5);
