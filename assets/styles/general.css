@@ -202,6 +202,83 @@ td.pages .navs span{
     color: white;
 }
 
+/* colors to overide element colors */
+.red-i, .danger-i{
+    background-color: var(--red) !important;
+    color: white !important;
+}
+
+.pink-i{
+    background-color: var(--pink) !important;
+    color: white !important;
+}
+
+.orange-i{
+    background-color: var(--orange) !important;
+    color: white !important;
+} 
+
+.yellow-i, .warning-i{
+    background-color: var(--yellow) !important;
+    color: white !important;
+} 
+
+.green-i, .success-i{
+    background-color: var(--green) !important;
+    color: white !important;
+} 
+
+.teal-i{
+    background-color: var(--teal) !important;
+    color: white !important;
+}
+
+.cyan-i, .info-i{
+    background-color: var(--cyan) !important;
+    color: white !important;
+} 
+
+.white-i{
+    background-color: var(--white) !important;
+    color: black !important;
+} 
+
+.light-i{
+    background-color: var(--light) !important;
+    color: black !important;
+} 
+
+.gray-i, .secondary-i{
+    background-color: var(--gray) !important;
+    color: white !important;
+} 
+
+.gray-i-dark, .dark-i{
+    background-color: var(--gray-dark) !important;
+    color: white !important;
+}
+
+.black-i, .black0-i{
+    background-color: var(--black) !important;
+    color: white !important;
+}
+
+.black1-i{
+    background-color: var(--black1) !important;
+    color: white !important;
+}
+
+.black2-i{
+    background-color: var(--black2) !important;
+    color: white !important;
+}
+
+.black3-i{
+    background-color: var(--black3) !important;
+    color: white !important;
+}
+/* end of overriding colors */
+
 .bg-plain{
     background-color: transparent !important;
 }
@@ -631,6 +708,10 @@ img.bright-100, img.bright-100-h:hover, .img-bright-100 > img, .img-bright-100-h
     right: 0;
 }
 
+.form_modal_box.outmost-modal{
+    z-index: 10;
+}
+
 .form_modal_box form, .form_modal_box .form{
     max-height: 90vh !important;
     overflow: auto;
@@ -918,6 +999,64 @@ img.bright-100, img.bright-100-h:hover, .img-bright-100 > img, .img-bright-100-h
 .color-green, .color-success{
     color: var(--success);
 }
+
+/* font color override */
+.color-light{
+    color: var(--light) !important;
+}
+
+.color-white{
+    color: var(--white) !important;
+}
+
+.color-yellow, .color-warning{
+    color: var(--yellow) !important;
+}
+
+.color-dark, .color-gray-dark{
+    color: var(--dark) !important;
+}
+
+.color-primary, .color-blue{
+    color: var(--primary) !important;
+}
+
+.color-teal{
+    color: var(--teal) !important;
+}
+
+.color-red, .color-danger{
+    color: var(--red) !important;
+}
+
+.color-secondary, .color-gray{
+    color: var(--secondary) !important;
+}
+
+.color-orange{
+    color: var(--orange) !important;
+}
+
+.color-pink{
+    color: var(--pink) !important;
+}
+
+.color-purple{
+    color: var(--purple) !important;
+}
+
+.color-info, .color-cyan{
+    color: var(--info) !important;
+}
+
+.color-indigo{
+    color: var(--indigo) !important;
+}
+
+.color-green, .color-success{
+    color: var(--success) !important;
+}
+/* end of font color overide */
 
 /* widths */
 /*container widths*/

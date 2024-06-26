@@ -357,7 +357,7 @@ function JSONtoFormData(json){
 
     for (const key in json) {
         if (json.hasOwnProperty(key)) {
-        formData.append(key, json[key]);
+            formData.append(key, json[key]);
         }
     }
 
@@ -641,7 +641,7 @@ async function jsonFormSubmit(form_element, submit_element, messageBox = true){
 
     submit_element = submit_element === null || form_element.find("input[name=submit]").length > 0 ? null : submit_element[0];
     const formData = FormDataToJSON(new FormData(form_element[0], submit_element));
-    formData.append("response_type", "json");
+    formData.response_type = "json";
 
     response = null;
     
@@ -848,5 +848,24 @@ function jsonToURL(json_object){
     dataString = dataString.replace(/\//g, "_");
 
     return dataString;
+}
+
+/**
+ * Convert a number to position
+ * @param {*} number The number to be formated
+ * @returns {string}
+ */
+function positionFormat(number) {
+    number = parseInt(number, 10);
+    let suffix = "";
+
+    switch (number % 10) {
+        case 1: suffix = (number > 20 || number < 10) ? "st" : "th"; break;
+        case 2: suffix = (number > 20 || number < 10) ? "nd" : "th"; break;
+        case 3: suffix = (number > 20 || number < 10) ? "rd" : "th"; break;
+        default: suffix = "th";
+    }
+
+    return number + suffix;
 }
   

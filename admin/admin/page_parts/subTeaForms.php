@@ -3,9 +3,17 @@
     $user_school_id = $_GET["school_id"];
 
     include_once("auth.php");
-    $courses = fetchData1("*","courses","school_id=$user_school_id", 0);
-    $teachers = fetchData1("*","teachers","school_id=$user_school_id", 0);
-    $classes = fetchData1("*","program","school_id=$user_school_id", 0);
+    global $courses, $teachers, $classes;
+
+
+    if(!isset($courses))
+        $courses = decimalIndexArray(fetchData1("*","courses","school_id=$user_school_id", 0));
+    
+    if(!isset($teachers))
+        $teachers = decimalIndexArray(fetchData1("*","teachers","school_id=$user_school_id", 0));
+    
+    if(!isset($classes))
+        $classes = decimalIndexArray(fetchData1("*","program","school_id=$user_school_id", 0));
     
     switch($form_type) :
         case "course_add":
@@ -90,7 +98,7 @@
             <div class="close"><span>&cross;</span></div>
         </div>
         <div class="body">
-            <?php if(is_array($classes)): ?>
+            <?php if($classes): ?>
             <div class="joint gap-sm">
                 <label for="teacher_lname" class="flex-column gap-sm">
                     <span class="label_title">Lastname</span>
@@ -124,9 +132,9 @@
                     <span class="label_title">Select the class taught</span>
                     <select name="class_id" id="class_id" multiple>
                         <option value="" disabled selected>Select a class</option>
-                        <?php for($counter=0; $counter < (isset($classes[0]) ? count($classes) : 1); $counter++) : $class = isset($classes[0]) ? $classes[$counter] : $classes; ?>
-                        <option value="<?= $class['program_id'] ?>"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></option>
-                        <?php endfor; ?>
+                        <?php foreach($classes as $counter => $class) : ?>
+                            <option value="<?= $class['program_id'] ?>"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></option>
+                        <?php endforeach; ?>
                     </select>
                     <span class="w-full txt-al-c item-event info">Hold down the control key to select multiple classes</span>
                 </label>
@@ -135,11 +143,11 @@
                     <span class="label_title">Select the subject taught</span>
                     <select name="course_id" id="course_id">
                         <option value="" disabled selected>Select the subject</option>
-                        <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
+                        <?php foreach($courses as $course) : ?>
                         <option value="<?= $course['course_id'] ?>">
                             <?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?>
                         </option>
-                        <?php endfor; ?>
+                        <?php endforeach; ?>
                     </select>
                 </label>
 
@@ -194,7 +202,7 @@
             <div class="close"><span>&cross;</span></div>
         </div>
         <div class="body">
-            <?php if(is_array($classes)) : ?>
+            <?php if($classes) : ?>
             <div class="joint gap-sm">
                 <label for="u_teacher_lname" class="flex-column gap-sm">
                     <span class="label_title">Lastname</span>
@@ -227,9 +235,9 @@
                     <span class="label_title">Select the class taught</span>
                     <select name="class_id" id="u_class_id" multiple>
                         <option value="" disabled selected>Select a class</option>
-                        <?php for($counter=0; $counter < (isset($classes[0]) ? count($classes) : 1); $counter++) : $class = isset($classes[0]) ? $classes[$counter] : $classes; ?>
-                        <option value="<?= $class['program_id'] ?>"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></option>
-                        <?php endfor; ?>
+                        <?php foreach($classes as $counter => $class) : ?>
+                            <option value="<?= $class['program_id'] ?>"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></option>
+                        <?php endforeach; ?>
                     </select>
                     <span class="w-full txt-al-c item-event info">Hold down the control key to select multiple classes</span>
                 </label>
@@ -238,11 +246,11 @@
                     <span class="label_title">Select the subject taught</span>
                     <select name="course_id" id="u_course_id">
                         <option value="" disabled selected>Select the subject</option>
-                        <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
+                        <?php foreach($courses as $counter => $course): ?>
                         <option value="<?= $course['course_id'] ?>">
                             <?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?>
                         </option>
-                        <?php endfor; ?>
+                        <?php endforeach; ?>
                     </select>
                 </label>
 
@@ -302,7 +310,7 @@
             <div class="close"><span>&cross;</span></div>
         </div>
         <div class="body flex flex-column gap-md">
-            <?php if(is_array($courses)) : ?>
+            <?php if($courses) : ?>
             <div class="joint">
                 <label for="program_name" class="flex-column gap-sm">
                     <span class="label_title">Name of Class</span>
@@ -318,14 +326,14 @@
                 <p>Select the subjects taught in this program</p>
             </label>
 
-            <?php if(is_array($courses)) : ?>
+            <?php if($courses) : ?>
             <div class="joint" id="courseIDs">
-            <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
-                <label for="course_id<?= $counter ?>" class="checkbox">
+            <?php foreach($courses as $counter => $course) : ?>
+                <label for="course_id<?= $counter ?>" class="checkbox" title="<?= $course["course_name"] ?>">
                     <input type="checkbox" name="course_id" id="course_id<?= $counter ?>" value="<?= $course['course_id'] ?>">
                     <span class="label_title"><?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?></span>
                 </label>
-                <?php endfor; ?>
+                <?php endforeach; ?>
             </div>
             <?php else: ?>
                 <label for="">
@@ -355,7 +363,7 @@
             <div class="close"><span>&cross;</span></div>
         </div>
         <div class="body flex flex-column gap-md">
-            <?php if(is_array($courses)) : ?>
+            <?php if($courses) : ?>
             <div class="joint">
                 <label for="u_program_name" class="flex-column gap-sm">
                     <span class="label_title">Name of Class</span>
@@ -371,14 +379,14 @@
                 <p>Select the subjects taught in this program</p>
             </label>
 
-            <?php if(is_array($courses)) : ?>
+            <?php if($courses) : ?>
             <div class="joint" id="courseIDs">
-                <?php for($counter=0; $counter < (isset($courses[0]) ? count($courses) : 1); $counter++) : $course = isset($courses[0]) ? $courses[$counter] : $courses; ?>
-                <label for="u_course_id<?= $counter ?>" class="checkbox">
+                <?php foreach($courses as $count => $course) : ?>
+                <label for="u_course_id<?= $counter ?>" class="checkbox" title="<?= $course["course_name"] ?>">
                     <input type="checkbox" name="course_id" id="u_course_id<?= $counter ?>" value="<?= $course['course_id'] ?>">
                     <span class="label_title"><?= empty($course["short_form"]) || is_null($course["short_form"]) ? $course["course_name"] : $course["short_form"] ?></span>
                 </label>
-                <?php endfor; ?>
+                <?php endforeach; ?>
             </div>
             <?php else: ?>
                 <label for="">

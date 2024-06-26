@@ -10,7 +10,7 @@
     }
 
     $courses = fetchData1("*","courses","school_id=$user_school_id", 0);
-    $teachers = fetchData1("*","teachers","school_id=$user_school_id", 0);
+    $teachers = fetchData1("*","teachers","school_id=$user_school_id AND status > 0", 0);
 ?>
 
 <section class="section_container">

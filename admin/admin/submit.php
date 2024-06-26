@@ -1267,10 +1267,15 @@
             $column_name = $_GET["column_name"];
             $db = $_GET["db"] ?? "shsdesk";
 
-            if($db == "shsdesk"){
+            if($db == "shsdesk" || empty($db)){
                 $db = $connect;
             }else{
                 $db = $connect2;
+            }
+
+            if(in_array(strtolower($table_name), ["results"])){
+                $items = explode("-", $item_id);
+                $item_id = $items[0];
             }
 
             if(in_array(strtolower($table_name), ["teachers"])){
@@ -1290,6 +1295,8 @@
                         $db->query("DELETE FROM teacher_login WHERE user_id=$item_id");       //delete login details of teacher
                     }elseif($table_name == "recordapproval"){
                         $db->query("DELETE FROM results WHERE result_token='$item_id'");
+                    }elseif($table_name == "results" && isset($items)){
+                        assignPositions(end($items));
                     }
                     echo "success";
                 }else{
@@ -2031,21 +2038,25 @@
             if(is_null($token_id) || empty($token_id)){
                 $message = "No token id provided";
             }else{
-                $sql = "SELECT r.indexNumber, r.class_mark, r.exam_mark, r.mark, (CONCAT(s.Lastname,' ',s.Othernames)) AS fullname
+                $sql = "SELECT r.indexNumber, r.class_mark, r.exam_mark, r.mark, r.id, r.position, r.academic_year, (CONCAT(s.Lastname,' ',s.Othernames)) AS fullname
                     FROM results r JOIN students_table s ON r.indexNumber = s.indexNumber
-                    WHERE r.result_token='$token_id'";
+                    WHERE r.result_token='$token_id' ORDER BY r.position ASC";
                 $results = $connect2->query($sql);
 
                 if($results->num_rows > 0){
                     $exam_type = fetchData("school_result","admissiondetails","schoolID=$user_school_id")["school_result"];
                     if(empty($exam_type) || is_null($exam_type)){
-                        $message = "Your results type has not been revised. Please revise it to get grade marks";
+                        $message = "Your results type has not been revised or provided. Please revise it to get grade marks";
                     }else{
                         $counter = 0;
+                        $current_academic_year = getAcademicYear(now(), false);
                     
                         while($row = $results->fetch_assoc()){
                             $message[$counter] = $row;
                             $message[$counter]["grade"] = giveGrade($row["mark"],$exam_type);
+                            $message[$counter]["position"] = positionFormat($row["position"]);
+                            $message[$counter]["can_remove"] = $row["academic_year"] == $current_academic_year;
+
                             $counter++;
                         }
                         $error = false;
