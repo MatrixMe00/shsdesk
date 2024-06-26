@@ -95,32 +95,7 @@
     $number_of_columns = count($field_names) - (count($exception_headers) - 1);
 
     //fill current columns with column names
-    $current_col_names = array();
-
-    if($number_of_columns <= count($all_col_names)){
-        for($i=0; $i < $number_of_columns; $i++){
-            $current_col_names[$i] = $all_col_names[$i];
-        }
-    }else{
-        $temp_number_of_columns = $number_of_columns;
-        for($i=0; $i < intval($number_of_columns / count($all_col_names))+1; $i++){
-            if($temp_number_of_columns > count($all_col_names)){
-                $ttl = count($all_col_names);
-                $temp_number_of_columns -= count($all_col_names);
-            }else{
-                $ttl = $number_of_columns % count($all_col_names);
-            }
-
-            for($j=0; $j < $ttl; $j++){
-                if($i > 0){
-                    $current_col_names[$headerCounter] = $all_col_names[$i-1].$all_col_names[$j];
-                }else{
-                    $current_col_names[$headerCounter] = $all_col_names[$j];
-                }
-                $headerCounter++;
-            }
-        }
-    }
+    $current_col_names = createColumnHeader($number_of_columns);
 
     //Provide a title
     if($submit == "enrolment"){

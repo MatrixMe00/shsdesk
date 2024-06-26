@@ -1250,10 +1250,11 @@
      * formats the academic year
      * @param string $academic_year The academic year to format
      * @param bool $spaced If there should be spaces
+     * @return ?string
      */
-    function formatAcademicYear($academic_year, $spaced = true){
+    function formatAcademicYear($academic_year, $spaced = true):?string{
         if(is_null($academic_year) || !str_contains($academic_year, "/")){
-            return "";
+            return null;
         }
         $academic_year = str_replace(" ", "", $academic_year);
 
@@ -1758,4 +1759,106 @@
     function flush_output(){
         ob_flush();
         flush();
+    }
+
+    /**
+     * Get the current date and time
+     * @param string $date Custom datetime or leave at now for current date
+     * @param string $format The format to be used 
+     * @param ?string $timezone The timezone to be used
+     */
+    function now(string $date = "now", string $format = "d-m-Y H:i:s", ?string $timezone = null){
+        // set the timezone
+        $timezone = $timezone ? new DateTimeZone($timezone) : null;
+        $date = new DateTime($date, $timezone);
+        return $date->format($format);
+    }
+
+    /**
+     * Used to check merged cells
+     * @param $sheet The sheet
+     * @param object $cell The cell object
+     */
+    function checkMergedCells($sheet, $cell){
+        foreach ($sheet->getMergeCells() as $row){
+            if($cell->isInRange($row)){
+                //cell is merged
+                return true;
+            }
+        }
+
+        //cell is by default defined as not merged
+        return false;
+    }
+
+    /**
+     * Creates a column header
+     * @param int|string $heading The total headings
+     * @return array
+     */
+    function createColumnHeader(int|string $heading) :array{
+        $all_col_names = range("A","Z");
+        
+        // usually for creation. Gets the highest header
+        if(intval($heading) > 0 && $heading <= count($all_col_names)){
+            $current_col_names = array_splice($all_col_names, 0, $heading);
+        }elseif(($index = array_search($heading, $all_col_names)) !== false){
+            $current_col_names = array_splice($all_col_names, 0, $index+1);
+        }else{
+            $current_col_names = [];
+
+            //count the headers
+            $headerCounter = 0;
+    
+            //set a variable ready for values beyond z, aa - zz
+            $beyond_z = 0;
+
+            if(is_numeric($heading)){
+                $temp_number_of_columns = $heading;
+                for($i=0; $i < intval($heading / count($all_col_names))+1; $i++){
+                    if($temp_number_of_columns > count($all_col_names)){
+                        $ttl = count($all_col_names);
+                        $temp_number_of_columns -= count($all_col_names);
+                    }else{
+                        $ttl = $heading % count($all_col_names);
+                    }
+        
+                    for($j=0; $j < $ttl; $j++){
+                        if($i > 0){
+                            $current_col_names[$headerCounter] = $all_col_names[$i-1].$all_col_names[$j];
+                        }else{
+                            $current_col_names[$headerCounter] = $all_col_names[$j];
+                        }
+                        $headerCounter++;
+                    }
+                }
+            }else{
+                while($all_col_names[$headerCounter%count($all_col_names)]){
+                    if($headerCounter <= count($all_col_names)){
+                        $current_col_names[$headerCounter] = $all_col_names[$headerCounter%count($all_col_names)];
+    
+                        //break here
+                        if($current_col_names[$headerCounter] == $heading){
+                            break;
+                        }
+                    }else{
+                        $current_col_names[$headerCounter] = $all_col_names[$beyond_z].$all_col_names[$headerCounter%count($all_col_names)];
+                        
+                        //increment left label only if the right label is z
+                        if($all_col_names[$headerCounter%count($all_col_names)] == end($all_col_names)){
+                            $beyond_z++;
+                        }
+    
+                        //break here
+                        if($current_col_names[$headerCounter] == $heading){
+                            break;
+                        }
+                    }
+    
+                    $headerCounter++;
+                }
+            }
+        }
+
+        return $current_col_names;
     }

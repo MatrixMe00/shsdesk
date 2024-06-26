@@ -79,47 +79,9 @@
     
                         //last heading
                         $last_heading = ucwords($sheet->getCell($max_column.($row_start-1))->getValue());
-    
-                        //create a general column header
-                        $all_col_names = array("A","B","C","D","E","F",
-                                                "G","H","I","J","K","L",
-                                                "M","N","O","P","Q","R",
-                                                "S","T","U","V","W","X",
-                                                "Y","Z");
                         
                         //create columns for cell number operations
-                        $current_col_names = array();
-    
-                        //count the headers
-                        $headerCounter = 0;
-    
-                        //set a variable ready for values beyond z, aa - zz
-                        $beyond_z = 0;
-    
-                        while($all_col_names[$headerCounter%count($all_col_names)]){
-                            if($headerCounter <= count($all_col_names)){
-                                $current_col_names[$headerCounter] = $all_col_names[$headerCounter%count($all_col_names)];
-    
-                                //break here
-                                if($current_col_names[$headerCounter] == $max_column){
-                                    break;
-                                }
-                            }else{
-                                $current_col_names[$headerCounter] = $all_col_names[$beyond_z].$all_col_names[$headerCounter%count($all_col_names)];
-                                
-                                //increment left label only if the right label is z
-                                if($all_col_names[$headerCounter%count($all_col_names)] == end($all_col_names)){
-                                    $beyond_z++;
-                                }
-    
-                                //break here
-                                if($current_col_names[$headerCounter] == $max_column){
-                                    break;
-                                }
-                            }
-    
-                            $headerCounter++;
-                        }
+                        $current_col_names = createColumnHeader($max_column);
     
                         //function to check for merged cells
                         function checkMergedCells($sheet, $cell){
@@ -137,7 +99,7 @@
                         // display content
                         // for placement provided by system
                         if($max_column == "J" && $last_heading != "Guardian Contact"){
-                            $academic_year = $_REQUEST["academic_year"] ?? getAcademicYear(date("d-m-Y"), false);
+                            $academic_year = $_REQUEST["academic_year"] ?? getAcademicYear(now(), false);
                             $academic_year = formatAcademicYear($academic_year, false);
                             for($row=$row_start; $row <= $max_row; $row++){
                                 //grab columns
