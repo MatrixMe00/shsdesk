@@ -604,10 +604,13 @@
     /**
      * This is a function to format entry of names into proper nouns
      * 
-     * @param string $name The name of the person to be formated
+     * @param ?string $name The name of the person to be formated
      * @return string formated name
      */
-    function formatName($name){
+    function formatName(?string $name) :string{
+        if(is_null($name) || empty($name)){
+            return "Not Defined";
+        }
         //separate them by spaces
         $new_name = explode(" ",$name);
 
