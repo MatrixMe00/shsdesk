@@ -868,4 +868,13 @@ function positionFormat(number) {
 
     return number + suffix;
 }
+
+/**
+ * Returns a promise
+ * @param {*} ms Time in miliseconds
+ * @returns {Promise}
+ */
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
   

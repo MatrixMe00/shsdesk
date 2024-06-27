@@ -1274,8 +1274,10 @@
             }
 
             if(in_array(strtolower($table_name), ["results"])){
-                $items = explode("-", $item_id);
-                $item_id = $items[0];
+                if(str_contains($item_id, "-")){
+                    $items = explode("-", $item_id);
+                    $item_id = $items[0];
+                }
             }
 
             if(in_array(strtolower($table_name), ["teachers"])){
@@ -1560,8 +1562,8 @@
             header("Content-Type: application/json");
             echo json_encode($final);
         }elseif($submit === "result_status_change" || $submit === "result_status_change_ajax"){
-            @$record_status = $_POST["record_status"];
-            @$record_token = $_POST["record_token"];
+            $record_status = $_POST["record_status"] ?? null;
+            $record_token = $_POST["record_token"] ?? null;
             $message = ""; $status = false; $response = array();
             
             if(empty($record_status) || is_null($record_status)){
@@ -1575,19 +1577,15 @@
                     $stmt->bind_param("ss",$record_status, $record_token);
 
                     if($stmt->execute()){
-                        if($record_status === "accepted"){
-                            //mark student records as completed
-                            $sql = "UPDATE results SET accept_status=1 WHERE result_token='$record_token'";
-                            if($connect2->query($sql)){
-                                $status = true;
-                                $message = "success";
-                            }else{
-                                $message = "Students could not be approved successfully";
-                            }
-                        }else{
+                        //mark student records as completed or rejected
+                        $accept_status = intval($record_status === "accepted");
+                        $sql = "UPDATE results SET accept_status=$accept_status WHERE result_token='$record_token'";
+                        if($connect2->query($sql)){
                             $status = true;
                             $message = "success";
-                        }                        
+                        }else{
+                            $message = "Students could not be approved successfully";
+                        }
                     }else{
                         $message = "The selected record could not be updated. Please try again at a later time";
                     }

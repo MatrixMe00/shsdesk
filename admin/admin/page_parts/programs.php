@@ -92,7 +92,7 @@
 
         <!-- multiple action buttons -->
         <div class="multi_actions btn">
-            <button class="multi_button delete" disabled>Delete [<span class="selected_rows">0</span>]</button>
+            <button class="multi_button" data-table="program" data-del-col="program_id" data-event="delete" disabled>Delete [<span class="selected_rows">0</span>]</button>
             <button class="de_select no_disp">Deselect All</button>
         </div>
 
@@ -105,14 +105,14 @@
             </thead>
             <tbody>
                 <?php foreach($programs as $program) : ?>
-                <tr>
+                <tr data-item-id="<?= $program["program_id"] ?>">
                     <td><?= formatItemId($program["program_id"], "PID") ?></td>
                     <td><?= $program["program_name"] ?></td>
                     <td><?= is_null($program["short_form"]) ? "Not Set" : $program["short_form"] ?></td>
                     <td><?= count(explode(" ", $program["course_ids"])) - 1 ?></td>
                     <td>
-                        <span class="item-event edit" data-item-id="<?= $program["program_id"] ?>">Edit</span>
-                        <span class="item-event delete" data-item-id="<?= $program["program_id"] ?>">Delete</span>
+                        <span class="item-event edit">Edit</span>
+                        <span class="item-event delete">Delete</span>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -138,9 +138,9 @@
 
     <!-- multiple action buttons -->
     <div class="multi_actions btn">
-        <button class="multi_button approve" disabled>Approve [<span class="selected_rows">0</span>]</button>
-        <button class="multi_button reject" disabled>Reject [<span class="selected_rows">0</span>]</button>
-        <button class="multi_button delete" disabled>Delete [<span class="selected_rows">0</span>]</button>
+        <button class="multi_button" data-event="approve" disabled>Approve [<span class="selected_rows">0</span>]</button>
+        <button class="multi_button" data-event="reject" disabled>Reject [<span class="selected_rows">0</span>]</button>
+        <button class="multi_button" data-table="recordapproval" data-del-col="result_token" data-event="delete" disabled>Delete [<span class="selected_rows">0</span>]</button>
         <button class="de_select no_disp">Deselect All</button>
     </div>
 
@@ -157,7 +157,7 @@
         </thead>
         <tbody>
         <?php foreach($resultPending as $counter => $result) : ?>
-            <tr>
+            <tr data-item-id="<?= $result["result_token"] ?>">
                 <td><?= ($counter + 1) ?></td>
                 <td class="program_name"><?= empty($result["short_form"]) ? $result["program_name"] : $result["short_form"] ?></td>
                 <td class="exam_year"><?= $result["exam_year"] ?></td>
@@ -167,9 +167,9 @@
                 <td class="academic_year"><?= $result["academic_year"] ?></td>
                 <td class="result_date"><?= date("M d, Y H:i:s", strtotime($result["submission_date"])) ?></td>
                 <td class="options">
-                    <span class="item-event view" data-item-id="<?= $result["result_token"] ?>">View</span>
-                    <span class="item-event approve" data-item-id="<?= $result["result_token"] ?>">Approve</span>
-                    <span class="item-event reject" data-item-id="<?= $result["result_token"] ?>">Reject</span>
+                    <span class="item-event view">View</span>
+                    <span class="item-event approve">Approve</span>
+                    <span class="item-event reject">Reject</span>
                 </td>
             </tr>
             <?php endforeach; ?>
@@ -200,9 +200,9 @@
 
     <!-- multiple action buttons -->
     <div class="multi_actions btn">
-        <button class="multi_button approve" disabled>Approve [<span class="selected_rows">0</span>]</button>
-        <button class="multi_button reject" disabled>Reject [<span class="selected_rows">0</span>]</button>
-        <button class="multi_button delete" disabled>Delete [<span class="selected_rows">0</span>]</button>
+        <button class="multi_button" data-event="approve" disabled>Approve [<span class="selected_rows">0</span>]</button>
+        <button class="multi_button" data-event="reject" disabled>Reject [<span class="selected_rows">0</span>]</button>
+        <button class="multi_button" data-table="recordapproval" data-del-col="result_token" data-event="delete" disabled>Delete [<span class="selected_rows">0</span>]</button>
         <button class="de_select no_disp">Deselect All</button>
     </div>
 
@@ -232,7 +232,7 @@
         </thead>
         <tbody>
             <?php foreach($resultAttended as $counter => $result) : ?>
-            <tr class="<?= $result["result_status"] === "rejected" ? "red-i" : "" ?>">
+            <tr class="<?= $result["result_status"] === "rejected" ? "red-i" : "" ?>" data-item-id="<?= $result["result_token"] ?>">
                 <td><?= ($counter+1) ?></td>
                 <td class="program_name"><?= $result["short_form"] ?? $result["program_name"] ?></td>
                 <td class="exam_year"><?= $result["exam_year"] ?></td>
@@ -242,12 +242,12 @@
                 <td class="academic_year"><?= $result["academic_year"] ?></td>
                 <td class="result_date"><?= date("M d, Y H:i:s", strtotime($result["submission_date"])) ?></td>
                 <td class="options">
-                    <span class="item-event view" data-item-id="<?= $result["result_token"] ?>">View</span>
+                    <span class="item-event view">View</span>
                     <?php if($result["result_status"] === "rejected") : ?>
-                        <span class="item-event approve" data-item-id="<?= $result["result_token"] ?>">Approve</span>
-                        <span class="item-event remove" data-item-id="<?= $result["result_token"] ?>">Delete</span>
+                        <span class="item-event approve">Approve</span>
+                        <span class="item-event remove">Delete</span>
                     <?php else : ?>
-                        <span class="item-event reject" data-item-id="<?= $result["result_token"] ?>">Reject</span>                    
+                        <span class="item-event reject">Reject</span>                    
                     <?php endif; ?>
                 </td>
             </tr>
@@ -279,7 +279,7 @@
 
     <!-- multiple action buttons -->
     <div class="multi_actions btn">
-        <button class="multi_button delete" disabled>Delete [<span class="selected_rows">0</span>]</button>
+        <button class="multi_button" data-table="results" data-del-col="result_token" data-event="delete" disabled>Delete [<span class="selected_rows">0</span>]</button>
         <button class="de_select no_disp">Deselect All</button>
     </div>
     
@@ -296,7 +296,7 @@
         </thead>
         <tbody>
             <?php foreach($brokenResults as $counter => $result) : ?>
-            <tr>
+            <tr data-item-id="<?= $result["result_token"] ?>">
                 <td><?= ($counter+1) ?></td>
                 <td class="program_name"><?= $result["short_form"] ?? $result["program_name"] ?></td>
                 <td class="exam_year"><?= $result["exam_year"] ?></td>
@@ -306,8 +306,8 @@
                 <td class="academic_year"><?= $result["academic_year"] ?></td>
                 <td class="result_date"><?= date("M d, Y H:i:s", strtotime($result["date"])) ?></td>
                 <td class="options">
-                    <span class="item-event view" data-item-id="<?= $result["result_token"] ?>">View</span>
-                    <span class="item-event remove" data-item-id="<?= $result["result_token"] ?>">Delete</span>                    
+                    <span class="item-event view">View</span>
+                    <span class="item-event remove">Delete</span>                    
                 </td>
             </tr>
             <?php endforeach; ?>
