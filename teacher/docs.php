@@ -19,7 +19,9 @@
     }
 
     //load spreadsheet class
-    use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
     //load IOFactory class
     use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -109,7 +111,8 @@
                                 // insert a formula into the total cell
                                 $c_cell = $current_col_names[2].$rowCounter;
                                 $e_cell = $current_col_names[3].$rowCounter;
-                                $value = "=$c_cell+$e_cell";
+                                $value = "=IF(OR($c_cell > 30, $c_cell < 0), \"class mark is invalid\", IF(OR($e_cell > 70, $e_cell < 0), \"exam mark is invalid\", $c_cell + $e_cell))";
+                                break;
                             default:
                                 $value = 0;
                         }
