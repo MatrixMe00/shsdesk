@@ -121,7 +121,7 @@
         if(is_null($academic_year)){
             $message = "No Year value provided";
         }else{
-            $sql = "SELECT e.indexNumber, e.lastname, e.othername, e.enrolCode, e.aggregateScore, e.program, 
+            $sql = "SELECT e.indexNumber, e.lastname, e.othername, c.boardingStatus, e.enrolCode, e.aggregateScore, e.program, 
                         e.gender, e.jhsName, e.jhsTown, e.jhsDistrict, e.birthdate, e.birthPlace, e.fatherName,
                         e.fatherOccupation, e.motherName, e.motherOccupation, e.guardianName, e.residentAddress,
                         e.postalAddress, e.primaryPhone, e.secondaryPhone, e.interest, e.award, e.position, e.witnessName,
