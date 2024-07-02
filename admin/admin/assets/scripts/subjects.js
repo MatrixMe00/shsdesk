@@ -261,6 +261,7 @@ $(".item-event").click(function(){
         $("#delete_form input[name=item_id]").val(item_id)
         $("#delete_form input[name=table_name]").val(table)
         $("#delete_form input[name=column_name]").val(table_col)
+        $("#delete_form input[name=db]").val("shsdesk2")
 
         $(this).parents("tr").addClass("remove_marker");
     }else if($(this).hasClass("remove_td")){
