@@ -69,5 +69,5 @@
         </form>
     </div>
 
-    <script src="<?= "$url/assets/scripts/functions.min.js" ?>"></script>
+    <script src="<?= "$url/assets/scripts/functions.min.js?v=".time() ?>"></script>
     <script src="<?php echo "$url/assets/scripts/updateStat.min.js?v=".time() ?>"></script>

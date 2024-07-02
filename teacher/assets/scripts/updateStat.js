@@ -1,32 +1,27 @@
-$("form").submit(function(e){
+$("form").submit(async function(e){
     e.preventDefault();
 
-    const result = jsonFormSubmit($(this), $("form[name=update_new_user] button[name=submit]"), false);
-    
-    result.then((response)=>{
-        if(response["status"] == true){
-            $("#pMessage").html("Update Successful. Preparing dashboard...").addClass("success").removeClass("light");
+    const result = await jsonFormSubmit($(this), $(this).find("button[name=submit]"), false);
 
-            //refresh in 3seconds
-            setTimeout(function(){
-                $("#pMessage").html("Welcome " + $("#new_username").val());
-            },3000);
+    if(result.status == true){
+        $("#pMessage").html("Update Successful. Preparing dashboard...").addClass("success").removeClass("light");
 
-            setTimeout(function(){
-                location.href = location.href;
-            },4000);
-        }else{
-            html = $("#pMessage").html();
-            message = "";
-            
-            $("#pMessage").html(response["message"]).addClass("danger").removeClass("light");
+        //refresh in 3seconds
+        setTimeout(function(){
+            $("#pMessage").html("Welcome " + $("#new_username").val());
+        },3000);
 
-            setTimeout(function(){
-                $("#pMessage").html(html).removeClass("danger").addClass("light");
-            },5000);
-        }
+        setTimeout(function(){
+            location.href = location.href;
+        },4000);
+    }else{
+        html = $("#pMessage").html();
+        message = "";
+        
+        $("#pMessage").html(result.message).addClass("danger").removeClass("light");
 
-    }).catch((response)=>{
-        alert_box(response.responseText,"red",10)
-    })
+        setTimeout(function(){
+            $("#pMessage").html(html).removeClass("danger").addClass("light");
+        },5000);
+    }
 })

@@ -428,8 +428,8 @@ async function fileUpload(form_element, submit_element, messageBox = true){
 
     submit_element = submit_element === null || form_element.find("input[name=submit]").length > 0 ? null : submit_element[0];
     const formData = FormDataToJSON(new FormData(form_element[0], submit_element));
-    formData.append("response_type", "json");
- 
+    formData.response_type = "json";
+
     response = null;
     
     await $.ajax({
@@ -444,13 +444,13 @@ async function fileUpload(form_element, submit_element, messageBox = true){
                 message = loadDisplay({size: "small"});
                 type = "load";
                 time = 0;
- 
+
                 messageBoxTimeout(form_element.prop("name"), message, type, time);
             }
         },
         success: function(text){
             if(messageBox){
-                 $("form[name=" + form_element.prop("name") + "] .message_box").addClass("no_disp");
+                $("form[name=" + form_element.prop("name") + "] .message_box").addClass("no_disp");
             }
             text = JSON.parse(JSON.stringify(text));
             
@@ -467,11 +467,11 @@ async function fileUpload(form_element, submit_element, messageBox = true){
             // message = "Please check your internet connection and try again";
             message = JSON.stringify(e)
             type = "error";
- 
+
             if(textStatus === "timeout"){
-                 message = "Connection was timed out due to a slow network. Please try again later"
+                message = "Connection was timed out due to a slow network. Please try again later"
             }
- 
+
             if(messageBox){
                 messageBoxTimeout(form_element.prop("name"), message, type, 0)
             }else{
@@ -479,9 +479,9 @@ async function fileUpload(form_element, submit_element, messageBox = true){
             }
         }
     })
- 
+
     return response;
- }
+}
 
 /**
 * This is a custom override function to show a custom alert display onscreen
