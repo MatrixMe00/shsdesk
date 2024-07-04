@@ -367,4 +367,4 @@
     </div>
 </div>
 
-<script src="<?= "$url/admin/admin/assets/scripts/programs.js?v=".time() ?>"></script>
+<script src="<?= "$url/admin/admin/assets/scripts/programs.min.js?v=".time() ?>"></script>

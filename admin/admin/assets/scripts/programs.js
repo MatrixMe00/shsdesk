@@ -1,7 +1,23 @@
-current_section = $("#lhs .item.active[data-tab]").attr("data-tab");
+var current_section = $("#lhs .item.active[data-tab]").attr("data-tab");
 
 $(document).ready(function(){
-    ajaxCall_ = null
+    ajaxCall_ = null;
+
+    //direct displays to the control buttons
+    $(".control_btn").click(function(){
+        const section = $(this).attr("data-section");
+
+        $(".section_box:not(.no_disp)").addClass("no_disp");
+        $("#lhs .item.active").attr("data-tab", section);
+        $("#" + $(this).attr("data-section")).removeClass("no_disp");
+
+        $(".control_btn:not(.plain)").addClass("plain");
+        $(this).removeClass("plain");
+
+        if($(this).attr("data-refresh") && $(this).attr("data-refresh") === "true"){
+            $("#lhs.menu .item.active").click();
+        }
+    })
 
     $(".control_btn[data-section=" + current_section + "]").click()
 
@@ -44,22 +60,6 @@ $(document).ready(function(){
                 }, 3000)
             }         
         })
-    })
-
-    //direct displays to the control buttons
-    $(".control_btn").click(function(){
-        const section = $(this).attr("data-section")
-
-        $(".section_box:not(.no_disp)").addClass("no_disp")
-        $("#lhs .item.active").attr("data-tab", section)
-        $("#" + $(this).attr("data-section")).removeClass("no_disp")
-
-        $(".control_btn:not(.plain)").addClass("plain")
-        $(this).removeClass("plain")
-
-        if($(this).attr("data-refresh") && $(this).attr("data-refresh") === "true"){
-            $("#lhs.menu .item.active").click()
-        }
     })
 
     $(".item-event").click(function(){
