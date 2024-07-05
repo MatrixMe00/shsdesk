@@ -1,7 +1,7 @@
 <?php require_once "compSession.php"; $_SESSION["active-page"] = "report" ?>
 <?php 
-$code = fetchData1("accessToken","accesstable","indexNumber='{$student['indexNumber']}' AND status=1 ORDER BY expiryDate DESC"); 
-if($code !== "empty"): ?>
+$code = fetchData1("accessToken","accesstable","indexNumber='{$student['indexNumber']}' AND status=1 ORDER BY expiryDate DESC"); ?>
+<?php if($code !== "empty"): ?>
 <section class="flex d-section flex-wrap gap-sm p-lg card-section">
     <div class="card v-card gap-lg indigo sm-rnd flex-wrap">
         <span class="self-align-start">Number of Subjects</span>
@@ -40,9 +40,17 @@ if($code !== "empty"): ?>
     <div class="form flex-all-center flex-eq wmax-md sm-auto flex-wrap gap-sm">
         <label class="p-med" for="report_year">
             <select class="w-full" name="report_year" id="report_year">
-                <?php for($i=intval($student["studentYear"]); $i > 0; $i--) : ?>
-                <option value="<?= $i ?>">Year <?= $i ?></option>
-                <?php endfor; ?>
+                <?php
+                    $years = decimalIndexArray(fetchData1("DISTINCT exam_year, program_id", "results", "indexNumber='{$student['indexNumber']}'")); 
+
+                    if(!$years){
+                        $years = decimalIndexArray(["exam_year" => $student["studentYear"], "program_id" => $student["program_id"]]);
+                    }
+
+                    foreach($years as $year) : 
+                ?>
+                <option value="<?= $year["exam_year"] ?>" data-program-id="<?= $year["program_id"] ?>">Year <?= $year["exam_year"] ?></option>
+                <?php endforeach; ?>
             </select>
         </label>
         <label class="p-med" for="report_term">
@@ -171,14 +179,15 @@ if($code !== "empty"): ?>
             const report_year = $("select#report_year").val()
             const report_term = $("select#report_term").val()
             const indexNumber = $("input#indexNumber").val()
+            const program_id = $("select option:selected").attr("data-program-id");
             const canvasImage = $("canvas#stats")[0].toDataURL()
             
             if(canvasImage.length <= 22){
                 alert_box("Chart could not be drawn")
                 return
             }
-            dataString = "submit=generateReport&year=" + report_year + "&semester=" + report_term
-            location.href="./components/generateReport.php?" + dataString
+            dataString = "submit=generateReport&year=" + report_year + "&semester=" + report_term + "&program_id=" + program_id;
+            location.href="./pages/generateReport.php?" + dataString
         })
 
         $("select[name=report_year], select[name=report_term]").change(function(){

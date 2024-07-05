@@ -64,21 +64,24 @@
                 //semester results table filters
                 $semester = $_REQUEST["semester"];
                 $exam_year = $_REQUEST["year"];
+                $program_id = $_REQUEST["program_id"];
 
                 //school details
-                $school_result_type = fetchData("school_result","admissiondetails","schoolID={$student['school_id']}")["school_result"];
-                $schoolLogo = "<img src=\"$mainRoot".fetchData("logoPath","schools","id={$student['school_id']}")["logoPath"]."\" alt=\"logo\" width=\"30mm\" height=\"30mm\">";
-                $head_master = fetchData("headName","admissiondetails","schoolID={$student['school_id']}")["headName"];
+                $school = getSchoolDetail($student["school_id"], true);
+                $admission_details = fetchData(["school_result", "headName"], "admissiondetails", "schoolID={$school['id']}");
+
+                $school_result_type = $admission_details["school_result"];
+                $schoolLogo = "<img src=\"$mainRoot".$school["logoPath"]."\" alt=\"logo\" width=\"30mm\" height=\"30mm\">";
+                $head_master = $admission_details["headName"];
                 
-                $schoolFullData = getSchoolDetail($student["school_id"], true);
-                $schoolName = $schoolFullData["schoolName"];
-                $postal_address = $schoolFullData["postalAddress"];
+                $schoolName = $school["schoolName"];
+                $postal_address = $school["postalAddress"];
                 //end of school details
 
                 //all student details
                 $student_name = $student["Lastname"]." ".$student["Othernames"];
                 
-                $class_name = fetchData1("program_name, short_form","program", "program_id={$student['program_id']}");
+                $class_name = fetchData1("program_name, short_form","program", "program_id=$program_id");
                 // $chartImg = "<img src=\"".$_REQUEST['canvas']."\" height=\"80mm\ width=\"80mm\">";
                 if(is_array($class_name)){
                     $class_name = empty($class_name["short_form"]) ? $class_name["program_name"] : $class_name["short_form"];
@@ -87,16 +90,13 @@
                 }
 
                 $student_program = $student["programme"];
-                $academicYear = getAcademicYear(fetchData1("date","results","indexNumber='{$student['indexNumber']}' AND exam_year=$exam_year ORDER BY date DESC")["date"]);
-
-                //average of student marks
-                $average = fetchData1("AVG(mark) as Mark","results","indexNumber='".$student["indexNumber"]."' AND exam_year=$exam_year AND semester=$semester AND accept_status=1")["Mark"];
-                $average = number_format($average, 1);
-                $avg_grade = giveGrade($average, $school_result_type);
+                $class_result_data = fetchData1("COUNT(DISTINCT indexNumber) as total, academic_year", "results","program_id=$program_id AND exam_year=$exam_year AND semester=$semester");
+                
+                $academicYear = $class_result_data["academic_year"];
 
                 //calculating class position
                 $class_position = getStudentPosition($student["indexNumber"], $exam_year, $semester);
-                $total_position = fetchData1("COUNT(DISTINCT indexNumber) as total", "results","program_id={$student['program_id']} AND exam_year=$exam_year AND semester=$semester")["total"];
+                $total_position = fetchData1("COUNT(DISTINCT indexNumber) as total", "results","program_id=$program_id AND exam_year=$exam_year AND semester=$semester")["total"];
 
                 $attendance = fetchData1("student_attendance, attendance_total", "attendance", "indexNumber={$student['indexNumber']} AND student_year=$exam_year AND semester=$semester");
                 if(is_array($attendance)){
@@ -108,38 +108,43 @@
                 //end of student details
 
                 //results table
-                $table = "
-                <table id=\"results_table\">
-                    <thead>
-                        <tr>
-                            <td>Subject</td>
-                            <td>Class Score</td>
-                            <td>Exam Score</td>
-                            <td>Total</td>
-                            <td>Grade</td>
-                            <td>Position</td>
-                        </tr>
-                    </thead>
-                    <tbody>";
-                
-                $sql = "SELECT DISTINCT c.course_name, r.course_id, r.class_mark, r.exam_mark, r.mark
+                $sql = "SELECT DISTINCT c.course_name, r.course_id, r.class_mark, r.exam_mark, r.mark, r.position
                     FROM results r JOIN courses c ON r.course_id=c.course_id
-                    WHERE r.indexNumber='{$student['indexNumber']}' AND r.exam_year=$exam_year AND r.semester=$semester";
-                $results = $connect2->query($sql);
+                    WHERE r.indexNumber='{$student['indexNumber']}' AND r.program_id=$program_id AND r.exam_year=$exam_year AND r.semester=$semester";
+                $results = decimalIndexArray($connect2->query($sql)->fetch_all(MYSQLI_ASSOC));
 
-                if($results->num_rows > 0){
+                //average of student marks
+                $average = 0;
+
+                $table = "
+                <table id=\"results_table\">\n
+                    <thead>\n
+                        <tr>
+                            <td>Subject</td>\n
+                            <td>Class Score</td>\n
+                            <td>Exam Score</td>\n
+                            <td>Total</td>\n
+                            <td>Grade</td>\n
+                            <td>Position</td>\n
+                        </tr>\n
+                    </thead>\n
+                    <tbody>\n";
+
+                if($results){
                     $total_class = 0;
                     $total_exam = 0;
 
-                    while($row = $results->fetch_assoc()){
+                    $average = array_sum(array_column($results, "mark")) / count($results);
+
+                    foreach($results as $row){
                         $table .= "
-                        <tr>
-                            <td>{$row['course_name']}</td>
-                            <td>".number_format($row['class_mark'], 1)."</td>
-                            <td>".number_format($row['exam_mark'], 1)."</td>
-                            <td>".number_format($row['mark'], 1)."</td>
-                            <td>".giveGrade($row['mark'], $school_result_type)."</td>
-                            <td>".getSubjectPosition($student["indexNumber"], $row["course_id"], $exam_year, $semester)."</td>
+                        <tr>\n
+                            <td>{$row['course_name']}</td>\n
+                            <td>".number_format($row['class_mark'], 1)."</td>\n
+                            <td>".number_format($row['exam_mark'], 1)."</td>\n
+                            <td>".number_format($row['mark'], 1)."</td>\n
+                            <td>".giveGrade($row['mark'], $school_result_type)."</td>\n
+                            <td>".positionFormat($row["position"])."</td>\n
                         </tr>
                         ";
                         $total_class += $row["class_mark"];
@@ -148,19 +153,22 @@
                     $total_class = number_format($total_class, 1);
                     $total_exam = number_format($total_exam, 1);
                     $table .= "
-                    <tr class=\"total\">
-                        <td>Total</td>
-                        <td>$total_class</td>
-                        <td>$total_exam</td>
-                        <td>".number_format($total_class + $total_exam, 1)."</td>
-                        <td colspan=\"2\"></td>
-                    </tr>
-                    <tr><td colspan=\"6\" style=\"border: unset\"></rd></tr>
-                    <tr><td colspan=\"6\" style=\"text-align: center\">$attendance</rd></tr>
+                    <tr class=\"total\">\n
+                        <td>Total</td>\n
+                        <td>$total_class</td>\n
+                        <td>$total_exam</td>\n
+                        <td>".number_format($total_class + $total_exam, 1)."</td>\n
+                        <td colspan=\"2\"></td>\n
+                    </tr>\n
+                    <tr><td colspan=\"6\" style=\"border: unset\"></rd></tr>\n
+                    <tr><td colspan=\"6\" style=\"text-align: center\">$attendance</rd></tr>\n
                     ";
                 }else{
-                    $table .= "<tr colspan=\"6\">No results were found</tr>";
+                    $table .= "<tr colspan=\"6\">No results were found</tr>\n";
                 }
+
+                $average = number_format($average, 1);
+                $avg_grade = giveGrade($average, $school_result_type);
 
 
                 $table .= "</tbody>
@@ -258,8 +266,6 @@
                 header("Content-Type: application/json");
                 echo json_encode($response);
             }
-
-            
         }else{
             echo "Submit value not found";
         }

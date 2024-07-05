@@ -1337,11 +1337,7 @@
      */
     function decimalIndexArray($array){
         if(is_array($array) && !empty($array)){
-            if(array_key_exists(0,$array)){
-                return $array;
-            }else{
-                return [$array];
-            }
+            return array_key_exists(0,$array) ? $array : [$array];
         }else{
             return false;
         }
