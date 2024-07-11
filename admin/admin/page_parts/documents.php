@@ -166,6 +166,7 @@
                 </div>
             </label>
         </div>
+        <button type="submit" name="submit" value="upload_document" class="no_disp"></button>
     </form>
 </section>
 
@@ -228,7 +229,7 @@
                         title = "Attendance List"
                         break;
                 }
-                location.href = "./admin/excelFile.php?" + jsonToURL($form_data);
+                location.href = "./admin/excelFile.php?" + jsonToURL(form_data);
             }else if($(this).val() == "upload_document"){
                 $("form[name=upload_form]").submit()
             }
@@ -261,7 +262,7 @@
         $("form[name=upload_form]").submit(async function(e){
             e.preventDefault();
 
-            response = await fileUpload($(this), $("button.upload_btn"), false)
+            response = await fileUpload($(this), $(this).find("button[name=submit]"), false);
             if(response == true){
                 alert_box("upload finish")
             }else{
