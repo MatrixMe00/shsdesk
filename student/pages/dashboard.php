@@ -60,9 +60,17 @@
                 <div class="form flex-all-center flex-eq wmax-md sm-auto flex-wrap gap-sm" id="searchStats">
                     <label for="stat_year" class="p-med">
                         <select name="stat_year" id="stat_year">
-                            <?php for($i = intval($student["studentYear"]); $i > 0 ; $i--) : ?>
-                            <option value="<?= $i ?>">Year <?= $i ?></option>
-                            <?php endfor; ?>
+                            <?php
+                                $years = decimalIndexArray(fetchData1("DISTINCT exam_year, program_id", "results", "indexNumber='{$student['indexNumber']}'", limit: 0)); 
+
+                                if(!$years){
+                                    $years = decimalIndexArray(["exam_year" => $student["studentYear"], "program_id" => $student["program_id"]]);
+                                }
+
+                                foreach($years as $year) : 
+                            ?>
+                            <option value="<?= $year["exam_year"] ?>" data-program-id="<?= $year["program_id"] ?>">Year <?= $year["exam_year"] ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </label>
                     <label for="stat_term" class="p-med">
@@ -155,15 +163,16 @@
 
             $("button#stat_search").click(function(){
                 if(new_search_data){
-                    const year = $("select[name=stat_year]").val()
-                    const term = $("select[name=stat_term]").val()
-                    const indexNumber = $("#search_student_id").val()
+                    const year = $("select[name=stat_year]").val();
+                    const term = $("select[name=stat_term]").val();
+                    const indexNumber = $("#search_student_id").val();
+                    const program_id = $("select[name=stat_year] option:selected").attr("data-program-id");
 
                     $.ajax({
                         url: "submit.php",
                         data: {
                             report_year: year, report_term: term, submit: $(this).attr("value"),
-                            index_number: indexNumber, result_distinct: true
+                            index_number: indexNumber, result_distinct: true, program_id: program_id
                         },
                         dataType: "json",
                         type: "get",

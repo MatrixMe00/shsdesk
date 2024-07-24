@@ -39,7 +39,7 @@
         <label class="p-med" for="report_year">
             <select class="w-full" name="report_year" id="report_year">
                 <?php
-                    $years = decimalIndexArray(fetchData1("DISTINCT exam_year, program_id", "results", "indexNumber='{$student['indexNumber']}'")); 
+                    $years = decimalIndexArray(fetchData1("DISTINCT exam_year, program_id", "results", "indexNumber='{$student['indexNumber']}'", limit: 0)); 
 
                     if(!$years){
                         $years = decimalIndexArray(["exam_year" => $student["studentYear"], "program_id" => $student["program_id"]]);

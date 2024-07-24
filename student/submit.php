@@ -7,6 +7,7 @@
         $report_year = $_GET["report_year"];
         $report_term = $_GET["report_term"];
         $index_number = $_GET["index_number"];
+        $program_id = $_GET["program_id"] ?? $student["program_id"];
         $distinct = $_GET["result_distinct"] ?? false;
 
         $message = array();
@@ -31,7 +32,7 @@
             }
 
             $sql .= "FROM results r JOIN courses c ON r.course_id=c.course_id
-                WHERE r.indexNumber='$index_number' AND r.exam_year=$report_year AND r.semester=$report_term AND r.accept_status=1
+                WHERE r.indexNumber='$index_number' AND r.exam_year=$report_year AND r.semester=$report_term AND r.accept_status=1 AND r.program_id=$program_id
                 ORDER BY r.exam_type ASC";
             // echo $sql; return;
             $query = $connect2->query($sql);
