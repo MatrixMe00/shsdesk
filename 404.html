@@ -63,12 +63,13 @@
         </main>
 
         <footer>
-            <span>&copy; 2023 SHSDesk</span>
+            <span>&copy; <span id="year"></span> SHSDesk</span>
         </footer>
     </div>
 
     <script>
-        document.getElementById("path").append(window.location.href)
+        document.getElementById("path").append(window.location.href);
+        document.getElementById("year").innerHTML = new Date().getFullYear();
     </script>
 </body>
 </html>
