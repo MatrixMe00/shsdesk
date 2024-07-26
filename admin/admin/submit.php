@@ -2353,6 +2353,55 @@
             $message = $response ? "$connect->affected_rows records have been cleaned" : "Error: $connect->error";
 
             echo json_encode(["status" => $response, "message" => $message]);
+        }elseif($submit == "process_code"){
+            $index_number = $_POST["index_number"] ?? null;
+            $transaction_id = $_POST["transaction_id"] ?? null;
+            $purchaseDate = $_POST["purchase_date"] ?? now();
+            $school_id = $_POST["school_id"] ?? null;
+
+            if(empty($index_number) || is_null($index_number)){
+                $message = "Index Number is required";
+            }elseif(empty($transaction_id) || is_null($transaction_id)){
+                $message = "Transaction ID is required";
+            }elseif(empty($school_id) || is_null($school_id)){
+                $message = "School not defined. Refresh page to retry";
+            }else{
+                $valid_index = is_array(fetchData1("*", "students_table", "indexNumber='$index_number'"));
+
+                if($valid_index){
+                    try {
+                        $active_index = is_array(fetchData1("*", "accesstable", ["indexNumber='$index_number'", "status = TRUE"]));
+
+                        if($active_index){
+                            $message = "An active code for this account is already in use";
+                        }else{
+                            do{
+                                $accessToken = generateToken(rand(1,9), $school_id);
+                            }while(is_array(fetchData1("accessToken","accesstable","accessToken='$accessToken'")));
+        
+                            $expiryDate = date("Y-m-d 23:59:59",strtotime($purchaseDate." +4 months +1 day"));
+        
+                            $sql = "INSERT INTO accesstable(indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
+                            $stmt = $connect2->prepare($sql);
+                            $stmt->bind_param("ssisss", $index_number, $accessToken, $school_id, $purchaseDate, $expiryDate, $transaction_id);
+        
+                            if($stmt->execute()){
+                                $status = true;
+                                $message = "success";
+                            }else{
+                                $status = false;
+                                $message = "Student token was not captured appropriately. Try again";
+                            }
+                        }
+                    } catch (\Throwable $th) {
+                        $message = $th->getMessage();
+                    }
+                }else{
+                    $message = "Index Number '$index_number' is invalid";
+                }
+            }
+
+            echo $message;
         }else{
             echo "Procedure for submit value '$submit' was not found";
         }

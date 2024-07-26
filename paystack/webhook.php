@@ -76,14 +76,14 @@
 
             if(!is_array($exist)){
                 try{
-                    $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email) VALUES (?,?,?,?,?,?)";
+                    $index_number = $metadata[3]["value"];
+
+                    $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email, index_number) VALUES (?,?,?,?,?,?,?)";
                     $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("siddss", $reference, $school_id, $amount, $deduction, $customer_number, $customer_email);
+                    $stmt->bind_param("siddss", $reference, $school_id, $amount, $deduction, $customer_number, $customer_email, $index_number);
                     
                     // pass payment to database
                     $stmt->execute();
-
-                    $index_number = $metadata[3]["value"];
 
                     do{
                         $accessToken = generateToken(rand(1,9), $school_id);
@@ -107,7 +107,13 @@
                         $message = "Student token was not captured appropriately. Token ID is <b>$accessToken</b>";
                     }
 
-                    include "../sms/sms.php";
+                    // pass into sms
+                    $_REQUEST = [
+                        "submit" => "sendTransaction",
+                        "phone" => $customer_number,
+                        "message" => "Access code purchase was successful. Your transaction reference is '$transaction_id'. In case of any challenge, send this code to the school admin"
+                    ];
+                    include "./sms/sms.php";
                     
                     file_put_contents("./paystack/paystack_check.log", $reference." confirmed entry for connect2 with message => $message" . PHP_EOL, FILE_APPEND);
                 }catch(Throwable $th){

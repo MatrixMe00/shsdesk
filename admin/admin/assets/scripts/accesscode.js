@@ -336,4 +336,24 @@ $(document).ready(function(){
             }
         }
     })
+
+    // process request
+    $(".process_request").click(function(){
+        const parent = $(this).parents(".card").first();
+        const transaction_id = parent.find(".transaction_id").text();
+        const index_number = $(this).attr("data-index");
+        const purchase_date = $(this).attr("data-date");
+        const modal = $("#modal");
+        const form = modal.find("form");
+        const school_input = form.find("input[name=school_id]");
+
+        // set the index number and form data
+        modal.find("#request_index_span").html(index_number != "" ? " For " + index_number : "");
+        form.find("input[name=transaction_id]").val(transaction_id);
+        form.find("input[name=index_number]").val(index_number);
+        form.find("input[name=purchase_date]").val(purchase_date);
+        school_input.val(school_input.attr("data-init"));
+
+        $("#modal").removeClass("no_disp");
+    })
 })

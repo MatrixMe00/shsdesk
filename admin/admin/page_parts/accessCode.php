@@ -11,6 +11,7 @@
         <?php if($developmentServer): ?><button class="plain-r primary" data-main-section="enable-disable">Change Settings</button><?php endif; ?>
         <button class="plain-r primary" data-main-section="set-up">Set Up Access Code Price</button>
         <button class="plain-r primary" data-main-section="bulk-purchase">Purchase Bulk Access Code</button>
+        <button class="plain-r primary" data-main-section="process-access">Process Access Code</button>
     </div>
 </section>
 
@@ -25,6 +26,86 @@
         When specifying individual students, separate the names with a comma and a space. <br> Eg. Student1, Student2, etc
     </p>
 </section>
+
+<section class="sp-xlg-tp btn_section process-access">
+    <?php
+        $not_served = decimalIndexArray(fetchData1(
+            ["t.transactionID", "t.email", "t.phoneNumber", "t.index_number", "t.created_at", "a.indexNumber"],
+            [
+                "join" => "transaction accesstable",
+                "alias" => "t a",
+                "on" => "transactionID transactionID"
+            ],
+            ["t.school_id = $user_school_id", "a.indexNumber IS NULL"], 0, "AND", "LEFT"
+        ));
+
+        if($not_served):
+    ?>
+    <p class="txt-al-c">Transactions shown below do not have an access token assigned them</p>
+    <?php else: ?>
+    <p class="txt-al-c">No transactions to process</p>
+    <?php endif; ?>
+</section>
+
+<?php if($not_served): ?>
+<section class="process-access btn_section white p-section sp-xlg-tp">
+    <div class="body flex flex-center-content flex-wrap gap-md sm-lg-t">
+        <?php foreach($not_served as $transaction): ?>
+        <div class="card light v-card sm-rnd m-med-tp sp-lg">
+            <div class="self-align-start flex gap-sm flex-column">
+                <h2 class="transaction_id"><?= $transaction["transactionID"] ?></h2>
+                <h4><?= $transaction["phoneNumber"]." | ".(!empty($transaction["index_number"]) ? $transaction["index_number"] : "No Index no.") ?></h4>
+                <p class="txt-fs"><?= $transaction["email"] ?></p>
+            </div>
+            <div class="foot btn self-align-end">
+                <button class="light plain-r sp-lg process_request" data-index="<?= $transaction["index_number"] ?? "" ?>" data-date="<?= $transaction["created_at"] ?>">
+                    Process Request
+                </button>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+</section>
+
+<div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <form action="<?php echo $url?>/admin/admin/submit.php" method="POST" class="fixed" name="processAccessCode">
+        <div class="head">
+            <h2>Process Request <span id="request_index_span"></span></h2>
+        </div>
+        <div class="body">
+            <div class="message_box success no_disp">
+                <span class="message"></span>
+                <div class="close"><span>&cross;</span></div>
+            </div>
+            <div class="joint">
+                <input type="hidden" name="school_id" data-init="<?= $user_school_id ?>">
+                <input type="hidden" name="purchase_date">
+                <label for="transaction_id">
+                    <span class="label_image"><img src="<?= $url ?>/assets/images/icons/cash-outline.svg" alt=""></span>
+                    <input type="text" readonly name="transaction_id" id="transaction_id">
+                </label>
+                <label for="index_number">
+                    <span class="label_image">
+                        <img src="<?php echo $url?>/assets/images/icons/index.png" alt="index">
+                    </span>
+                    <input type="text" name="index_number" id="index_number"
+                    autocomplete="off" placeholder="Index Number">
+                </label>
+            </div>
+        </div>
+        <div class="foot">
+            <div class="flex flex-wrap gap-sm flex-eq wmax-xs sm-auto">
+                <label for="submit" class="btn w-full sm-unset sp-unset">
+                    <button type="submit" name="submit" class="primary w-fluid sp-med xs-rnd" value="process_code">Save</button>
+                </label>
+                <label for="cancel" class="btn w-full sm-unset sp-unset">
+                    <button type="reset" name="cancel" class="red w-fluid sp-med xs-rnd" onclick="$('#modal').addClass('no_disp')">Cancel</button>
+                </label>
+            </div>
+        </div>
+    </form>
+</div>
+<?php endif; ?>
 
 <section class="sp-xlg-tp btn_section bulk-purchase">
     <h3 class="txt-al-c sm-lg-b">Select which category of students you are buying for</h3>
