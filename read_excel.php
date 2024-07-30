@@ -82,19 +82,7 @@
                         
                         //create columns for cell number operations
                         $current_col_names = createColumnHeader($max_column);
-    
-                        //function to check for merged cells
-                        function checkMergedCells($sheet, $cell){
-                            foreach ($sheet->getMergeCells() as $row){
-                                if($cell->isInRange($row)){
-                                    //cell is merged
-                                    return true;
-                                }
-                            }
-    
-                            //cell is by default defined as not merged
-                            return false;
-                        }
+                        $headerCounter = count($current_col_names);
                         
                         // display content
                         // for placement provided by system
@@ -268,13 +256,17 @@
                                 }             
                             }
                         }elseif($max_column == "J" && $last_heading == "Guardian Contact"){
-                            $message = ""; $insert_count = 0;
+                            $message = ""; $insert_count = 0; $houses = [];
+                            $house_data = fetchData("id, title", "houses", "schoolID=$user_school_id", 0);
+                            $houses = $house_data == "empty" ? [] : array_change_key_case(pluck($house_data, "title", "id"));
+                            $program_data = fetchData1("program_id, program_name", "program", "school_id=$user_school_id", 0);
+                            $programs = $program_data == "empty" ? [] : array_change_key_case(pluck($program_data, "program_name", "program_id"));
+                            
                             for($row=$row_start; $row <= $max_row; $row++){
                                 $skip_row = 0;
                                 //grab columns
-                                for($col = 0; $col <= $headerCounter; $col++){
+                                for($col = 0; $col < $headerCounter; $col++){
                                     $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
-                                    
                                     switch ($col) {
                                         case 0:
                                             $skip_row = empty($cellValue) ? $skip_row + 1 : 0;
@@ -299,12 +291,7 @@
                                             break;
                                         case 5:
                                             $house = strtolower($cellValue);
-                                            $houseID = fetchData("id","houses","LOWER(title)='$house' AND schoolID=$user_school_id AND (gender='$Gender' OR gender='Both')");
-                                            if(is_array($houseID)){
-                                                $houseID = $houseID["id"];
-                                            }else{
-                                                $houseID = 0;
-                                            }
+                                            $houseID = $houses[$house] ?? 0;
                                             break;
                                         case 6:
                                             $boardingStatus = ucfirst($cellValue);
@@ -318,8 +305,7 @@
                                             break;
                                         case 8:
                                             $program = strtolower($cellValue);
-                                            $program_id = fetchData1("program_id","program","school_id=$user_school_id AND (program_name='$program' OR short_form='$program')");
-                                            $program_id = is_array($program_id) ? $program_id["program_id"] : 0;
+                                            $program_id = $programs[$program] ?? 0;
                                             break;
                                         case 9:
                                             if(empty($cellValue) || ctype_digit($cellValue) === false){
@@ -380,11 +366,14 @@
                                             }
                                             ++$insert_count;
                                         }
+                                    }elseif($row == $max_row){
+                                        $message = "success";
                                     }
                                 } catch (\Throwable $th) {
                                     $message = $th->getMessage();
                                 }
                             }
+
                             echo $message;
                         }else{
                             for($row=$row_start; $row <= $max_row; $row++){

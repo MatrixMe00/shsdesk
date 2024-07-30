@@ -129,19 +129,6 @@ if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
                         $headerCounter++;
                     }
 
-                    //function to check for merged cells
-                    function checkMergedCells($sheet, $cell){
-                        foreach ($sheet->getMergeCells() as $row){
-                            if($cell->isInRange($row)){
-                                //cell is merged
-                                return "true";
-                            }
-                        }
-
-                        //cell is by default defined as not merged
-                        return "false";
-                    }
-
                     if($document_type == "attendance_list"){
                         for($row=$row_start; $row <= $max_row; $row++){
                             $skip_row = 0;

@@ -95,7 +95,7 @@
                 $academicYear = $class_result_data["academic_year"];
 
                 //calculating class position
-                $class_position = getStudentPosition($student["indexNumber"], $exam_year, $semester);
+                $class_position = getStudentPosition($student["indexNumber"], $exam_year, $semester, $program_id);
                 $total_position = fetchData1("COUNT(DISTINCT indexNumber) as total", "results","program_id=$program_id AND exam_year=$exam_year AND semester=$semester")["total"];
 
                 $attendance = fetchData1("student_attendance, attendance_total", "attendance", "indexNumber={$student['indexNumber']} AND student_year=$exam_year AND semester=$semester");
