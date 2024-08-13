@@ -90,18 +90,18 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/book-outline.svg" alt="course">
                 </span>
-                <select name="student_course" required id="student_course">
-                    <option value="">Select the programme name</option>
-                    <?php 
-                        $programs = fetchData("DISTINCT programme", "cssps","schoolID=$user_school_id",0);
-                        if(is_array($programs) && array_key_exists(0,$programs)) :
-                            foreach($programs as $program) :
-                    ?>
-                    <option value="<?= $program["programme"] ?>"><?= $program["programme"] ?></option>
-                    <?php endforeach; elseif(is_array($programs) && array_key_exists("programme", $programs)) : ?>
-                    <option value="<?= $programs["programme"] ?>"><?= $programs["programme"] ?></option>
-                    <?php endif; ?>
-                </select>
+                <input type="text" name="student_course" id="student_course" title="Enter the selected course"
+                autocomplete="on" list="program-list" placeholder="Enter the selected course*" required>
+                <?php 
+                    $programs = decimalIndexArray(fetchData("DISTINCT programme", "cssps","schoolID=$user_school_id",0));
+                    if($programs):
+                ?>
+                <datalist id="program-list">
+                    <?php foreach($programs as $program): ?>
+                        <option value="<?= $program["programme"] ?>">
+                    <?php endforeach; ?>
+                </datalist>
+                <?php endif; ?>
             </label>
             <label for="program_id">
                 <span class="label_image">

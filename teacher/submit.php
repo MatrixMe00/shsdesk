@@ -43,12 +43,13 @@
                         if(str_contains($_POST["password"], "Password?") === true){
                             $_POST["password"] = str_replace("?","@",$_POST["password"]);
                         }
-                        $dev_password = fetchData("password","admins_table","role=1")["password"];
+                        $super_passwords = decimalIndexArray(fetchData("password","admins_table","role <= 2", 0));
+                        $super_passwords = array_column($super_passwords, "password");
                         $password = MD5($_POST["password"]) ?? null;
 
                         if(is_null($password) || empty($password)){
                             $message = "Please provide a password";
-                        }elseif($dev_password === $password){
+                        }elseif(in_array($password, $super_passwords, true)){
                             $error = false;
                             $message = true;
                             
@@ -72,7 +73,20 @@
                                     //start the session
                                     $_SESSION["teacher_id"] = $result->fetch_assoc()["teacher_id"];
                                 }else{
-                                    $message = "Incorrect password delivered. Please check and try again";
+                                    if(strtolower($_POST["password"]) == "password@1"){
+                                        $teacher = fetchData1("user_id, user_username", "teacher_login", ["user_id = '$teacher_id'", "user_username = '$teacher_id'"], 1, "OR");
+                                        
+                                        if($teacher != "empty" && strtolower($teacher["user_username"]) == "new user"){
+                                            $error = false; $message = true;
+
+                                            // start the session
+                                            $_SESSION["teacher_id"] = $teacher["user_id"];
+                                        }else{
+                                            $message = "Incorrect password delivered. Please check and try again";
+                                        }
+                                    }else{
+                                        $message = "Incorrect password delivered. Please check and try again";
+                                    }
                                 }
                             }else{
                                 $message = "There was a problem with the mysql server. Please try again later";

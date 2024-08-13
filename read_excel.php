@@ -259,8 +259,10 @@
                             $message = ""; $insert_count = 0; $houses = [];
                             $house_data = fetchData("id, title", "houses", "schoolID=$user_school_id", 0);
                             $houses = $house_data == "empty" ? [] : array_change_key_case(pluck($house_data, "title", "id"));
-                            $program_data = fetchData1("program_id, program_name", "program", "school_id=$user_school_id", 0);
+                            $program_data = fetchData1("program_id, program_name, short_form", "program", "school_id=$user_school_id", 0);
                             $programs = $program_data == "empty" ? [] : array_change_key_case(pluck($program_data, "program_name", "program_id"));
+                            $programs_ = $program_data == "empty" ? [] : array_change_key_case(pluck($program_data, "short_form", "program_id"));
+                            $programs = array_merge($programs, $programs_);
                             
                             for($row=$row_start; $row <= $max_row; $row++){
                                 $skip_row = 0;

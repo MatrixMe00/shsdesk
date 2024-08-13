@@ -92,7 +92,7 @@
                     <img src="<?php echo $url?>/assets/images/icons/book-outline.svg" alt="course">
                 </span>
                 <input type="text" name="student_course" id="student_course" title="Enter the selected course"
-                autocomplete="off" placeholder="Enter the selected course*" required>
+                autocomplete="off" list="program-list" placeholder="Enter the selected course*" required>
             </label>
             <?php if($admin_mode == "records") : ?>
             <label for="program_id">

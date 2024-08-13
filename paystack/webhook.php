@@ -80,7 +80,7 @@
 
                     $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email, index_number) VALUES (?,?,?,?,?,?,?)";
                     $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("siddss", $reference, $school_id, $amount, $deduction, $customer_number, $customer_email, $index_number);
+                    $stmt->bind_param("siddsss", $reference, $school_id, $amount, $deduction, $customer_number, $customer_email, $index_number);
                     
                     // pass payment to database
                     $stmt->execute();
@@ -107,7 +107,6 @@
                         $message = "Student token was not captured appropriately. Token ID is <b>$accessToken</b>";
                     }
 
-                    // pass into sms
                     $_REQUEST = [
                         "submit" => "sendTransaction",
                         "phone" => $customer_number,
