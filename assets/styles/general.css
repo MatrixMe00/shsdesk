@@ -97,6 +97,13 @@ table tbody tr.empty td{
     text-align: center;
 }
 
+table .transform-v th, table .transform-v td, .transform-vs{
+    transform: rotate(-60deg);
+    height: 6em;
+    transform-origin: center;
+    width: 3em;
+}
+
 td.pages > div{
     padding: 0.2rem 0.6em;
 }

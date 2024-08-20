@@ -2402,6 +2402,93 @@
             }
 
             echo $message;
+        }elseif($submit == "search_class_result" || $submit == "search_subject_result"){
+            $program_id = $_GET["program_id"] ?? null;
+            $academic_year = $_GET["academic_year"] ?? null;
+            $year_level = $_GET["year_level"] ?? null;
+            $semester = $_GET["semester"] ?? null;
+            $course_id = $_GET["course_id"] ?? null;
+            $search_by_subject = $submit == "search_subject_result";
+
+            if(is_null($program_id) || empty($program_id)){
+                $message = "Class was not specified";
+            }elseif(is_null($academic_year) || empty($academic_year)){
+                $message = "Academic year was not specified";
+            }elseif(!is_numeric($program_id)){
+                $message = "Invalid class specified";
+            }elseif(empty($year_level) || is_null($year_level)){
+                $message = "Form level is required";
+            }elseif(!is_numeric($year_level)){
+                $message = "Invalid form level specified";
+            }elseif(empty($semester) || is_null($semester)){
+                $message = "Semester was not specified";
+            }elseif(!is_numeric($semester)){
+                $message = "Invalid semester value provided";
+            }elseif($search_by_subject && (is_null($course_id) || empty($course_id))){
+                $message = "Subject has not been selected";
+            }elseif($search_by_subject && !is_numeric($course_id)){
+                $message = "Invalid subject value provided";
+            }else{
+                $sql_c = "SELECT r.indexNumber, c.course_name, c.short_form, SUM(r.mark) as total_mark
+                    FROM results r JOIN courses c ON c.course_id = r.course_id
+                    WHERE r.program_id = $program_id AND r.exam_year = $year_level AND r.semester = $semester AND r.academic_year = '$academic_year'
+                    AND accept_status = TRUE
+                    GROUP BY r.indexNumber, c.course_name, c.short_form
+                ";
+                $sql_s = "SELECT r.indexNumber, c.course_name, r.class_mark, r.exam_mark, r.mark as total, CONCAT(t.lname, ' ', t.oname) as teacher_name
+                    FROM results r JOIN courses c ON c.course_id = r.course_id
+                    JOIN teachers t ON t.teacher_id = r.teacher_id
+                    WHERE r.program_id = $program_id AND r.exam_year = $year_level AND r.semester = $semester AND r.academic_year = '$academic_year'
+                    AND r.course_id = $course_id AND accept_status = TRUE
+                ";
+
+                $results = $connect2->query($search_by_subject ? $sql_s : $sql_c)->fetch_all(MYSQLI_ASSOC);
+
+                if($results){
+                    $status = true;
+                    $thead = [];
+
+                    if(!$search_by_subject){
+                        foreach($results as $result){
+                            $course_name = str_replace(" ", "_", strtolower($result["short_form"] ?? $result["course_name"]));
+                            $message[$result["indexNumber"]][$course_name] = $result["total_mark"];
+                            $message[$result["indexNumber"]]["total"] = floatval($message[$result["indexNumber"]]["total"] ?? 0) + $result["total_mark"];
+
+                            if(!in_array($course_name, $thead))
+                                $thead[] = $course_name;
+                        }
+                    }else{
+                        $thead = ["class_score", "exam_score"];
+                        foreach($results as $result){
+                            $message[$result["indexNumber"]]["class_score"] = $result["class_mark"];
+                            $message[$result["indexNumber"]]["exam_score"] = $result["exam_mark"];
+                            $message[$result["indexNumber"]]["total"] = $result["total"];
+                        }
+                    }
+
+                    // arrange in descending order
+                    uasort($message, function($a, $b) {
+                        return $b['total'] <=> $a['total'];
+                    });
+
+                    $thead = array_unique($thead);
+                    $thead[] = "total";
+
+                    $message = ["thead" => $thead, "data" => $message];
+
+                    if($search_by_subject){
+                        $message["course_name"] = $results[0]["course_name"];
+                        $message["teacher_name"] = $results[0]["teacher_name"];
+                    }
+                }else{
+                    $message = "No results for this search";
+                }
+            }
+
+            header("Content-type: application/json");
+            echo json_encode([
+                "status" => $status ?? false, "data" => $message
+            ]);
         }else{
             echo "Procedure for submit value '$submit' was not found";
         }

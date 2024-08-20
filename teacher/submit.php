@@ -233,26 +233,30 @@
                 }else{
                     $teacher_id = $teacher["teacher_id"];
 
-                    $sql = "SELECT s.indexNumber, CONCAT(s.Lastname, ' ', s.Othernames) AS fullname, s.gender, ROUND(r.mark, 1)
-                        FROM results r JOIN students_table s ON r.indexNumber = s.indexNumber
-                        WHERE r.teacher_id=$teacher_id AND s.studentYear=$program_year AND s.program_id=$program_id AND r.course_id=$course_id
-                            AND r.semester=$semester AND YEAR(date) = $year_period
-                        GROUP BY s.indexNumber
-                    ";
-                    $query = $connect2->query($sql);
+                    try {
+                        $sql = "SELECT s.indexNumber, CONCAT(s.Lastname, ' ', s.Othernames) AS fullname, s.gender, ROUND(r.mark, 1)
+                            FROM results r JOIN students_table s ON r.indexNumber = s.indexNumber
+                            WHERE r.teacher_id=$teacher_id AND s.studentYear=$program_year AND s.program_id=$program_id AND r.course_id=$course_id
+                                AND r.semester=$semester AND YEAR(date) = $year_period
+                            GROUP BY s.indexNumber, r.mark
+                        ";
+                        $query = $connect2->query($sql);
 
-                    if($query->num_rows > 0){
-                        $message = $query->fetch_all(MYSQLI_ASSOC);
+                        if($query->num_rows > 0){
+                            $message = $query->fetch_all(MYSQLI_ASSOC);
 
-                        if(array_key_exists("indexNumber", $message)){
-                            $message_n = $message;
-                            $message = null;
-                            $message[0] = $message_n;
+                            if(array_key_exists("indexNumber", $message)){
+                                $message_n = $message;
+                                $message = null;
+                                $message[0] = $message_n;
+                            }
+                            $status = true;
+                        }else{
+                            $message = "No student data to be seen here. Please have a record approved to continue";
                         }
-                        $status = true;
-                    }else{
-                        $message = "No student data to be seen here. Please have a record approved to continue";
-                    }
+                    } catch (\Throwable $th) {
+                        $message = throwableMessage($th);
+                    }                    
                 }
 
                 $response = [
