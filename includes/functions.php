@@ -1,6 +1,6 @@
 <?php
-    //for database purposes
-    require("database_functions.php");
+    // for database purposes
+    require "database_functions.php";
 
     /**
      * The purpose of this function is to retrieve user details from database
@@ -459,6 +459,79 @@
     }
 
     /**
+     * This function is used to generate an sql query
+     * 
+     * @param string|array $columns This receives the roles to fetch
+     * @param string|array $table Receives table name
+     * @param string|array $where Receives a where clause command
+     * @param int $limit Number of rows to deliver. Default is 1. Use 0 to fetch everything
+     * @param array|string $where_binds This is used to bind where conditions
+     * @param string $join_type This is the type of join to be used in a table
+     * @param string|array $group_by This is used in case there is a group function 
+     * @param string|array $order_by order results by some columns
+     * @param bool $asc order is in ascending order by default
+     * 
+     * @return string
+     */
+    function create_query_string(string|array $columns, string|array $table, 
+        string|array $where = "", int $limit = 1, string|array $where_binds = "",
+        string $join_type = "", string|array $group_by = "", string|array $order_by = "", bool $asc = true
+    ):string{
+        $columns = stringifyColumn($columns);
+        $table = stringifyTable($table, $join_type);
+        $where = stringifyWhere($where, $where_binds);
+
+        $sql = "SELECT $columns FROM $table";
+        $sql .= !empty($where) ? " WHERE $where" : "";
+
+        //automatically detect that know that all data is been fetched if where is empty
+        if(empty($where)){
+            $limit = 0;
+        }else{
+            if(!empty($group_by)){
+                $sql .=" GROUP BY ";
+                $sql .= is_array($group_by) ? implode(", ", $group_by) : $group_by;
+            }
+        }
+
+        if(!empty($order_by)){
+            $sql .= " ORDER BY ";
+            $sql .= is_array($order_by) ? implode(", ", $order_by) : $order_by;
+
+            if($asc){
+                $sql .= " ASC";
+            }else{
+                $sql .= " DESC";
+            }
+        }
+
+        //add the limit if the limit is set
+        $sql .= $limit > 0 ? " LIMIT $limit" : "";
+
+        return $sql;
+    }
+
+    /**
+     * This function queries the database, usually for select statements
+     * 
+     * @param mysqli $adapter The sql connection adapter
+     * @param string $sql The sql string
+     * @param mixed $error_value Optional value to be displayed when results are false. Default is empty
+     * @return mixed
+     */
+    function fetch_query(mysqli $adapter, string $sql, $error_value = "empty"){
+        $query = $adapter->query($sql);
+
+        if($query->num_rows > 0){
+            $result = $query->num_rows == 1 ? $query->fetch_assoc() : $query->fetch_all(MYSQLI_ASSOC);
+        }else{
+            $result = $error_value;
+        }
+
+        return $result;
+    }
+
+    /**
      * Function to directly query database
      * 
      * @param string|array $columns This receives the roles to fetch
@@ -480,49 +553,13 @@
         global $connect;
 
         try{
-            $columns = stringifyColumn($columns);
-            $table = stringifyTable($table, $join_type);
-            $where = stringifyWhere($where, $where_binds);
+            // generate an sql
+            $sql = create_query_string(
+                $columns, $table, $where, $limit, $where_binds, 
+                $join_type, $group_by, $order_by, $asc
+            );
 
-            $sql = "SELECT $columns FROM $table";
-            $sql .= !empty($where) ? " WHERE $where" : "";
-
-            //automatically detect that know that all data is been fetched if where is empty
-            if(empty($where)){
-                $limit = 0;
-            }else{
-                if(!empty($group_by)){
-                    $sql .=" GROUP BY ";
-                    $sql .= is_array($group_by) ? implode(", ", $group_by) : $group_by;
-                }
-            }
-
-            if(!empty($order_by)){
-                $sql .= " ORDER BY ";
-                $sql .= is_array($order_by) ? implode(", ", $order_by) : $order_by;
-
-                if($asc){
-                    $sql .= " ASC";
-                }else{
-                    $sql .= " DESC";
-                }
-            }
-
-            //add the limit if the limit is set
-            $sql .= $limit > 0 ? " LIMIT $limit" : "";
-
-            $query = $connect->query($sql);
-
-            if($query->num_rows > 0){
-                if($query->num_rows == 1){
-                    $result = $query->fetch_assoc();
-                }else{
-                    $result = $query->fetch_all(MYSQLI_ASSOC);
-                }
-                    
-            }else{
-                $result = "empty";
-            }
+            $result = fetch_query($connect, $sql);
         }catch(Throwable $th){
             $result = throwableMessage($th);
         }
@@ -551,49 +588,13 @@
         global $connect2;
 
         try{
-            $columns = stringifyColumn($columns);
-            $table = stringifyTable($table, $join_type);
-            $where = stringifyWhere($where, $where_binds);
+            // generate an sql
+            $sql = create_query_string(
+                $columns, $table, $where, $limit, $where_binds, 
+                $join_type, $group_by, $order_by, $asc
+            );
 
-            $sql = "SELECT $columns FROM $table";
-            $sql .= !empty($where) ? " WHERE $where" : "";
-
-            //automatically detect that know that all data is been fetched if where is empty
-            if(empty($where)){
-                $limit = 0;
-            }else{
-                if(!empty($group_by)){
-                    $sql .=" GROUP BY ";
-                    $sql .= is_array($group_by) ? implode(", ", $group_by) : $group_by;
-                }
-            }
-
-            if(!empty($order_by)){
-                $sql .= " ORDER BY ";
-                $sql .= is_array($order_by) ? implode(", ", $order_by) : $order_by;
-
-                if($asc){
-                    $sql .= " ASC";
-                }else{
-                    $sql .= " DESC";
-                }
-            }
-
-            //add the limit if the limit is set
-            $sql .= $limit > 0 ? " LIMIT $limit" : "";
-
-            $query = $connect2->query($sql);
-
-            if($query->num_rows > 0){
-                if($query->num_rows == 1){
-                    $result = $query->fetch_assoc();
-                }else{
-                    $result = $query->fetch_all(MYSQLI_ASSOC);
-                }
-                    
-            }else{
-                $result = "empty";
-            }
+            $result = fetch_query($connect2, $sql);
         }catch(Throwable $th){
             $result = throwableMessage($th);
         }
@@ -1142,11 +1143,12 @@
      * @param string $index_number This takes the index number which has its position to be found
      * @param int $year This takes the year been searched for
      * @param int $semester This takes the semester to which the exams was held
+     * @param int $program_id The program id
      * @param string $exam_type This is an optional parameter which checks the type of exam
      * 
      * @return string returns the position in a string form
      */
-    function getStudentPosition($index_number, $year, $semester, $exam_type="exam"):string{
+    function getStudentPosition($index_number, $year, $semester, $program_id, $exam_type="exam"):string{
         global $connect2;
 
         //make sure student exists
@@ -1157,7 +1159,7 @@
             $sql = "SELECT SUM(mark) as totalMark, indexNumber 
                 FROM results 
                 WHERE school_id={$studentData['school_id']} AND exam_year=$year AND semester=$semester 
-                    AND exam_type='$exam_type' AND accept_status=1 AND program_id='{$studentData['program_id']}'
+                    AND exam_type='$exam_type' AND accept_status=1 AND program_id=$program_id
                 GROUP BY indexNumber
                 ORDER BY totalMark DESC";
             $results = $connect2->query($sql);
@@ -1792,72 +1794,41 @@
 
     /**
      * Creates a column header
-     * @param int|string $heading The total headings
+     * @param int|string $maxCols The total headings
      * @return array
      */
-    function createColumnHeader(int|string $heading) :array{
-        $all_col_names = range("A","Z");
-        
-        // usually for creation. Gets the highest header
-        if(intval($heading) > 0 && $heading <= count($all_col_names)){
-            $current_col_names = array_splice($all_col_names, 0, $heading);
-        }elseif(($index = array_search($heading, $all_col_names)) !== false){
-            $current_col_names = array_splice($all_col_names, 0, $index+1);
-        }else{
-            $current_col_names = [];
+    function createColumnHeader($maxCols) {
+        // If the parameter is a column letter, convert it to a number
+        if (!is_numeric($maxCols)) {
+            $maxCols = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($maxCols);
+        }
+    
+        $columns = [];
+        for ($i = 1; $i <= $maxCols; $i++) {
+            $columns[] = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+        }
+        return $columns;
+    }
 
-            //count the headers
-            $headerCounter = 0;
-    
-            //set a variable ready for values beyond z, aa - zz
-            $beyond_z = 0;
-
-            if(is_numeric($heading)){
-                $temp_number_of_columns = $heading;
-                for($i=0; $i < intval($heading / count($all_col_names))+1; $i++){
-                    if($temp_number_of_columns > count($all_col_names)){
-                        $ttl = count($all_col_names);
-                        $temp_number_of_columns -= count($all_col_names);
-                    }else{
-                        $ttl = $heading % count($all_col_names);
-                    }
-        
-                    for($j=0; $j < $ttl; $j++){
-                        if($i > 0){
-                            $current_col_names[$headerCounter] = $all_col_names[$i-1].$all_col_names[$j];
-                        }else{
-                            $current_col_names[$headerCounter] = $all_col_names[$j];
-                        }
-                        $headerCounter++;
-                    }
-                }
-            }else{
-                while($all_col_names[$headerCounter%count($all_col_names)]){
-                    if($headerCounter <= count($all_col_names)){
-                        $current_col_names[$headerCounter] = $all_col_names[$headerCounter%count($all_col_names)];
-    
-                        //break here
-                        if($current_col_names[$headerCounter] == $heading){
-                            break;
-                        }
-                    }else{
-                        $current_col_names[$headerCounter] = $all_col_names[$beyond_z].$all_col_names[$headerCounter%count($all_col_names)];
-                        
-                        //increment left label only if the right label is z
-                        if($all_col_names[$headerCounter%count($all_col_names)] == end($all_col_names)){
-                            $beyond_z++;
-                        }
-    
-                        //break here
-                        if($current_col_names[$headerCounter] == $heading){
-                            break;
-                        }
-                    }
-    
-                    $headerCounter++;
-                }
-            }
+    /**
+     * This is used to pluck a column and change it into an array of values
+     * 
+     * @param ?array $array The array to be formated
+     * @param string $key The column in the array to serve as the key
+     * @param string $value The column in the array to serve as the value
+     * @return ?array
+     */
+    function pluck(?array $array, string $key, string $value) :?array{
+        if(is_null($array)){
+            return null;
         }
 
-        return $current_col_names;
+        $array = decimalIndexArray($array);
+        $response = [];
+
+        foreach($array as $data){
+            $response[trim($data[$key])] = $data[$value];
+        }
+
+        return $response;
     }
