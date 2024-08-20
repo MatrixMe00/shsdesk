@@ -2,6 +2,9 @@
     // for database purposes
     require "database_functions.php";
 
+    // add pagination functions
+    include "pagination.php"; 
+
     /**
      * The purpose of this function is to retrieve user details from database
      * 
