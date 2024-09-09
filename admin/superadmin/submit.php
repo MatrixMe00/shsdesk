@@ -475,7 +475,7 @@
                     $message = "The bank account number for the admin is of invalid standard length";
                 }elseif(strtolower($admin_account_type) == "mobile" && strlen($admin_number) != 10){
                     $message = "Please provide a valid 10 digit phone number for the admin";
-                }elseif(strtolower($admin_account_type) == "mobile" && ctype_digit($admin_number) === false){
+                }elseif(strtolower($admin_account_type) == "mobile" && is_numeric($admin_number) === false){
                     $message = "Phone number for the admin must be only numbers";
                 }elseif(strtolower($admin_account_type) == "mobile" && array_search(strtolower($admin_bank),$telecoms) === false){
                     $message = "You have provided an invalid account vendor for the admin";
@@ -491,7 +491,7 @@
                     $message = "The bank account number for the head is of invalid standard length";
                 }elseif(strtolower($head_account_type) == "mobile" && strlen($head_number) != 10){
                     $message = "Please provide a valid 10 digit phone number for the head";
-                }elseif(strtolower($head_account_type) == "mobile" && ctype_digit($head_number) === false){
+                }elseif(strtolower($head_account_type) == "mobile" && is_numeric($head_number) === false){
                     $message = "Phone number for the head must be only numbers";
                 }elseif(strtolower($head_account_type) == "mobile" && array_search(strtolower($head_bank),$telecoms) === false){
                     $message = "You have provided an invalid account vendor for the head";
@@ -602,7 +602,7 @@
                     if(strlen($recipient) != 10){
                         $response = "'$recipient' is not up to 10 digits. Please check and try again";
                         break;
-                    }elseif(!ctype_digit($recipient)){
+                    }elseif(!is_numeric($recipient)){
                         $response = "'$recipient' has an invalid character. Please check and try again";
                         break;
                     }elseif(array_search(substr($recipient, 0, 3), $phoneNumbers) === false){

@@ -39,7 +39,7 @@ $domain_name = $_SERVER['HTTP_HOST'];
 $url = $protocol.$domain_name;
 
 //start a session
-if(!session_start())
+if(session_status() !== PHP_SESSION_ACTIVE)
     session_start();
 
 date_default_timezone_set("Africa/Accra");

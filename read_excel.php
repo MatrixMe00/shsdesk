@@ -276,15 +276,15 @@
                                             break;
                                         case 1:
                                             $skip_row = empty($cellValue) ? $skip_row + 1 : $skip_row - 1;
-                                            $Lastname = ucfirst($cellValue);
+                                            $Lastname = ucfirst(strtolower($cellValue));
                                             break;
                                         case 2:
-                                            $Othernames = ucwords($cellValue);
+                                            $Othernames = ucwords(strtolower($cellValue));
                                             break;
                                         case 3:
-                                            $Gender = ucfirst($cellValue);
+                                            $Gender = ucfirst(strtolower($cellValue));
                                             if($Gender != "Male" && $Gender != "Female"){
-                                                echo "Gender for <b>$indexNumber</b> was invalid. Process has been terminated";
+                                                echo "Gender for <b>$Lastname $Othernames</b> was invalid. Process has been terminated";
                                                 exit(1);
                                             }
                                             break;
@@ -296,7 +296,7 @@
                                             $houseID = $houses[$house] ?? 0;
                                             break;
                                         case 6:
-                                            $boardingStatus = ucfirst($cellValue);
+                                            $boardingStatus = ucfirst(strtolower($cellValue));
                                             if($boardingStatus !== "Boarder" && $boardingStatus !== "Day"){
                                                 echo "Boarding Status for <b>$indexNumber</b> is invalid. Process execution has been terminated";
                                                 exit(1);
@@ -310,7 +310,7 @@
                                             $program_id = $programs[$program] ?? 0;
                                             break;
                                         case 9:
-                                            if(empty($cellValue) || ctype_digit($cellValue) === false){
+                                            if(empty($cellValue) || !is_numeric($cellValue)){
                                                 $guardianContact = null;
                                             }else{
                                                 $guardianContact = remakeNumber($cellValue, false, false);

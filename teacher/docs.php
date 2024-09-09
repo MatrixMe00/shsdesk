@@ -55,7 +55,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
                 $students = decimalIndexArray(fetchData1(
                     "indexNumber, CONCAT(Lastname,' ',Othernames) as fullname",
                     "students_table",
-                    "program_id=$program_id AND studentYear=$class_year",0
+                    "program_id=$program_id AND studentYear=$class_year",0, order_by: ["Lastname", "Othernames", "indexNumber"]
                 ));
                 
                 //reject if

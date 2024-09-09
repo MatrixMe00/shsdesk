@@ -271,7 +271,7 @@
                         if(!is_null($guardianContact) && !empty($guardianContact)){
                             if(strlen($guardianContact) != 10){
                                 $message = "Guardian's phone number is too short";
-                            }elseif(ctype_digit($guardianContact) === false){
+                            }elseif(is_numeric($guardianContact) === false){
                                 $message = "Your phone number should only contain numbers";
                             }elseif(array_search(substr($guardianContact,0,3), $phoneNumbers) === false){
                                 $message = "Phone number has an invalid operator";
@@ -2091,7 +2091,7 @@
                     $message = "The bank account number for the admin is of invalid standard length";
                 }elseif(strtolower($admin_account_type) == "mobile" && strlen($admin_number) != 10){
                     $message = "Please provide a valid 10 digit phone number for the admin";
-                }elseif(strtolower($admin_account_type) == "mobile" && ctype_digit($admin_number) === false){
+                }elseif(strtolower($admin_account_type) == "mobile" && is_numeric($admin_number) === false){
                     $message = "Phone number for the admin must be only numbers";
                 }elseif(strtolower($admin_account_type) == "mobile" && array_search(strtolower($admin_bank),$telecoms) === false){
                     $message = "You have provided an invalid account vendor for the admin";
@@ -2107,7 +2107,7 @@
                     $message = "The bank account number for the head is of invalid standard length";
                 }elseif(strtolower($head_account_type) == "mobile" && strlen($head_number) != 10){
                     $message = "Please provide a valid 10 digit phone number for the head";
-                }elseif(strtolower($head_account_type) == "mobile" && ctype_digit($head_number) === false){
+                }elseif(strtolower($head_account_type) == "mobile" && is_numeric($head_number) === false){
                     $message = "Phone number for the head must be only numbers";
                 }elseif(strtolower($head_account_type) == "mobile" && array_search(strtolower($head_bank),$telecoms) === false){
                     $message = "You have provided an invalid account vendor for the head";
@@ -2142,9 +2142,9 @@
             $current = $_POST["current"] ?? null;
             $change = $_POST["change"] ?? null;
 
-            if(is_null($current) || ctype_digit($current) === false){
+            if(is_null($current) || is_numeric($current) === false){
                 $message = "Current value not idenfied";
-            }elseif(is_null($change) || ctype_digit($change) === false){
+            }elseif(is_null($change) || is_numeric($change) === false){
                 $message = "Setting chosen is neither enable or disable";
             }elseif($current === $change){
                 $message = "Load: No change was detected";

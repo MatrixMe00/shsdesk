@@ -277,7 +277,7 @@
                 }elseif(empty($year) || is_null($year)){
                     $message = "Please select the current year of the program";
                 }else{
-                    $message = fetchData1("indexNumber, Lastname, Othernames", "students_table","program_id=$class AND studentYear=$year",0);
+                    $message = fetchData1("indexNumber, Lastname, Othernames", "students_table","program_id=$class AND studentYear=$year",0, order_by: ["Lastname", "Othernames", "indexNumber"]);
                     if(!is_array($message)){
                         $message = "No results to be displayed for this search. Data not yet uploaded";
                     }else{

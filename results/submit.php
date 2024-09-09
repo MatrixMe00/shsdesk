@@ -245,7 +245,7 @@ if(isset($_REQUEST["submit"])){
     
         if(is_null($school_id) || empty($school_id)){
             $message = "School required was not selected. Contact the admin for help";
-        }elseif(ctype_digit($school_id) == false){
+        }elseif(is_numeric($school_id) == false){
             $message = "School selected has an invalid index. Please contact admin for help";
         }else{
             $message = getSchoolSplit($school_id, APIKEY::MANAGEMENT);

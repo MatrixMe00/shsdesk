@@ -40,7 +40,7 @@
 <body>
     <div id="container">
 <?php
-    include_once("../includes/session.php");
+    include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
 
     if(isset($_POST['submit']) && $_POST['submit'] == "register_school"){
         //take details
