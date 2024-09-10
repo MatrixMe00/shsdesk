@@ -205,6 +205,7 @@ $("#submit_result").click(async function(){
         const c_id = $("select[name=subject]").val();
         const p_id = $("select[name=class]").attr("data-selected-class");
         const e_year = $("select[name=year]").attr("data-selected-year");
+        const academic_year = $("#academic_year").val();
 
         // create the result head first
         await create_result_head(
@@ -227,7 +228,7 @@ $("#submit_result").click(async function(){
                         submit: "submit_result", student_index: stud_index, mark: score,
                         exam_mark: e_mark, class_mark: c_mark, course_id: c_id, result_token: token,
                         exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id,
-                        position: position,
+                        position: position, academic_year: academic_year
                     },
                     type: "POST",
                     timeout: 5000

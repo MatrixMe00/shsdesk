@@ -817,11 +817,13 @@ async function deleteTokenResults(token, table="results"){
  */
 async function create_result_head(token, course_id, program_id, semester, exam_year){
     let response_  = false;
+    let academic_year = $("label[for=academic_year] #academic_year").length > 0 ? $("#academic_year").val() : 0;
     await $.ajax({
         url:"./submit.php",
         data: {
             result_token: token, course_id: course_id, program_id: program_id,
-            semester: semester, exam_year: exam_year, submit: "submit_result_head"
+            semester: semester, exam_year: exam_year, submit: "submit_result_head",
+            academic_year: academic_year
         },
         method: "POST",
         success:function(response){

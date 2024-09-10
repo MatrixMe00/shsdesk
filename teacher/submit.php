@@ -392,7 +392,11 @@
                     $program_id = $_POST["program_id"]; 
                     $semester = $_POST["semester"];
                     $exam_year = $_POST["exam_year"];
-                    $academic_year = getAcademicYear(date("d-m-Y"), false);
+                    $academic_year = $_POST["academic_year"] ?? 0;
+
+                    if(!$academic_year){
+                        $academic_year = getAcademicYear(date("d-m-Y"), false);
+                    }
 
                     $sql = "INSERT INTO recordapproval (result_token, school_id, teacher_id, program_id, course_id, exam_year, semester, academic_year) VALUES (?,?,?,?,?,?,?,?)";
                     $stmt = $connect2->prepare($sql);

@@ -51,26 +51,21 @@
 
 <section class="lt-shade white d-section no_disp sm-xlg-tp" id="sub_term_form">
     <div class="form txt-al-c wmax-md sm-auto">
-        <p>Please provide the subject and current semester to proceed</p>
-        <div class="joint gap-sm sp-med-tp">
+        <?php $show_select = date("m") <= 11 && date("m") >= 9; ?>
+        <p>Please provide the subject<?= $show_select ? ", academic year" : " " ?> and current semester to proceed</p>
+        <div class="flex gap-sm sp-med-tp">
             <label for="subject">
-                <select class="w-full sp-xlg" name="subject" id="semester">
+                <select class="w-full sp-xlg" name="subject" id="subject">
                     <option value="">Select Subject</option>
                     <?php 
-                        $results = fetchData1(
+                        $results = decimalIndexArray(fetchData1(
                             "DISTINCT t.course_id, t.program_id, c.course_name",
                             "teacher_classes t JOIN courses c ON t.course_id=c.course_id",
-                            "t.teacher_id={$teacher['teacher_id']}", 0);
-                        if(is_array($results)){
-                            if(array_key_exists(0, $results)){
-                                foreach($results as $result){
-                                    echo "
-                                        <option value=\"{$result['course_id']}\" data-pid=\"{$result['program_id']}\">{$result['course_name']}</option>
-                                    ";
-                                }
-                            }elseif(array_key_exists("course_id",$results)){
+                            "t.teacher_id={$teacher['teacher_id']}", 0));
+                        if($results){
+                            foreach($results as $result){
                                 echo "
-                                <option value=\"{$results['course_id']}\" data-pid=\"{$results['program_id']}\">{$results['course_name']}</option>
+                                    <option value=\"{$result['course_id']}\" data-pid=\"{$result['program_id']}\">{$result['course_name']}</option>
                                 ";
                             }
                         }else{
@@ -85,6 +80,20 @@
                     <option value="1">Semester 1</option>
                     <option value="2">Semester 2</option>
                 </select>
+            </label>
+            <label for="academic_year">
+                <?php 
+                    $p1 = getAcademicYear(date("d-m-Y"), false);
+                    if($show_select): 
+                        $p2 = getAcademicYear(date("d-m-Y", strtotime("-1 year")), false);
+                ?>
+                <select name="academic_year" class="w-full sp-xlg" id="academic_year">
+                    <option value="<?= $p1 ?>"><?= $p1 ?></option>
+                    <option value="<?= $p2 ?>"><?= $p2 ?></option>
+                </select>
+                <?php else: ?>
+                <input type="text" class="sp-xlg" name="academic_year" id="academic_year" value="<?= $p1 ?>" readonly />
+                <?php endif; ?>
             </label>
         </div>
     </div>
