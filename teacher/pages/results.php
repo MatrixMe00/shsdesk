@@ -83,17 +83,9 @@
             </label>
             <label for="academic_year">
                 <?php 
-                    $p1 = getAcademicYear(date("d-m-Y"), false);
-                    if($show_select): 
-                        $p2 = getAcademicYear(date("d-m-Y", strtotime("-1 year")), false);
+                    $academic_year = $show_select ? getAcademicYear(date("d-m-Y", strtotime("-1 year")), false) : getAcademicYear(date("d-m-Y"), false);
                 ?>
-                <select name="academic_year" class="w-full sp-xlg" id="academic_year">
-                    <option value="<?= $p1 ?>"><?= $p1 ?></option>
-                    <option value="<?= $p2 ?>"><?= $p2 ?></option>
-                </select>
-                <?php else: ?>
-                <input type="text" class="sp-xlg" name="academic_year" id="academic_year" value="<?= $p1 ?>" readonly />
-                <?php endif; ?>
+                <input type="text" class="sp-xlg" name="academic_year" id="academic_year" value="<?= $academic_year ?>" readonly />
             </label>
         </div>
     </div>

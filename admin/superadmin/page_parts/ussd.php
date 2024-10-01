@@ -14,7 +14,7 @@
     $rejected_ussds = decimalIndexArray(fetchData1(...[
         "columns" => ["school_id", "sms_id"],
         "table" => "school_ussds",
-        "where" => "status='rejected'",
+        "where" => "status='reject'",
         "limit" => 0
     ]));
 

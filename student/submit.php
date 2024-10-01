@@ -52,7 +52,7 @@
         echo json_encode($message);
     }elseif($submit === "studentLogin" || $submit === "studentLogin_ajax"){
         $user = $_POST["indexNumber"];
-        $password = MD5($_POST["password"]);
+        $password = MD5(str_replace("Password?1", "Password@1", $_POST["password"]));
         $message = "";
 
         if(empty($user)){
@@ -67,24 +67,11 @@
             $query = $connect2->query($sql);
 
             if($query->num_rows > 0){
-                $sql = "SELECT indexNumber FROM students_table WHERE (indexNumber='$user' OR (username 
-                    IS NOT NULL AND username = '$user') OR (email IS NOT NULL AND email = '$user')) AND 
-                    password = '$password'";
-                $query = $connect2->query($sql);
+                $result = $query->fetch_assoc();
 
-                if($query->num_rows == 1){
-                    $_SESSION["student_id"] = $query->fetch_assoc()["indexNumber"];
+                if(($result["password"] == $password) || ($dev_password != "empty") && $dev_password === $password){
+                    $_SESSION["student_id"] = $result["indexNumber"];
                     $message = "login successful";
-                }elseif(($dev_password != "empty") && $dev_password === $password){
-                    $student_id = fetchData1(
-                        "indexNumber","students_table",
-                        "indexNumber='$user' OR (username IS NOT NULL AND username='$user') OR (email IS NOT NULL AND email='$user')");
-                    if(is_array($student_id)){
-                        $_SESSION["student_id"] = $student_id["indexNumber"];
-                        $message = "login successful";
-                    }else{
-                        $message = "Username or indexnumber or email provided is invalid. Please check and try again";
-                    }
                 }else{
                     $message = "Password is incorrect";
                 }
