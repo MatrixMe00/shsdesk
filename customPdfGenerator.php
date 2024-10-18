@@ -17,47 +17,65 @@
         //set footer name with school name
         $school_name = $_SESSION["ad_school_name"];
 
-        //make settings for footer
-        $footer = array (
-            'odd' => array (
-                'L' => array (
-                    'content' => 'Page {PAGENO} of {nbpg}',
-                    'font-size' => 10,
-                    'font-style' => 'R',
-                    'font-family' => 'Times',
-                    'color'=>'#000000'
-                ),
-                'C' => array (
-                    'content' => "$school_name",
-                    'font-size' => 10,
-                    'font-style' => 'R',
-                    'font-family' => 'Times',
-                    'color'=>'#000000'
-                ),
-                'line' => 1
-            ),
-            'even' => array (
-                'L' => array (
-                    'content' => 'Page {PAGENO} of {nbpg}',
-                    'font-size' => 10,
-                    'font-style' => 'R',
-                    'font-family' => 'Times',
-                    'color'=>'#000000'
-                ),
-                'C' => array (
-                    'content' => "$school_name",
-                    'font-size' => 10,
-                    'font-style' => 'R',
-                    'font-family' => 'Times',
-                    'color'=>'#000000'
-                ),
-                'line' => 1
-            )
-        );
+        $school = getSchoolDetail($school_name, true);
 
-        //apply footer settings
-        $pdf->setFooter($footer);
+        if(empty($school["admission_template"])){
+            //make settings for footer
+            $footer = array (
+                'odd' => array (
+                    'L' => array (
+                        'content' => 'Page {PAGENO} of {nbpg}',
+                        'font-size' => 10,
+                        'font-style' => 'R',
+                        'font-family' => 'Times',
+                        'color'=>'#000000'
+                    ),
+                    'C' => array (
+                        'content' => "$school_name",
+                        'font-size' => 10,
+                        'font-style' => 'R',
+                        'font-family' => 'Times',
+                        'color'=>'#000000'
+                    ),
+                    'line' => 1
+                ),
+                'even' => array (
+                    'L' => array (
+                        'content' => 'Page {PAGENO} of {nbpg}',
+                        'font-size' => 10,
+                        'font-style' => 'R',
+                        'font-family' => 'Times',
+                        'color'=>'#000000'
+                    ),
+                    'C' => array (
+                        'content' => "$school_name",
+                        'font-size' => 10,
+                        'font-style' => 'R',
+                        'font-family' => 'Times',
+                        'color'=>'#000000'
+                    ),
+                    'line' => 1
+                )
+            );
 
+            //apply footer settings
+            $pdf->setFooter($footer);
+
+            // some options which are a must here
+            $date_now = date("M j, Y")." at ".date("H:i:sa");
+            $school_phone = remakeNumber($_SESSION["ad_school_phone"]);
+            $logo = $_SESSION["ad_school_logo"];
+            $logo = html_entity_decode("<img src=\"$url/$logo\" alt=\"logo\" width=\"30mm\" height=\"30mm\">", ENT_QUOTES);
+        }else{
+            $template = $pdf->setSourceFile("$rootPath/{$school['admission_template']}");
+            $template = $pdf->importPage($template);
+
+            // use imported template
+            $pdf->useTemplate($template);
+            $pdf->SetY(60);
+            $date_now = date("jS F, Y");
+        }
+        
         //provide document information
         $pdf->SetCreator("MatrixMe");
         $pdf->SetAuthor("SHSDesk");
@@ -66,19 +84,12 @@
         $pdf->SetKeywords("Admission, SHSDesk, letter, document, $lastname, MatrixMe");
 
         //user data
-        $date_now = date("M j, Y")." at ".date("H:i:sa");
         $enrolment_code = $_SESSION["ad_stud_enrol_code"];
         $candidate = $lastname." ".$_SESSION["ad_stud_oname"];
         $residence_status = $_SESSION["ad_stud_residence"];
         $program = $_SESSION["ad_stud_program"];
         $house = $_SESSION["ad_stud_house"];
-        $gender = $_SESSION["ad_stud_gender"];
-
-        if($gender == "Male"){
-            $gender = "Sir";
-        }else{
-            $gender = "Madam";
-        }
+        $gender = $_SESSION["ad_stud_gender"] == "Male" ? "Sir" : "Madam";
 
         if($house == "e"){
             $house = "Allocated Later";
@@ -95,9 +106,6 @@
         $head_master = $_SESSION["ad_school_head"];
         $it_name = $_SESSION["ad_it_admin"];
         $box_address = $_SESSION["ad_box_address"];
-        $school_phone = remakeNumber($_SESSION["ad_school_phone"]);
-        $logo = $_SESSION["ad_school_logo"];
-        $logo = html_entity_decode("<img src=\"$url/$logo\" alt=\"logo\" width=\"30mm\" height=\"30mm\">", ENT_QUOTES);
         $ad_title = $_SESSION["ad_admission_title"];
 
         //qrcode
@@ -126,18 +134,31 @@
                 }
             </style>
         </head>
-        <div class="header" style="text-align: center;">
-            <div>
-                <br>$logo
+        HTML;
+
+        if(empty($school["admission_template"])){
+            $html .= <<<HTML
+            <div class="header" style="text-align: center;">
+                <div>
+                    <br>$logo
+                </div>
+                <span class="school_name">$school_name</span><br>
+                <span>$box_address</span><br>
+                <span>Telephone: $school_phone</span>
             </div>
-            <span class="school_name">$school_name</span><br>
-            <span>$box_address</span><br>
-            <span>Telephone: $school_phone</span>
-        </div>
-        <div class="middle">
-            <div class="print_date" style="border-bottom: 1px solid lightgrey; padding-bottom: 5px;">
-                <span>Printed: $date_now</span>
-            </div>
+            <div class="middle">
+                <div class="print_date" style="border-bottom: 1px solid lightgrey; padding-bottom: 5px;">
+                    <span>Printed: $date_now</span>
+                </div>
+            HTML;
+        }else{
+            $html .= <<<HTML
+            <div class="middle">
+                <p class="issue_date" style="text-align: right"><b>$date_now</b></p>
+            HTML;
+        }
+        
+        $html .= <<<HTML
             <div class="body">
                 <br><span>Dear $gender</span>
                 <div class="letter">

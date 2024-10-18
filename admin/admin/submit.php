@@ -855,14 +855,12 @@
                 //remove the root path
                 $image_directory = explode("$rootPath/",$image_directory);
                 $image_directory = $image_directory[1];
-
-                $logo_mod = true;
             }else{
-                $logo_mod = false;
+                $image_directory = $_POST["old_avatar"];
             }
 
             //prospectus check
-            if(isset($_FILES["prospectus"]) && $_FILES["prospectus"]["tmp_name"] !== null){
+            if(isset($_FILES["prospectus"]) && !empty($_FILES["prospectus"]["tmp_name"])){
                 //get file extension
                 $ext = strtolower(fileExtension("prospectus"));
     
@@ -879,68 +877,51 @@
                     echo "<p>File provided for prospectus is not a PDF</p>";
                     echo "<p>Please provide a valid document</p>";
                 }
-
-                $pros_mod = true;
             }else{
-                $pros_mod = false;
+                $prostectusDirectory = $_POST["old_prospectus"];
             }
 
-            if(@$autoHousePlace == "true" || @$autoHousePlace == "on"){
-                @$autoHousePlace = true;
+            //admission template check
+            if(isset($_FILES["admission_template"]) && !empty($_FILES["admission_template"]["tmp_name"])){
+                //get file extension
+                $ext = strtolower(fileExtension("admission_template"));
+    
+                if($ext =="pdf"){
+                    $file_input_name = "admission_template";
+                    $local_storage_directory = "$rootPath/admin/admin/assets/files/admission templates/";
+
+                    if(!is_dir($local_storage_directory)){
+                        mkdir($local_storage_directory, recursive: true);
+                    }
+    
+                    $template_dir = getFileDirectory($file_input_name, $local_storage_directory);
+
+                    //remove rootPath
+                    $template_dir = explode("$rootPath/", $template_dir);
+                    $template_dir = $template_dir[1];
+                }else{
+                    echo "<p>File provided for admission template is not a PDF</p>";
+                    echo "<p>Please provide a valid document</p>";
+                }
+            }else{
+                $template_dir = empty($_POST["old_admission_template"]) ? null : $_POST["old_admission_template"];
+            }
+
+            if($autoHousePlace == "true" || $autoHousePlace == "on"){
+                $autoHousePlace = true;
             }
 
             if($message == ""){
-                if($logo_mod && $pros_mod){
-                    $sql = "UPDATE schools SET logoPath=?, prospectusPath=?, admissionPath=?, admissionHead=?, schoolName=?, postalAddress=?, headName=?, email=?,
-                            description=?, autoHousePlace=? WHERE id=?";
-                    $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("sssssssssii",$image_directory,$prostectusDirectory, $admission, $admission_head, $school_name, $postal_address, $head_name,
-                        $school_email, $description, $autoHousePlace, $school_id);
-                }elseif($logo_mod){
-                    $sql = "UPDATE schools SET logoPath=?, admissionPath=?, admissionHead=?, schoolName=?, postalAddress=?, headName=?, email=?,
-                            description=?, autoHousePlace=? WHERE id=?";
-                    $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("ssssssssii",$image_directory, $admission, $admission_head, $school_name, $postal_address, $head_name,
-                        $school_email, $description, $autoHousePlace, $school_id);
-                }elseif($pros_mod){
-                    $sql = "UPDATE schools SET prospectusPath=?, admissionPath=?, admissionHead=?, schoolName=?, postalAddress=?, headName=?, email=?,
-                            description=?, autoHousePlace=? WHERE id=?";
-                    $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("ssssssssii",$prostectusDirectory, $admission, $admission_head, $school_name, $postal_address, $head_name,
-                        $school_email, $description, $autoHousePlace, $school_id);
-                }else{
-                    $sql = "UPDATE schools SET admissionPath=?, admissionHead=?, schoolName=?, postalAddress=?, headName=?, email=?,
-                            description=?, autoHousePlace=? WHERE id=?";
-                    $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("sssssssii", $admission, $admission_head, $school_name, $postal_address, $head_name,
-                        $school_email, $description, $autoHousePlace, $school_id);
-                }
+                $sql = "UPDATE schools SET logoPath=?, prospectusPath=?, admissionPath=?, admissionHead=?, schoolName=?, postalAddress=?, headName=?, email=?,
+                        description=?, autoHousePlace=?, admission_template=? WHERE id=?";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("sssssssssisi",$image_directory,$prostectusDirectory, $admission, $admission_head, $school_name, $postal_address, $head_name,
+                    $school_email, $description, $autoHousePlace, $template_dir, $school_id);
 
                 if($stmt->execute()){
-                    //providing a value according to a calculated algorithm
-                    $this_year = date("Y");
-                    $this_month = date("m");
-                    $admission_year = $this_year;
-
-                    if($this_month < 9){
-                        $admission_year = $this_year - 1;
-                    }
-
-                    //get the academic year
-                    $prev_year = null;
-                    $next_year = null;
-                    // $this_date = date("Y-m-1");
-                    $this_date = date("Y-m-d");
-
-                    if($this_date < date("Y-09-01")){
-                        $prev_year = date("Y") - 1;
-                        $next_year = date("Y");
-                    }else{
-                        $prev_year = date("Y");
-                        $next_year = date("Y") + 1;
-                    }
-
-                    $academic_year = "$prev_year / $next_year";
+                    // current academic year
+                    $academic_year = getAcademicYear(now());
+                    $admission_year = date("Y");
 
                     //update admission details table
                     $sql = "UPDATE admissiondetails SET titleOfHead=?, headName=?, admissionYear=?, academicYear=?,
@@ -950,6 +931,8 @@
                     
                     $stmt->execute();
                     $message = "success";
+                }else{
+                    $message = $stmt->error;
                 }
             }
 

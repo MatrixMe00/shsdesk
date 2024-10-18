@@ -1,4 +1,6 @@
-<?php try{ ?>
+<?php include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+    $connect->begin_transaction();
+    try{ ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,18 +42,18 @@
 <body>
     <div id="container">
 <?php
-    include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+    require_once "$rootPath/includes/functions.php";
 
     if(isset($_POST['submit']) && $_POST['submit'] == "register_school"){
         //take details
-        $form_id = $connect->real_escape_string($_POST["form_id"]);
+        $form_id = $_POST["form_id"];
 
         //check if the form is not already submitted
-        $res = $connect->query("SELECT * FROM schools WHERE id=$form_id") or die($connect->error);
+        $res = fetchData("*", "schools", "id=$form_id");
 
-        if($res->num_rows > 0){
+        if(is_array($res)){
             echo "<p>This form has already been submitted\n</p>";
-            echo "<p>Click <a href=\"".$url."/admin\">here</a> to login</p>";
+            echo "<p>Click <a href=\"$url/admin\">here</a> to login</p>";
 
             exit(1);
         }
@@ -74,14 +76,14 @@
         $category = $_POST["category"];
         $residence_status = $_POST["residence_status"];
         $sector = $_POST["sector"];
-        @$autoHousePlace = $_POST["autoHousePlace"];
+        $autoHousePlace = $_POST["autoHousePlace"];
 
         //admission letter
         $admission_letter_head = $_POST["admission_letter_head"];
         $admission_letter = htmlentities($_POST["admission_letter"]);
 
-        if(@$autoHousePlace == "true" || @$autoHousePlace == "on"){
-            @$autoHousePlace = true;
+        if($autoHousePlace == "true" || $autoHousePlace == "on"){
+            $autoHousePlace = true;
         }
 
         //prevent empty entries
@@ -141,8 +143,7 @@
         }
 
         //check if email already exists
-        $exist_email = fetchData("email", "schools","email='$school_email'");
-        if(is_array($exist_email)){
+        if(is_array(fetchData("email", "schools", "email = '$school_email'"))){
             echo "<p>Email already exists. Please review your email and try again</p>";
             exit(1);
         }
@@ -162,7 +163,7 @@
         }
 
         //allow user to upload prospectus
-        if(isset($_FILES["prospectus"]) && $_FILES["prospectus"]["tmp_name"] !== null){
+        if(isset($_FILES["prospectus"]) && !empty($_FILES["prospectus"]["tmp_name"])){
             //get file extension
             $ext = strtolower(fileExtension("prospectus"));
 
@@ -182,6 +183,30 @@
             exit(1);
         }
 
+        $template_dir = null;
+        if(isset($_FILES["admission_template"]) && !empty($_FILES["admission_template"]["tmp_name"])){
+            //get file extension
+            $ext = strtolower(fileExtension("admission_template"));
+
+            if($ext =="pdf"){
+                $file_input_name = "admission_template";
+                $local_storage_directory = "$rootPath/admin/admin/assets/files/admission templates/";
+
+                if(!is_dir($local_storage_directory)){
+                    mkdir($local_storage_directory, recursive: true);
+                }
+
+                $template_dir = getFileDirectory($file_input_name, $local_storage_directory);
+
+                //remove rootPath
+                $template_dir = explode("$rootPath/", $template_dir);
+                $template_dir = $template_dir[1];
+            }else{
+                echo "<p>File provided for admission template is not a PDF</p>";
+                echo "<p>Please provide a valid document</p>";
+            }
+        }
+
         //remove the root path
         $image_directory = explode("$rootPath/",$image_directory);
         $prostectusDirectory = explode("$rootPath/", $prostectusDirectory);
@@ -193,22 +218,19 @@
         //query the database
         $query = "INSERT INTO schools (logoPath, prospectusPath, admissionPath, admissionHead, schoolName, postalAddress, abbr, 
             headName, techName, techContact, email, description, category, residence_status, sector, 
-            autoHousePlace) 
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
+            autoHousePlace, admission_template) 
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
 
         //prepare query for entry into database
         $result = $connect->prepare($query);
-        $result->bind_param("ssssssssssssissi", $image_directory, $prostectusDirectory, $admission_letter, $admission_letter_head,
+        $result->bind_param("ssssssssssssissis", $image_directory, $prostectusDirectory, $admission_letter, $admission_letter_head,
         $school_name, $postal_address, $abbreviation, $head_name, $technical_name, $technical_phone, $school_email, $description, 
-        $category, $residence_status, $sector, $autoHousePlace);
+        $category, $residence_status, $sector, $autoHousePlace, $template_dir);
 
         //execute the results
         if($result->execute()){
-            //take this school id
-            $sql = $connect->query("SELECT id FROM schools WHERE schoolName = '$school_name'");
-
-            //take the id in the form of array
-            $row = $sql->fetch_array();
+            // take school id
+            $school_id = $connect->insert_id;
 
             //set the default password
             $default_password = MD5("Password@1");
@@ -221,50 +243,26 @@
 
             //prepare the insert statement
             $res = $connect->prepare($sql);
-
-            $row_id = intval($row["id"]);
             $role = 3;
             
             //bind necessary parameters
-            $res->bind_param('sssisis',$technical_name,$school_email, $default_password,$row_id, $technical_phone, $role, $date_now);
+            $res->bind_param('sssisis',$technical_name,$school_email, $default_password,$school_id, $technical_phone, $role, $date_now);
 
             if($res->execute()){
-                //providing a value according to a calculated algorithm
-                $this_year = date("Y");
-                $this_month = date("m");
-                $admission_year = $this_year;
-
-                /*if($this_month < 9){
-                    $admission_year = $this_year - 1;
-                }*/
-
-                //get the academic year
-                $prev_year = null;
-                $next_year = null;
-                // $this_date = date("Y-m-1");
-                $this_date = date("Y-m-d");
-
-                // if($this_date < date("Y-09-01")){
-                /*if($this_date <= date("Y-m-01")){
-                    $prev_year = date("Y") - 1;
-                    $next_year = date("Y");
-                }else{
-                    $prev_year = date("Y");
-                    $next_year = date("Y") + 1;
-                }*/
-
-                $prev_year = date("Y");
-                $next_year = date("Y") + 1;
-
-                $academic_year = "$prev_year / $next_year";
+                //providing academic year according to a calculated algorithm
+                $admission_year = date("Y");
+                $academic_year = getAcademicYear(now());
 
                 //insert data into admission details table
                 $sql = "INSERT INTO admissiondetails (schoolID, headName, admissionYear, academicYear) 
-                VALUES (".$row["id"].",'$head_name', '$admission_year', '$academic_year')";
+                VALUES ($school_id,'$head_name', '$admission_year', '$academic_year')";
                 $connect->query($sql);
 
+                // save all changes to database
+                $connect->commit();
+
                 echo "<p>Your data has been recorded successfully!</p>";
-                if(@$autoHousePlace != true){
+                if($autoHousePlace !== true){
                     echo "<p>Student house allocation has not been set to automatic<br>
                         Click <a href=\"$url/admin/admin/assets/files/default files/house_allocation.xlsx\">here</a> to download 
                         required file to manually place students in required houses</p>";
@@ -293,6 +291,7 @@
 </html>
 <?php 
     }catch(Throwable $th){
-        echo $th->getTraceAsString();
+        $connect->rollback();
+        echo throwableMessage($th);
     }
 ?>

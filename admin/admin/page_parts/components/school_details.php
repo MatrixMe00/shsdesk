@@ -130,6 +130,7 @@
                 <div id="display_avatar" class="display_image_box">
                     <img src="<?php echo $url."/".$schoolDetail["logoPath"]?>" alt="avatar">
                 </div>
+                <input type="hidden" name="old_avatar" value="<?= $schoolDetail["logoPath"] ?>">
             </label>
         </div>
 
@@ -145,6 +146,7 @@
                     $prospectus = explode("/",$schoolDetail["prospectusPath"]);
                     echo $url."/".$schoolDetail["prospectusPath"];
                 ?>"><?php echo end($prospectus) ?></a></span>
+                <input type="hidden" name="old_prospectus" value="<?= $schoolDetail["prospectusPath"] ?>">
             </label>
 
             <label for="autoHousePlace" class="checkbox">
@@ -159,6 +161,26 @@
                     Not enabling this feature would require you to upload students manually using the default
                     <a href="<?php echo $url?>/admin/admin/files/default files/house_allocation.xlsx">file</a>;
                 </span>
+            </label>
+        </div>
+
+        <div class="joint">
+            <label for="admission_template" class="file_label">
+                <span class="label_title">Add a custom admission template here</span>
+                <div class="fore_file_display">
+                    <input type="file" name="admission_template" id="admission_template" accept=".pdf">
+                    <span class="plus">+</span>
+                    <span class="display_file_name">Choose or drag your file here</span>
+                </div>
+                <span class="label_title">
+                    <?php if(empty($schoolDetail["admission_template"])): ?>
+                        Current Filename: None
+                    <?php else: ?>
+                    Current Filename: <a href="<?php 
+                    $template = explode("/",$schoolDetail["admission_template"]);
+                    echo $url."/".$schoolDetail["admission_template"];
+                ?>"><?php echo end($template) ?></a><?php endif; ?></span>
+                <input type="hidden" name="old_admission_template" value="<?= $schoolDetail["admission_template"] ?>">
             </label>
         </div>
         <div class="message_box no_disp">

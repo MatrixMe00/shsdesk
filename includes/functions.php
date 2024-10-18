@@ -1269,18 +1269,20 @@
     /**
      * This function determines what message should be displayed in a try/catch throwable block
      * @param Throwable $throwable This takes the throwable variable
-     * @return string Returns the string form of the desired error
+     * @return string
      */
     function throwableMessage(Throwable $throwable):string{
         global $developmentServer;
         
         $message = "";
-        /*if($developmentServer){
-            $message = $throwable->getTraceAsString();
+        if($developmentServer){
+            if(str_contains($_SERVER["SERVER_NAME"], ".local") === true)
+                $message = $throwable->getMessage()." in ".$throwable->getFile()." on line ".$throwable->getLine();
+            else
+                $message = $throwable->getMessage();
         }else{
             $message = $throwable->getMessage();
-        }*/
-        $message = $throwable->getMessage();
+        }
 
         return $message;
     }

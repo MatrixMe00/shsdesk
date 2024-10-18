@@ -14,8 +14,8 @@
     $serverName = $_SERVER['SERVER_NAME'];
     $serverDown = false;
 
-    // last figure of index number
-    $index_end = "23";
+    // last figure of index number is current year
+    $index_end = date("m") > 7 ? date("y") : date("y") - 1; 
 
     $sqlServer = array();
     $priceKeys = array(

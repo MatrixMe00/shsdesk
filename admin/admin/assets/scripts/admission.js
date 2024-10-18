@@ -48,83 +48,12 @@ $("input[name=avatar]").change(function(){
 
 $("form[name=admissiondetailsForm]").submit(function(e){
     e.preventDefault();
-    
-    formData = new FormData();
 
-    //preparing file and submit values
-    file1 = $("input[name=avatar]").prop("files")[0];
-    file1_name = $("input[name=avatar]").attr("name");
-    file2 = $("input[name=prospectus]").prop("files")[0];
-    file2_name = $("input[name=prospectus]").attr("name");
-
-    submit_value = $("form[name=admissiondetailsForm] button[name=submit]").prop("value");
-
-    //strip form data into array form and attain total data
-    form_data = $(this).serializeArray();
-    split_lenght = form_data.length;
-
-    //loop and fill form data
-    counter = 0;
-    while(counter < split_lenght){
-        //grab each array data
-        new_data = form_data[counter];
-
-        key = new_data["name"];
-        value = new_data["value"];
-
-        //append to form data
-        formData.append(key, value);
-
-        //move to next data
-        counter++;
-    }
-
-    //append name and value of file
-    formData.append(file1_name, file1);
-    formData.append(file2_name, file2);
-
-    //append submit if not found
-    if(!$(this).serialize().includes("&submit=")){
-        formData.append("submit", submit_value + "_ajax");
-    }
-
-    response = null;
-    
-    $.ajax({
-        url: $(this).attr("action"),
-        data: formData,
-        method: "post",
-        dataType: "text",
-        cache: false,
-        async: false,
-        contentType: false,
-        processData: false,
-        timeout: 30000,
-        beforeSend: function(){
-            message = loadDisplay({size: "small"});
-            type = "load";
-            time = 0;
-                
-            messageBoxTimeout($(this).prop("name"), message, type, time);    
-        },
-        success: function(text){
-            $("form[name=" + $(this).prop("name") + "] .message_box").addClass("no_disp");
-            if(text == "success" || text.includes("success")){
-                alert_box("Update was successful!");
-            }else{
-                alert_box(text, "danger", 8);
-            }
-        },
-        error: function(xhr, textMessage){
-            if(textMessage == "timeout"){
-                message = "Connection was timed out. Please take a moment and try again"
-            }else{
-                message = "Please check your internet connection and try again"
-            }
-            
-            type = "error";
-
-            messageBoxTimeout($(this).prop("name"), message, type);
+    fileUpload($(this), $(this).find("button[name=submit]"), true).then((response) => {
+        if(response == true){
+            alert_box("Update was successful!");
+        }else{
+            alert_box(response, "danger", 8);
         }
-    })
+    });
 })

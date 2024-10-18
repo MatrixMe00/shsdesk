@@ -1,17 +1,8 @@
-<?php
-    //depending on where the page is being called from
-    $this_url = $_SERVER["REQUEST_URI"];
-
-    if(strpos($this_url, "shsdesk")){
-        include_once($_SERVER["DOCUMENT_ROOT"]."/shsdesk/includes/session.php");
-    }else{
-        include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
-    }
-?>
+<?php require_once("../includes/session.php"); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php @include_once($rootPath.'/blocks/generalHead.php')?>
+    <?php require_once($rootPath.'/blocks/generalHead.php')?>
     <link rel="stylesheet" href="<?php echo $url?>/admin/assets/styles/tinymce.min.css?v=<?php echo time()?>">
 
     <!--Document title-->
@@ -190,6 +181,15 @@
                         <img src="<?php echo $url?>/assets/images/icons/megaphone-outline.svg" alt="admission" srcset="">
                     </span>
                     <textarea name="admission_letter" id="admission_letter" class="admin_tinymce" placeholder="Please provide a body for your admission letter. Refer to the demo document to know what is expected of you"></textarea>
+                </label>
+
+                <label for="admission_template" class="file_label">
+                    <span class="label_title">[Optional] If you have a custom template for your admission letter, upload it below (PDF format) <br> [Only the body and other enrolment details is going to be inserted into the template provided]</span>
+                    <div class="fore_file_display">
+                        <input type="file" name="admission_template" id="admission_template" accept=".pdf">
+                        <span class="plus">+</span>
+                        <span class="display_file_name">Choose or drag your file here</span>
+                    </div>
                 </label>
 
                 <label for="autoHousePlace" class="checkbox">
