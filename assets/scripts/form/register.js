@@ -1,21 +1,3 @@
-//concerning the files that will be chosen
-$("input[type=file]").change(function(){
-    //get the value of the image name
-    image_path = $(this).val();
-
-    //strip the path name to file name only
-    image_name = image_path.split("C:\\fakepath\\");
-
-    //store the name of the file into the display div
-    if(image_path != ""){
-        $(this).siblings(".plus").hide();
-        $(this).siblings(".display_file_name").html(image_name);       
-    }else{
-        $(this).siblings(".plus").css("display","initial");
-        $(this).siblings(".display_file_name").html("Choose or drag your file here");
-    }
-})
-
 //the avatar of the school
 $("input[name=avatar]").change(function(){
     if($(this).val() != ''){

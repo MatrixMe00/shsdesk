@@ -213,61 +213,71 @@
      * 
      * @param string $file_input_name This is the name of the input file tag to retrieve data from
      * @param string $local_storage_directory This is the default directory path where the file is stored
+     * @param ?string $name [Optional] The name of the file
+     * @param bool $replace [optional] Used to define if a file should be replaced if its the same name or should be given an index
      * 
      * @return string This function return the directory of the file stored
      */
-    function getFileDirectory(string $file_input_name, string $local_storage_directory):string{
-        if(isset($_FILES[$file_input_name]) && $_FILES[$file_input_name]["tmp_name"] != null){
-            //get a local directory
+    function getFileDirectory(string $file_input_name, string $local_storage_directory, ?string $name = null, bool $replace = false): string {
+        if(isset($_FILES[$file_input_name]) && $_FILES[$file_input_name]["tmp_name"] != null) {
+            // Get a local directory
             $base_directory = $local_storage_directory;
-
-            //grab the target filename
-            $file_name = $base_directory . basename($_FILES[$file_input_name]["name"]);
-
-            //raise a flag for upload
+    
+            // Grab the target filename
+            $original_file_name = basename($_FILES[$file_input_name]["name"]);
+    
+            // If $name is provided, use it instead of the original filename
+            if($name !== null) {
+                // Extract the original file extension
+                $extension = pathinfo($original_file_name, PATHINFO_EXTENSION);
+                $file_name = $base_directory . $name . "." . $extension;
+            } else {
+                $file_name = $base_directory . $original_file_name;
+            }
+    
+            // Raise a flag for upload
             $uploadOk = 1;
-
-            //if file already exists, try to create another filename
-            if(file_exists($file_name)){
+    
+            // If file already exists, try to create another filename
+            if(file_exists($file_name) && $replace) {
                 $counter = 1;
-
-                //split the pathname and extension
-                $temp_file_name = explode("/",$file_name);
-
+    
+                // Split the pathname and extension
+                $temp_file_name = explode("/", $file_name);
+    
                 $file_directory = "";
-
-                foreach ($temp_file_name as $row){
-                    if($row != end($temp_file_name)){
+    
+                foreach ($temp_file_name as $row) {
+                    if($row != end($temp_file_name)) {
                         $file_directory .= "$row/";
                     }
                 }
+    
                 $filename = end($temp_file_name);
                 
-                //divide filename into name and extension
+                // Divide filename into name and extension
                 $filename = explode(".", $filename);
-
-                //loop through until unique file is found
-                while(file_exists($file_name)){
-                    //set the filename path into a new filename path
-                    $file_name = $file_directory.$filename[0]."_".$counter++.".".$filename[1];
+    
+                // Loop through until unique file is found
+                while(file_exists($file_name)) {
+                    // Set the filename path into a new filename path
+                    $file_name = $file_directory . $filename[0] . "_" . $counter++ . "." . $filename[1];
                 }
-
-                //when loop is over, let the image be prepared for upload
+    
+                // When loop is over, let the image be prepared for upload
                 $uploadOk = 1;
             }
-
-            //now upload the file
-            if($uploadOk == 1){
-                if(move_uploaded_file($_FILES[$file_input_name]["tmp_name"], $file_name)){
+    
+            // Now upload the file
+            if($uploadOk == 1) {
+                if(move_uploaded_file($_FILES[$file_input_name]["tmp_name"], $file_name)) {
                     $file_name = trim($file_name);
                 }
-            }else{
+            } else {
                 echo "<p>Upload failed</p>";
             }
-        }else{
-            $file_name = "error";
         }
-
+    
         return $file_name;
     }
 
@@ -1833,4 +1843,24 @@
         }
 
         return $response;
+    }
+
+    /**
+     * This is used to get the program name for an assigned course
+     * @param ?string $course_name The name of the course
+     * @param int $school_id The id of the school
+     * @return ?int
+     */
+    function get_program_from_course(?string $course_name, int $school_id) :?int{
+        if(empty($course_name)){
+            return null;
+        }
+
+        $program = fetchData1("program_id", "program", ["school_id=$school_id", "LOWER(associate_program)='".strtolower($course_name)."'"]);
+
+        if(!is_array($program)){
+            return null;
+        }
+
+        return $program["program_id"];
     }

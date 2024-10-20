@@ -517,7 +517,8 @@ async function ajaxCall({url, formData, returnType = "text", method = "GET", sen
             contentType: sendRaw ? false : 'application/x-www-form-urlencoded; charset=UTF-8',
             processData: !sendRaw,
             beforeSend: function(){
-                beforeSend();
+                if(beforeSend != null)
+                    beforeSend();
             },
             success: function (response) {
                 response_ = response;

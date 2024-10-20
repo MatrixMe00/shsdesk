@@ -98,6 +98,7 @@ $(document).ready(function(){
                         
                         $("#updateProgram input[name=program_id]").val(results["program_id"])
                         $("#updateProgram input[name=program_name]").val(results["program_name"])
+                        $("#updateProgram select[name=associate_program]").val(results["associate_program"])
                         $("#updateProgram input[type=checkbox]").each((index, element)=>{
                             element_val = $(element).val()
                             if(course_ids.includes(element_val) === true){

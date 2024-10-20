@@ -1208,10 +1208,11 @@
         }elseif($submit == "addProgram" || $submit == "addProgram_ajax"){
             $message = ""; $status = false; $final = array();
 
-            @$program_name = $_GET["program_name"];
-            @$school_id = $_GET["school_id"];
-            @$course_ids = $_GET["course_ids"];
-            @$short_form = $_GET["short_form"];
+            $program_name = $_GET["program_name"];
+            $school_id = $_GET["school_id"];
+            $course_ids = $_GET["course_ids"];
+            $short_form = $_GET["short_form"];
+            $associate_program = $_GET["associate_program"];
             
             if(empty($program_name)){
                 $message = "Please provide the name of the program";
@@ -1221,9 +1222,9 @@
                 $message = "Please select the courses/subjects held in this program";
             }else{
                 try {
-                    $sql = "INSERT INTO program (school_id, program_name, short_form, course_ids) VALUES (?,?,?,?)";
+                    $sql = "INSERT INTO program (school_id, program_name, short_form, course_ids, associate_program) VALUES (?,?,?,?,?)";
                     $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("isss", $school_id, $program_name, $short_form, $course_ids);
+                    $stmt->bind_param("issss", $school_id, $program_name, $short_form, $course_ids, $associate_program);
 
                     if($stmt->execute()){
                         $message = "The program has been saved.";
@@ -1313,10 +1314,11 @@
         }elseif($submit == "updateProgram" || $submit == "updateProgram_ajax"){
             $message = ""; $status = false; $final = array();
 
-            @$program_name = $_GET["program_name"];
-            @$program_id = $_GET["program_id"];
-            @$course_ids = $_GET["course_ids"];
-            @$short_form = $_GET["short_form"];
+            $program_name = $_GET["program_name"];
+            $program_id = $_GET["program_id"];
+            $course_ids = $_GET["course_ids"];
+            $short_form = $_GET["short_form"];
+            $associate_program = $_GET["associate_program"];
             
             if(empty($program_id) || intval($program_id) < 0){
                 $message = "Class could not be selected. Please refresh the page and try again";
@@ -1326,9 +1328,9 @@
                 $message = "Please select the courses/subjects held in this class";
             }else{
                 try {
-                    $sql = "UPDATE program SET program_name=?, short_form=?, course_ids=? WHERE program_id=?";
+                    $sql = "UPDATE program SET program_name=?, short_form=?, course_ids=?, associate_program = ? WHERE program_id=?";
                     $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("sssi", $program_name, $short_form, $course_ids, $program_id);
+                    $stmt->bind_param("ssssi", $program_name, $short_form, $course_ids, $associate_program, $program_id);
 
                     if($stmt->execute()){
                         $message = "The program has been updated";

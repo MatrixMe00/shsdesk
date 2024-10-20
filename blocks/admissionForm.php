@@ -1,4 +1,4 @@
-<form action="<?php echo $url?>/submit.php" class="fixed" method="post" ng-controller="AdmissionController" name="admissionForm" style="max-height: 95vh">
+<form action="<?php echo $url?>/submit.php" class="fixed" method="post" enctype="multipart/form-data" ng-controller="AdmissionController" name="admissionForm" style="max-height: 95vh">
     <div class="tabs">
         <span class="tab_button" data-views="view1">
             Step 1
@@ -45,21 +45,21 @@
                                 <img src="<?php echo $url?>/assets/images/icons/index.png" alt="index number">
                             </span>
                             <input type="text" name="ad_index" id="ad_index" ng-model="ad_index" placeholder="Enter Your JHS Index Number*" 
-                            pattern="[0-9]+" title="Enter your index number in this field. It should be only numbers" required>
+                                title="Enter your index number in this field. It should be only numbers" required>
                         </label>
                         <label for="ad_aggregate" class="no_disp">
                             <span class="label_image">
                                 <img src="<?php echo $url?>/assets/images/icons/hashtag.png" alt="aggregate">
                             </span>
                             <input type="text" name="ad_aggregate" id="ad_aggregate" maxlength="2"
-                            placeholder="Enter your aggregate here" title="Enter your aggregate here" pattern="[0-9]+" 
+                            placeholder="Enter your aggregate here" title="Enter your aggregate here" 
                             ng-model="ad_aggregate" readonly>
                         </label>
                         <label for="ad_course" class="no_disp">
                             <span class="label_image">
                                 <img src="<?php echo $url?>/assets/images/icons/book-outline.svg" alt="course">
                             </span>
-                            <input type="text" name="ad_course" id="ad_course" title="Enter your course here" placeholder="Enter your course here*" pattern="[a-zA-Z\s]{5,}" 
+                            <input type="text" name="ad_course" id="ad_course" title="Enter your course here" placeholder="Enter your course here*" 
                             ng-model="ad_course" readonly>
                         </label>
                     </div>
@@ -73,7 +73,7 @@
                                 <img src="<?php echo $url?>/assets/images/icons/person-outline.svg" alt="lastname">
                             </span>
                             <input type="text" name="ad_lname" id="ad_lname" class="text_input" 
-                            placeholder="Your Lastname*" autocomplete="off" ng-model="ad_lname" pattern="[a-zA-Z\s]{6,}[\.\-\']{0,}" 
+                            placeholder="Your Lastname*" autocomplete="off" ng-model="ad_lname" 
                             title="Enter your lastname only, do not add any space" required readonly>
                         </label>
                         <label for="ad_oname">
@@ -84,6 +84,14 @@
                             autocomplete="off" ng-model="ad_oname" title="Enter any other name(s) you have" required readonly>
                         </label>
                     </div>
+                    <label for="profile_pic" class="file_label">
+                        <span class="label_title">Upload a profile picture [optional]</span>
+                        <div class="fore_file_display">
+                            <input type="file" name="profile_pic" id="profile_pic" class="file_input" data-show-file="0" data-disp-cont-id="" accept="image/*">
+                            <span class="plus">+</span>
+                            <span class="display_file_name">Choose or drag your file here</span>
+                        </div>
+                    </label>
                     <div class="joint">
                         <label for="ad_gender">
                             <span class="label_image">
@@ -176,7 +184,7 @@
                                 <img src="<?php echo $url?>/assets/images/icons/home.png" alt="birth_place">
                             </span>
                             <input type="text" name="ad_birth_place" id="ad_birth_place" placeholder="Place of Birth*" 
-                            pattern="[a-zA-Z\s]{2,}[\.\-\']{0,}" required ng-model="ad_birth_place">
+                             required ng-model="ad_birth_place">
                         </label>
                     </div>
                 </fieldset>
@@ -303,6 +311,15 @@
                     </label>
                 </fieldset>
 
+                <fieldset id="class_fieldset">
+                    <legend>Class</legend>
+                    <p>Important: The program you're enrolling in is divided into several classes. These classes are grouped by major elective subjects.</p>
+                    <select name="program_id" id="program_select">
+                        <option value="">Select an elective class</option>
+                    </select>
+                    <span id="course_displays"></span>
+                </fieldset>
+
                 <fieldset>
                     <legend>Witness</legend>
                     <label for="ad_witness">
@@ -390,6 +407,14 @@
                             </div>
                             <div class="value">
                                 <span id="res_ad_oname"></span>
+                            </div>
+                        </div>
+                        <div class="label">
+                            <div class="name">
+                                <span>Profile Picture</span>
+                            </div>
+                            <div class="value">
+                                <span id="res_ad_profile_picture">Not Set</span>
                             </div>
                         </div>
                         <div class="label">
@@ -552,6 +577,14 @@
                             </div>
                             <div class="value">
                                 <span>{{ad_position}}</span>
+                            </div>
+                        </div>
+                        <div class="label">
+                            <div class="name">
+                                <span>Elective Class</span>
+                            </div>
+                            <div class="value">
+                                <span id="program_display_val">N/A</span>
                             </div>
                         </div>
                     </div>

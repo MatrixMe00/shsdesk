@@ -82,3 +82,54 @@ $("button.request_btn").click(function(){
     
     location.href = url ;
 })
+
+//concerning the files that will be chosen
+$("input[type=file]").change(function(){
+    //get the value of the image name
+    file_path = $(this).val();
+
+    //strip the path name to file name only
+    file_name = file_path.split("C:\\fakepath\\");
+
+    //store the name of the file into the display div
+    if(file_path != ""){
+        $(this).siblings(".plus").hide();
+        $(this).siblings(".display_file_name").html(file_name);       
+    }else{
+        $(this).siblings(".plus").css("display","initial");
+        $(this).siblings(".display_file_name").html("Choose or drag your file here");
+    }
+})
+
+// used for images or documents
+$("input.file_input").change(function(){
+    const label = $(this).parents("label").first();
+    const show_file = parseInt($(this).attr("data-show-file"));
+
+    if($(this).val() != ''){
+        //show the selected image
+        label.removeClass("no_disp");  
+
+        //make the file ready for display
+        var file = $(this).get(0).files[0];
+
+        if(file){
+            //create a variable to make a read class instance
+            reader = new FileReader();
+
+            reader.onload = function(){
+                //pass the result to the image element
+                $("#display_avatar img").attr("src", reader.result);
+            }
+
+            //make the reading data a demo url
+            reader.readAsDataURL(file);
+        }
+    }else{
+        //hide the selected image
+        label.addClass("no_disp");
+
+        //empty the image src
+        $("#display_avatar img").prop("src", "");
+    }
+})

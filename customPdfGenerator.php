@@ -90,6 +90,7 @@
         $program = $_SESSION["ad_stud_program"];
         $house = $_SESSION["ad_stud_house"];
         $gender = $_SESSION["ad_stud_gender"] == "Male" ? "Sir" : "Madam";
+        $profile_pic = $_SESSION["ad_profile_pic"];
 
         if($house == "e"){
             $house = "Allocated Later";

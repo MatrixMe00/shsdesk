@@ -320,10 +320,20 @@
                     <span class="label_title">Short Name of Class</span>
                     <input type="text" name="short_form" id="short_form" placeholder="Alias name of Class">
                 </label>
+                <label for="associate_program" class="flex-column gap-sm">
+                    <span class="label_title">Associated Program</span>
+                    <select name="associate_program" id="associate_program">
+                        <option value="">Select the Class' program</option>
+                        <?php $programs = decimalIndexArray(fetchData("DISTINCT programme", "cssps", "schoolID=$user_school_id", 0)); if($programs): foreach($programs as $program): ?>
+                        <option value="<?= $program["programme"] ?>"><?= $program["programme"] ?></option>
+                        <?php endforeach; endif; ?>
+                    </select>
+                    <span class="item-event info">This helps automatically assign students to a class based on their program. Electives can be chosen during admission once set.</span>
+                </label>
             </div>
 
             <label for="">
-                <p>Select the subjects taught in this program</p>
+                <p>Select the subjects taught in this class</p>
             </label>
 
             <?php if($courses) : ?>
@@ -373,10 +383,20 @@
                     <span class="label_title">Short Name of Class</span>
                     <input type="text" name="short_form" id="u_short_form" placeholder="Alias name of Class">
                 </label>
+                <label for="u_associate_program" class="flex-column gap-sm">
+                    <span class="label_title">Associated Program</span>
+                    <select name="associate_program" id="u_associate_program">
+                        <option value="">Select the Class' program</option>
+                        <?php $programs = decimalIndexArray(fetchData("DISTINCT programme", "cssps", "schoolID=$user_school_id", 0)); if($programs): foreach($programs as $program): ?>
+                        <option value="<?= $program["programme"] ?>"><?= $program["programme"] ?></option>
+                        <?php endforeach; endif; ?>
+                    </select>
+                    <span class="item-event info">This helps automatically assign students to a class based on their program. Electives can be chosen during admission once set.</span>
+                </label>
             </div>
 
             <label for="">
-                <p>Select the subjects taught in this program</p>
+                <p>Select the subjects taught in this class</p>
             </label>
 
             <?php if($courses) : ?>

@@ -38,8 +38,6 @@ $(document).ready(function(){
              break;
          }
      }
- 
-     return;
  }
 
 //fill the number of days depending on the selected month
@@ -270,15 +268,6 @@ $("#view2 .checkbox").click(function(){
     admissionFormButtonChange();
 })
 
-//retrieve health specification information
-$("select[name=ad_health]").change(function () {
-    if($(this).val() == "yes"){
-        $("label[for=health_specify]").removeClass("no_disp");
-    }else{
-        fadeOutElement($("label[for=health_specify]"));
-    }
-})
-
 //show the payment form when the payment / enrol button is clicked
 $("#payment_button, .enrol_button").click(function(){
     $("#payment_form").removeClass("no_disp").addClass("flex");
@@ -393,7 +382,6 @@ $("button[name=continue]").click(function(){
                 //candidate full name entry into swear box
                 $("#fullCandidateName").html(data["Lastname"] + " " + data["Othernames"]);
                 
-
                 //remove this button and show the submit button
                 $("form[name=admissionForm] label[for=continue]").addClass("no_disp");
                 $("label[for=submit_admission]").removeClass("no_disp");
@@ -418,6 +406,27 @@ $("button[name=continue]").click(function(){
 
                 //display admission form
                 $('#admission').removeClass('no_disp');
+
+                // fetch class details
+                ajaxCall({
+                    url: $("form[name=admissionForm]").attr("action"),
+                    formData: {submit: "get_programs", course_name: data["programme"], school_id: school_id},
+                    method: "GET"
+                }).then(resp => {
+                    if(resp == "none"){
+                        $("#class_fieldset").addClass("no_disp");
+                        $("#program_display_val").text("N/A");
+                        $("#program_select").html("");
+                    }else{
+                        $("#program_select").html("");
+
+                        for(i = 0; i < resp.length; i++){
+                            const opt = resp[i];
+                            const option = "<option value=\"" + opt.id + "\" data-courses=\"" + opt.courses + "\">" + opt.name + "</option>";
+                            $("#program_select").append(option);
+                        }
+                    }
+                })
             }else if(data["status"] == "wrong-school-select"){
                 //display an error message
                 $("#view1 .para_message").html("Incorrect school chosen. Select your right school to continue and enter your transaction ID to continue");
@@ -492,6 +501,17 @@ $("button[name=continue]").click(function(){
     })
 })
 
+// show the courses where the need be
+$("#program_select").change(function(){
+    $("#course_displays").html("");
+    $("#program_display_val").text("Not Set");
+
+    if($(this).val() != ""){
+        $("#course_displays").html($(this).attr("data-courses"));
+        $("#program_display_val").text($(this).find("option:selected").text());
+    }
+})
+
 //when the admission form cancel button is clicked, reset that form
 $("form[name=admissionForm] button[name=modal_cancel]").click(function(){
     //display continue button and hide the submit button
@@ -517,217 +537,163 @@ $("form[name=admissionForm] button[name=modal_cancel]").click(function(){
 //submit the admission form
 $("form[name=admissionForm]").submit(function(e){
     e.preventDefault();
-    
-    //data for disabled fields
-    dataString = "shs_placed=" + $("#shs_placed").val() + "&ad_index=" + $("#ad_index").val() + "&ad_aggregate=" + $("#ad_aggregate").val() + "&ad_course=" + $("#ad_course").val() + 
-    "&ad_jhs=" + $("#ad_jhs").val() + "&ad_transaction_id=" + $("#ad_transaction_id").val();
 
-    //strip form data into array form and attain total data
-    form_data = $(this).serializeArray();
-    split_lenght = form_data.length;
+    fileUpload($(this), $(this).find("button[name=submit_admission]"), true)
+    .then(response => {
+        time = 5;
 
-    //variable to hold all user data
-    formData = "";
+        if(response === true){
+            message = "Enrolment was successful. Please wait as your letters are prepared";
+            type = "success";
 
-    //loop and fill form data
-    counter = 0;
-    while(counter < split_lenght){
-        //grab each array data
-        new_data = form_data[counter];
+            messageBoxTimeout("admissionForm",message, type, 3);
 
-        key = new_data["name"];
-        value = new_data["value"];
-
-        //append to form data
-        if(formData != ""){
-            formData += "&" + key + "=" + value;
+            //click on cancel and open blank tab in 3 seconds
+            setTimeout(function(){
+                $("#handle_pdf")[0].click();
+                $("button[name=modal_cancel]").click();
+            },3000);
         }else{
-            formData = key + "=" + value;
-        }
+            type = "error";
 
-        //move to next data
-        counter++;
-    }
-
-    //append submit if not found
-    if(!$(this).serialize().includes("&submit=")){
-        formData += "&submit=" + $("form[name=admissionForm] button[name=submit_admission]").val() + "_ajax";
-    }
-
-    //append disabled form fields
-    formData += "&" + dataString;
-
-    //parse data into database
-    $.ajax({
-        url: $(this).attr("action"),
-        data: formData,
-        method: "post",
-        dataType: "text",
-        cache: false,
-        async: false,
-        timeout: 30000,
-        beforeSend: function(){
-            message = loadDisplay({size: "small"});
-            type = "load";
-            time = 0;
+            if(response == "no-transaction-id"){
+                message = "No transaction id was provided";
+                i = 1;
+            }else if(response == "no-index-number"){
+                message = "No index number was provided";
+                i = 1;
+            }else if(response == "profile-wrong-ext"){
+                message = "Profile picture must be of type jpg, jpeg or png";
+                i=1;
+            }else if(response == "no-enrolment-code"){
+                message = "No enrolment code was provided";
+                i = 1;
+                $("#ad_enrol_code").focus();
+            }else if(response == "enrolment-code-short"){
+                message = "Your enrolment code should be 10 characters long";
+                i = 1;
+                $("#ad_enrol_code").focus();
+            }else if(response == "enrolment-code-exist"){
+                message = "The enrolment code <b>'" + $("#ad_enrol_code").val() + "'</b> already exists. Please check your placement form and provide a valid one";
+                i = 1;
+                $("#ad_enrol_code").focus();
+            }else if(response == "wrong-school"){
+                message = "Error with school name. Please report to admin";
+                i = 1;
+            }else if(response == "no-aggeregate-score"){
+                message = "Please enter your aggregate score";
+                i = 1;
+            }else if(response == "no-course-set"){
+                message = "Please provide the name of your selected program";
+                i = 1;
+            }else if(response == "no-lname-set"){
+                message = "Please provide your last name";
+                i = 1;
+            }else if(response == "no-oname-set"){
+                message = "Please provide your other name(s)";
+                i = 1;
+            }else if(response == "no-gender-set"){
+                message = "Please select your gender";
+                i = 1;
+            }else if(response == "no-jhs-name-set"){
+                message = "Please provide the name of your JHS";
+                i = 1;
+            }else if(response == "no-jhs-town-set"){
+                message = "Please provide the town in which JHS is found";
+                i = 1;
+            }else if(response == "no-jhs-district-set"){
+                message = "Please provide the district of your JHS";
+                i = 1;
+            }else if(response == "no-year-set"){
+                message = "Please select your year of birth";
+                i = 1;
+            }else if(response == "no-month-set"){
+                message = "Please select your month of birth";
+                i = 1;
+            }else if(response == "no-day-set"){
+                message = "Please select your day of birth";
+                i = 1;
+            }else if(response == "no-birth-place-set"){
+                message = "Please enter your place of birth";
+                i = 1;
+            }else if(response == "no-father-name"){
+                message = "Please provide your father's name";
+                i = 2;
+            }else if(response == "no-f-occupation-set"){
+                message = "Please provide your father's occupation";
+                i = 2;
+            }else if(response == "no-mother-name"){
+                message = "Please provide your mother's name";
+                i = 2;
+            }else if(response == "no-m-occupation-set"){
+                message = "Please provide your mother's occupation";
+                i = 2;
+            }else if(response == "no-elder-name"){
+                message = "Please provide your father, mother or a guardian";
+                i = 2;
+            }else if(response == "no-residence-set"){
+                message = "Please provide your residential address";
+                i = 2;
+            }else if(response == "no-p-p-set"){
+                message = "Please select your primary phone number";
+                i = 2;
+            }else if(response == "p-p-short"){
+                message = "Primary phone number is shorter than normal";
+                i = 2;
+            }else if(response == "p-p-long"){
+                message = "Primary phone number is longer than normal";
+                i = 2;
+            }else if(response == "p-p-invalid"){
+                message = "Primary phone number is not a invalid phone number";
+                i = 2;
+            }else if(response == "s-p-short"){
+                message = "Secondary phone number is shorter than normal";
+                i = 2;
+            }else if(response == "s-p-long"){
+                message = "Secondary phone number is longer than normal";
+                i = 2;
+            }else if(response == "s-p-invalid"){
+                message = "Secondary phone number is not a invalid phone number";
+                i = 2;
+            }else if(response == "no-interest-set"){
+                message = "Please select at least one interest";
+                i = 2;
+            }else if(response == "no-witness-set"){
+                message = "Please provide a witness' name";
+                i = 2;
+            }else if(response == "no-witness-phone"){
+                message = "Please provide your witness' phone number";
+                i = 2;
+            }else if(response == "witness-phone-long"){
+                message = "Witness' phone number is longer than normal";
+                i = 2;
+            }else if(response == "witness-phone-short"){
+                message = "Witness' phone number is shorter than normal";
+                i = 2;
+            }else if(response == "witness-phone-invalid"){
+                message = "Witness' phone number is not a valid phone number";
+                i = 2;
+            }else{
+                message = response;
+                time = 0;
+            }
+            
+            //click respective head
+            $(".tabs span.tab_button:nth-child(" + i + ")").click();
 
             messageBoxTimeout("admissionForm", message, type, time);
-        },
-        success: function(text){
-            time = 5;
+        }
+    }).then(error => {
+        let message = ""
 
-            if(text == "success" || text.includes("success")){
-                message = "Enrolment was successful. Please wait as your letters are prepared";
-                type = "success";
-
-                messageBoxTimeout("admissionForm",message, type, 3);
-
-                //click on cancel and open blank tab in 3 seconds
-                setTimeout(function(){
-                    $("#handle_pdf")[0].click();
-                    $("button[name=modal_cancel]").click();
-                },3000);
-            }else{
-                response = text;
-                type = "error";
-
-                if(response == "no-transaction-id"){
-                    message = "No transaction id was provided";
-                    i = 1;
-                }else if(response == "no-index-number"){
-                    message = "No index number was provided";
-                    i = 1;
-                }else if(response == "no-enrolment-code"){
-                    message = "No enrolment code was provided";
-                    i = 1;
-                    $("#ad_enrol_code").focus();
-                }else if(response == "enrolment-code-short"){
-                    message = "Your enrolment code should be 10 characters long";
-                    i = 1;
-                    $("#ad_enrol_code").focus();
-                }else if(response == "enrolment-code-exist"){
-                    message = "The enrolment code <b>'" + $("#ad_enrol_code").val() + "'</b> already exists. Please check your placement form and provide a valid one";
-                    i = 1;
-                    $("#ad_enrol_code").focus();
-                }else if(response == "wrong-school"){
-                    message = "Error with school name. Please report to admin";
-                    i = 1;
-                }else if(response == "no-aggeregate-score"){
-                    message = "Please enter your aggregate score";
-                    i = 1;
-                }else if(response == "no-course-set"){
-                    message = "Please provide the name of your selected program";
-                    i = 1;
-                }else if(response == "no-lname-set"){
-                    message = "Please provide your last name";
-                    i = 1;
-                }else if(response == "no-oname-set"){
-                    message = "Please provide your other name(s)";
-                    i = 1;
-                }else if(response == "no-gender-set"){
-                    message = "Please select your gender";
-                    i = 1;
-                }else if(response == "no-jhs-name-set"){
-                    message = "Please provide the name of your JHS";
-                    i = 1;
-                }else if(response == "no-jhs-town-set"){
-                    message = "Please provide the town in which JHS is found";
-                    i = 1;
-                }else if(response == "no-jhs-district-set"){
-                    message = "Please provide the district of your JHS";
-                    i = 1;
-                }else if(response == "no-year-set"){
-                    message = "Please select your year of birth";
-                    i = 1;
-                }else if(response == "no-month-set"){
-                    message = "Please select your month of birth";
-                    i = 1;
-                }else if(response == "no-day-set"){
-                    message = "Please select your day of birth";
-                    i = 1;
-                }else if(response == "no-birth-place-set"){
-                    message = "Please enter your place of birth";
-                    i = 1;
-                }else if(response == "no-father-name"){
-                    message = "Please provide your father's name";
-                    i = 2;
-                }else if(response == "no-f-occupation-set"){
-                    message = "Please provide your father's occupation";
-                    i = 2;
-                }else if(response == "no-mother-name"){
-                    message = "Please provide your mother's name";
-                    i = 2;
-                }else if(response == "no-m-occupation-set"){
-                    message = "Please provide your mother's occupation";
-                    i = 2;
-                }else if(response == "no-elder-name"){
-                    message = "Please provide your father, mother or a guardian";
-                    i = 2;
-                }else if(response == "no-residence-set"){
-                    message = "Please provide your residential address";
-                    i = 2;
-                }else if(response == "no-p-p-set"){
-                    message = "Please select your primary phone number";
-                    i = 2;
-                }else if(response == "p-p-short"){
-                    message = "Primary phone number is shorter than normal";
-                    i = 2;
-                }else if(response == "p-p-long"){
-                    message = "Primary phone number is longer than normal";
-                    i = 2;
-                }else if(response == "p-p-invalid"){
-                    message = "Primary phone number is not a invalid phone number";
-                    i = 2;
-                }else if(response == "s-p-short"){
-                    message = "Secondary phone number is shorter than normal";
-                    i = 2;
-                }else if(response == "s-p-long"){
-                    message = "Secondary phone number is longer than normal";
-                    i = 2;
-                }else if(response == "s-p-invalid"){
-                    message = "Secondary phone number is not a invalid phone number";
-                    i = 2;
-                }else if(response == "no-interest-set"){
-                    message = "Please select at least one interest";
-                    i = 2;
-                }else if(response == "no-witness-set"){
-                    message = "Please provide a witness' name";
-                    i = 2;
-                }else if(response == "no-witness-phone"){
-                    message = "Please provide your witness' phone number";
-                    i = 2;
-                }else if(response == "witness-phone-long"){
-                    message = "Witness' phone number is longer than normal";
-                    i = 2;
-                }else if(response == "witness-phone-short"){
-                    message = "Witness' phone number is shorter than normal";
-                    i = 2;
-                }else if(response == "witness-phone-invalid"){
-                    message = "Witness' phone number is not a valid phone number";
-                    i = 2;
-                }else{
-                    message = response;
-                    time = 0;
-                }
-                
-                //click respective head
-                $(".tabs span.tab_button:nth-child(" + i + ")").click();
-
-                messageBoxTimeout("admissionForm", message, type, time);
-            }
-        },
-        error: function(xhr, textStatus){
-            let message = ""
-
-            if(textStatus == "timeout"){
+            if(error == "timeout"){
                 message = "Connection was timed out due to a slow network. Please try again later"
             }else{
-                message = "Please check your internet connection and try again";
+                message = error.toString();
             }
             type = "error";
 
             messageBoxTimeout(form_element.prop("name"), message, type);
-        }
     })
 })
 
@@ -739,6 +705,15 @@ $(".tab_button").click(function(){
         $("label[for=print_summary]").removeClass("no_disp");
     }else{
         $("label[for=print_summary]").addClass("no_disp");
+    }
+})
+
+//the avatar of the school
+$("input#profile_pic").change(function(){
+    if($(this).val() != ''){
+        $("#res_ad_profile_picture").text("Provided");
+    }else{
+        $("#res_ad_profile_picture").text("Not Set");
     }
 })
 

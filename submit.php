@@ -1,12 +1,16 @@
 <?php
     include_once("includes/session.php");
 
-    if(isset($_POST['submit'])){
-        $submit = $_POST['submit'];
+    if(isset($_POST['submit']) || isset($_POST["submit_admission"])){
+        $submit = $_POST['submit'] ?? $_POST["submit_admission"];
 
         if($submit == "admissionFormSubmit" || $submit == "admissionFormSubmit_ajax"){
             //receive details of the student
             //cssps details
+            $connect->begin_transaction();
+            $connect2->begin_transaction();
+            $ad_profile_pic = null;
+
             try {
                 $shs_placed = getSchoolDetail($_POST["shs_placed"])["id"];
                 $ad_enrol_code = $_POST["ad_enrol_code"];
@@ -19,14 +23,15 @@
                 }
 
                 $ad_course = $_POST["ad_course"];
+                $program_id = isset($_POST["program_id"]) && !empty($_POST["program_id"]) ? $_POST["program_id"] : get_program_from_course($ad_course, $shs_placed);
 
                 //personal details of candidate
-                $ad_lname = formatName($_POST["ad_lname"]);
-                $ad_oname = formatName($_POST["ad_oname"]);
-                $ad_gender = formatName($_POST["ad_gender"]);
-                $ad_jhs = formatName($_POST["ad_jhs"]);
-                $ad_jhs_town = formatName($_POST["ad_jhs_town"]);
-                $ad_jhs_district = formatName($_POST["ad_jhs_district"]);
+                $ad_lname = ucwords($_POST["ad_lname"]);
+                $ad_oname = ucwords($_POST["ad_oname"]);
+                $ad_gender = ucwords($_POST["ad_gender"]);
+                $ad_jhs = ucwords($_POST["ad_jhs"]);
+                $ad_jhs_town = ucwords($_POST["ad_jhs_town"]);
+                $ad_jhs_district = ucwords($_POST["ad_jhs_district"]);
 
                 //birthdate
                 $ad_year = $_POST["ad_year"];
@@ -61,20 +66,44 @@
 
                 $current_date = date("Y-m-d H:i:s");
 
+                //create profile picture
+                if(isset($_FILES["profile_pic"]) && !empty($_FILES["profile_pic"]["tmp_name"])){
+                    //get file extension
+                    $ext = strtolower(fileExtension("profile_pic"));
+                    $allowed = ["jpg","jpeg","png"];
+        
+                    if(in_array($ext, $allowed)){
+                        $file_input_name = "profile_pic";
+                        $local_storage_directory = "$rootPath/";
+
+                        if(!is_dir($local_storage_directory)){
+                            mkdir($local_storage_directory, recursive: true);
+                        }
+        
+                        $ad_profile_pic = getFileDirectory($file_input_name, $local_storage_directory);
+
+                        //remove rootPath
+                        $ad_profile_pic = explode("$rootPath/", $ad_profile_pic);
+                        $ad_profile_pic = $ad_profile_pic[1];
+                    }else{
+                        echo "profile-wrong-ext";
+                    }
+                }
+
                 //bind the statement
                 $sql = "INSERT INTO enrol_table (indexNumber, enrolCode, shsID, aggregateScore, program, 
                 lastname, othername, gender, jhsName, jhsTown, jhsDistrict, birthdate, birthPlace, fatherName, 
                 fatherOccupation, motherName, motherOccupation, guardianName, residentAddress, postalAddress, primaryPhone, 
-                secondaryPhone, interest, award, position, witnessName, witnessPhone, transactionID, enrolDate) 
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
+                secondaryPhone, interest, award, position, witnessName, witnessPhone, transactionID, enrolDate, profile_pic) 
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
 
                 //prepare query for entry into database
                 $result = $connect->prepare($sql);
-                $result->bind_param("ssissssssssssssssssssssssssss", 
+                $result->bind_param("ssisssssssssssssssssssssssssss", 
                 $ad_index,$ad_enrol_code,$shs_placed, $ad_aggregate, $ad_course, $ad_lname, $ad_oname, 
                 $ad_gender, $ad_jhs, $ad_jhs_town, $ad_jhs_district, $ad_birthdate, $ad_birth_place, $ad_father_name, 
                 $ad_father_occupation, $ad_mother_name, $ad_mother_occupation, $ad_guardian_name, $ad_resident, $ad_postal_address, 
-                $ad_phone, $ad_other_phone, $interest, $ad_awards, $ad_position, $ad_witness, $ad_witness_phone, $_POST["ad_transaction_id"], $current_date);
+                $ad_phone, $ad_other_phone, $interest, $ad_awards, $ad_position, $ad_witness, $ad_witness_phone, $_POST["ad_transaction_id"], $current_date, $ad_profile_pic);
 
                 //check for errors
                 if(!isset($_POST["ad_transaction_id"]) || empty($_POST["ad_transaction_id"])){
@@ -157,10 +186,10 @@
                         $retry = 0;
 
                         $sql = "UPDATE cssps 
-                            SET jhsAttended = ?, dob=?, enroled = 1 
+                            SET jhsAttended = ?, dob=?, profile_pic = ?, enroled = 1 
                             WHERE indexNumber = ?";
                         $stmt = $connect->prepare($sql);
-                        $stmt->bind_param("sss", $ad_jhs, $ad_birthdate, $ad_index);
+                        $stmt->bind_param("ssss", $ad_jhs, $ad_birthdate, $ad_profile_pic, $ad_index);
                         $stmt->execute();
 
                         //verify if transaction id can be found in database
@@ -283,6 +312,7 @@
                         $_SESSION["ad_stud_residence"] = $student["boardingStatus"];
                         $_SESSION["ad_stud_program"] = $student["programme"];
                         $_SESSION["ad_stud_gender"] = $student["Gender"];
+                        $_SESSION["ad_profile_pic"] = $ad_profile_pic;
 
                         //convert house name for only auto house placed students
                         if($_SESSION["ad_stud_house"] !== "e"){
@@ -295,6 +325,23 @@
                                 "ho.indexNumber='$ad_index'"
                             )["title"];
                         }
+
+                        // insert student data into database
+                        if(!empty($program_id)){
+                            $sql = "INSERT INTO students_table (
+                                indexNumber, profile_pic, Lastname, Othernames, Gender, 
+                                houseID, school_id, studentYear, guardianContact, programme, program_id, 
+                                boardingStatus) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+                            $stmt = $connect2->prepare($sql);
+                            $house_id = intval($_SESSION["ad_stud_house"]);
+                            $year = 1;
+                            $stmt->bind_param("sssssiiissis", $ad_index, $ad_profile_pic, $ad_lname, $ad_oname, $ad_gender, $house_id, $shs_placed,
+                                $year, $ad_phone, $ad_course, $program_id, $student["boardingStatus"]);
+                            $stmt->execute();
+                        }
+
+                        $connect->commit();
+                        $connect2->commit();
                     }else{
                         if(str_contains(strtolower(strval($result->error)), "duplicate")){
                             $message = "Your data has already been written. Please navigate to <a href='https://www.shsdesk.com/student'>shsdesk.com/student</a> to print document";
@@ -304,6 +351,14 @@
                     }
                 }
             } catch (\Throwable $th) {
+                $connect->rollback();
+                $connect2->rollback();
+
+                // remove profile pic if it has been created
+                if(!is_null($ad_profile_pic)){
+                    unlink($_SERVER["DOCUMENT_ROOT"]."/".$ad_profile_pic);
+                }
+                
                 $message = throwableMessage($th);
             }
 
@@ -612,6 +667,27 @@
             }
 
             echo $message;
+        }elseif($submit == "get_programs"){
+            $course_name = $_GET["course_name"];
+            $school_id = $_GET["school_id"];
+            $programs = decimalIndexArray(fetchData1(["program_id", "program_name", "course_ids"], "program", ["school_id=$school_id", "LOWER(associate_program) = '".strtolower($course_name)."'"], 0));
+
+            if($programs){
+                $progs = [];
+                foreach($programs as $program){
+                    $ids = array_filter(explode(" ", $program["course_ids"]));
+                    $ids = implode(", ", $ids);
+                    $courses = decimalIndexArray(fetchData1("course_name", "courses", "course_id IN ($ids)", 0));
+                    $progs[] = [
+                        "id" => $program["program_id"],
+                        "name" => $program["program_name"],
+                        "courses" => implode(", ", array_values($courses))
+                    ];
+                }
+                echo json_encode($progs);
+            }else{
+                echo "none";
+            }
         }else{
             echo "Provided submission could not be found. Please try again, else use the message us button";
         }

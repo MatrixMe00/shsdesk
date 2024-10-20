@@ -36,6 +36,7 @@
             $_SESSION["ad_stud_residence"] = $student["boardingStatus"];
             $_SESSION["ad_stud_program"] = $student["programme"];
             $_SESSION["ad_stud_gender"] = $student["Gender"];
+            $_SESSION["ad_profile_pic"] = $student["profile_pic"];
             
             if(is_array(fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'"))){
                 $house_id = fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"];
