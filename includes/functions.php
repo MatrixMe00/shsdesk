@@ -1896,3 +1896,14 @@
 
         return $nav_light;
     }
+
+    /**
+     * This is used to check if a should receive or bypass payment
+     * @param int $school_id The id of the school
+     * @return bool
+     */
+    function access_without_payment(int $school_id) :bool{
+        $no_payment = [64];
+
+        return in_array($school_id, $no_payment);
+    }

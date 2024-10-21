@@ -1,6 +1,4 @@
 <?php require_once "compSession.php"; $_SESSION["active-page"] = "report" ?>
-<?php 
-$code = fetchData1("accessToken","accesstable","indexNumber='{$student['indexNumber']}' AND status=1 ORDER BY expiryDate DESC"); ?>
 <?php if($code !== "empty"): ?>
 <section class="flex d-section flex-wrap gap-sm p-lg card-section">
     <div class="card v-card gap-lg indigo sm-rnd flex-wrap">
@@ -41,7 +39,7 @@ $code = fetchData1("accessToken","accesstable","indexNumber='{$student['indexNum
         <label class="p-med" for="report_year">
             <select class="w-full" name="report_year" id="report_year">
                 <?php
-                    $years = decimalIndexArray(fetchData1("DISTINCT exam_year, program_id", "results", "indexNumber='{$student['indexNumber']}'")); 
+                    $years = decimalIndexArray(fetchData1("DISTINCT exam_year, program_id", "results", "indexNumber='{$student['indexNumber']}'", limit: 0)); 
 
                     if(!$years){
                         $years = decimalIndexArray(["exam_year" => $student["studentYear"], "program_id" => $student["program_id"]]);

@@ -9,8 +9,12 @@
     </div>
     <h3 class="flex-all-center flex-column gap-sm">
         <span><?= $student["Lastname"]." ".$student["Othernames"] ?></span>
+        <?php if(access_without_payment($student["school_id"])): ?>
+        <span class="txt-fs">[free_access]</span>
+        <?php else: ?>
         <span class="txt-fs"><?php $code = fetchData1("accessToken","accesstable","indexNumber='{$student['indexNumber']}' AND status=1 ORDER BY expiryDate DESC"); 
             echo $code == "empty" ? "[No access Code]" : "[{$code['accessToken']} Active]" ?></span>
+        <?php endif; ?>
     </h3>
     <div class="nav_links">
         <div id="ham">

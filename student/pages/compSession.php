@@ -8,5 +8,9 @@
         exit(1);
     }*/
 
-    $code = fetchData1("accessToken","accesstable","indexNumber='{$student['indexNumber']}' AND status=1 ORDER BY expiryDate DESC"); 
+    if(access_without_payment($student["school_id"])){
+        $code = "free_access";
+    }else{
+        $code = fetchData1("accessToken","accesstable","indexNumber='{$student['indexNumber']}' AND status=1 ORDER BY expiryDate DESC"); 
+    }
 ?>

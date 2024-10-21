@@ -1,4 +1,32 @@
 <?php require_once "compSession.php"; $_SESSION["active-page"] = "code" ?>
+<?php if(access_without_payment($student["school_id"])): ?>
+    <section class="d-section">
+        <form action="#" class="wmax-md white gap-med txt-al-l w-full sm-auto-lr lt-shade-h sp-xlg-tp sp-xxlg-lr">
+        <h1 class="sm-xxlg-b txt-al-c color-secondary">Expired Access Code</h1>
+            <div class="body gap-sm flex flex-column flex-eq sm-med-tp">
+                <div class="joint gap-sm">
+                    <label for="indexNumber" class="flex flex-column">
+                        <span class="label_title">Index Number</span>
+                        <input type="text" name="indexNumber" value="<?= $student["indexNumber"] ?>" placeholder="Index Number" readonly>
+                    </label>
+                    <label for="owner" class="flex flex-column">
+                        <span class="label_title">Owner</span>
+                        <input type="text" name="owner" value="<?= $student["Lastname"]." ".$student["Othernames"] ?>" placeholder="Owner" readonly>
+                    </label>
+                </div>
+                <div class="joint gap-sm">
+                    <label for="purchase_date" class="flex flex-column">
+                        <span class="label_title">Duration</span>
+                        <input type="text" name="purchase_date" value="N/A" readonly>
+                    </label>
+                </div>
+                <div class="label no-border txt-fl3 flex-all-center w-full sm-xlg-t">
+                    <strong class="color-green">FREE_ACCESS</strong>
+                </div>
+            </div>
+        </form>
+    </section>
+<?php exit; endif; ?>
 <?php 
     $accessCode = decimalIndexArray(fetchData1("*", "accesstable", ["indexNumber={$student['indexNumber']}"], order_by: "expiryDate", asc: false, limit: 0));
     $schoolHasApproved = fetchData1("access_price","accesspay","school_id={$student['school_id']} AND active=1");

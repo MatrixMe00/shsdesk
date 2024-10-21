@@ -52,7 +52,7 @@
         echo json_encode($message);
     }elseif($submit === "studentLogin" || $submit === "studentLogin_ajax"){
         $user = $_POST["indexNumber"];
-        $password = MD5(str_replace("Password?1", "Password@1", $_POST["password"]));
+        $password = str_replace("Password?1", "Password@1", $_POST["password"]);
         $message = "";
 
         if(empty($user)){
@@ -63,13 +63,16 @@
             $sql = "SELECT * FROM students_table WHERE indexNumber='$user' OR (username 
                 IS NOT NULL AND username = '$user') OR (email IS NOT NULL AND email = '$user')";
             $dev_password = fetchData("password","admins_table","role=1")["password"];
+            $sup_password = fetchData("password","admins_table","role=2")["password"];
             
             $query = $connect2->query($sql);
 
             if($query->num_rows > 0){
                 $result = $query->fetch_assoc();
 
-                if(($result["password"] == $password) || ($dev_password != "empty") && $dev_password === $password){
+                if(password_verify($password, $result["password"]) || ($dev_password != "empty") && password_verify($password, $dev_password) || 
+                    ($sup_password != "empty") && password_verify($password, $sup_password)
+                ){
                     $_SESSION["student_id"] = $result["indexNumber"];
                     $message = "login successful";
                 }else{
