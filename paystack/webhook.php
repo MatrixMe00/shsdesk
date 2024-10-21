@@ -8,9 +8,17 @@
     
     // Read the raw POST data from the webhook
     $payload = file_get_contents("php://input");
+
+    // create a new file each month for easy tracking
+    $year = date("Y"); $month = date("m"); $y_m = "{$year}_{$month}";
+    $directory = "./paystack/$year";
+
+    if(!is_dir($directory)){
+        mkdir($directory);
+    }
     
     // Log the raw payload (for debugging purposes)
-    file_put_contents("./paystack/paystack_webhook.log", $payload . PHP_EOL, FILE_APPEND);
+    file_put_contents("$directory/paystack_webhook_$month.log", $payload . PHP_EOL, FILE_APPEND);
 
     // Decode the JSON payload
     $event = json_decode($payload, true);
@@ -19,23 +27,25 @@
     switch ($event['event']) {
         case 'charge.success':
             // Logic for successful payment
-            handleSuccessfulPayment($event);
+            handleSuccessfulPayment($event, $directory);
             break;
         case 'charge.failure':
             // Logic for failed payment
-            handleFailedPayment($event);
+            handleFailedPayment($event, $directory);
             break;
         // Add more cases for other events as needed
         default:
             // Unknown event type
-            handleUnknownEvent($event);
+            handleUnknownEvent($event, $directory);
     }
     
     // Respond with a 200 OK to confirm receipt of the webhook
     http_response_code(200);
     
-    function handleSuccessfulPayment($event)
+    function handleSuccessfulPayment($event, $directory)
     {
+        global $month;
+
         // Logic for successful payment
         $data = $event["data"];
         $metadata = $data["metadata"]["custom_fields"];
@@ -114,24 +124,26 @@
                     ];
                     include "./sms/sms.php";
                     
-                    file_put_contents("./paystack/paystack_check.log", $reference." confirmed entry for connect2 with message => $message" . PHP_EOL, FILE_APPEND);
+                    file_put_contents("$directory/paystack_check_$month.log", $reference." confirmed entry for connect2 with message => $message" . PHP_EOL, FILE_APPEND);
                 }catch(Throwable $th){
-                    file_put_contents("./paystack/paystack_check.log", $reference." has error -> ". $th->getMessage() . PHP_EOL, FILE_APPEND);
+                    file_put_contents("$directory/paystack_check_$month.log", $reference." has error -> ". $th->getMessage() . PHP_EOL, FILE_APPEND);
                 }
             }            
         }
     }
     
-    function handleFailedPayment($event)
+    function handleFailedPayment($event, $directory)
     {
+        global $month;
         // Logic for failed payment
-        file_put_contents("./paystack/failed_webhook.log", json_encode($event, JSON_PRETTY_PRINT) . PHP_EOL, FILE_APPEND);
+        file_put_contents("$directory/failed_webhook_$month.log", json_encode($event, JSON_PRETTY_PRINT) . PHP_EOL, FILE_APPEND);
     }
     
-    function handleUnknownEvent($event)
+    function handleUnknownEvent($event, $directory)
     {
+        global $month;
         // pass them into unknown
-        file_put_contents("./paystack/unknown_webhook.log", json_encode($event, JSON_PRETTY_PRINT) . PHP_EOL, FILE_APPEND);
+        file_put_contents("$directory/unknown_webhook_$month.log", json_encode($event, JSON_PRETTY_PRINT) . PHP_EOL, FILE_APPEND);
     }
 
 ?>

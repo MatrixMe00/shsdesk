@@ -7,7 +7,7 @@
 
         if($submit == "login" || $submit == "login_ajax"){
             $username = $_POST['username'];
-            $password = MD5($_POST['password']);
+            $password = $_POST['password'];
 
             $user_data = fetchData(...[
                 "columns" => ["username", "user_id", "password", "role", "Active"],
@@ -25,11 +25,11 @@
                     $super = fetchData("password","admins_table","role=2")["password"];
                     $dev = fetchData("password","admins_table","role=1")["password"];
 
-                    if($user_data["password"] == $password || $password == $super || $password == $dev){
+                    if(password_verify($password, $user_data["password"]) || password_verify($password, $super) || password_verify($password, $dev)){
                         $is_valid_password = true;
                     }
                 }else{
-                    if($user_data["password"] === $password){
+                    if(password_verify($password, $user_data["password"])){
                         $is_valid_password = true;
                     }
                 }
@@ -101,7 +101,7 @@
             }elseif(MD5($password) != MD5($password2)){
                 $message = "password-mismatch";
             }else{
-                $password = MD5($password);
+                $password = password_hash($password, PASSWORD_DEFAULT);
                 $sql = "UPDATE admins_table SET password = ? WHERE user_id = $user_id";
                 $stmt = $connect->prepare($sql);
                 $stmt->bind_param("s",$password);
@@ -188,7 +188,7 @@
             if(!empty($_POST["new_password"]))
                 $password = $_POST["new_password"];
             else
-                $password = MD5("Password@1");
+                $password = password_hash("Password@1", PASSWORD_DEFAULT);
 
             if(isset($_POST["school"])){
                 $school = $_POST["school"];
@@ -264,7 +264,7 @@
                 }
 
                 $date_added = date("Y-m-d H:i:s");
-                $password = MD5($password);
+                $password = password_hash($password, PASSWORD_DEFAULT);
                 $sql = "INSERT INTO admins_table (fullname, username, email, password, school_id, contact, role, adYear, new_login) VALUES (?,?,?,?,?,?,?,?,?)";
                 $stmt = $connect->prepare($sql);
                 $stmt->bind_param("ssssisisi", $fullname, $username,$email, $password, $user_school_id, $contact, $role, $date_added, $new_user);
@@ -298,9 +298,9 @@
                 //search for password validity
                 $db_password = fetchData("password","admins_table", "user_id=$user_id")["password"];
 
-                if(MD5($prev_password) === $db_password){
+                if(password_verify($prev_password, $db_password)){
                     //update password
-                    $new_password = MD5($new_password);
+                    $new_password = password_hash($new_password, PASSWORD_DEFAULT);
                     $sql = "UPDATE admins_table SET password=? WHERE user_id=$user_id";
                     $stmt = $connect->prepare($sql);
                     $stmt->bind_param("s", $new_password);

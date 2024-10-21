@@ -74,7 +74,7 @@
         
                     if(in_array($ext, $allowed)){
                         $file_input_name = "profile_pic";
-                        $local_storage_directory = "$rootPath/";
+                        $local_storage_directory = "$rootPath/assets/images/profiles/students";
 
                         if(!is_dir($local_storage_directory)){
                             mkdir($local_storage_directory, recursive: true);
@@ -94,16 +94,16 @@
                 $sql = "INSERT INTO enrol_table (indexNumber, enrolCode, shsID, aggregateScore, program, 
                 lastname, othername, gender, jhsName, jhsTown, jhsDistrict, birthdate, birthPlace, fatherName, 
                 fatherOccupation, motherName, motherOccupation, guardianName, residentAddress, postalAddress, primaryPhone, 
-                secondaryPhone, interest, award, position, witnessName, witnessPhone, transactionID, enrolDate, profile_pic) 
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
+                secondaryPhone, interest, award, position, witnessName, witnessPhone, transactionID, profile_pic) 
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
 
                 //prepare query for entry into database
                 $result = $connect->prepare($sql);
-                $result->bind_param("ssisssssssssssssssssssssssssss", 
+                $result->bind_param("ssissssssssssssssssssssssssss", 
                 $ad_index,$ad_enrol_code,$shs_placed, $ad_aggregate, $ad_course, $ad_lname, $ad_oname, 
                 $ad_gender, $ad_jhs, $ad_jhs_town, $ad_jhs_district, $ad_birthdate, $ad_birth_place, $ad_father_name, 
                 $ad_father_occupation, $ad_mother_name, $ad_mother_occupation, $ad_guardian_name, $ad_resident, $ad_postal_address, 
-                $ad_phone, $ad_other_phone, $interest, $ad_awards, $ad_position, $ad_witness, $ad_witness_phone, $_POST["ad_transaction_id"], $current_date, $ad_profile_pic);
+                $ad_phone, $ad_other_phone, $interest, $ad_awards, $ad_position, $ad_witness, $ad_witness_phone, $_POST["ad_transaction_id"], $ad_profile_pic);
 
                 //check for errors
                 if(!isset($_POST["ad_transaction_id"]) || empty($_POST["ad_transaction_id"])){
@@ -198,8 +198,8 @@
                         
                         //insert if it cannot be found
                         if(!is_array($db_transaction)){
-                            $sql = "INSERT INTO `transaction` (`transactionID`, `contactNumber`, `schoolBought`, `amountPaid`, `contactName`, `contactEmail`, `Deduction`, `Transaction_Date`, `indexNumber`, `Transaction_Expired`) 
-                            VALUES ('$transaction_id', '$ad_phone', '$shs_placed', 30, 'No Name', NULL, 0.59, '$current_date', NULL, '0')";
+                            $sql = "INSERT INTO `transaction` (`transactionID`, `contactNumber`, `schoolBought`, `amountPaid`, `contactName`, `contactEmail`, `Deduction`, `indexNumber`, `Transaction_Expired`) 
+                            VALUES ('$transaction_id', '$ad_phone', '$shs_placed', 30, 'No Name', NULL, 0.59, NULL, '0')";
                             
                             $connect->query($sql);
                         }

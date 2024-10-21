@@ -5,7 +5,11 @@
     if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0) :
         //determine which page to show per user role
         if($role_is_system){
-            require("superadmin/index.php");
+            if(str_contains($user_role, "chass")){
+                require "chass/index.php";
+            }else{
+                require("superadmin/index.php");
+            }
         }else{
             require("admin/index.php");
         }

@@ -272,31 +272,11 @@
 
     <script>
         $(document).ready(function() {
-            nav_point = "<?php
-                if((isset($_GET["nav_point"]) && $_GET["nav_point"] != null) || (isset($_SESSION["nav_point"]) && !empty($_SESSION["nav_point"]))){
-                    if(isset($_GET["nav_point"]))
-                        echo $_GET["nav_point"];
-                    else
-                        echo $_SESSION["nav_point"];
-                }else{
-                    echo "Dashboard";
-                }
-                ?>";
+            const nav_point = "<?= get_nav_point() ?>";
+            const nav_mode = "<?= get_nav_mode() ?>";
             $("div[name=" + nav_point + "]").click();
 
-            <?php 
-                if($time < 6){
-                    $nav_light = "dark";
-                }elseif($time < 18){
-                    $nav_light = "light";
-                }else{
-                    $nav_light = "dark";
-                }
-            ?>
-            $("nav").addClass("<?php echo $nav_light?>");
-            <?php if($nav_light == "dark"){?>
-            $("nav *").css("color","white");
-            <?php } ?>
+            $("nav").addClass(nav_mode);
         })
     </script>
     <?php }

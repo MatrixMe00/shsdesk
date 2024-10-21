@@ -6,24 +6,7 @@
     <div class="content blue">
         <div class="head">
             <h2>
-                <?php
-                    $res = $connect->query("SELECT e.enrolDate 
-                        FROM enrol_table e JOIN cssps c ON e.indexNumber=c.indexNumber
-                        WHERE shsID=$user_school_id AND c.current_data=TRUE");
-                    $i = 0;
-
-                    if($res->num_rows > 0){
-                        while($row = $res->fetch_assoc()){
-                            if(date("W",strtotime($row['enrolDate'])) == date("W")){
-                                $i += 1;
-                            }else{
-                                continue;
-                            }
-                        }
-                    }
-
-                    echo $i;
-                ?>
+                <?= fetchData("COUNT(enrolDate) as total", "enrol_table", ["shsID=$user_school_id", "current_data = TRUE", "YEAR(NOW()) = YEAR(enrolDate)", "WEEK(NOW()) = WEEK(enrolDate)"], where_binds: "AND")["total"] ?>
             </h2>
         </div>
         <div class="body">
@@ -138,21 +121,14 @@
         <div class="head">
             <h2>GHC
             <?php
-                    $wk_amt = $connect->query("SELECT Transaction_Date as enrolDate, amountPaid 
-                        FROM transaction WHERE current_data=TRUE AND Transaction_Expired = TRUE
-                        AND schoolBought=$user_school_id AND DATE_FORMAT(Transaction_Date, '%Y-%m')");
-                    
-                    $amount = 0;
-                    while($wk_amt = $res->fetch_array()){
-                        if(date("W",strtotime($wk_amt["enrolDate"]) - 1) == date("W") - 1){
-                            $amount += $role_price;
-                        }else{
-                            continue;
-                        }
-                    }
-                    $amount = number_format(round($amount,2), 2);
-                    echo $amount;
-                ?>
+                $wk_amt = fetchData("COUNT(amountPaid) as total", "transaction", 
+                    ["current_data = TRUE", "schoolBought = $user_school_id", "YEAR(NOW()) = YEAR(Transaction_DATE)", "WEEK(NOW()) - 1", "WEEK(Transaction_Date)"], where_binds: "AND"
+                )["total"];
+                
+                $amount = $role_price * $wk_amt;
+                $amount = number_format(round($amount,2), 2);
+                echo $amount;
+            ?>
             </h2>
         </div>
         <div class="body">
@@ -163,18 +139,15 @@
     <div class="content purple">
         <div class="head">
             <h2>GHC
-                <?php
-                    $amount = 0;
-                    while($wk_amt = $res->fetch_array()){
-                        if(date("W",strtotime($wk_amt["enrolDate"])) == date("W")){
-                            $amount += $role_price;
-                        }else{
-                            continue;
-                        }
-                    }
-                    $amount = number_format(round($amount,2), 2);
-                    echo $amount;
-                ?>
+            <?php
+                $wk_amt = fetchData("COUNT(amountPaid) as total", "transaction", 
+                    ["current_data = TRUE", "schoolBought = $user_school_id", "YEAR(NOW()) = YEAR(Transaction_DATE)", "WEEK(NOW())", "WEEK(Transaction_Date)"], where_binds: "AND"
+                )["total"];
+                
+                $amount = $role_price * $wk_amt;
+                $amount = number_format(round($amount,2), 2);
+                echo $amount;
+            ?>
             </h2>
         </div>
         <div class="body">
@@ -193,7 +166,7 @@
                     );
                     
                     $head_id = (int) $role_id + 1;
-                    $head_price = fetchData("price","roles","id=$head_id")["price"];
+                    $head_price = getRole($head_id, false)["price"];
                     $amount = $amount["total"] * ($head_price / 100);
                     
                     echo number_format(round($amount,2), 2);

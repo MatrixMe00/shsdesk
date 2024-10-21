@@ -1864,3 +1864,35 @@
 
         return $program["program_id"];
     }
+
+    /**
+     * Used to get the nav point for admin dashboards
+     * @return string
+     */
+    function get_nav_point() :string{
+        $nav_point = "";
+
+        if((isset($_GET["nav_point"]) && $_GET["nav_point"] != null) || (isset($_SESSION["nav_point"]) && !empty($_SESSION["nav_point"]))){
+            $nav_point = $_GET["nav_point"] ?? $_SESSION["nav_point"];
+        }
+
+        return empty($nav_point) ? "dashboard" : $nav_point;
+    }
+
+    /**
+     * Sets the dark mode for the nav bar
+     * @return string
+     */
+    function get_nav_mode(){
+        $time = date("H");
+        
+        if($time < 6){
+            $nav_light = "dark";
+        }elseif($time < 18){
+            $nav_light = "light";
+        }else{
+            $nav_light = "dark";
+        }
+
+        return $nav_light;
+    }

@@ -323,7 +323,7 @@
             }
             if((intval($response) && $response > 0) || (!is_null($response) && !empty($response))) :
         ?>
-        <div class="news_number absolte danger flex-all-center">
+        <div class="news_number absolute danger flex-all-center">
             <span><?= $response ?></span>
         </div>
         <?php endif; ?>

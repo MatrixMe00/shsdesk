@@ -3,7 +3,7 @@
 
     $this_url = $_SERVER["REQUEST_URI"];
 
-    if($this_url == "/admin/admin/"){
+    if($this_url == "/admin/chass/"){
         header("Location: ./admin");
     }
 
@@ -27,36 +27,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             session_destroy();
         }else{
     ?>
-    <?php 
-        //determine if user system is active or not
-        $data = getSchoolDetail($user_school_id, true);
-        if($data["Active"] == FALSE){
-            echo "<nav id='not-active'>
-            ";
-            $status = "Status: School Disabled";
-            $_SESSION["real_status"] = false;
-        }else{
-            //check if house and students are set
-            $house_check = fetchData("COUNT(DISTINCT(title)) AS total", "houses", "schoolID=$user_school_id")["total"];
-            if($house_check >= 1){
-                //check if there is at least one student uploaded on the system
-                $students = fetchData("COUNT(indexNumber) AS total", "cssps", "schoolID=$user_school_id")["total"];
-                if($students == 0){
-                    echo "<nav id='not-display'>";
-                    $status = "Status: Not Active [No Student Uploaded]";
-                    $_SESSION["real_status"] = false;
-                }else{
-                    echo "<nav>";
-                    $status = "Status: Active";
-                    $_SESSION["real_status"] = true;
-                }
-            }else{
-                echo "<nav id='not-display'>";
-                $status = "Status: Not Active [No House Uploaded]";
-                $_SESSION["real_status"] = false;
-            }
-        }
-    ?>
+    <nav>
         <div id="ham" class="">
             <span></span>
             <span></span>
@@ -77,10 +48,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
                     </span>
                 </div>
                 <div class="status">
-                    <span><?php echo $status ?></span>
-                </div>
-                <div class="admin_mode">
-                    <span class="txt-fs"><?= "[".ucwords($_SESSION["admin_mode"])." Mode]" ?></span>
+                    <span>Status: Active</span>
                 </div>
             </div>
             <?php include_once("page_parts/nav.php"); ?>
@@ -88,7 +56,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     </nav>
     <section id="rhs">
         <div class="head">
-            <h3 id="title"><?php echo getSchoolDetail($user_school_id)["schoolName"] ?> / <span id="head"></span></h3>
+            <h3 id="title">CHASS / <span id="head"></span></h3>
         </div>
         <div class="body"></div>
     </section>
@@ -115,64 +83,22 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
         </div>
     </div>
 
-    <div style="transition: unset !important; max-width: 250px; width: 100%; cursor: move" 
-        class="fixed dark lt-shade sp-med top-right light sm-lg-t sm-xlg-r" id="admin_mode">
-        <p class="txt-al-c txt-fs" style="cursor: pointer" id="admin_head_title">Change Interface Mode</p>
-        <select name="admin_mode_select" style="cursor: default" class="p-med sp-med wmin-unset w-full no_disp" id="admin_mode_select">
-            <option value="admission"<?= $_SESSION["admin_mode"] == "admission" ? " selected" : "" ?>>Admission</option>
-            <option value="records"<?= $_SESSION["admin_mode"] == "records" ? " selected" : "" ?>>Records</option>
-        </select>
-        <p class="txt-fs2 sm-med-t txt-al-c no_disp">This box can be dragged</p>
-    </div>
-
     <script src="<?php echo $url?>/admin/assets/scripts/index.min.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
     
     <script>
         $(document).ready(function() {
-            dragElement($("#admin_mode"))
-            touchDragElement($("#admin_mode"))
-
             const nav_point = "<?= get_nav_point() ?>";
-            const nav_mode = "<?= get_nav_mode() ?>";
+            const nav_light = "<?= get_nav_mode() ?>";
+
             $("div[name=" + nav_point + "]").click();
 
-            $("nav").addClass(nav_mode);
+            $("nav").addClass(nav_light);
             
             $("#admin_head_title").click(function(){
                 $(this).siblings("select, p").toggleClass("no_disp")
                 $(this).toggleClass("sm-med-b")
                 $(this).parent().toggleClass("dark")
-            })
-
-            $("#admin_mode select").change(function(){
-                const val = $(this).val()
-
-                $.ajax({
-                    url: "admin/submit.php",
-                    data: {
-                        submit: "change_admin_mode", admin_mode: val
-                    },
-                    timeout: 30000,
-                    success: function(response){
-                        if(response === "true"){
-                            alert_box("Mode changed to " + val, "teal")
-
-                            setTimeout(()=>{
-                                location.reload()
-                            },1000)
-                        }else{
-                            alert_box(response, "warning color-dark")
-                        }
-                    },
-                    error: function(xhr, textStatus){
-                        if(textStatus === "timeout"){
-                            alert_box("Connection was timed out. Please check your internet connection", "danger", 7)
-                        }else{
-                            alert_box(xhr.responseText)
-                        }
-                    }
-                })
             })
         })
     </script>
