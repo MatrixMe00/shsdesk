@@ -43,13 +43,10 @@
                         if(str_contains($_POST["password"], "Password?") === true){
                             $_POST["password"] = str_replace("?","@",$_POST["password"]);
                         }
-                        $super_passwords = decimalIndexArray(fetchData("password","admins_table","role <= 2", 0));
-                        $super_passwords = array_column($super_passwords, "password");
-                        $password = MD5($_POST["password"]) ?? null;
 
                         if(is_null($password) || empty($password)){
                             $message = "Please provide a password";
-                        }elseif(in_array($password, $super_passwords, true)){
+                        }elseif(super_bypass($password)){
                             $error = false;
                             $message = true;
                             
@@ -523,12 +520,12 @@
                             $message = "Please provide your current password";
                         }elseif(is_null($password_n) || empty($password_n)){
                             $message = "Please provide your new password";
-                        }elseif(MD5($password_c) !== $password){
+                        }elseif(!password_verify($password_c, $password)){
                             $message = "Your current password is incorrect";
-                        }elseif(MD5($password_n) === $password){
+                        }elseif(password_verify($password_n, $password)){
                             $message = "You cannot use your current password as a new password";
                         }else{
-                            $password_n = md5($password_n);
+                            $password_n = password_hash($password_n, PASSWORD_DEFAULT);
                         }
                     }else{
                         $password_n = $password;
@@ -767,12 +764,12 @@
                         if(is_array($user)){
                             $password_o = fetchData1("user_password","teacher_login","user_id={$user["teacher_id"]}")["user_password"];
 
-                            if(md5($password) == $password_o){
+                            if(password_verify($password, $password_o)){
                                 $message = "You cannot use the current password";
-                            }else if(strtolower($password) != strtolower($password_c)){
+                            }else if($password !== $password_c){
                                 $message = "Your passwords do not match. Please check and try again";
                             }else{
-                                $password = md5($password);
+                                $password = password_hash($password, PASSWORD_DEFAULT);
                                 $sql = "UPDATE teacher_login SET user_password=? WHERE user_id=?";
                                 $stmt = $connect2->prepare($sql);
                                 $stmt->bind_param("si",$password, $user["teacher_id"]);

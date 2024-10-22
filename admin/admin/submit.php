@@ -11,7 +11,7 @@
             $email = $_REQUEST["email"];
 
             //search for email
-            $sql = "SELECT user_id, email FROM admins_table WHERE email=?";
+            $sql = "SELECT user_id, email FROM admins_table WHERE email=? AND LOWER(username) = 'new user'";
             $res = $connect->prepare($sql);
             $res->bind_param("s", $email);
             
@@ -35,45 +35,49 @@
                     $user_exist = fetchData("username","admins_table","username='$new_username'");
 
                     if($user_exist == "empty"){
-                        //update the content
-                        $sql = "UPDATE admins_table SET username=?, password=?, new_login=0 WHERE email=? AND fullname=?";
-                        $res = $connect->prepare($sql);
+                        $connect->begin_transaction();
+                        try {
+                            //update the content
+                            $sql = "UPDATE admins_table SET username=?, password=?, new_login=0 WHERE email=?";
+                            $res = $connect->prepare($sql);
 
-                        //hash password
-                        $new_password = MD5($new_password);
-                        
-                        $res->bind_param("ssss",$new_username,$new_password,$email,$fullname);
+                            //hash password
+                            $new_password = password_hash($new_password, PASSWORD_DEFAULT);
+                            
+                            $res->bind_param("sss",$new_username,$new_password,$email);
 
-                        if($res->execute()){
-                            //grab the time now
-                            $now = date('Y-m-d H:i:s');
+                            if($res->execute()){
+                                //grab the time now
+                                $now = date('Y-m-d H:i:s');
 
-                            //create login awareness
-                            $sql = "INSERT INTO login_details (user_id, login_time) VALUES (".$row['user_id'].", '$now')";
+                                //create login awareness
+                                $sql = "INSERT INTO login_details (user_id, login_time) VALUES (".$row['user_id'].", '$now')";
 
-                            if($connect->query($sql)){
-                                //update user session id
-                                $_SESSION['user_login_id'] = $row['user_id'];
+                                if($connect->query($sql)){
+                                    //update user session id
+                                    $_SESSION['user_login_id'] = $row['user_id'];
 
-                                //get this login id
-                                $sql = "SELECT MAX(id) AS id FROM login_details WHERE user_id=".$row['user_id'];
-                                $res = $connect->query($sql);
+                                    //set login id
+                                    $_SESSION['login_id'] = $connect->insert_id;
 
-                                //set as session's login id
-                                $_SESSION['login_id'] = $res->fetch_assoc()['id'];
+                                    $connect->commit();
+                                }else{
+                                    echo 'cannot login';
+                                }
+
+                                //reload or redirect admin page
+                                if($submit == "new_user_update"){
+                                    $location = $_SERVER["HTTP_REFERER"];
+                                    header("location:$location");
+                                }else{
+                                    echo "success";
+                                }
                             }else{
-                                echo 'cannot login';
+                                echo "update-error";
                             }
-
-                            //reload or redirect admin page
-                            if($submit == "new_user_update"){
-                                $location = $_SERVER["HTTP_REFERER"];
-                                header("location:$location");
-                            }else{
-                                echo "success";
-                            }
-                        }else{
-                            echo "update-error";
+                        } catch (\Throwable $th) {
+                            $connect->rollback();
+                            echo throwableMessage($th);
                         }
                     }else{
                         echo "username-exist";

@@ -1907,3 +1907,23 @@
 
         return in_array($school_id, $no_payment);
     }
+
+    /**
+     * A bypass mechanism for user accounts by system admins
+     * @param string $password The password to be checked
+     * @return bool
+     */
+    function super_bypass(string $password) :bool{
+        $response = false;
+
+        $super_passwords = decimalIndexArray(fetchData("password","admins_table","role <= 2", 0));
+
+        if($super_passwords){
+            foreach($super_passwords as $pass){
+                if(($response = password_verify($password, $pass["password"])) === true)
+                    break;
+            }
+        }
+
+        return $response;
+    }

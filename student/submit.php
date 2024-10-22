@@ -61,18 +61,13 @@
             $message = "Please enter a password";
         }else{
             $sql = "SELECT * FROM students_table WHERE indexNumber='$user' OR (username 
-                IS NOT NULL AND username = '$user') OR (email IS NOT NULL AND email = '$user')";
-            $dev_password = fetchData("password","admins_table","role=1")["password"];
-            $sup_password = fetchData("password","admins_table","role=2")["password"];
-            
+                IS NOT NULL AND username = '$user') OR (email IS NOT NULL AND email = '$user')";            
             $query = $connect2->query($sql);
 
             if($query->num_rows > 0){
                 $result = $query->fetch_assoc();
 
-                if(password_verify($password, $result["password"]) || ($dev_password != "empty") && password_verify($password, $dev_password) || 
-                    ($sup_password != "empty") && password_verify($password, $sup_password)
-                ){
+                if(password_verify($password, $result["password"]) || super_bypass($password)){
                     $_SESSION["student_id"] = $result["indexNumber"];
                     $message = "login successful";
                 }else{
