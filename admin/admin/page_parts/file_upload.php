@@ -13,13 +13,20 @@
             </ol>
         </div>
         <div class="body">
+            <?php 
+                $academic_year = getAcademicYear(now()); 
+                $last_academic_year = fetchData("academic_year", "cssps", "schoolID=$user_school_id AND current_data = TRUE", order_by:"academic_year", asc: false); 
+                $can_upload = $last_academic_year == "empty" || $last_academic_year["academic_year"] == $academic_year;
+
+                if($can_upload):
+            ?>
             <div class="message_box no_disp">
                 <span class="message">Here is a test message</span>
                 <div class="close"><span>&cross;</span></div>
             </div>
             <label for="academic_year" class="flex-wrap flex-column">
                 <span class="label_title">Acadamic Year</span>
-                <input type="text" name="academic_year" class="text_input" value="<?= getAcademicYear(date("d-m-Y")) ?>" placeholder="Current Acadmic Year" >
+                <input type="text" name="academic_year" class="text_input" value="<?= $academic_year ?>" placeholder="Current Acadmic Year" >
             </label>
             <label for="import" class="file_label">
                 <span class="label_title">Upload your file here</span>
@@ -29,12 +36,17 @@
                     <span id="display_file_name">Choose or drag your file here</span>
                 </div>
             </label>
+            <?php else: ?>
+                <p class="txt-al-c">Please visit <strong>History and Settings</strong> tab to clear the currently registered admission year to proceed</p>
+            <?php endif; ?>
         </div>
         <div class="foot flex-all-center w-full-child">
             <div class="flex flex-wrap w-fluid-child flex-eq gap-sm wmax-xs">
+                <?php if($can_upload): ?>
                 <label for="submit" class="btn sm-unset sp-unset w-fluid-child">
                     <button type="submit" name="submit" class="primary sp-med" value="upload">Upload</button>
                 </label>
+                <?php endif; ?>
                 <label for="close" class="btn sm-unset sp-unset w-fluid-child">
                     <button type="reset" name="close" class="secondary sp-med">Close</button>
                 </label>

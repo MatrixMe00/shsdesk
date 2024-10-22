@@ -233,7 +233,7 @@
             $school_id = $connect->insert_id;
 
             //set the default password
-            $default_password = MD5("Password@1");
+            $default_password = password_hash("Password@1", PASSWORD_DEFAULT);
 
             $date_now = date("d-m-Y H:i:s");
 

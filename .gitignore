@@ -7,3 +7,4 @@ student/assets/images/icons/sv/*
 *.zip
 *.log
 paystack/test.json
+/admin/admin/assets/files/admission templates

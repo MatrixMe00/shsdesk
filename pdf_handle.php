@@ -137,6 +137,11 @@
                 <button id="btn_pros">Download School's Prospectus | Download [PDF]</button>
             </a>
         </div>
+        <div class="member_div">
+            <a href="<?php echo $url?>/enrolPDF.php" rel="nofollow">
+                <button id="btn_ad">My Enrolment Information | Download [PDF]</button>
+            </a>
+        </div>
         <?php if($houses > 0){?>
         <div class="member_div">
             <a href="<?php echo $url?>/customPdfGenerator.php" rel="nofollow">

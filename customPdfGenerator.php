@@ -92,6 +92,11 @@
         $gender = $_SESSION["ad_stud_gender"] == "Male" ? "Sir" : "Madam";
         $profile_pic = $_SESSION["ad_profile_pic"];
 
+        if(!empty($profile_pic)){
+            $profile_pic = "<img src=\"$url/$profile_pic\" width=\"30mm\" height=\"30mm\">";
+            $profile_pic = html_entity_decode($profile_pic, ENT_QUOTES);
+        }
+
         if($house == "e"){
             $house = "Allocated Later";
         }
@@ -164,6 +169,9 @@
                 <br><span>Dear $gender</span>
                 <div class="letter">
                     <h3 class="letter_title" style="text-align: center; font-size: 11pt"><u>$ad_title</u></h3>
+                    <div style="float: right;">
+                        $profile_pic
+                    </div>
                     <div class="candidate_info" style="text-align: start;">
                         <span>Enrolment Code: $enrolment_code</span><br>
                         <span>Candidate Name: $candidate</span><br>

@@ -5,15 +5,15 @@
         $submit = $_REQUEST["submit"];
 
         if($submit == "new_user_update" || $submit == "new_user_update_ajax"){
-            $new_username = strip_tags(stripslashes($_REQUEST["new_username"]));
-            $new_password = strip_tags(stripslashes($_REQUEST["new_password"]));
-            $fullname = strip_tags(stripslashes($_REQUEST["fullname"]));
-            $email = strip_tags(stripslashes($_REQUEST["email"]));
+            $new_username = $_REQUEST["new_username"];
+            $new_password = $_REQUEST["new_password"];
+            $fullname = $_REQUEST["fullname"];
+            $email = $_REQUEST["email"];
 
             //search for email
-            $sql = "SELECT user_id, email FROM admins_table WHERE email=? AND fullname=?";
+            $sql = "SELECT user_id, email FROM admins_table WHERE email=?";
             $res = $connect->prepare($sql);
-            $res->bind_param("ss", $email,$fullname);
+            $res->bind_param("s", $email);
             
             //execute statement
             $res->execute();
@@ -2321,8 +2321,12 @@
 
             echo $message;
         }elseif($submit == "reset_admission"){
-            $sql = "UPDATE cssps SET current_data = FALSE WHERE schoolID=$user_school_id AND current_data = TRUE";
-            $response = $connect->query($sql);
+            $sql = "UPDATE cssps SET current_data = FALSE WHERE schoolID=$user_school_id AND current_data = TRUE;
+                UPDATE enrol_table SET current_data = FALSE WHERE shsID=$user_school_id AND current_data = TRUE;
+                UPDATE house_allocation SET current_data = FALSE WHERE schoolID=$user_school_id AND current_data = TRUE;
+                UPDATE transaction SET current_data = FALSE WHERE schoolBought = $user_school_id AND current_data = TRUE;
+            ";
+            $response = $connect->multi_query($sql);
 
             if($response === true){
                 $message = "Admission has been reset. $connect->affected_rows results were updated";
