@@ -80,7 +80,7 @@
                             mkdir($local_storage_directory, recursive: true);
                         }
         
-                        $ad_profile_pic = getFileDirectory($file_input_name, $local_storage_directory);
+                        $ad_profile_pic = getFileDirectory($file_input_name, $local_storage_directory, $ad_index, true);
 
                         //remove rootPath
                         $ad_profile_pic = explode("$rootPath/", $ad_profile_pic);
@@ -670,7 +670,7 @@
         }elseif($submit == "get_programs"){
             $course_name = $_GET["course_name"];
             $school_id = $_GET["school_id"];
-            $programs = decimalIndexArray(fetchData1(["program_id", "program_name", "course_ids"], "program", ["school_id=$school_id", "LOWER(associate_program) = '".strtolower($course_name)."'"], 0));
+            $programs = decimalIndexArray(fetchData1(["program_id", "program_name", "course_ids"], "program", ["school_id=$school_id", "LOWER(associate_program) = '".strtolower($course_name)."'"], 0, where_binds: "AND"));
 
             if($programs){
                 $progs = [];
@@ -681,7 +681,7 @@
                     $progs[] = [
                         "id" => $program["program_id"],
                         "name" => $program["program_name"],
-                        "courses" => implode(", ", array_values($courses))
+                        "courses" => implode(", ", array_column($courses, "course_name"))
                     ];
                 }
                 echo json_encode($progs);

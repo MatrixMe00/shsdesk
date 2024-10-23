@@ -23,72 +23,49 @@
                         $teacher_id = formatItemId(strtoupper($teacher_id), "TID", true);
                     }
 
-                    if($step == 1){
-                        $sql = "SELECT user_username FROM teacher_login WHERE (user_id=? OR user_username=?)";
-                        $stmt = $connect2->prepare($sql);
-                        $stmt->bind_param("is", $teacher_id, $teacher_id);
-                        if($stmt->execute()){
-                            $result = $stmt->get_result();
+                    $sql = "SELECT user_id, user_username, user_password FROM teacher_login WHERE (user_id=? OR user_username=?)";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("is", $teacher_id, $teacher_id);
+                    if($stmt->execute()){
+                        $result = $stmt->get_result();
 
+                        if($step == 1 && $result){
                             if($result->num_rows > 0){
                                 $error = false;
                                 $message = true;
                             }else{
                                 $message = "ID was not found. Please check your id and try again";
                             }
-                        }else{
-                            $message = "There is an internal sql error. Please try again later";
-                        }
-                    }else{
-                        if(str_contains($_POST["password"], "Password?") === true){
-                            $_POST["password"] = str_replace("?","@",$_POST["password"]);
-                        }
+                        }elseif($step == 2 && $result->num_rows > 0){
+                            if(!isset($_POST["password"])){
+                                $message = "No password provided";
+                            }else{
+                                if(str_contains($_POST["password"], "Password?") === true){
+                                    $_POST["password"] = str_replace("?","@",$_POST["password"]);
+                                }
+                                $result = $result->fetch_assoc();
 
-                        if(is_null($password) || empty($password)){
-                            $message = "Please provide a password";
-                        }elseif(super_bypass($password)){
-                            $error = false;
-                            $message = true;
-                            
-                            if(!is_int($teacher_id)){
-                                $teacher_id = fetchData1("user_id","teacher_login","user_username='$teacher_id'")["user_id"];
-                            }
-                            
-                            $_SESSION["teacher_id"] = $teacher_id;
-                        }else{
-                            $sql = "SELECT t.teacher_id FROM teacher_login l JOIN teachers t ON l.user_id=t.teacher_id
-                                WHERE (l.user_id=? OR l.user_username=?) AND l.user_password=?";
-                            $stmt = $connect2->prepare($sql);
-                            $stmt->bind_param("iss", $teacher_id, $teacher_id, $password);
-                            if($stmt->execute()){
-                                $result = $stmt->get_result();
+                                $password = $_POST["password"];
+                                $is_new_user = strtolower($result["user_username"]) == "new user" && $password == "Password@1";
 
-                                if($result->num_rows > 0){
+                                if(empty($password)){
+                                    $message = "Please provide a password";
+                                }elseif(super_bypass($password) || password_verify($password, $result["user_password"]) || $is_new_user){
                                     $error = false;
                                     $message = true;
-
-                                    //start the session
-                                    $_SESSION["teacher_id"] = $result->fetch_assoc()["teacher_id"];
+                                    
+                                    $_SESSION["teacher_id"] = $result["user_id"];
                                 }else{
-                                    if(strtolower($_POST["password"]) == "password@1"){
-                                        $teacher = fetchData1("user_id, user_username", "teacher_login", ["user_id = '$teacher_id'", "user_username = '$teacher_id'"], 1, "OR");
-                                        
-                                        if($teacher != "empty" && strtolower($teacher["user_username"]) == "new user"){
-                                            $error = false; $message = true;
-
-                                            // start the session
-                                            $_SESSION["teacher_id"] = $teacher["user_id"];
-                                        }else{
-                                            $message = "Incorrect password delivered. Please check and try again";
-                                        }
-                                    }else{
-                                        $message = "Incorrect password delivered. Please check and try again";
-                                    }
+                                    $message = "Password provided is incorrect";
                                 }
-                            }else{
-                                $message = "There was a problem with the mysql server. Please try again later";
-                            }                            
-                        }                        
+                            }
+                        }elseif($result && $result->num_rows == 0){
+                            $message = "User account not found";
+                        }else{
+                            $message = "Invalid step provided";
+                        }
+                    }else{
+                        $message = "There is an internal sql error. Please try again later";
                     }
                 }
                 $response = [

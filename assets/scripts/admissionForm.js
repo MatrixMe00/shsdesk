@@ -420,10 +420,17 @@ $("button[name=continue]").click(function(){
                     }else{
                         $("#program_select").html("");
 
-                        for(i = 0; i < resp.length; i++){
-                            const opt = resp[i];
-                            const option = "<option value=\"" + opt.id + "\" data-courses=\"" + opt.courses + "\">" + opt.name + "</option>";
-                            $("#program_select").append(option);
+                        if(is_json_string(resp)){
+                            resp = JSON.parse(resp);
+
+                            if(resp.length > 1)
+                                $("#program_select").html("<option value=\"\">Select preferred Class</option>")                        
+
+                            for(i = 0; i < resp.length; i++){
+                                const opt = resp[i];
+                                const option = "<option value=\"" + opt.id + "\" data-courses=\"" + opt.courses + "\">" + opt.name + "</option>";
+                                $("#program_select").append(option);
+                            }
                         }
                     }
                 })
@@ -507,8 +514,9 @@ $("#program_select").change(function(){
     $("#program_display_val").text("Not Set");
 
     if($(this).val() != ""){
-        $("#course_displays").html($(this).attr("data-courses"));
-        $("#program_display_val").text($(this).find("option:selected").text());
+        const option = $(this).find("option:selected");
+        $("#course_displays").html(option.attr("data-courses"));
+        $("#program_display_val").text(option.text());
     }
 })
 

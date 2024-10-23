@@ -230,7 +230,7 @@
             if($name !== null) {
                 // Extract the original file extension
                 $extension = pathinfo($original_file_name, PATHINFO_EXTENSION);
-                $file_name = $base_directory . $name . "." . $extension;
+                $file_name = "$base_directory/$name.$extension";
             } else {
                 $file_name = $base_directory . $original_file_name;
             }
@@ -239,7 +239,7 @@
             $uploadOk = 1;
     
             // If file already exists, try to create another filename
-            if(file_exists($file_name) && $replace) {
+            if(file_exists($file_name) && !$replace) {
                 $counter = 1;
     
                 // Split the pathname and extension
@@ -1823,26 +1823,48 @@
     }
 
     /**
-     * This is used to pluck a column and change it into an array of values
-     * 
-     * @param ?array $array The array to be formated
-     * @param string $key The column in the array to serve as the key
-     * @param string $value The column in the array to serve as the value
-     * @return ?array
+     * Used to pluck an array to the form [key => value, key => value]...
+     * If $value is "array", it will store the remainder of the keys as an array.
+     * All internal keys are uppercase by default
+     * @param $array The array. Rejects non-arrays
+     * @param string $key The key values
+     * @param string $value The value key or use "array" to store the remainder
+     * @return array
      */
-    function pluck(?array $array, string $key, string $value) :?array{
-        if(is_null($array)){
-            return null;
-        }
-
-        $array = decimalIndexArray($array);
+    function pluck(mixed $array, string $key, string $value) :array{
         $response = [];
 
-        foreach($array as $data){
-            $response[trim($data[$key])] = $data[$value];
+        if(empty($array) || !is_array($array)){
+            return $response;
         }
+        
+        array_map(function($object) use (&$response, $key, $value){
+            $keyValue = strtoupper($object[$key]);
+
+            if ($value === 'array') {
+                unset($object[$key]);
+                $response[$keyValue] = array_change_key_case($object, CASE_UPPER);
+            } else {
+                $response[$keyValue] = strtoupper($object[$value]);
+            }
+        }, $array);
 
         return $response;
+    }
+
+    /**
+     * This function is used to make a value numeric
+     * @param mixed $value The value to be processed
+     * @return int
+     */
+    function numeric_strict(string $value) :int{
+        if(empty($value) || !preg_match("/\d/", $value)){
+            return 0;
+        }elseif(is_numeric($value)){
+            return $value;
+        }
+
+        return preg_replace("/\D/", "", $value);
     }
 
     /**

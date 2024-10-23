@@ -426,6 +426,20 @@ async function fileUpload(form_element, submit_element, messageBox = true){
 }
 
 /**
+ * This is used to check if a string can be parsed in json
+ * @param {string} value The string value to be checked
+ * @return {bool}
+ */
+function is_json_string(value){
+    try {
+        JSON.parse(value);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+/**
  * This function will be used to parse any file type into the database
  * 
  * @param {string} file_element This takes the element name of the file

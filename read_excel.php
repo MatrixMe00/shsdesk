@@ -258,17 +258,20 @@
                         }elseif($max_column == "J" && $last_heading == "Guardian Contact"){
                             $message = ""; $insert_count = 0; $houses = [];
                             $house_data = fetchData("id, title", "houses", "schoolID=$user_school_id", 0);
-                            $houses = $house_data == "empty" ? [] : array_change_key_case(pluck($house_data, "title", "id"));
+                            $houses = $house_data == "empty" ? [] : array_change_key_case(pluck(decimalIndexArray($house_data), "title", "id"));
                             $program_data = fetchData1("program_id, program_name, short_form", "program", "school_id=$user_school_id", 0);
-                            $programs = $program_data == "empty" ? [] : array_change_key_case(pluck($program_data, "program_name", "program_id"));
-                            $programs_ = $program_data == "empty" ? [] : array_change_key_case(pluck($program_data, "short_form", "program_id"));
+                            $programs = $program_data == "empty" ? [] : array_change_key_case(pluck(decimalIndexArray($program_data), "program_name", "program_id"));
+                            $programs_ = $program_data == "empty" ? [] : array_change_key_case(pluck(decimalIndexArray($program_data), "short_form", "program_id"));
                             $programs = array_merge($programs, $programs_);
                             
+                            $connect2->begin_transaction();
                             for($row=$row_start; $row <= $max_row; $row++){
                                 $skip_row = 0;
                                 //grab columns
                                 for($col = 0; $col < $headerCounter; $col++){
                                     $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
+                                    $cellValue = trim($cellValue);
+
                                     switch ($col) {
                                         case 0:
                                             $skip_row = empty($cellValue) ? $skip_row + 1 : 0;
@@ -285,11 +288,12 @@
                                             $Gender = ucfirst(strtolower($cellValue));
                                             if($Gender != "Male" && $Gender != "Female"){
                                                 echo "Gender for <b>$Lastname $Othernames</b> was invalid. Process has been terminated";
+                                                $connect2->rollback();
                                                 exit(1);
                                             }
                                             break;
                                         case 4:
-                                            $studentYear = intval($cellValue);
+                                            $studentYear = numeric_strict($cellValue);
                                             break;
                                         case 5:
                                             $house = strtolower($cellValue);
@@ -299,6 +303,7 @@
                                             $boardingStatus = ucfirst(strtolower($cellValue));
                                             if($boardingStatus !== "Boarder" && $boardingStatus !== "Day"){
                                                 echo "Boarding Status for <b>$indexNumber</b> is invalid. Process execution has been terminated";
+                                                $connect2->rollback();
                                                 exit(1);
                                             }
                                             break;
@@ -372,9 +377,11 @@
                                         $message = "success";
                                     }
                                 } catch (\Throwable $th) {
-                                    $message = $th->getMessage();
+                                    $connect2->rollback();
+                                    $message = throwableMessage($th);
                                 }
                             }
+                            $connect2->commit();
 
                             echo $message;
                         }else{

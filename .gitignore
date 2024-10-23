@@ -8,3 +8,4 @@ student/assets/images/icons/sv/*
 *.log
 paystack/test.json
 /admin/admin/assets/files/admission templates
+/assets/images/profiles

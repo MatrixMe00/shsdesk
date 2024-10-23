@@ -93,7 +93,7 @@
         $profile_pic = $_SESSION["ad_profile_pic"];
 
         if(!empty($profile_pic)){
-            $profile_pic = "<img src=\"$url/$profile_pic\" width=\"30mm\" height=\"30mm\">";
+            $profile_pic = "<img src=\"$url/$profile_pic\" width=\"100%\" height=\"100%\">";
             $profile_pic = html_entity_decode($profile_pic, ENT_QUOTES);
         }
 
@@ -169,7 +169,7 @@
                 <br><span>Dear $gender</span>
                 <div class="letter">
                     <h3 class="letter_title" style="text-align: center; font-size: 11pt"><u>$ad_title</u></h3>
-                    <div style="float: right;">
+                    <div style="float: right; width: 30mm; height: 30mm">
                         $profile_pic
                     </div>
                     <div class="candidate_info" style="text-align: start;">

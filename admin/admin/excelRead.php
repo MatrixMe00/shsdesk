@@ -195,11 +195,19 @@ if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
                             }
                         }
                     }elseif($document_type == "students_list"){
+                        $houses = decimalIndexArray(fetchData("id, LOWER(title) as title, gender","houses", "schoolID=$user_school_id", 0));
+                        $houses = pluck($houses, "title", "array");
+                        $programs = decimalIndexArray(fetchData1("program_id, program_name, short_form", "program", "school_id=$user_school_id", 0));
+                        $programs = array_merge(pluck($programs, "program_name", "program_id"), pluck($programs, "short_form", "program_id"));
+
+                        $connect2->begin_transaction();
+
                         for($row=$row_start; $row <= $max_row; $row++){
                             $skip_row = 0;
                             //grab columns
                             for($col = 0; $col <= $headerCounter; $col++){
                                 $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
+                                $cellValue = trim($cellValue);
                                 
                                 switch ($col) {
                                     case 0:
@@ -214,28 +222,32 @@ if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
                                         $Othernames = ucwords(strtolower($cellValue));
                                         break;
                                     case 3:
-                                        $Gender = ucfirst(strtolower($cellValue));
+                                        $Gender = trim(ucfirst(strtolower($cellValue)));
                                         if($Gender != "Male" && $Gender != "Female"){
                                             echo "Gender for <b>$Lastname $Othernames</b> was invalid. Process has been terminated";
+                                            $connect2->rollback();
                                             exit(1);
                                         }
                                         break;
                                     case 4:
-                                        $studentYear = intval($cellValue);
+                                        $studentYear = numeric_strict($cellValue);
                                         break;
                                     case 5:
-                                        $house = strtolower($cellValue);
-                                        $houseID = fetchData("id","houses","LOWER(title)='$house' AND schoolID=$user_school_id AND (gender='$Gender' OR gender='Both')");
-                                        if(is_array($houseID)){
-                                            $houseID = $houseID["id"];
-                                        }else{
-                                            $houseID = 0;
+                                        $house = strtoupper($cellValue);
+                                        $houseID = 0;
+
+                                        if($houses && isset($houses[$house])){
+                                            $house = $houses[$house];
+                                            if(in_array($house["GENDER"], [$Gender, "Both"])){
+                                                $houseID = $house["ID"];
+                                            }
                                         }
                                         break;
                                     case 6:
                                         $boardingStatus = ucfirst(strtolower($cellValue));
                                         if($boardingStatus !== "Boarder" && $boardingStatus !== "Day"){
                                             echo "Boarding Status for <b>$indexNumber</b> is invalid. Process execution has been terminated";
+                                            $connect2->rollback();
                                             exit(1);
                                         }
                                         break;
@@ -244,8 +256,8 @@ if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
                                         break;
                                     case 8:
                                         $program = strtolower($cellValue);
-                                        $program_id = fetchData1("program_id","program","school_id=$user_school_id AND (program_name='$program' OR short_form='$program')");
-                                        $program_id = is_array($program_id) ? $program_id["program_id"] : 0;
+                                        $program_id = $programs[$program] ?? 0;
+
                                         break;
                                     case 9:
                                         if(empty($cellValue) || is_numeric($cellValue) === false){
@@ -255,7 +267,7 @@ if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
                                         }
                                         break; 
                                     default:
-                                        "Buffer count is beyond expected input count";
+                                        echo "Buffer count is beyond expected input count";
                                         exit(1);
                                 }
 
@@ -287,7 +299,7 @@ if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
                                     }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
                                         echo "Detail for $indexNumber not written. Gender must either be Male or Female";
                                     }                                
-                                }elseif($index["program_id"] == 0 || empty($index["program_id"])){
+                                }elseif(empty($index["program_id"])){
                                     $sql = "UPDATE students_table SET program_id=? WHERE indexNumber=?";
                                     $stmt = $connect2->prepare($sql);
                                     $stmt->bind_param("is",$program_id,$indexNumber);
@@ -301,9 +313,11 @@ if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
                                     echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
                                 }     
                             } catch (\Throwable $th) {
-                                echo $th->getMessage();
+                                $connect2->rollback();
+                                echo throwableMessage($th);
                             }                          
                         }
+                        $connect->commit();
                     }
                 }else{
                     echo "The columns of this file cannot be found";

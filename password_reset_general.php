@@ -9,14 +9,17 @@
     }
 
     // $users = decimalIndexArray(fetchData("user_id, password", "admins_table", limit: 0));
-    $users = decimalIndexArray(fetchData1("indexNumber, password", "students_table", limit: 0));
+    // $users = decimalIndexArray(fetchData1("indexNumber, password", "students_table", limit: 0));
+    $users = decimalIndexArray(fetchData1("user_id, user_password", "teacher_login", limit: 0));
 
     if($users){
         $connect->begin_transaction();
-        $sql = "UPDATE students_table SET password = ? WHERE indexNumber = ?";
+        // $sql = "UPDATE students_table SET password = ? WHERE indexNumber = ?";
         // $sql = "UPDATE admins_table SET password = ? WHERE user_id = ?";
+        $sql = "UPDATE teacher_login SET user_password = ? WHERE user_id = ?";
         // $default_password = password_hash("1234567890", PASSWORD_DEFAULT);
         $default_password = password_hash("Password@1", PASSWORD_DEFAULT);
+
         $affected = 0;
 
         try{
@@ -28,9 +31,10 @@
             }
 
             foreach($users as $user){
-                if(!isHashed($user["password"])){
+                if(!isHashed($user["user_password"])){
                     // $stmt->bind_param("si", $default_password, $user["user_id"]);
-                    $stmt->bind_param("ss", $default_password, $user["indexNumber"]);
+                    // $stmt->bind_param("ss", $default_password, $user["indexNumber"]);
+                    $stmt->bind_param("si", $default_password, $user["user_id"]);
 
                     if($stmt->execute()){
                         ++$affected;

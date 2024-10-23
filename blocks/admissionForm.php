@@ -313,11 +313,13 @@
 
                 <fieldset id="class_fieldset">
                     <legend>Class</legend>
-                    <p>Important: The program you're enrolling in is divided into several classes. These classes are grouped by major elective subjects.</p>
-                    <select name="program_id" id="program_select">
-                        <option value="">Select an elective class</option>
-                    </select>
-                    <span id="course_displays"></span>
+                    <p><strong>Important</strong>: The program you're enrolling in is divided into several classes. These classes are grouped by major elective subjects.</p>
+                    <div class="joint sp-med gap-md">
+                        <select name="program_id" id="program_select" style="align-self: flex-start;">
+                            <option value="">Select an elective class</option>
+                        </select>
+                        <span id="course_displays"></span>
+                    </div>
                 </fieldset>
 
                 <fieldset>
