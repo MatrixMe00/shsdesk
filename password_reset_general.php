@@ -1,53 +1,66 @@
 <?php
     require "includes/session.php";
+    
+    $types = [
+        "admin" => [
+            "col" => "user_id, password", "table" => "admins_table", "function" => "fetchData", "def_password" => "1234567890",
+            "password_col" => "password", "id_col" => "user_id", "bind" => "si", "connection" => $connect
+        ],
+        "students" => [
+            "col" => "indexNumber, password", "table" => "students_table", "function" => "fetchData1", "def_password" => "Password@1",
+            "password_col" => "password", "id_col" => "indexNumber", "bind" => "ss", "connection" => $connect2
+        ],
+        "admin" => [
+            "col" => "user_id, user_password", "table" => "teacher_login", "function" => "fetchData1", "def_password" => "Password@1",
+            "password_col" => "user_password", "id_col" => "user_id", "bind" => "si", "connection" => $connect2
+        ],
+    ];
 
-    function isHashed($password) {
-        // Check if the password matches bcrypt, argon2i, or argon2id patterns
-        return (preg_match('/^\$2y\$/', $password) || // bcrypt
-                preg_match('/^\$argon2i\$/', $password) || // argon2i
-                preg_match('/^\$argon2id\$/', $password)); // argon2id
+    $type = "students";
+
+    $user = $types[$type] ?? null;
+
+    if(!$user){
+        exit("Invalid user type: $type");
     }
 
-    // $users = decimalIndexArray(fetchData("user_id, password", "admins_table", limit: 0));
-    // $users = decimalIndexArray(fetchData1("indexNumber, password", "students_table", limit: 0));
-    $users = decimalIndexArray(fetchData1("user_id, user_password", "teacher_login", limit: 0));
+    $users = decimalIndexArray($user["function"](
+        $user["col"], $user["table"], $user["password_col"]." NOT LIKE '$2y%'", 0
+    ));
 
     if($users){
-        $connect->begin_transaction();
-        // $sql = "UPDATE students_table SET password = ? WHERE indexNumber = ?";
-        // $sql = "UPDATE admins_table SET password = ? WHERE user_id = ?";
-        $sql = "UPDATE teacher_login SET user_password = ? WHERE user_id = ?";
-        // $default_password = password_hash("1234567890", PASSWORD_DEFAULT);
-        $default_password = password_hash("Password@1", PASSWORD_DEFAULT);
+        $connection = $user["connection"];
+        $connection->begin_transaction();
+        $sql = "UPDATE {$user['table']} SET {$user['password_col']} = ? WHERE {$user['id_col']} = ?";
 
         $affected = 0;
 
         try{
-            // $stmt = $connect->prepare($sql);
-            $stmt = $connect2->prepare($sql);
+            $stmt = $connection->prepare($sql);
 
             if(!$stmt){
-                throw new Exception("Statement could not be prepared: ".$connect->error);
+                throw new Exception("Statement could not be prepared: ".$connection->error);
             }
 
-            foreach($users as $user){
-                if(!isHashed($user["user_password"])){
-                    // $stmt->bind_param("si", $default_password, $user["user_id"]);
-                    // $stmt->bind_param("ss", $default_password, $user["indexNumber"]);
-                    $stmt->bind_param("si", $default_password, $user["user_id"]);
+            foreach($users as $user_){
+                // $default_password = password_hash("1234567890", PASSWORD_DEFAULT);
+                $default_password = password_hash($user["def_password"], PASSWORD_DEFAULT);
 
-                    if($stmt->execute()){
-                        ++$affected;
-                    }else{
-                        throw new Exception("Error: ".$stmt->error);
-                    }
+                $stmt->bind_param($user["bind"], $default_password, $user_[$user["password_col"]]);
+
+                if($stmt->execute()){
+                    ++$affected;
+                }else{
+                    throw new Exception("Error: ".$stmt->error);
                 }
+
+                // sleep(1);
             }
+            $connection->commit();
 
             echo "$affected users have their passwords reset";
-            // $connect->commit();
         }catch(Throwable $th){
-            $connect->rollback();
+            $connection->rollback();
             echo throwableMessage($th);
         }
     }

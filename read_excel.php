@@ -346,11 +346,12 @@
                                     $index = fetchData1("indexNumber, program_id","students_table","indexNumber='$indexNumber' OR (Lastname='$Lastname' AND Othernames='$Othernames')");
             
                                     if($index == "empty"){
-                                        $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, guardianContact, programme, program_id, boardingStatus)
-                                            VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+                                        $password = password_hash("Password@1", PASSWORD_DEFAULT);
+                                        $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, guardianContact, programme, program_id, boardingStatus, password)
+                                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
                                         $stmt = $connect2->prepare($sql);
-                                        $stmt->bind_param("ssssiiissis",$indexNumber, $Lastname, $Othernames, $Gender, $houseID, $user_school_id, $studentYear,
-                                            $guardianContact,$programme, $program_id, $boardingStatus);
+                                        $stmt->bind_param("ssssiiississ",$indexNumber, $Lastname, $Othernames, $Gender, $houseID, $user_school_id, $studentYear,
+                                            $guardianContact,$programme, $program_id, $boardingStatus, $password);
                                         if($stmt->execute()){
                                             if($row == $max_row){
                                                 $message = "success";

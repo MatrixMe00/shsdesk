@@ -3,6 +3,29 @@
     use PHPMailer\PHPMailer\Exception;
     
     require_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
+
+    /**
+     * This function is used to merge mails which are not in the database to the mailing list
+     * @param array $original This is the original data from the enduser
+     * @param array $db_data This is the data from the database
+     * @return array Returns the merged results
+     */
+    function mergeRecipients(array $original, array $db_data){
+        $found_emails = array_column($db_data, "email");
+        $emails_not_found = array_diff($original, $found_emails);
+
+        foreach($emails_not_found as $email){
+            $db_data[] = [
+                "email" => $email,
+                "name" => "No name",
+                "username" => "No username",
+                "school" => "No school",
+                "phone" => "No phone",
+            ];
+        }
+
+        return $db_data;
+    }
     
     // require the phpmailer
     require "$rootPath/phpmailer/src/Exception.php";
@@ -12,17 +35,7 @@
     $mail = new PHPMailer(true);
 
     //depending on the sender name should provide sender email
-    switch(strtolower($sender_name)){
-        case "shsdesk":
-            $sender_email = "sysadmin@shsdesk.com"; break;
-        case "customer care":
-            $sender_email = "customercare@shsdesk.com"; break;
-        default:
-            if(str_contains($_SERVER["SERVER_NAME"], "local"))
-                $sender_email = "successinnovativehub@gmail.com";
-            else
-                $sender_email = "sysadmin@shsdesk.com";
-    }
+    $sender_email = get_default_email($sender_name);
 
     try {
         //Server settings
@@ -47,7 +60,7 @@
         $message = "";
 
         // make sure all recipients are email addresses
-        $recipientsIsValid = checkRecipients($recipients, $message);
+        $recipientsIsValid = validate_email($recipients, $message);
 
         if(!$recipientsIsValid) {
             exit($message);

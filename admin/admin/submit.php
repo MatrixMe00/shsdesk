@@ -715,6 +715,130 @@
             );
 
             echo json_encode($data);
+        }elseif($submit == "search_transfer_student"){
+            $search = $_GET["search"] ?? null;
+            $mode = $_GET["mode"] ?? null;
+
+            if(!empty($search) && !empty($mode)){
+                $academic_year = getAcademicYear(now(), false);
+                $search = "%$search%";
+                $mode = $mode == "process" ? "schoolID=$user_school_id" : "schoolID != $user_school_id";
+                $sql = "SELECT indexNumber, CONCAT(Lastname, ' ', Othernames) AS fullname, schoolID FROM cssps WHERE (Lastname LIKE ? OR Othernames LIKE ? OR indexNumber LIKE ? OR CONCAT(Lastname, ' ', Othernames) LIKE ?) AND current_data = TRUE AND enroled = FALSE AND $mode AND academic_year = '$academic_year'";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("ssss", $search, $search, $search, $search);
+                $stmt->execute();
+
+                $results = $stmt->get_result();
+
+                if($results->num_rows > 0){
+                    $data = $results->fetch_all(MYSQLI_ASSOC);
+                    $status = true;
+                }
+
+                header("Content-type: application/json");
+                echo json_encode([
+                    "status" => $status ?? false,
+                    "data" => $data ?? "No student information was found"
+                ]);
+            }
+        }elseif($submit == "transfer_student"){
+            $school_self = $_POST["school_self"];
+            $school_transfer = $_POST["school_transfer"] ?? null;
+            $index_number = $_POST["student_index"];
+            $mode = $_POST["mode"];
+
+            if(empty($school_self)){
+                $message = "Your school could not be processed";
+            }elseif(empty($mode)){
+                $message = "Transfer mode was not selected";
+            }elseif(empty($school_transfer)){
+                $message = "Transfer school not provided";
+            }elseif(empty($index_number)){
+                $message = "Student index number not provided";
+            }else{
+                $mode_where = $mode == "process" ? "schoolID = $school_self" : "schoolID != $school_self";
+                $academic_year = getAcademicYear(now(), false);
+
+                if(fetchData("indexNumber", "cssps", ["indexNumber='$index_number'", $mode_where, "academic_year = '$academic_year'"], where_binds: "AND") === "empty"){
+                    $message = "Student index number provided was not found on this system";
+                }else{
+                    $school_to = $mode == "request" ? $school_self : $school_transfer;
+                    $school_from = $mode == "request" ? $school_transfer : $school_self;
+                    $status = $mode == "request" ? "request" : "pending";
+                    $is_request = $mode == "request";
+
+                    $connect->begin_transaction();
+                    try {
+                        $sql = "INSERT INTO school_transfer (index_number, school_from, school_to, academic_year, status, is_request) VALUES (?, ?, ?, ?, ?, ?)";
+                        $stmt = $connect->prepare($sql);
+                        $stmt->bind_param("siissi", $index_number, $school_from, $school_to, $academic_year, $status, $is_request);
+                        $message = $stmt->execute() ? "success" : $stmt->error;
+                        
+                        $connect->commit();
+                    } catch (\Throwable $th) {
+                        $connect->rollback();
+                        $message = throwableMessage($th);
+                    }
+                }
+            }
+            echo $message;
+        }elseif($submit == "parse_transfer"){
+            $id = $_POST["id"];
+            $type = $_POST["type"];
+            $is_request = $_POST["is_request"];
+
+            if(empty($id)){
+                $message = "Transfer could not be identified or has invalid identity";
+            }elseif(empty($type)){
+                $message = "Transfer type not specified";
+            }elseif(!is_numeric($is_request) || !in_array($is_request, [0,1])){
+                $message = "Transfer request type has invalid value: $is_numeric";
+            }else{
+                $connect->begin_transaction();
+                $sql = "UPDATE school_transfer SET status = ? WHERE id = ?";
+                $type = $is_request && $type == "resubmit" ? "re-submit" : $type;
+
+                $status = [
+                    "resubmit" => "pending",
+                    "accept" => "accepted",
+                    "reject" => "rejected",
+                    "re-submit" => "transfer"
+                ];
+
+                try {
+                    $stmt = $connect->prepare($sql);
+                    if(!$stmt){
+                        throw new Exception($connect->error);
+                    }
+
+                    $stmt->bind_param("si", $status[$type], $id);
+
+                    $message = $stmt->execute() ? "success" : "Update could not occur: ".$stmt->error;
+
+                    if($type == "accept"){
+                        $student = fetchData("index_number, school_to", "school_transfer", "id=$id");
+                        
+                        // less likely to happen
+                        if(!is_array($student)){
+                            throw new Exception("Student transfer information could not be found");
+                        }
+
+                        $sql = "UPDATE cssps SET schoolID={$student['school_to']} WHERE indexNumber='{$student['index_number']}'";
+                        if(!($connect->query($sql))){
+                            // less likely to happen
+                            throw new Exception("Student transfer failed. No changes were made");
+                        }
+
+                        $connect->commit();
+                    }
+
+                } catch (\Throwable $th) {
+                    $connect->rollback();
+                    $message = throwableMessage($th);
+                }
+            }
+
+            echo $message;
         }elseif($submit == "table_yes_no_submit"){
             $indexNumber = $_REQUEST["indexNumber"] ?? null;
             $school_id = $_REQUEST["school_id"] ?? null;
@@ -1122,7 +1246,8 @@
                         include_once("$rootPath/sms/sms.php");
 
                         if(!is_null($teacher_id) && !empty($teacher_id)){
-                            $connect2->query("INSERT INTO teacher_login (user_id) VALUES ($teacher_id)");
+                            $password = password_hash("Password@1", PASSWORD_DEFAULT);
+                            $connect2->query("INSERT INTO teacher_login (user_id, user_password) VALUES ($teacher_id, '$password')");
                             
                             //teacher courses and classes are in the format [program_id|course_id] [program_id|course_id]
                             $parts = explode(' ', $course_ids);
@@ -1178,6 +1303,26 @@
                             if(empty($message)){
                                 $message = "Teacher has been added";
                                 $status = true;
+
+                                $school_name = getSchoolDetail($user_school_id)["schoolName"];
+                                $teacher_portal = "teacher.$url";
+                                $mail_message = <<<HTML
+                                <p>Dear $teacher_lname $teacher_oname,
+                                <br><br>
+                                We are excited to inform you that your account has been successfully created at <b>$school_name</b>. You can now log in to access your teaching resources, student information, and more.
+                                <br><br>
+                                To log in, please visit $teacher_portal and use the following credentials: <br>
+                                - Username: TID $teacher_id <br>
+                                - Password: Password@1
+                                <br><br>
+                                If you have any questions or need assistance, feel free to reach out.</p>
+                                <br><br>
+                                Best regards,<br>
+                                SHSDesk Team</p>
+                                HTML;
+
+                                // send a confirmation email
+                                send_email($mail_message, "Welcome to $school_name", $teacher_email);
                             }else{
                                 $status = false;
 

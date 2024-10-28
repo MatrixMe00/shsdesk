@@ -135,7 +135,7 @@
                                 }
                             }else{
                                 // Prepare the first update statement
-                                $new_password = MD5($new_password);
+                                $new_password = password_hash($new_password, PASSWORD_DEFAULT);
                                 $sql1 = "UPDATE teacher_login SET user_username=?, user_password=? WHERE user_id=?";
                                 $stmt1 = $connect2->prepare($sql1);
                                 $stmt1->bind_param("ssi", $new_username, $new_password, $teacher_id);
@@ -736,10 +736,10 @@
                         $message = "Confirm password box cannot be empty";
                     }else{
                         //validate user
-                        $user = fetchData1("teacher_id, email","teachers","email='$email'");
+                        $user = fetchData1("user_id, user_password",["join" => "teachers teacher_login", "on" => "teacher_id user_id", "alias" => "t tl"],"email='$email'");
 
                         if(is_array($user)){
-                            $password_o = fetchData1("user_password","teacher_login","user_id={$user["teacher_id"]}")["user_password"];
+                            $password_o = $user["user_password"];
 
                             if(password_verify($password, $password_o)){
                                 $message = "You cannot use the current password";
@@ -749,7 +749,7 @@
                                 $password = password_hash($password, PASSWORD_DEFAULT);
                                 $sql = "UPDATE teacher_login SET user_password=? WHERE user_id=?";
                                 $stmt = $connect2->prepare($sql);
-                                $stmt->bind_param("si",$password, $user["teacher_id"]);
+                                $stmt->bind_param("si",$password, $user["user_id"]);
                                 
                                 if($stmt->execute()){
                                     $message = "success";
@@ -758,7 +758,7 @@
                                 }
                             }
                         }else{
-                            $message = "Email does not match any user in the database";
+                            $message = "Email does not match any valid existing user";
                         }
                     }
                 }catch(\Throwable $th){

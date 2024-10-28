@@ -393,7 +393,13 @@
                 echo 'message_short';
 
             } else {
-                require $rootPath.'/mailer.php';
+                $subject = "SHSDesk Customer Enquiry - $email";
+                $message .= "<br>Sender: $email<br>Fullname: $fullname";
+                $response = send_email($message, $subject, "safosah00@gmail.com", reply: $email);
+                $response = $response === true ? "true" : $response;
+                $response = $response === false ? "Message could not be sent, try again" : $response;
+
+                echo $response;
             }
         }elseif($submit == "add_payment_data"){
             //receive data from data string

@@ -47,6 +47,7 @@ $("input[name=avatar]").change(function(){
 })
 
 $("form[name=admissiondetailsForm]").submit(function(e){
+    tinymce.triggerSave();
     e.preventDefault();
 
     fileUpload($(this), $(this).find("button[name=submit]"), true).then((response) => {

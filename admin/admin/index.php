@@ -126,8 +126,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     </div>
 
     <script src="<?php echo $url?>/admin/assets/scripts/index.min.js?v=<?php echo time()?>"></script>
-    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
-    
+    <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>    
     <script>
         $(document).ready(function() {
             dragElement($("#admin_mode"))
@@ -176,6 +175,8 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             })
         })
     </script>
+    <script src="<?php echo $url?>/admin/admin/assets/scripts/polling.min.js?v=<?php echo time()?>"></script>
+
     <?php }
         //close connection
         $connect->close();

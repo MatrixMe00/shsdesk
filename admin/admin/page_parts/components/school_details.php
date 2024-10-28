@@ -1,4 +1,4 @@
-<form action="<?php echo $url?>/admin/admin/submit.php" method="post" name="admissiondetailsForm">
+<form action="<?php echo $url?>/admin/admin/submit.php" method="post" name="admissiondetailsForm" enctype="multipart/form-data">
     <div class="body">
         <div class="message_box no_disp">
             <span class="message">Here is a test message</span>

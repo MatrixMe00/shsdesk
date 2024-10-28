@@ -1,25 +1,6 @@
 <?php 
     $admin_mode = $_SESSION["admin_mode"];
 
-    //check if there are admission issues
-    $issues = decimalIndexArray(fetchData("c.indexNumber, c.Lastname, c.Othernames, e.enrolDate", 
-        ["join" => "enrol_table cssps", "on" => "indexNumber indexNumber", "alias" => "e c"],
-        ["c.schoolID=$user_school_id", "c.current_data=TRUE", "c.Enroled=FALSE"], 
-        0, "AND", "left"));
-    $issues = $issues ? "(".count($issues).")" : "";
-    
-    $displaced_studs = (int) $connect->query(
-            "SELECT COUNT(indexNumber) AS total 
-                FROM house_allocation 
-                WHERE schoolID=$user_school_id AND current_data = 1 AND NOT EXISTS (
-                    SELECT 1 
-                    FROM houses 
-                    WHERE houses.id = house_allocation.houseID 
-                    AND houses.schoolID = $user_school_id
-                )"
-        )->fetch_assoc()["total"];
-    $displaced_studs = $displaced_studs ? "($displaced_studs)" : "";
-
     $navMiddle = [
         "Dashboard" => [
             [
@@ -32,14 +13,24 @@
                 "display_title" => "Dashboard",
                 "admin_mode" => "admission"
             ],
-            [
+            /*[
                 "item_class"=> "relative",
                 "name" => "issues",
                 "title" => "Admission Issues",
                 "data-url" => "/admin/admin/page_parts/issues.php",
                 "imgSrc" => "/assets/images/icons/person-outline.svg",
                 "imgAlt" => "issues",
-                "display_title" => "Admission Issues <span class='absolute right txt-bold sm-med-r rounded hmax-fit'>$issues</span>",
+                "display_title" => "Admission Issues <span class='absolute right txt-bold sm-med-r rounded hmax-fit' id='issues_element'>$issues</span>",
+                "admin_mode" => "admission"
+            ],*/
+            [
+                "item_class"=> "relative",
+                "name" => "transfers",
+                "title" => "Student Transfers",
+                "data-url" => "/admin/admin/page_parts/transfers.php",
+                "imgSrc" => "/assets/images/icons/person-outline.svg",
+                "imgAlt" => "transfers",
+                "display_title" => "Student Transfers <span class='absolute right txt-bold sm-med-r rounded hmax-fit' id='transfers_element'></span>",
                 "admin_mode" => "admission"
             ],
             [
@@ -50,7 +41,7 @@
                 "imgSrc" => "/assets/images/icons/notifications-circle-outline.svg",
                 "imgAlt" => "notification",
                 "menu_class" => "relative",
-                "display_title" => "Notification",
+                "display_title" => "Notification <span class='absolute right txt-bold sm-med-r rounded hmax-fit' id='notification_element'></span>",
                 "admin_mode" => "admission",
                 "item_child" => true
             ],
@@ -117,7 +108,7 @@
                 "data-url" => "/admin/admin/page_parts/houses.php",
                 "imgSrc" => "/assets/images/icons/bed-outline.svg",
                 "imgAlt" => "house n bed",
-                "display_title" => "House & Bed Declarations <span class='absolute right color-red txt-bold sm-med-r rounded hmax-fit'>$displaced_studs</span>",
+                "display_title" => "House & Bed Declarations <span class='absolute right color-red txt-bold sm-med-r rounded hmax-fit' id='displaced_element'></span>",
                 "admin_mode" => "admission"
             ]
         ],
@@ -296,37 +287,6 @@
                 <span><?= $item["display_title"] ?></span>
             </div>
         </div>
-        <?php 
-            switch($item["name"]){
-                case "notification":
-                    //count notifications
-                    $response = 0;
-
-                    //unread notifications
-                    $result = $connect->query("SELECT *
-                        FROM notification
-                        WHERE (Read_by NOT LIKE '%$user_username%' AND Audience='all')
-                        OR (Audience LIKE '%$user_username%' AND Read_by NOT LIKE '%$user_username%')
-                        AND '{$user_details['adYear']}' <= DATE
-                        ORDER BY ID DESC");
-                    $response += $result->num_rows;
-
-                    //new replies
-                    $result = $connect->query("SELECT DISTINCT n.* 
-                        FROM notification n JOIN reply r 
-                        ON n.ID = r.Comment_id 
-                        WHERE r.Read_by NOT LIKE '%$user_username%'
-                        AND n.Read_by LIKE '%$user_username%'
-                        ORDER BY ID DESC");
-                    $response += $result->num_rows;
-                    break;
-            }
-            if((intval($response) && $response > 0) || (!is_null($response) && !empty($response))) :
-        ?>
-        <div class="news_number absolute danger flex-all-center">
-            <span><?= $response ?></span>
-        </div>
-        <?php endif; ?>
 
         <?php elseif((isset($item["if-condition"]) && $item["if-condition"] === true) && $item["condition"]) : ?>
         <div class="item<?= !empty($item["item_class"]) ? " ".$item["item_class"] : ""?>" 

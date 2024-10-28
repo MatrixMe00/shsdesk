@@ -10,6 +10,11 @@
     </body>
     <?php 
     include_once("includes/session.php");
+
+    // test the send_email function
+    $message = "This is a test email for the test email function";
+    $subject = "Testing send_email Function";
+    var_dump(send_email($message, $subject, "safosah00@gmail.com"));
     // header("Cache-Control: no-cache, must-revalidate");
     // header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
     
@@ -200,7 +205,7 @@
                         exit(throwableMessage($th));
                     }
                 }*/
-        $affected = decimalIndexArray(fetchData1("DISTINCT result_token", "results", "position = 0", 0));
+        /*$affected = decimalIndexArray(fetchData1("DISTINCT result_token", "results", "position = 0", 0));
         
         if($affected){
             flush_php_start();
@@ -233,6 +238,6 @@
             echo "</tbody>\n</table>";
         }else{
             echo "no affected tokens to be processed";
-        }
+        }*/
     ?>
 </html>

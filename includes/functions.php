@@ -1,5 +1,8 @@
 <?php
     // for database purposes
+
+    use PHPMailer\PHPMailer\PHPMailer;
+
     require "database_functions.php";
 
     /**
@@ -272,6 +275,8 @@
             if($uploadOk == 1) {
                 if(move_uploaded_file($_FILES[$file_input_name]["tmp_name"], $file_name)) {
                     $file_name = trim($file_name);
+                }else{
+                    exit("File move failed");
                 }
             } else {
                 echo "<p>Upload failed</p>";
@@ -480,15 +485,17 @@
      * @param string|array $group_by This is used in case there is a group function 
      * @param string|array $order_by order results by some columns
      * @param bool $asc order is in ascending order by default
+     * @param array $multiple_table Takes a list of tables that can appear multiple times during joins
      * 
      * @return string
      */
     function create_query_string(string|array $columns, string|array $table, 
         string|array $where = "", int $limit = 1, string|array $where_binds = "",
-        string $join_type = "", string|array $group_by = "", string|array $order_by = "", bool $asc = true
+        string $join_type = "", string|array $group_by = "", string|array $order_by = "", bool $asc = true,
+        array $multiple_table = []
     ):string{
         $columns = stringifyColumn($columns);
-        $table = stringifyTable($table, $join_type);
+        $table = stringifyTable($table, $join_type, $multiple_table);
         $where = stringifyWhere($where, $where_binds);
 
         $sql = "SELECT $columns FROM $table";
@@ -553,12 +560,14 @@
      * @param string|array $group_by This is used in case there is a group function 
      * @param string|array $order_by order results by some columns
      * @param bool $asc order is in ascending order by default
+     * @param array $multiple_table Takes a list of tables that can appear multiple times during joins
      * 
      * @return string|array returns a(n) array|string of data or error
      */
     function fetchData(string|array $columns, string|array $table, 
         string|array $where = "", int $limit = 1, string|array $where_binds = "",
-        string $join_type = "", string|array $group_by = "", string|array $order_by = "", bool $asc = true
+        string $join_type = "", string|array $group_by = "", string|array $order_by = "", bool $asc = true,
+        array $multiple_table = []
     ){
         global $connect;
 
@@ -566,7 +575,7 @@
             // generate an sql
             $sql = create_query_string(
                 $columns, $table, $where, $limit, $where_binds, 
-                $join_type, $group_by, $order_by, $asc
+                $join_type, $group_by, $order_by, $asc, $multiple_table
             );
 
             $result = fetch_query($connect, $sql);
@@ -589,11 +598,13 @@
      * @param string|array $group_by This is used in case there is a group function 
      * @param string|array $order_by order results by some columns
      * @param bool $asc order is in ascending order by default
+     * @param array $multiple_table Takes a list of tables that can appear multiple times during joins
      * 
      * @return string|array returns a(n) array|string of data or error
      */
     function fetchData1(string|array $columns, string|array $table, string|array $where = "", int $limit = 1, 
-        string|array $where_binds = "", string $join_type = "", string|array $group_by = "", string|array $order_by = "", bool $asc = true
+        string|array $where_binds = "", string $join_type = "", string|array $group_by = "", string|array $order_by = "", bool $asc = true,
+        array $multiple_table = []
     ){
         global $connect2;
 
@@ -601,7 +612,7 @@
             // generate an sql
             $sql = create_query_string(
                 $columns, $table, $where, $limit, $where_binds, 
-                $join_type, $group_by, $order_by, $asc
+                $join_type, $group_by, $order_by, $asc, $multiple_table
             );
 
             $result = fetch_query($connect2, $sql);
@@ -1555,7 +1566,7 @@
      * @param null|mixed $message The message to be sent if there is an error
      * @return bool true if everything is fine or false if otherwise
      */
-    function checkRecipients(string|array $recipients, &$message = null){
+    function validate_email(string|array $recipients, &$message = null){
         $isValid = true;
 
         if(!is_array($recipients)){
@@ -1571,29 +1582,6 @@
         }
 
         return $isValid;
-    }
-
-    /**
-     * This function is used to merge mails which are not in the database to the mailing list
-     * @param array $original This is the original data from the enduser
-     * @param array $db_data This is the data from the database
-     * @return array Returns the merged results
-     */
-    function mergeRecipients(array $original, array $db_data){
-        $found_emails = array_column($db_data, "email");
-        $emails_not_found = array_diff($original, $found_emails);
-
-        foreach($emails_not_found as $email){
-            $db_data[] = [
-                "email" => $email,
-                "name" => "No name",
-                "username" => "No username",
-                "school" => "No school",
-                "phone" => "No phone",
-            ];
-        }
-
-        return $db_data;
     }
 
     /**
@@ -1945,6 +1933,163 @@
                 if(($response = password_verify($password, $pass["password"])) === true)
                     break;
             }
+        }
+
+        return $response;
+    }
+
+    /**
+     * This is used to get the transfers in a school
+     * @param bool $count This determines if it should only count or get the details
+     * @return int|array
+     */
+    function get_transfers(bool $count = false) :int|array|false{
+        global $user_school_id;
+        $response = false;
+
+        if($count){
+            $response = fetchData("COUNT(index_number) as total", "school_transfer", ["school_to=$user_school_id", "status IN ('pending', 'request')", "(school_from = $user_school_id AND status = 'request')"], where_binds: ["AND", "OR"])["total"];
+        }else{
+            $statuses = ["pending","accepted","rejected","request"];
+            $response = array_combine($statuses, array_fill(0, count($statuses), ["data" => [], "count" => 0]));
+
+            $results = decimalIndexArray(fetchData(
+                ["st.id", "index_number", "is_request", "CONCAT(Lastname,' ',Othernames) as fullname", "programme", "st.created_at", "st.updated_at", 
+                    "s.schoolName as school_from", "sc.schoolName as school_to", "s.abbr as from_abbr", "sc.abbr as to_abbr", "status"],
+                [
+                    ["join" => "school_transfer cssps", "on" => "index_number indexNumber", "alias" => "st c"],
+                    ["join" => "school_transfer schools", "on" => "school_from id", "alias" => "st s"],
+                    ["join" => "school_transfer schools", "on" => "school_to id", "alias" => "st sc"]
+                ],
+                ["(st.school_to=$user_school_id OR st.school_from=$user_school_id)", "current_data = TRUE"], 0, "AND",
+                order_by: ["created_at", "status"], asc: false, multiple_table: ["schools"]
+            ));
+            $this_school = getSchoolDetail($user_school_id)["schoolName"];
+            $incoming = $outgoing = 0;
+
+            if($results){
+                foreach($results as $result){
+                    $status = $result["status"];
+
+                    if($result["is_request"] && $status == "request"){
+                        if($result["school_from"] == $this_school){
+                            ++$incoming;
+                        }else{
+                            ++$outgoing;
+                        }
+                    }
+
+                    $response[$status]["data"][] = $result;
+                    ++$response[$status]["count"];
+                }
+            }
+
+            $response["incoming"] = $incoming;
+            $response["outgoing"] = $outgoing;
+            $response["this_school"] = $this_school;
+        }
+
+        return $response;
+    }
+
+    /**
+     * This sends an email to someone
+     * @param string $message The message body
+     * @param string $subject The message subject
+     * @param string $receipients The receipient email
+     * @param string $sender Default is from the default account
+     * @param string $name The name of the sender
+     * @param string|false $reply Provide an email for replies, or set to true if replies should be sent to sender email
+     * @return bool|string
+     */
+    function send_email(string $message, string $subject, string|array $receipients, 
+        string $sender = null, string $name = null, string|bool $reply = false
+    ){
+        global $rootPath, $mailserver_email, $mailserver_password, $mailserver;
+
+        // require the phpmailer
+        require "$rootPath/phpmailer/src/Exception.php";
+        require "$rootPath/phpmailer/src/PHPMailer.php";
+        require "$rootPath/phpmailer/src/SMTP.php";
+
+        $mail = new PHPMailer(true);
+
+        try {
+            if(is_null($sender)){
+                $name = "SHSDesk";
+                $sender = get_default_email($name);
+            }elseif(is_null($name) && validate_email($sender)){
+                $name = explode("@", $sender)[0] ?? "No Name";
+            }elseif(!validate_email($sender)){
+                throw new Exception("Sender mail is invalid");
+            }
+
+            // turn recipients to array
+            if(!is_array($receipients)){
+                $receipients = [$receipients];
+            }
+
+            //Server settings
+            $mail->isSMTP();
+            $mail->Host       = $mailserver;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $mailserver_email;
+            $mail->Password   = $mailserver_password;
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
+            $mail->Port       = 465;
+            
+            if($reply){
+                $reply = $reply === true ? $sender : $reply;
+                $mail->AddReplyTo($reply, $name ? $name : "");
+            }
+            
+            $mail->setFrom($sender, $name ?? "");
+
+            // add recipient(s)
+            foreach($receipients as $recipient){
+                if(is_array($recipient)){
+                    if(!isset($recipient["email"]) && !isset($receipient["name"])){
+                        throw new Exception("Recipient array should have 'name' and 'email' only");
+                    }
+
+                    $mail->addAddress($recipient["email"], $recipient["name"]);
+                }else{
+                    $mail->addAddress($recipient);
+                }
+            }
+    
+            $mail->isHTML(true);                                  // Set email format to HTML
+    
+            $mail->Subject = $subject;
+            $mail->Body = $message;
+            $mail->AltBody = 'This is the body in plain text for non-HTML mail clients. '.$message;
+            
+            $response = $mail->send();
+        } catch (\Throwable $th) {
+            // $response = 'Message could not be sent. Mailer Error: '. $mail->ErrorInfo;
+            $response = $mail->ErrorInfo ? "Mailer Error: ".$mail->ErrorInfo : throwableMessage($th);
+        }
+
+        return $response;
+    }
+
+    /**
+     * This gets the system default mail users
+     * @param string $name The name of the sender
+     * @return string
+     */
+    function get_default_email(string $name) :string{
+        // if its the local development server, use local email
+        if(str_contains($_SERVER["SERVER_NAME"], "local"))
+            return "successinnovativehub@gmail.com";
+
+        switch(strtolower($name)){
+            case "shsdesk":
+                $response = "sysadmin@shsdesk.com"; break;
+            case "customer care":
+                $response = "customercare@shsdesk.com"; break;
+            default:
+                $response = "sysadmin@shsdesk.com";
         }
 
         return $response;

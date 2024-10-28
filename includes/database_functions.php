@@ -60,10 +60,11 @@
      * used to stringify the table query part
      * @param string|string[] $table The table query to stringify
      * @param string $join_type This is the type of join to be used
+     * @param array $multiple_table Takes a list of tables that can appear multiple times during joins
      * 
      * @return string The formated version of the table query
      */
-    function stringifyTable(string|array $tables, string $join_type) :string{
+    function stringifyTable(string|array $tables, string $join_type, $multiple_table) :string{
         $new_tables = "";
 
         if(is_array($tables)){
@@ -75,8 +76,8 @@
                         $alias2, $ref1, $ref2) = tableArraySplit($table);
 
                     //bind table1 to string
-                    joinTableString($new_tables, $table1, $alias1, $join_type);
-                    joinTableString($new_tables, $table2, $alias2, $join_type);
+                    joinTableString($new_tables, $table1, $alias1, $join_type, $multiple_table);
+                    joinTableString($new_tables, $table2, $alias2, $join_type, $multiple_table);
                     onTableString($new_tables, $table);
                 }
             }elseif(!isset($tables[0])){
@@ -84,8 +85,8 @@
                     $alias2, $ref1, $ref2) = tableArraySplit($tables);
 
                 //bind table1 to string
-                joinTableString($new_tables, $table1, $alias1, $join_type);
-                joinTableString($new_tables, $table2, $alias2, $join_type);
+                joinTableString($new_tables, $table1, $alias1, $join_type, $multiple_table);
+                joinTableString($new_tables, $table2, $alias2, $join_type, $multiple_table);
                 onTableString($new_tables, $tables);
             }else{
                 // only table names should assume ids of the tables
@@ -118,12 +119,13 @@
      * @param string $table The table from which to get details from
      * @param string $table_alias The alias of the said tables
      * @param string $join_type This is the type of join
+     * @param array $multiple_table Takes a list of tables that can appear multiple times during joins
      * @return void all changes are done into the new_table variable
      */
-    function joinTableString(&$new_table, $table, $table_alias, $join_type){
+    function joinTableString(&$new_table, $table, $table_alias, $join_type, $multiple_table){
         $join_type = empty($join_type) ? "JOIN" : strtoupper($join_type)." JOIN ";
         
-        if(!str_contains($new_table, $table)){
+        if(!str_contains($new_table, $table) || in_array($table, $multiple_table)){
             if(empty($new_table)){
                 $new_table = $table;
             }else{

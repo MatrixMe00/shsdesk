@@ -511,10 +511,11 @@ async function jsonFileUpload(form_element, submit_element, messageBox = true){
  * @property {string} method The method of the request
  * @property {bool} sendRaw Set this to true if the call contains a file
  * @property {Function} beforeSend A method to be run when beforeSend is called
+ * @property {int} timeout The wait time until timeout
  * @param {AJAXOptions} ajaxOptions
  * @return
  */
-async function ajaxCall({url, formData, returnType = "text", method = "GET", sendRaw = false, beforeSend = null}){
+async function ajaxCall({url, formData = {}, returnType = "text", method = "GET", sendRaw = false, beforeSend = null, timeout = 0}){
     let response_ = false;
     try {
         if(formData instanceof FormData){
@@ -528,6 +529,7 @@ async function ajaxCall({url, formData, returnType = "text", method = "GET", sen
             url: url,
             data: formData,
             dataType: returnType,
+            timeout: timeout,
             contentType: sendRaw ? false : 'application/x-www-form-urlencoded; charset=UTF-8',
             processData: !sendRaw,
             beforeSend: function(){
