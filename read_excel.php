@@ -89,76 +89,86 @@
                         if($max_column == "J" && $last_heading != "Guardian Contact"){
                             $academic_year = $_REQUEST["academic_year"] ?? getAcademicYear(now(), false);
                             $academic_year = formatAcademicYear($academic_year, false);
-                            for($row=$row_start; $row <= $max_row; $row++){
-                                //grab columns
-                                for($col = 0; $col <= $headerCounter; $col++){
-                                    $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
-                                    
-                                    switch ($col) {
-                                        case 0:
-                                            $indexNumber = $cellValue;
-                                            break;
-                                        case 1:
-                                            $Lastname = formatName($cellValue);
-                                            break;
-                                        case 2:
-                                            $Othernames = formatName($cellValue);
-                                            break;
-                                        case 3:
-                                            $Gender = formatName($cellValue);
-                                            break;
-                                        case 4:
-                                            $boardingStatus = formatName($cellValue);
-    
-                                            if(str_contains($boardingStatus, "board")){
-                                                $boardingStatus = "Boarder";
-                                            }
-                                            break;    
-                                        case 5:
-                                            $programme = formatName($cellValue);
-                                            break;
-                                        case 6:
-                                            $aggregate = $cellValue;
-                                            break;
-                                        case 7:
-                                            if(!empty($cellValue)){
-                                                $jhsAttended = formatName($cellValue);
-                                            }else{
-                                                $jhsAttended = null;
-                                            }                                        
-                                            break;
-                                        case 8:
-                                            if(!empty($cellValue)){
-                                                $val = PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($cellValue);
-                                                $dob = date("Y-m-d", $val);
-                                            }else{
-                                                $dob = null;
-                                            }                                        
-                                            break;
-                                        case 9:
-                                            $trackID = $cellValue;
-                                            break;
-        
-                                        default:
-                                            exit("Buffer count is beyond expected input count");
-                                    }
-                                }
 
-                                // insert data but ignore any existing student
-                                $sql = "INSERT IGNORE INTO cssps(indexNumber,Lastname,Othernames,Gender,boardingStatus,programme,aggregate,jhsAttended,dob,trackID,schoolID, academic_year)
+                            $connect->begin_transaction();
+                            $sql = "INSERT IGNORE INTO cssps(indexNumber,Lastname,Othernames,Gender,boardingStatus,programme,aggregate,jhsAttended,dob,trackID,schoolID, academic_year)
                                         VALUES (?,?,?,?,?,?,?,?,?,?,?,'$academic_year')
                                     ";
-                                $stmt = $connect->prepare($sql);
-                                $stmt->bind_param("ssssssisssi",$indexNumber,$Lastname,$Othernames,$Gender,$boardingStatus,$programme,$aggregate,$jhsAttended,$dob,$trackID,$user_school_id);
-                                if($stmt->execute()){
-                                    if($row == $max_row){
-                                        echo "success";
+                            try {
+                                for($row=$row_start; $row <= $max_row; $row++){
+                                    //grab columns
+                                    for($col = 0; $col < $headerCounter; $col++){
+                                        $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
+                                        
+                                        switch ($col) {
+                                            case 0:
+                                                $indexNumber = $cellValue;
+                                                break;
+                                            case 1:
+                                                $Lastname = formatName($cellValue);
+                                                break;
+                                            case 2:
+                                                $Othernames = formatName($cellValue);
+                                                break;
+                                            case 3:
+                                                $Gender = formatName($cellValue);
+                                                break;
+                                            case 4:
+                                                $boardingStatus = formatName($cellValue);
+        
+                                                if(str_contains($boardingStatus, "board")){
+                                                    $boardingStatus = "Boarder";
+                                                }
+                                                break;    
+                                            case 5:
+                                                $programme = formatName($cellValue);
+                                                break;
+                                            case 6:
+                                                $aggregate = $cellValue;
+                                                break;
+                                            case 7:
+                                                if(!empty($cellValue)){
+                                                    $jhsAttended = formatName($cellValue);
+                                                }else{
+                                                    $jhsAttended = null;
+                                                }                                        
+                                                break;
+                                            case 8:
+                                                if(!empty($cellValue)){
+                                                    $val = PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($cellValue);
+                                                    $dob = date("Y-m-d", $val);
+                                                }else{
+                                                    $dob = null;
+                                                }                                        
+                                                break;
+                                            case 9:
+                                                $trackID = $cellValue;
+                                                break;
+            
+                                            default:
+                                                exit("Buffer count is beyond expected input count");
+                                        }
                                     }
-                                }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
-                                    echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
-                                }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
-                                    echo "Detail for $indexNumber not written. Gender must either be Male or Female";
-                                }                         
+    
+                                    // insert data but ignore any existing student
+                                    $stmt = $connect->prepare($sql);
+                                    $stmt->bind_param("ssssssisssi",$indexNumber,$Lastname,$Othernames,$Gender,$boardingStatus,$programme,$aggregate,$jhsAttended,$dob,$trackID,$user_school_id);
+                                    if($stmt->execute()){
+                                        if($row == $max_row){
+                                            $connect->commit();
+                                            echo "success";
+                                        }
+                                    }elseif(strtolower($boardingStatus) != "day" && strtolower($boardingStatus) != "boarder"){
+                                        echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
+                                    }elseif(strtolower($Gender) != "male" && strtolower($Gender) != "female"){
+                                        echo "Detail for $indexNumber not written. Gender must either be Male or Female";
+                                    }else{
+                                        throw new Exception("Execution Error: $stmt->error");
+                                    }
+                                }
+                            } catch (\Throwable $th) {
+                                $connect->rollback();
+                                echo throwableMessage($th);
                             }
                         }elseif($max_column == "H" || $max_column == "G" || $max_column == "I"){
                             //make it end at G

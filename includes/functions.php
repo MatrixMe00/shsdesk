@@ -634,36 +634,18 @@
             return "Not Defined";
         }
         //separate them by spaces
-        $new_name = explode(" ",$name);
+        $new_name = explode(" ",strtolower($name));
 
         //reset the name variable
-        $name = "";
+        $name = [];
 
         //make needed changes to name
         foreach ($new_name as $key => $value) {
-            $value_size = strlen($value);
-
-            //make formatting here
-            for ($i=0; $i < $value_size; $i++) { 
-                //capitalize only first alphabet or any value after a hyphen or dot
-                if($i == 0 || ($i > 0 && $value[$i-1] == "-") || $value[$i-1] == "."){
-                    $value[$i] = strtoupper($value[$i]);
-                }else{
-                    //make any other value lowercase
-                    $value[$i] = strtolower($value[$i]);
-                }
-            }
-
-            //push new value into name
-            if(strlen($name) == 0){
-                $name = $value;
-            }else{
-                $name .= " $value";
-            }
+            $name[] = ucfirst($value);
         }
 
         //return name
-        return $name;
+        return implode(" ", $name);
     }
 
     /**
