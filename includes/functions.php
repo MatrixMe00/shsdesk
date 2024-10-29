@@ -560,7 +560,8 @@
      * @param string|array $group_by This is used in case there is a group function 
      * @param string|array $order_by order results by some columns
      * @param bool $asc order is in ascending order by default
-     * @param array $multiple_table Takes a list of tables that can appear multiple times during joins
+     * @param array $multiple_table Takes a list of tables that can appear multiple times during joins.
+     * Do something like [table_name => max_occurences] If the table must have multiple occurences for a fixed number of times
      * 
      * @return string|array returns a(n) array|string of data or error
      */
@@ -1975,6 +1976,211 @@
     }
 
     /**
+     * This is used to get the details of a transfer procedure
+     * @param int $transfer_id The id of the transfer
+     * @return array|false
+     */
+    function get_transfer_information(int $transfer_id) :array|false{
+        $response = false;
+
+        $results = fetchData(
+            ["index_number", "CONCAT(Lastname,' ',Othernames) as fullname", "is_request", "status",
+                "s.schoolName as school_from", "sc.schoolName as school_to", "s.abbr as from_abbr", "sc.abbr as to_abbr",
+                "st.school_from as from_id", "st.school_to as to_id", "sfa.email as from_email", "sta.email as to_email"
+            ],
+            [
+                ["join" => "school_transfer cssps", "on" => "index_number indexNumber", "alias" => "st c"],
+                ["join" => "school_transfer schools", "on" => "school_from id", "alias" => "st s"],
+                ["join" => "school_transfer schools", "on" => "school_to id", "alias" => "st sc"],
+                ["join" => "schools admins_table", "on" => "id school_id", "alias" => "s sfa"],
+                ["join" => "schools admins_table", "on" => "id school_id", "alias" => "sc sta"],
+                ["join" => "admins_table roles", "on" => "role id", "alias" => "sfa rf"], 
+                ["join" => "admins_table roles", "on" => "role id", "alias" => "sta rt"] 
+            ],
+            ["st.id = $transfer_id", "(rf.title LIKE 'admin%' AND rf.school_id = 0)", "(rt.title LIKE 'admin%' AND rt.school_id = 0)"], where_binds: "AND", multiple_table:["schools" => 2, "admins_table" => 2, "roles" => 2]
+        );
+
+        if(is_array($results)){
+            $response = $results;
+        }
+
+        return $response;
+    }
+
+    /**
+     * Sends an email to the client school for a completed transfer
+     * @param int $transfer_id
+     */
+    function send_request_email($transfer_id){
+        $info = get_transfer_information($transfer_id);
+
+        if($info){
+            list($message, $receipient, $subject) = get_body($info);
+            return send_email($message, $subject, $receipient);
+        }
+
+        return false;
+    }
+
+    /**
+     * Used with the send_request_email to create a body for the email
+     * @param array $info The transfer information
+     * @return array
+     */
+    function get_body(array $info) :array{
+        global $user_school_id;
+
+        $response = ""; $receipient_email = $subject = "";
+
+        switch($info["status"]) {
+            case "accepted":
+                if($info["is_request"]) {
+                    $receipient = $info["to_id"] == $user_school_id ? "from" : "to";
+                    $receipient_email = $info["{$receipient}_email"];
+                    $salutation = $info["{$receipient}_abbr"];
+        
+                    $response = <<<EOD
+                    <p>Dear <strong>$salutation</strong>,</p>
+        
+                    <p>We are pleased to inform you that the transfer request for <strong>{$info['fullname']}</strong> 
+                    (<strong>{$info['index_number']}</strong>) from <em>{$info['school_from']}</em> 
+                    to <em>{$info['school_to']}</em> has been successfully accepted. The transfer process is now complete.</p>
+        
+                    <p>Thank you for your cooperation.</p>
+        
+                    <p>Best Regards,<br>School Transfer Team</p>
+                    EOD;
+        
+                    $subject = "Transfer Request Accepted for {$info['fullname']}";
+                } else {
+                    $response = <<<EOD
+                    <p>Dear <strong>{$info['from_abbr']}</strong>,</p>
+        
+                    <p>The transfer for <strong>{$info['fullname']}</strong> 
+                    (<strong>{$info['index_number']}</strong>) from <em>{$info['school_from']}</em> 
+                    to <em>{$info['school_to']}</em> has been successfully completed.</p>
+        
+                    <p>If you have any questions, please contact <strong>{$info['to_abbr']}</strong> 
+                    at <a href="mailto:{$info['to_email']}">{$info['to_email']}</a>.</p>
+        
+                    <p>Thank you,<br>School Transfer Team</p>
+                    EOD;
+        
+                    $subject = "Transfer Completed for {$info['fullname']}";
+                    $receipient_email = $info["from_email"];
+                }
+                break;
+        
+            case "rejected":
+                if(!$info["is_request"]) {
+                    $response = <<<EOD
+                    <p>Dear <strong>{$info['from_abbr']}</strong>,</p>
+        
+                    <p>We regret to inform you that the transfer for <strong>{$info['fullname']}</strong> 
+                    (<strong>{$info['index_number']}</strong>) to <em>{$info['school_to']}</em> 
+                    has been rejected by <strong>{$info['to_abbr']}</strong>.</p>
+        
+                    <p>Please reach out to <strong>{$info['to_abbr']}</strong> at 
+                    <a href="mailto:{$info['to_email']}">{$info['to_email']}</a> for more details if needed.</p>
+        
+                    <p>Sincerely,<br>School Transfer Team</p>
+                    EOD;
+        
+                    $subject = "Transfer Request Rejected for {$info['fullname']}";
+                    $receipient_email = $info["from_email"];
+                } else {
+                    $receipient = $info["to_id"] == $user_school_id ? "from" : "to";
+                    $receipient_email = $info["{$receipient}_email"];
+                    $sender = $receipient == "to" ? "from" : "to";
+                    $sender_email = $info["{$sender}_email"];
+                    $salutation = $info["{$receipient}_abbr"];
+        
+                    $response = <<<EOD
+                    <p>Dear <strong>$salutation</strong>,</p>
+        
+                    <p>This is to confirm that the transfer request for <strong>{$info['fullname']}</strong> 
+                    (<strong>{$info['index_number']}</strong>) from <em>{$info['school_from']}</em> 
+                    to <em>{$info['school_to']}</em> has been officially marked as rejected.</p>
+        
+                    <p>Please contact us via <a href="mailto:$sender_email">$sender_email</a> if you have further questions.</p>
+        
+                    <p>Thank you,<br>School Transfer Team</p>
+                    EOD;
+        
+                    $subject = "Transfer Request Finalized - Rejected for {$info['fullname']}";
+                }
+                break;
+        
+            case "pending":
+                $response = <<<EOD
+                <p>Dear <strong>{$info['to_abbr']}</strong>,</p>
+        
+                <p>We have received a transfer request for <strong>{$info['fullname']}</strong> 
+                (<strong>{$info['index_number']}</strong>) from <em>{$info['school_from']}</em> 
+                to <em>{$info['school_to']}</em>. The request is currently pending and awaiting further action.</p>
+        
+                <p>If you have any questions, feel free to contact us at 
+                <a href="mailto:{$info['to_email']}">{$info['to_email']}</a>.</p>
+        
+                <p>Best Regards,<br>School Transfer Team</p>
+                EOD;
+        
+                $receipient_email = $info["to_email"];
+                $subject = "Transfer Request for {$info['index_number']} to {$info['to_abbr']}";
+                break;
+        
+            case "transfer":
+                $subject = "Action Required - Transfer Request for {$info['fullname']}";
+        
+                $receipient = $info["from_id"] == $user_school_id ? "to" : "from";
+                $sender = $receipient == "to" ? "from" : "to";
+                $receipient_email = $info[$receipient."_email"];
+                $sender_email = $info[$sender."_email"];
+                $salutation = $info[$receipient."_abbr"];
+        
+                $response = <<<EOD
+                <p>Dear <strong>$salutation</strong>,</p>
+        
+                <p>A transfer request has been initiated for <strong>{$info['fullname']}</strong> 
+                (<strong>{$info['index_number']}</strong>) from <em>{$info['school_from']}</em> 
+                to <em>{$info['school_to']}</em>. Please review and process this request as soon as possible.</p>
+        
+                <p>Contact us at <a href="mailto:$sender_email">$sender_email</a> if you need additional information.</p>
+        
+                <p>Thank you,<br>School Transfer Team</p>
+                EOD;
+                break;
+        }
+        
+
+        return [$response, $receipient_email, $subject];
+    }
+
+    /**
+     * Wraps a message in html for emails
+     * @param string $message The message text
+     * @return string
+     */
+    function htmlwrap(string $message) :string{
+        $response = <<<EOD
+                    <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial, sans-serif; line-height: 1.5; }
+                            h1 { font-family: 'Times New Roman', serif; font-size: 24px; color: #333; }
+                            p { font-family: Georgia, serif; font-size: 16px; color: #555; }
+                        </style>
+                    </head>
+                    <body>
+                        $message
+                    </body>
+                    </html>
+                    EOD;
+        
+        return $response;
+    }
+
+    /**
      * This sends an email to someone
      * @param string $message The message body
      * @param string $subject The message subject
@@ -2043,7 +2249,7 @@
             $mail->isHTML(true);                                  // Set email format to HTML
     
             $mail->Subject = $subject;
-            $mail->Body = $message;
+            $mail->Body = htmlwrap($message);
             $mail->AltBody = 'This is the body in plain text for non-HTML mail clients. '.$message;
             
             $response = $mail->send();

@@ -14,7 +14,7 @@
     // test the send_email function
     $message = "This is a test email for the test email function";
     $subject = "Testing send_email Function";
-    var_dump(send_email($message, $subject, "safosah00@gmail.com"));
+    // formatDump(send_request_email(1));
     // header("Cache-Control: no-cache, must-revalidate");
     // header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
     

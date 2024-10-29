@@ -830,6 +830,7 @@
                         }
 
                         $connect->commit();
+                        send_request_email($id);
                     }
 
                 } catch (\Throwable $th) {

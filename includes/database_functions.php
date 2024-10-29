@@ -125,7 +125,7 @@
     function joinTableString(&$new_table, $table, $table_alias, $join_type, $multiple_table){
         $join_type = empty($join_type) ? "JOIN" : strtoupper($join_type)." JOIN ";
         
-        if(!str_contains($new_table, $table) || in_array($table, $multiple_table)){
+        if(!str_contains($new_table, $table) || in_array($table, $multiple_table) || (in_array($table, array_keys($multiple_table)) && substr_count($new_table, $table) < $multiple_table[$table])){
             if(empty($new_table)){
                 $new_table = $table;
             }else{

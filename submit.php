@@ -395,7 +395,7 @@
             } else {
                 $subject = "SHSDesk Customer Enquiry - $email";
                 $message .= "<br>Sender: $email<br>Fullname: $fullname";
-                $response = send_email($message, $subject, "safosah00@gmail.com", reply: $email);
+                $response = send_email($message, $subject, ["safosah00@gmail.com", "successinnovativehub@gmail.com"], reply: $email);
                 $response = $response === true ? "true" : $response;
                 $response = $response === false ? "Message could not be sent, try again" : $response;
 
