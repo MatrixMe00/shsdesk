@@ -8,10 +8,8 @@
             <select name="getContact" id="getContact">
                 <option value="">Select A School</option>
                 <?php 
-                    $sql = "SELECT id, schoolName FROM schools WHERE Active=1";
-                    $res = $connect->query($sql);
-                    if($res->num_rows > 0){
-                        while($row = $res->fetch_assoc()){
+                    if($schools > 0){
+                        foreach($schools as $row){
                             echo "
                             <option value=\"".$row['id']."\">".$row["schoolName"]."</option>
                             ";

@@ -10,6 +10,9 @@
                 <li>Verify that the first column in your document is labeled <strong>"index number"</strong>. The system would mark a file without this first column as invalid</li>
                 <li>If you do not have the default spreadsheet file for upload, please click on <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">
                 document1</a> or <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template2.xlsx">document2</a> to download</li>
+                <li>Please <strong>refrain</strong> from uploading the same document twice as this can lead to a <u>duplicate entry</u> of details if your document doesnt have the full index numbers of the students in place.
+                    Quickly contact the system admins to assist you if you have a challenge
+                </li>
             </ol>
         </div>
         <div class="body">

@@ -173,97 +173,113 @@
                         }elseif($max_column == "H" || $max_column == "G" || $max_column == "I"){
                             //make it end at G
                             $headerCounter = 6;
-                            
-                            for($row=$row_start; $row <= $max_row; $row++){
-                                //grab columns [reject last column, column H]
-                                for($col = 0; $col <= $headerCounter; $col++){
-                                    $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
-                                    switch ($col) {
-                                        case 0:
-                                            $indexNumber = $cellValue;
 
-                                            if(empty($indexNumber)){
-                                                exit("Empty index number at cell ".$current_col_names[$col].$row.". Data before this cell have been saved");
-                                            }
-                                            break;
-                                        case 1:
-                                            //extract lastname and othernames
-                                            $name = explode(' ', formatName($cellValue), 2);
+                            $connect->begin_transaction();
+                            try {
+                                for($row=$row_start; $row <= $max_row; $row++){
+                                    $hidden_index = null;
+                                    //grab columns [reject last column, column H]
+                                    for($col = 0; $col <= $headerCounter; $col++){
+                                        $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
+                                        switch ($col) {
+                                            case 0:
+                                                $indexNumber = $cellValue;
     
-                                            if(is_array($name)){
-                                                $Lastname = $name[0];
-                                                $Othernames = $name[1] ?? "";
-
-                                                if(empty($Othernames)){
-                                                    $cellValue = $sheet->getCell($current_col_names[$col].$row)->getCalculatedValue();
-                                                    $name = explode(' ', formatname($cellValue), 2);
-                                                    if(is_array($name)){
-                                                        $Lastname = $name[0];
-                                                        $Othernames = $name[1] ?? "";
-                                                    }
-                                                    
-                                                    if(empty($Othernames)){
-                                                        exit("Student's name for '$indexNumber' at ".$current_col_names[$col].$row." could not be well formated");
-                                                    }
+                                                if(empty($indexNumber)){
+                                                    exit("Empty index number at cell ".$current_col_names[$col].$row.". Data before this cell have been saved");
+                                                }elseif(str_contains($indexNumber, "*")){
+                                                    $hidden_index = $indexNumber;   // store the hashed index_number
+                                                    do {
+                                                        $indexNumber = generateIndexNumber($user_school_id);
+                                                    } while (is_array(fetchData("indexNumber","cssps","indexNumber='$indexNumber'")));
                                                 }
-                                            }else{
-                                                exit("Student's name for '$indexNumber' could not be retrieved. Check your file and try again later, else report to admin for help");
-                                            }
-                                            
-                                            break;
-                                        case 2:
-                                            $Gender = formatName($cellValue);
-                                            break;
-                                        case 3:
-                                            $aggregate = $cellValue;
-                                            break;
-                                        case 4:
-                                            $programme = formatName($cellValue);
-                                            break;    
-                                        case 5:
-                                            $trackID = formatName($cellValue);
-                                            break;
-                                        case 6:
-                                            $boardingStatus = formatName($cellValue);
+                                                break;
+                                            case 1:
+                                                //extract lastname and othernames
+                                                $name = explode(' ', formatName($cellValue), 2);
+        
+                                                if(is_array($name)){
+                                                    $Lastname = $name[0];
+                                                    $Othernames = $name[1] ?? "";
     
-                                            //convert to enum value
-                                            if(str_contains(strtolower($boardingStatus), "board")){
-                                                $boardingStatus = 'Boarder';
-                                            }
-                                            break;
+                                                    if(empty($Othernames)){
+                                                        $cellValue = $sheet->getCell($current_col_names[$col].$row)->getCalculatedValue();
+                                                        $name = explode(' ', formatname($cellValue), 2);
+                                                        if(is_array($name)){
+                                                            $Lastname = $name[0];
+                                                            $Othernames = $name[1] ?? "";
+                                                        }
+                                                        
+                                                        if(empty($Othernames)){
+                                                            exit("Student's name for '$indexNumber' at ".$current_col_names[$col].$row." could not be well formated");
+                                                        }
+                                                    }
+                                                }else{
+                                                    exit("Student's name for '$indexNumber' could not be retrieved. Check your file and try again later, else report to admin for help");
+                                                }
+                                                
+                                                break;
+                                            case 2:
+                                                $Gender = formatName($cellValue);
+                                                break;
+                                            case 3:
+                                                $aggregate = $cellValue;
+                                                break;
+                                            case 4:
+                                                $programme = formatName($cellValue);
+                                                break;    
+                                            case 5:
+                                                $trackID = formatName($cellValue);
+                                                break;
+                                            case 6:
+                                                $boardingStatus = formatName($cellValue);
         
-                                        default:
-                                            exit("Buffer count is beyond expected input count");
+                                                //convert to enum value
+                                                if(str_contains(strtolower($boardingStatus), "board")){
+                                                    $boardingStatus = 'Boarder';
+                                                }
+                                                break;
+            
+                                            default:
+                                                exit("Buffer count is beyond expected input count");
+                                        }
                                     }
-                                }
-        
-                                //check if index number exists and insert data into database
-                                if(!is_null($indexNumber) && !empty($indexNumber)){
-                                    $index = fetchData("indexNumber","cssps","indexNumber='$indexNumber'");
-        
-                                    if($index == "empty"){
-                                        $sql = "INSERT INTO cssps(indexNumber,Lastname,Othernames,Gender,boardingStatus,programme,aggregate,trackID,schoolID)
-                                            VALUES (?,?,?,?,?,?,?,?,?)
-                                        ";
-                                        $stmt = $connect->prepare($sql);
-                                        $stmt->bind_param("ssssssisi",$indexNumber,$Lastname,$Othernames,$Gender,$boardingStatus,$programme,$aggregate,$trackID,$user_school_id);
-                                        if($stmt->execute()){
-                                            if($row == $max_row){
-                                                echo "success";
-                                            }
-                                        }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
-                                            echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
-                                        }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
-                                            echo "Detail for <b>$indexNumber</b> not written. Gender must either be Male or Female";
-                                        }           
+            
+                                    //check if index number exists and insert data into database
+                                    if(!is_null($indexNumber) && !empty($indexNumber)){
+                                        if(!$hidden_index || is_null($hidden_index))
+                                            $index = fetchData("indexNumber","cssps","indexNumber='$indexNumber'");
+                                        else
+                                            $index = fetchData("indexNumber", "cssps", ["Lastname = '$Lastname'", "Othernames = '$Othernames'", "programme = '$programme'", "schoolID = $user_school_id"], where_binds: "AND");
+            
+                                        if($index == "empty"){
+                                            $sql = "INSERT INTO cssps(indexNumber, hidden_index, Lastname,Othernames,Gender,boardingStatus,programme,aggregate,trackID,schoolID)
+                                                VALUES (?,?,?,?,?,?,?,?,?,?)
+                                            ";
+                                            $stmt = $connect->prepare($sql);
+                                            $stmt->bind_param("sssssssisi",$indexNumber,$hidden_index, $Lastname,$Othernames,$Gender,$boardingStatus,$programme,$aggregate,$trackID,$user_school_id);
+                                            if($stmt->execute()){
+                                                if($row == $max_row){
+                                                    $connect->commit();
+                                                    echo "success";
+                                                }
+                                            }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
+                                                echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
+                                            }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
+                                                echo "Detail for <b>$indexNumber</b> not written. Gender must either be Male or Female";
+                                            }           
+                                        }else{
+                                            echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
+                                        }      
                                     }else{
-                                        echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
-                                    }      
-                                }else{
-                                    $cellName = $current_col_names[$col].$row;
-                                    echo "Operation exited by meeting an empty column ($cellName). All preceding data received successfully";
-                                    break;
-                                }             
+                                        $cellName = $current_col_names[$col].$row;
+                                        echo "Operation exited by meeting an empty column ($cellName). All preceding data received successfully";
+                                        break;
+                                    }             
+                                }
+                            } catch (\Throwable $th) {
+                                $connect->rollback();
+                                echo throwableMessage($th);
                             }
                         }elseif($max_column == "J" && $last_heading == "Guardian Contact"){
                             $message = ""; $insert_count = 0; $houses = [];

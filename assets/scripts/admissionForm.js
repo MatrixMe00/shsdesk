@@ -333,6 +333,126 @@ $("#ad_index").keyup(function(){
     }
 })
 
+$("button[name=activate_student_index_number]").click(function(){
+    $("#activate_index_number").removeClass("no_disp").addClass("flex-all-center fixed");
+    $("#check_index_number").val($("#student_index_number").val());
+})
+
+$("#check_school_id").change(async function(){
+    const value = $(this).val();
+    const option = $(this).find("option:selected");
+    const check_program = $("select#check_programme");
+
+    check_program.html("<option value\"\">Select a Programme</option>")
+
+    if(value != ""){
+        if(option.attr("data-programs") == ""){
+            let programs = await ajaxCall({
+                url: "./submit.php",
+                returnType: "json",
+                method: "POST",
+                beforeSend: function(){
+                    $("#check_status_area").removeClass("no_disp").html("Fetching programs...");
+                },
+                formData: {submit: "get_cssps_programs", school_id: value}
+            });
+            
+            programs = programs.data;            
+
+            if(typeof programs === "object"){
+                option.attr("data-programs", JSON.stringify(programs));
+            }else{
+                alert_box(programs, "error");
+                $("#check_status_area").html(programs);
+
+                setTimeout(function(){
+                    $("#check_status_area").addClass("no_disp").html("")
+                }, 5000);
+                return;
+            }
+        }
+
+        var programs_ = JSON.parse(option.attr("data-programs"));
+
+        $.each(programs_, function (index, value) { 
+            check_program.append("<option value=\"" + value + "\">" + value + "</option>\n");
+        });
+    }
+})
+
+$("#check_programme").change(async function(){
+    const value = $(this).val();
+    const school_id = $("#check_school_id").val();
+    const index_select_field = $("select#students_index");
+
+    index_select_field.html("<option value\"\">Select Your Name</option>");
+
+    if(value != ""){
+        let students = await ajaxCall({
+            url: "./submit.php",
+            returnType: "json",
+            method: "POST",
+            beforeSend: function(){
+                $("#check_status_area").removeClass("no_disp").html("Fetching students...");
+            },
+            formData: {submit: "get_cssps_students", school_id: school_id, programme: value}
+        });
+
+        students = students.data;            
+
+        if(typeof students === "object"){
+            $.each(students, function(index, student){
+                index_select_field.append("<option value=\"" + student.indexNumber + "\">" + student.fullname + "</option>")
+            })
+        }else{
+            alert_box(students, "error");
+            $("#check_status_area").html(students);
+
+            setTimeout(function(){
+                $("#check_status_area").addClass("no_disp").html("")
+            }, 5000);
+            return;
+        }
+    }
+})
+
+$("select#students_index").change(function(){
+    const value = $(this).val();
+    const index_field = $("#check_index_number");
+    const submit_btn = $("#checkIndexButton");
+
+    if(value != ""){
+        index_field.prop("readonly", false);
+        submit_btn.prop("disabled", false);
+    }else{
+        index_field.prop("readonly", true);
+        submit_btn.prop("disabled", true);
+    }
+})
+
+$("form[name=indexNumberCheckerForm]").submit(async function(e){
+    e.preventDefault();
+    const me = $(this);
+    const response = formSubmit(me, me.find("#checkIndexButton"), true);
+    
+    if(response === true){
+        messageBoxTimeout("indexNumberCheckerForm", "Your index number has been activated", "success");
+        setTimeout(function(){
+            me.find("button[name=cancel]").click();
+        }, 5000);
+    }else{
+        messageBoxTimeout("indexNumberCheckerForm", response, "error");
+    }
+})
+
+$("form[name=indexNumberCheckerForm] button[name=cancel]").click(function(){
+    const index_field = $("#check_index_number");
+    const submit_btn = $("#checkIndexButton");
+
+    index_field.prop("readonly", true);
+    submit_btn.prop("disabled", true);
+})
+
 $("button[name=continue]").click(function(){
     //take index number
     index_number = $("#ad_index").val();
