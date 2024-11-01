@@ -647,6 +647,14 @@ img.bright-100, img.bright-100-h:hover, .img-bright-100 > img, .img-bright-100-h
     display: none !important;
 }
 
+.visible{
+    visibility: visible !important;
+}
+
+.not-visible{
+    visibility: hidden !important;
+}
+
 .item-event{
     font-size: small;
     padding: 0.4em;

@@ -1,6 +1,7 @@
 <?php include_once("session.php");
     $system_price = fetchData("price","roles","title='system'")["price"] / 100;
     $this_year = date("Y");
+    $academic_year = getAcademicYear(now(), false);
 
     //add nav point session
     $_SESSION["nav_point"] = "Dashboard";
@@ -18,7 +19,7 @@
 
     <div class="content teal">
         <div class="head">
-            <h2><?= $total_students = fetchData("COUNT(indexNumber) as total","enrol_table","current_data=TRUE")["total"] ?></h2>
+            <h2><?= $total_students = fetchData("COUNT(indexNumber) as total","enrol_table","current_data=TRUE AND academic_year = '$academic_year'")["total"] ?></h2>
         </div>
         <div class="body">
             <span><?= $total_schools != 1 ? "Students":"Student" ?> on System [Current]</span>
@@ -50,6 +51,15 @@
         </div>
         <div class="body">
             <span><?= $total_schools != 1 ? "Schools":"School" ?> Deactivated</span>
+        </div>
+    </div>
+
+    <div class="content light">
+        <div class="head">
+            <h2><?= $academic_year ?></h2>
+        </div>
+        <div class="body">
+            <span>Academic Year [current]</span>
         </div>
     </div>
 </section>
@@ -148,7 +158,7 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $amt = fetchData("SUM(amountPaid) as total, SUM(Deduction) AS deduction", "transaction", "DATE_FORMAT(Transaction_Date, '%Y') = $this_year AND Transaction_Expired=TRUE");
+                    $amt = fetchData("SUM(amountPaid) as total, SUM(Deduction) AS deduction", "transaction", "academic_year ='$academic_year' AND Transaction_Expired=TRUE");
                     $amount = $role_price * $amt["total"];
                     $amount = number_format(round($amount,2), 2);
                     echo $amount;

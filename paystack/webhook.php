@@ -10,7 +10,7 @@
     $payload = file_get_contents("php://input");
 
     // create a new file each month for easy tracking
-    $year = date("Y"); $month = date("m"); $y_m = "{$year}_{$month}";
+    $year = date("Y"); $month = date("M"); $y_m = "{$year}_{$month}";
     $directory = "./paystack/$year";
 
     if(!is_dir($directory)){
@@ -63,13 +63,14 @@
         if($amount > 15){
             //use the connection that is set
             global $connect;
+            $academic_year = getAcademicYear(now(), false);
     
             //pass data if its not in the database
             $exist = fetchData("transactionID","transaction", "transactionID='$reference'");
     
             if(!is_array($exist)){
                 $query = "INSERT INTO transaction (transactionID, contactNumber, schoolBought, amountPaid, contactName, 
-                    contactEmail, Deduction, Transaction_Date) VALUES (?,?,?,?,?,?,?,?)";
+                    contactEmail, Deduction, Transaction_Date, academic_year) VALUES (?,?,?,?,?,?,?,?, '$academic_year')";
                 $result = $connect->prepare($query);
                 $result->bind_param("ssidssds", $reference, $customer_number, $school_id, $amount, $customer_name, $customer_email, 
                     $deduction, $paid_at);

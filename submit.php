@@ -10,6 +10,8 @@
             $connect->begin_transaction();
             $connect2->begin_transaction();
             $ad_profile_pic = null;
+            $academic_year = getAcademicYear(now(), false);
+            $required_profile = [23];
 
             try {
                 $shs_placed = getSchoolDetail($_POST["shs_placed"])["id"];
@@ -88,14 +90,16 @@
                     }else{
                         echo "profile-wrong-ext";
                     }
+                }elseif(in_array($shs_placed, $required_profile) && empty($_FILES["profile_pic"]["tmp_name"])){
+                    echo "profile-pic-required";
                 }
 
                 //bind the statement
                 $sql = "INSERT INTO enrol_table (indexNumber, enrolCode, shsID, aggregateScore, program, 
                 lastname, othername, gender, jhsName, jhsTown, jhsDistrict, birthdate, birthPlace, fatherName, 
                 fatherOccupation, motherName, motherOccupation, guardianName, residentAddress, postalAddress, primaryPhone, 
-                secondaryPhone, interest, award, position, witnessName, witnessPhone, transactionID, profile_pic) 
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
+                secondaryPhone, interest, award, position, witnessName, witnessPhone, transactionID, profile_pic, academic_year) 
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, '$academic_year')" or die($connect->error);
 
                 //prepare query for entry into database
                 $result = $connect->prepare($sql);
@@ -198,8 +202,8 @@
                         
                         //insert if it cannot be found
                         if(!is_array($db_transaction)){
-                            $sql = "INSERT INTO `transaction` (`transactionID`, `contactNumber`, `schoolBought`, `amountPaid`, `contactName`, `contactEmail`, `Deduction`, `indexNumber`, `Transaction_Expired`) 
-                            VALUES ('$transaction_id', '$ad_phone', '$shs_placed', 30, 'No Name', NULL, 0.59, NULL, '0')";
+                            $sql = "INSERT INTO `transaction` (`transactionID`, `contactNumber`, `schoolBought`, `amountPaid`, `contactName`, `contactEmail`, `Deduction`, `indexNumber`, `Transaction_Expired`, `academic_year`) 
+                            VALUES ('$transaction_id', '$ad_phone', '$shs_placed', $system_usage_price, 'No Name', NULL, 0.59, NULL, '0', '$academic_year')";
                             
                             $connect->query($sql);
                         }
@@ -247,8 +251,8 @@
                                 
                                 if(is_null($next_room)){
                                     //enter students into table but without houses
-                                    $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
-                                        VALUES(?,?,?,?,NULL,?,?)";
+                                    $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus, academic_year)
+                                        VALUES(?,?,?,?,NULL,?,?, '$academic_year')";
                                     $stmt = $connect->prepare($sql);
                                     $stmt->bind_param("sissss", $student_details["indexNumber"], $student_details["schoolID"], $student_details["Lastname"], 
                                         $student_details["Othernames"], $student_details["Gender"], $student_details["boardingStatus"]);
@@ -257,8 +261,8 @@
                                     $_SESSION["ad_stud_house"] = "e";
                                 }else{
                                     //parse entry into allocation table
-                                    $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
-                                        VALUES(?,?,?,?,?,?,?)";
+                                    $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus, academic_year)
+                                        VALUES(?,?,?,?,?,?,?, '$academic_year')";
                                     $stmt = $connect->prepare($sql);
                                     $stmt->bind_param("sississ", $student_details["indexNumber"], $student_details["schoolID"], $student_details["Lastname"], 
                                         $student_details["Othernames"], $next_room, $student_details["Gender"], $student_details["boardingStatus"]);
@@ -276,8 +280,8 @@
 
                         //provide data into database with a null house value
                         if($null_entry){
-                            $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus)
-                                VALUES(?,?,?,?,NULL,?,?)";
+                            $sql = "INSERT INTO house_allocation (indexNumber, schoolID, studentLname, studentOname, houseID, studentGender, boardingStatus, academic_year)
+                                VALUES(?,?,?,?,NULL,?,?, '$academic_year')";
                             $stmt = $connect->prepare($sql);
                             $stmt->bind_param("sissss", $student_details["indexNumber"], $student_details["schoolID"], $student_details["Lastname"], $student_details["Othernames"], $student_details["Gender"], $student_details["boardingStatus"]);
                             $stmt->execute();
@@ -524,6 +528,7 @@
         }elseif($submit == "activate_index_number"){
             $index_number = $_POST["students_index"];
             $r_index_number = $_POST["check_index_number"];
+            $hashed_index = $_POST["hashed_index"] ?? "";
 
             if(empty($r_index_number)){
                 $message = "JHS index number not provided";
@@ -533,6 +538,8 @@
                 $message = "JHS index number is expected to be 12 characters long";
             }elseif(($y = substr($r_index_number, 10)) != $index_end){
                 $message = "JHS index number provided is not registered for current admission year $y";
+            }elseif(!verify_index_number_hash($hashed_index, $r_index_number)){
+                $message = "JHS index number provided to this account is invalid";
             }else{
                 $sql = "UPDATE cssps SET indexNumber=? WHERE indexNumber=?";
                 $stmt = $connect->prepare($sql);
@@ -557,7 +564,7 @@
             $programme = $_POST["programme"];
             $academic_year = getAcademicYear(now(), false);
 
-            $students = decimalIndexArray(fetchData("indexNumber, CONCAT(Lastname,' ',Othernames) as fullname", "cssps", "schoolID=$school_id AND academicYear='$academic_year' AND enroled=FALSE AND hidden_index IS NOT NULL", 0));
+            $students = decimalIndexArray(fetchData("indexNumber, hidden_index, CONCAT(Lastname,' ',Othernames) as fullname", "cssps", "schoolID=$school_id AND academic_year='$academic_year' AND enroled=FALSE AND hidden_index IS NOT NULL AND programme='$programme'", 0));
             
             if($students){
                 $response = json_encode(["data" => $students]);

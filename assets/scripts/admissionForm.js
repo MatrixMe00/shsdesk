@@ -338,12 +338,24 @@ $("button[name=activate_student_index_number]").click(function(){
     $("#check_index_number").val($("#student_index_number").val());
 })
 
+const reset_activation_fields = () => {
+    const index_field = $("#check_index_number");
+    const submit_btn = $("#checkIndexButton");
+    const datalist = $("datalist#student_names");
+
+    datalist.empty();
+    index_field.prop("readonly", true);
+    submit_btn.prop("disabled", true);
+    $("#check_status_span").addClass("not-visible").html("")
+}
+
 $("#check_school_id").change(async function(){
     const value = $(this).val();
     const option = $(this).find("option:selected");
     const check_program = $("select#check_programme");
 
     check_program.html("<option value\"\">Select a Programme</option>")
+    reset_activation_fields();
 
     if(value != ""){
         if(option.attr("data-programs") == ""){
@@ -352,7 +364,7 @@ $("#check_school_id").change(async function(){
                 returnType: "json",
                 method: "POST",
                 beforeSend: function(){
-                    $("#check_status_area").removeClass("no_disp").html("Fetching programs...");
+                    $("#check_status_span").removeClass("not-visible").html("Fetching programs...");
                 },
                 formData: {submit: "get_cssps_programs", school_id: value}
             });
@@ -360,14 +372,15 @@ $("#check_school_id").change(async function(){
             programs = programs.data;            
 
             if(typeof programs === "object"){
+                $("#check_status_span").addClass("not-visible");
                 option.attr("data-programs", JSON.stringify(programs));
             }else{
                 alert_box(programs, "error");
-                $("#check_status_area").html(programs);
+                $("#check_status_span").html(programs);
 
                 setTimeout(function(){
-                    $("#check_status_area").addClass("no_disp").html("")
-                }, 5000);
+                    $("#check_status_span").addClass("not-visible").html("")
+                }, 10000);
                 return;
             }
         }
@@ -383,9 +396,13 @@ $("#check_school_id").change(async function(){
 $("#check_programme").change(async function(){
     const value = $(this).val();
     const school_id = $("#check_school_id").val();
-    const index_select_field = $("select#students_index");
+    const datalist = $("datalist#student_names");
+    const index_field = $("#students_index");
+    const index_field_hidden = $("#students_index_hidden");
+    const index_field_hashed = $("#students_index_hashed");
 
-    index_select_field.html("<option value\"\">Select Your Name</option>");
+    datalist.empty();
+    index_field.val("").prop("readonly", false); index_field_hidden.val(""); index_field_hashed.val("");
 
     if(value != ""){
         let students = await ajaxCall({
@@ -393,7 +410,7 @@ $("#check_programme").change(async function(){
             returnType: "json",
             method: "POST",
             beforeSend: function(){
-                $("#check_status_area").removeClass("no_disp").html("Fetching students...");
+                $("#check_status_span").removeClass("not-visible").html("Fetching students...");
             },
             formData: {submit: "get_cssps_students", school_id: school_id, programme: value}
         });
@@ -401,27 +418,39 @@ $("#check_programme").change(async function(){
         students = students.data;            
 
         if(typeof students === "object"){
+            index_field.attr("placeholder", "Search your name here");
+            $("#check_status_span").addClass("not-visible");
+
             $.each(students, function(index, student){
-                index_select_field.append("<option value=\"" + student.indexNumber + "\">" + student.fullname + "</option>")
+                datalist.append("<option value=\"" + student.fullname + "\" data-hidden-index=\"" + student.hidden_index + "\" data-temp-index=\"" + student.indexNumber + "\" >" + student.fullname + "</option>")
             })
         }else{
             alert_box(students, "error");
-            $("#check_status_area").html(students);
+            $("#check_status_span").html(students);
+            index_field.val("").prop("readonly", true).attr("placeholder", "No assigned students"); index_field_hidden.val("");
 
             setTimeout(function(){
-                $("#check_status_area").addClass("no_disp").html("")
-            }, 5000);
+                $("#check_status_span").addClass("not-visible").html("")
+            }, 10000);
             return;
         }
     }
 })
 
-$("select#students_index").change(function(){
+$("#students_index").on("input", function(){
+    const datalist = $("datalist#student_names");
     const value = $(this).val();
+    const index_field_hashed = $("#students_index_hashed");
+    const temp_index_number = $("#students_index_hidden");
     const index_field = $("#check_index_number");
     const submit_btn = $("#checkIndexButton");
 
-    if(value != ""){
+    if(datalist.html() != "" && datalist.find("option[value='" + value + "']").length > 0){
+        const hidden_index = datalist.find("option[value='" + value + "']").attr("data-hidden-index");
+        const temp_index = datalist.find("option[value='" + value + "']").attr("data-temp-index");
+        index_field_hashed.val(hidden_index);
+        temp_index_number.val(temp_index);
+
         index_field.prop("readonly", false);
         submit_btn.prop("disabled", false);
     }else{
@@ -445,12 +474,8 @@ $("form[name=indexNumberCheckerForm]").submit(async function(e){
     }
 })
 
-$("form[name=indexNumberCheckerForm] button[name=cancel]").click(function(){
-    const index_field = $("#check_index_number");
-    const submit_btn = $("#checkIndexButton");
-
-    index_field.prop("readonly", true);
-    submit_btn.prop("disabled", true);
+$("form[name=indexNumberCheckerForm] button[name=modal_cancel]").click(function(){
+    reset_activation_fields();
 })
 
 $("button[name=continue]").click(function(){
@@ -692,6 +717,9 @@ $("form[name=admissionForm]").submit(function(e){
                 i = 1;
             }else if(response == "profile-wrong-ext"){
                 message = "Profile picture must be of type jpg, jpeg or png";
+                i=1;
+            }else if(response == "profile-pic-required"){
+                message = "Please provide your profile picture";
                 i=1;
             }else if(response == "no-enrolment-code"){
                 message = "No enrolment code was provided";

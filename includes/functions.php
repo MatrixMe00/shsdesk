@@ -1009,6 +1009,37 @@
         
         return "$school_id$current_year$student_number";
     }
+
+    /**
+     * This provides a hashed format of the index number
+     * @param string $index_number The index number to be hased
+     * @return string|false
+     */
+    function hash_index_number(string $index_number) :string|false{
+        if (is_numeric($index_number) && strlen($index_number) === 12) {
+            // Retain the first three digits, mask the middle five with asterisks, and keep the last four
+            return substr($index_number, 0, 3) . '*****' . substr($index_number, -4);
+        }
+
+        return false;
+    }
+
+    /**
+     * This is used to check if an index number is similar to its hash
+     * @param string $hashed_index The hashed index number
+     * @param string $index_number The index number
+     * @return bool
+     */
+    function verify_index_number_hash(string $hashed_index, string $index_number) :bool{
+        $index_number = hash_index_number($index_number);
+        $response = false;
+
+        if($index_number && $hashed_index == $index_number){
+            $response = true;
+        }
+
+        return $response;
+    }
     
     /**
      * 

@@ -173,6 +173,8 @@
                         }elseif($max_column == "H" || $max_column == "G" || $max_column == "I"){
                             //make it end at G
                             $headerCounter = 6;
+                            $academic_year = getAcademicYear(now(), false);
+                            $not_written = $new_data = 0;
 
                             $connect->begin_transaction();
                             try {
@@ -247,39 +249,49 @@
             
                                     //check if index number exists and insert data into database
                                     if(!is_null($indexNumber) && !empty($indexNumber)){
-                                        if(!$hidden_index || is_null($hidden_index))
+                                        if(!$hidden_index || is_null($hidden_index)){
                                             $index = fetchData("indexNumber","cssps","indexNumber='$indexNumber'");
-                                        else
-                                            $index = fetchData("indexNumber", "cssps", ["Lastname = '$Lastname'", "Othernames = '$Othernames'", "programme = '$programme'", "schoolID = $user_school_id"], where_binds: "AND");
+                                        }
+                                        else{
+                                            $index = fetchData("indexNumber", "cssps", ["hidden_index = '$hidden_index'", "Lastname = '$Lastname'", "Othernames = '$Othernames'", "programme = '$programme'", "schoolID = $user_school_id"], where_binds: "AND");
+                                        }
             
                                         if($index == "empty"){
-                                            $sql = "INSERT INTO cssps(indexNumber, hidden_index, Lastname,Othernames,Gender,boardingStatus,programme,aggregate,trackID,schoolID)
-                                                VALUES (?,?,?,?,?,?,?,?,?,?)
+                                            $sql = "INSERT INTO cssps(indexNumber, hidden_index, Lastname,Othernames,Gender,boardingStatus,programme,aggregate,trackID,schoolID, academic_year)
+                                                VALUES (?,?,?,?,?,?,?,?,?,?, '$academic_year')
                                             ";
                                             $stmt = $connect->prepare($sql);
                                             $stmt->bind_param("sssssssisi",$indexNumber,$hidden_index, $Lastname,$Othernames,$Gender,$boardingStatus,$programme,$aggregate,$trackID,$user_school_id);
                                             if($stmt->execute()){
-                                                if($row == $max_row){
-                                                    $connect->commit();
-                                                    echo "success";
-                                                }
+                                                ++$new_data;
                                             }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
                                                 echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
                                             }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
                                                 echo "Detail for <b>$indexNumber</b> not written. Gender must either be Male or Female";
-                                            }           
+                                            }else{
+                                                throw new Exception("Statment Error: $stmt->error");
+                                            }
                                         }else{
-                                            echo "Candidate with index number <b>$indexNumber</b> already exists. Candidate data was not written<br>";
-                                        }      
+                                            $not_written++;
+                                        }     
                                     }else{
                                         $cellName = $current_col_names[$col].$row;
                                         echo "Operation exited by meeting an empty column ($cellName). All preceding data received successfully";
                                         break;
-                                    }             
+                                    }
+
+                                    if($row == $max_row){
+                                        $connect->commit();
+
+                                        if($not_written < 1)
+                                            echo "success";
+                                        else
+                                            echo "$new_data new records have been added";
+                                    }
                                 }
                             } catch (\Throwable $th) {
                                 $connect->rollback();
-                                echo throwableMessage($th);
+                                echo "Error: ".throwableMessage($th);
                             }
                         }elseif($max_column == "J" && $last_heading == "Guardian Contact"){
                             $message = ""; $insert_count = 0; $houses = [];

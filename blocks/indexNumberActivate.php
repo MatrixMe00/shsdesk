@@ -36,9 +36,10 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/book-outline.svg" alt="course">
                 </span>
-                <select name="students_index" id="students_index" required>
-                    <option value="">Select Your Name</option>
-                </select>
+                <input type="hidden" name="students_index" id="students_index_hidden">
+                <input type="hidden" name="hashed_index" id="students_index_hashed">
+                <input type="text" id="students_index" list="student_names" autocomplete="off" placeholder="Search your name here" readonly />
+                <datalist id="student_names" style="z-index: 99;"></datalist>
             </label>
             <label for="check_index_number">
                 <span class="label_image">
@@ -49,7 +50,7 @@
             </label>
         </div>
         <div class="joint">
-            <p id="check_status_span" class="txt-al-c no_disp">This is a status text</p>
+            <p id="check_status_span" class="txt-al-c not-visible">This is a status text</p>
         </div>
     </div>
     <div class="flex flex-eq flex-wrap gap-sm">

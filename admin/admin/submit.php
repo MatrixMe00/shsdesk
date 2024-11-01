@@ -2471,10 +2471,11 @@
 
             echo $message;
         }elseif($submit == "reset_admission"){
-            $sql = "UPDATE cssps SET current_data = FALSE WHERE schoolID=$user_school_id AND current_data = TRUE;
-                UPDATE enrol_table SET current_data = FALSE WHERE shsID=$user_school_id AND current_data = TRUE;
-                UPDATE house_allocation SET current_data = FALSE WHERE schoolID=$user_school_id AND current_data = TRUE;
-                UPDATE transaction SET current_data = FALSE WHERE schoolBought = $user_school_id AND current_data = TRUE;
+            $academic_year = getAcademicYear(now(), false);
+            $sql = "UPDATE cssps SET current_data = FALSE WHERE schoolID=$user_school_id AND current_data = TRUE AND academic_year != '$academic_year';
+                UPDATE enrol_table SET current_data = FALSE WHERE shsID=$user_school_id AND current_data = TRUE AND academic_year != '$academic_year';
+                UPDATE house_allocation SET current_data = FALSE WHERE schoolID=$user_school_id AND current_data = TRUE AND academic_year != '$academic_year';
+                UPDATE transaction SET current_data = FALSE WHERE schoolBought = $user_school_id AND current_data = TRUE AND academic_year != '$academic_year';
             ";
             $response = $connect->multi_query($sql);
 

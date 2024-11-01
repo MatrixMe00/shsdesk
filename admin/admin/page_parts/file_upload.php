@@ -17,7 +17,7 @@
         </div>
         <div class="body">
             <?php 
-                $academic_year = getAcademicYear(now()); 
+                $academic_year = getAcademicYear(now(), false); 
                 $last_academic_year = fetchData("academic_year", "cssps", "schoolID=$user_school_id AND current_data = TRUE", order_by:"academic_year", asc: false); 
                 $can_upload = $last_academic_year == "empty" || $last_academic_year["academic_year"] == $academic_year;
 
