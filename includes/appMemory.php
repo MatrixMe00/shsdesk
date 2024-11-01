@@ -13,6 +13,7 @@
 
     $serverName = $_SERVER['SERVER_NAME'];
     $serverDown = false;
+    $lock_admission = true;
 
     // last figure of index number is current year
     $index_end = date("m") > 7 ? date("y") : date("y") - 1; 

@@ -521,6 +521,52 @@
             }else{
                 echo "found no files";
             }
+        }elseif($submit == "activate_index_number"){
+            $index_number = $_POST["students_index"];
+            $r_index_number = $_POST["check_index_number"];
+
+            if(empty($r_index_number)){
+                $message = "JHS index number not provided";
+            }elseif(!is_numeric($r_index_number)){
+                $message = "JHS index number provided has invalid format";
+            }elseif(strlen($r_index_number) != 12){
+                $message = "JHS index number is expected to be 12 characters long";
+            }elseif(($y = substr($r_index_number, 10)) != $index_end){
+                $message = "JHS index number provided is not registered for current admission year $y";
+            }else{
+                $sql = "UPDATE cssps SET indexNumber=? WHERE indexNumber=?";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("ss", $r_index_number, $index_number);
+                $message = $stmt->execute() === true ? "success" : $stmt->error;
+            }
+
+            echo $message;
+        }elseif($submit == "get_cssps_programs"){
+            $school_id = $_POST["school_id"];
+            $programs = decimalIndexArray(fetchData("DISTINCT programme", "cssps", "schoolID=$school_id", 0));
+            if($programs){
+                $response = json_encode(["data" => array_column($programs, "programme")]);
+            }else{
+                $response = json_encode(["data" => "No student record found"]);
+            }
+
+            header("Content-type: application/json");
+            echo $response;
+        }elseif($submit == "get_cssps_students"){
+            $school_id = $_POST["school_id"];
+            $programme = $_POST["programme"];
+            $academic_year = getAcademicYear(now(), false);
+
+            $students = decimalIndexArray(fetchData("indexNumber, CONCAT(Lastname,' ',Othernames) as fullname", "cssps", "schoolID=$school_id AND academicYear='$academic_year' AND enroled=FALSE AND hidden_index IS NOT NULL", 0));
+            
+            if($students){
+                $response = json_encode(["data" => $students]);
+            }else{
+                $response = json_encode(["data" => "No student record found"]);
+            }
+
+            header("Content-type: application/json");
+            echo $response;
         }
     }elseif(isset($_GET['submit'])){ 
         $submit = $_GET["submit"];
