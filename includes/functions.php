@@ -1040,6 +1040,44 @@
 
         return $response;
     }
+
+    /**
+     * Logs a throwable error
+     * @param Throwable $throwable The throwable message
+     */
+    function logThrowable(Throwable $throwable) {
+        // Define the path to the logs directory
+        $logDir = $_SERVER["DOCUMENT_ROOT"] . '/logs';
+        
+        // Check if the logs directory exists, create it if it doesn't
+        if (!is_dir($logDir)) {
+            mkdir($logDir, 0777, true);
+        }
+    
+        // Define the log file name based on the current month and year
+        $logFile = $logDir . '/' . date('F_Y') . '.log';
+    
+        // Gather error details
+        $timestamp = date('Y-m-d H:i:s');
+        $errorType = get_class($throwable);   // Get the exception/error class name
+        $errorCode = $throwable->getCode();    // Get the error code (if any)
+        $errorMessage = $throwable->getMessage();
+        $errorFile = $throwable->getFile();
+        $errorLine = $throwable->getLine();
+        $errorTrace = $throwable->getTraceAsString() ?: "No stack trace available."; // Handle empty stack trace
+    
+        // Format the log entry
+        $logEntry = "[$timestamp] Error Type: $errorType\n";
+        $logEntry .= "Error Code: $errorCode\n";
+        $logEntry .= "Message: $errorMessage\n";
+        $logEntry .= "File: $errorFile (Line $errorLine)\n";
+        $logEntry .= "Stack Trace:\n$errorTrace\n";
+        $logEntry .= str_repeat("-", 80) . "\n"; // Separator for readability
+    
+        // Append the log entry to the log file
+        file_put_contents($logFile, $logEntry, FILE_APPEND);
+    }
+    
     
     /**
      * 
@@ -1310,6 +1348,7 @@
         global $developmentServer;
         
         $message = "";
+        logThrowable($throwable);
         if($developmentServer){
             if(str_contains($_SERVER["SERVER_NAME"], ".local") === true)
                 $message = $throwable->getMessage()." in ".$throwable->getFile()." on line ".$throwable->getLine();
@@ -1880,7 +1919,7 @@
             return null;
         }
 
-        $program = fetchData1("program_id", "program", ["school_id=$school_id", "LOWER(associate_program)='".strtolower($course_name)."'"]);
+        $program = fetchData1("program_id", "program", ["school_id=$school_id", "LOWER(associate_program)='".strtolower($course_name)."'"], where_binds: "AND");
 
         if(!is_array($program)){
             return null;
