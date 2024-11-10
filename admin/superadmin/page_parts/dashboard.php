@@ -5,6 +5,9 @@
 
     //add nav point session
     $_SESSION["nav_point"] = "Dashboard";
+
+    $total_students = fetchData("COUNT(indexNumber) as total","enrol_table","academic_year = '$academic_year'")["total"];
+    $main_total_students = fetchData("COUNT(indexNumber) as total","enrol_table")["total"];
 ?>
 
 <section class="section_container">
@@ -17,28 +20,28 @@
         </div>
     </div>
 
-    <div class="content teal">
+    <div class="content teal" title="<?= number_format($total_students) ?>">
         <div class="head">
-            <h2><?= $total_students = fetchData("COUNT(indexNumber) as total","enrol_table","current_data=TRUE AND academic_year = '$academic_year'")["total"] ?></h2>
+            <h2><?= numberShortner($total_students) ?></h2>
         </div>
         <div class="body">
-            <span><?= $total_schools != 1 ? "Students":"Student" ?> on System [Current]</span>
+            <span><?= $total_students != 1 ? "Students":"Student" ?> on System [Current]</span>
         </div>
     </div>
 
-    <div class="content dark">
+    <div class="content dark" title="<?= number_format($main_total_students) ?>">
         <div class="head">
-            <h2><?= $total_students = fetchData("COUNT(indexNumber) as total","enrol_table")["total"] ?></h2>
+            <h2><?= numberShortner($main_total_students) ?></h2>
         </div>
         <div class="body">
-            <span><?= $total_schools != 1 ? "Students":"Student" ?> on System [Total]</span>
+            <span><?= $main_total_students != 1 ? "Students":"Student" ?> on System [Total]</span>
         </div>
     </div>
 
     <div class="content" style="background-color: #ffc107">
         <div class="head">
             <h2><?= $ttl = fetchData("count(indexNumber) AS total", "enrol_table", 
-                ["enrolDate LIKE '".date('Y-m-d')."%'", "current_data=TRUE"], where_binds: "AND")["total"];?></h2>
+                ["enrolDate LIKE '".date('Y-m-d')."%'", "academic_year='$academic_year'"], where_binds: "AND")["total"];?></h2>
         </div>
         <div class="body">
             <span>Application<?= $ttl != 1 ? "s":"" ?> today</span>
@@ -72,7 +75,7 @@
                 <?php
                     //get current sum of prices
                     $amount = $role_price * fetchData("SUM(amountPaid) as ttl",
-                        "transaction", "current_data=TRUE AND Transaction_Expired=TRUE"
+                        "transaction", "academic_year='$academic_year' AND Transaction_Expired=TRUE"
                     )["ttl"];
                     $amount = number_format(round($amount,2), 2);
                     echo $amount;
@@ -88,18 +91,11 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $wk_amt = $connect->query("SELECT Transaction_Date as enrolDate, amountPaid FROM transaction WHERE current_data=TRUE AND Transaction_Expired = TRUE");
-                    $amount = 0;
-                    if($wk_amt->num_rows > 0){
-                        while($row = $wk_amt->fetch_array()){
-                            if(date("W",strtotime($row["enrolDate"]) - 1) == date("W") - 1){
-                                $amount += ($role_price * $row["amountPaid"]);
-                            }else{
-                                continue;
-                            }
-                        }
-                    }
+                    $wk_amt = fetchData("SUM(amountPaid) as total", "transaction", 
+                        ["academic_year = '$academic_year'", "YEARWEEK(Transaction_Date, 1) = YEARWEEK(CURDATE() - INTERVAL 1 WEEK, 1)", "Transaction_Expired = TRUE"], where_binds: "AND"
+                    )["total"];
                     
+                    $amount = $role_price * $wk_amt;
                     $amount = number_format(round($amount,2), 2);
                     echo $amount;
                 ?>
@@ -114,16 +110,11 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $amount = 0;
-                    if($wk_amt->num_rows > 0){
-                        while($row = $wk_amt->fetch_array()){
-                            if(date("W",strtotime($row["enrolDate"])) == date("W")){
-                                $amount += ($role_price * $row["amountPaid"]);
-                            }else{
-                                continue;
-                            }
-                        }
-                    }
+                    $wk_amt = fetchData("SUM(amountPaid) as total", "transaction", 
+                        ["academic_year = '$academic_year'", "YEARWEEK(Transaction_Date, 1) = YEARWEEK(CURDATE(), 1)", "Transaction_Expired = TRUE"], where_binds: "AND"
+                    )["total"];
+                    
+                    $amount = $role_price * $wk_amt;
                     $amount = number_format(round($amount,2), 2);
                     echo $amount;
                 ?>
@@ -139,7 +130,7 @@
             <h2>GHC
                 <?php
                     $amount = fetchData("SUM(amountPaid) as total, SUM(deduction) as deduction",
-                        "transaction", "current_data=TRUE AND Transaction_Expired = TRUE"
+                        "transaction", "academic_year='$academic_year' AND Transaction_Expired = TRUE"
                     );
                     $amount = ($system_price * $amount["total"]) - $amount["deduction"];
                     $amount = number_format(round($amount,2), 2);
@@ -158,7 +149,7 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $amt = fetchData("SUM(amountPaid) as total, SUM(Deduction) AS deduction", "transaction", "academic_year ='$academic_year' AND Transaction_Expired=TRUE");
+                    $amt = fetchData("SUM(amountPaid) as total, SUM(Deduction) AS deduction", "transaction", "Year(Transaction_Date) = $this_year AND Transaction_Expired=TRUE");
                     $amount = $role_price * $amt["total"];
                     $amount = number_format(round($amount,2), 2);
                     echo $amount;

@@ -300,12 +300,13 @@
                 //check if transaction is already in system
                 $sql = "SELECT transactionID FROM transaction WHERE transactionID = '$trans_id'";
                 $result = $connect->query($sql);
+                $academic_year = getAcademicYear(now(), false);
 
                 if($result->num_rows > 0){
                     $message = "Transaction ID already exists in system";
                 }else{
-                    $sql = "INSERT INTO transaction (transactionID, contactNumber, schoolBought, amountPaid, contactName, contactEmail, Deduction, Transaction_Date) 
-                    VALUES(?,?,?,?,?,?,?,?)";
+                    $sql = "INSERT INTO transaction (transactionID, contactNumber, schoolBought, amountPaid, contactName, contactEmail, Deduction, Transaction_Date, academic_year) 
+                    VALUES(?,?,?,?,?,?,?,?, '$academic_year')";
                     $stmt = $connect->prepare($sql);
                     $stmt->bind_param("ssidssds", $trans_id, $cont_number, $school, $amount, $cont_name, $cont_email, $deduction, $trans_date);
                     if($stmt->execute()) {
@@ -318,8 +319,9 @@
 
             echo $message;
         }elseif($submit == "currentTransactionCount"){
+            $academic_year = getAcademicYear(now(), false);
             $response = array();
-            $sql = "SELECT COUNT(transactionID) as total FROM transaction WHERE current_data=TRUE";
+            $sql = "SELECT COUNT(transactionID) as total FROM transaction WHERE academic_year='$academic_year'";
             $result = $connect->query($sql);
             
             //total transaction count
@@ -328,7 +330,7 @@
             );
 
             $sql = "SELECT COUNT(transactionID) as total FROM transaction
-                WHERE current_data=TRUE AND Transaction_Expired=TRUE";
+                WHERE academic_year='$academic_year' AND Transaction_Expired=TRUE";
             $result = $connect->query($sql);
             
             //total transaction expired
@@ -337,7 +339,7 @@
             );
 
             $sql = "SELECT COUNT(transactionID) as total FROM transaction
-                WHERE current_data=TRUE AND Transaction_Expired=FALSE";
+                WHERE academic_year='$academic_year' AND Transaction_Expired=FALSE";
             $result = $connect->query($sql);
             
             //total transaction not expired
@@ -352,10 +354,10 @@
 
             if($contactSearch == "true"){
                 $sql = "SELECT transactionID, contactName, contactNumber, contactEmail, schoolBought, Transaction_Date, Transaction_Expired, Transaction_Date
-                    FROM transaction WHERE current_data=TRUE AND contactNumber LIKE '%$search%'";
+                    FROM transaction WHERE academic_year='$academic_year' AND contactNumber LIKE '%$search%'";
             }else{
                 $sql = "SELECT transactionID, contactName, contactNumber, contactEmail, schoolBought, Transaction_Date, Transaction_Expired, Transaction_Date
-                FROM transaction WHERE transactionID LIKE '%$search%'";
+                FROM transaction WHERE transactionID LIKE '%$search%' AND academic_year='$academic_year'";
             }
 
             $sql .= " ORDER BY Transaction_Expired ASC";

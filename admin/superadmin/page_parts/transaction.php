@@ -8,17 +8,18 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
     $_SESSION["nav_point"] = "Transactions";
 }
 $current_year = date("Y");
+$academic_year = getAcademicYear(now(), false);
 
 $trans_this_year = [
-    "total" => (int) fetchData("COUNT(transactionID) as total", "transaction", "DATE_FORMAT(Transaction_Date, '%Y') = $current_year")["total"],
-    "expired" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["DATE_FORMAT(Transaction_Date, '%Y') = $current_year", "Transaction_Expired=TRUE"], where_binds: "AND")["total"],
-    "shsdesk" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["DATE_FORMAT(Transaction_Date, '%Y') = $current_year", "LOWER(contactName)='shsdesk'"], where_binds: "AND")["total"],
+    "total" => (int) fetchData("COUNT(transactionID) as total", "transaction", "YEAR(Transaction_Date) = $current_year")["total"],
+    "expired" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["YEAR(Transaction_Date) = $current_year", "Transaction_Expired=TRUE"], where_binds: "AND")["total"],
+    "shsdesk" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["YEAR(Transaction_Date) = $current_year", "LOWER(contactName)='shsdesk'"], where_binds: "AND")["total"],
 ];
 
 $trans_current = [
-    "total" => (int) fetchData("COUNT(transactionID) as total", "transaction", "current_data=TRUE")["total"],
-    "expired" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["current_data=TRUE", "Transaction_Expired=TRUE"], where_binds: "AND")["total"],
-    "shsdesk" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["current_data=TRUE", "LOWER(contactName)='shsdesk'"], where_binds: "AND")["total"],
+    "total" => (int) fetchData("COUNT(transactionID) as total", "transaction", "academic_year='$academic_year'")["total"],
+    "expired" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["academic_year='$academic_year'", "Transaction_Expired=TRUE"], where_binds: "AND")["total"],
+    "shsdesk" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["academic_year='$academic_year'", "LOWER(contactName)='shsdesk'"], where_binds: "AND")["total"],
 ];
 ?>
 
@@ -66,7 +67,7 @@ $trans_current = [
             <h2><?= $trans_current["total"] ?></h2>
         </div>
         <div class="body">
-            <span>Transactions Received [Current]</span>
+            <span>Transactions Received [<?= $academic_year ?>]</span>
         </div>
     </div>
 
@@ -75,7 +76,7 @@ $trans_current = [
             <h2><?= $trans_current["expired"] ?></h2>
         </div>
         <div class="body">
-            <span>Transactions Expired [Current]</span>
+            <span>Transactions Expired [<?= $academic_year ?>]</span>
         </div>
     </div>
 
@@ -84,7 +85,7 @@ $trans_current = [
             <h2><?= $trans_current["total"] - $trans_current["expired"] ?></h2>
         </div>
         <div class="body">
-            <span>Transactions left to Expire [Current]</span>
+            <span>Transactions left to Expire [<?= $academic_year ?>]</span>
         </div>
     </div>
 
@@ -93,7 +94,7 @@ $trans_current = [
             <h2><?= $trans_current["shsdesk"] ?></h2>
         </div>
         <div class="body">
-            <span>SHSDesk Transactions [Current]</span>
+            <span>SHSDesk Transactions [<?= $academic_year ?>]</span>
         </div>
     </div>
 </section>

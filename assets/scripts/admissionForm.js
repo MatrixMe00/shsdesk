@@ -347,6 +347,7 @@ const reset_activation_fields = () => {
     index_field.prop("readonly", true);
     submit_btn.prop("disabled", true);
     $("#check_status_span").addClass("not-visible").html("")
+    $("#activate_index_number").addClass("no_disp").removeClass("flex-all-center fixed");
 }
 
 $("#check_school_id").change(async function(){

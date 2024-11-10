@@ -268,7 +268,8 @@
                                         $student_details["Othernames"], $next_room, $student_details["Gender"], $student_details["boardingStatus"]);
                                     $stmt->execute();
                                     
-                                    $_SESSION["ad_stud_house"] = fetchData("title","houses","id=$next_room")["title"];
+                                    $stud_house = fetchData("title","houses","id=$next_room");
+                                    $_SESSION["ad_stud_house"] = isset($stud_house["title"]) ? $stud_house["title"] : "e";
                                 }
                             }else{
                                 //enter students into table but without houses
@@ -347,8 +348,14 @@
                         $connect->commit();
                         $connect2->commit();
                     }else{
-                        if(str_contains(strtolower(strval($result->error)), "duplicate")){
-                            $message = "Your data has already been written. Please navigate to <a href='https://www.shsdesk.com/student'>shsdesk.com/student</a> to print document";
+                        $error = strtolower(strval($result->error));
+                        if(str_contains($error, "duplicate")){
+                            if(str_contains($error, "enrol_table.primary"))
+                                $message = "Your data has already been written. Please navigate to <a href='https://www.shsdesk.com/student'>shsdesk.com/student</a> to print document";
+                            elseif(str_contains($error, "enrol_table.transactionid"))
+                                $message = "This transaction has already been used. Please contact admins via the message us button for help";
+                            else
+                                $message = "A duplicate entry has been recognized. Please contact admin for help";
                         }else{
                             $message = "Navigate to <a href='https://www.shsdesk.com/student'>shsdesk.com/student</a> to check for document";
                         }
@@ -560,16 +567,26 @@
             header("Content-type: application/json");
             echo $response;
         }elseif($submit == "get_cssps_students"){
-            $school_id = $_POST["school_id"];
-            $programme = $_POST["programme"];
+            $school_id = $_POST["school_id"] ?? null;
+            $programme = $_POST["programme"] ?? null;
             $academic_year = getAcademicYear(now(), false);
 
-            $students = decimalIndexArray(fetchData("indexNumber, hidden_index, CONCAT(Lastname,' ',Othernames) as fullname", "cssps", "schoolID=$school_id AND academic_year='$academic_year' AND enroled=FALSE AND hidden_index IS NOT NULL AND programme='$programme'", 0));
+            if(empty($school_id)){
+                $message = "School was not selected or is invalid";
+            }elseif(empty($programme)){
+                $message = "Program name has not been selected or is invalid";
+            }
+
+            if(!isset($message)){
+                $students = decimalIndexArray(fetchData("indexNumber, hidden_index, CONCAT(Lastname,' ',Othernames) as fullname", "cssps", "schoolID=$school_id AND academic_year='$academic_year' AND enroled=FALSE AND hidden_index IS NOT NULL AND programme='$programme'", 0));
             
-            if($students){
-                $response = json_encode(["data" => $students]);
+                if($students){
+                    $response = json_encode(["data" => $students]);
+                }else{
+                    $response = json_encode(["data" => "No student record found"]);
+                }
             }else{
-                $response = json_encode(["data" => "No student record found"]);
+                $response = json_encode(["data" => $message]);
             }
 
             header("Content-type: application/json");

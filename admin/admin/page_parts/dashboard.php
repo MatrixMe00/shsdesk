@@ -7,7 +7,7 @@
     <div class="content blue">
         <div class="head">
             <h2>
-                <?= fetchData("COUNT(enrolDate) as total", "enrol_table", ["shsID=$user_school_id", "current_data = TRUE", "YEAR(NOW()) = YEAR(enrolDate)", "WEEK(NOW()) = WEEK(enrolDate)"], where_binds: "AND")["total"] ?>
+                <?= fetchData("COUNT(enrolDate) as total", "enrol_table", ["shsID=$user_school_id", "academic_year='$academic_year'", "YEARWEEK(enrolDate, 1) = YEARWEEK(CURDATE(), 1)"], where_binds: "AND")["total"] ?>
             </h2>
         </div>
         <div class="body">
@@ -17,7 +17,7 @@
 
     <div class="content teal">
         <div class="head">
-            <h2><?= $ttl = fetchData("COUNT(indexNumber) AS total", "cssps", ["schoolID=$user_school_id", "current_data=TRUE", "enroled=TRUE"], where_binds: "AND")["total"] ?></h2>
+            <h2><?= $ttl = fetchData("COUNT(indexNumber) AS total", "cssps", ["schoolID=$user_school_id", "academic_year='$academic_year'", "enroled=TRUE"], where_binds: "AND")["total"] ?></h2>
         </div>
         <div class="body">
             <span><?= $ttl > 1 ? "Students" : "Student" ?> Registered</span>
@@ -26,7 +26,7 @@
 
     <div class="content red">
         <div class="head">
-            <h2><?= $ttl = fetchData("COUNT(indexNumber) AS total", "cssps", ["schoolID=$user_school_id", "current_data=TRUE", "enroled=FALSE"], where_binds: "AND")["total"] ?></h2>
+            <h2><?= $ttl = fetchData("COUNT(indexNumber) AS total", "cssps", ["schoolID=$user_school_id", "academic_year='$academic_year'", "enroled=FALSE"], where_binds: "AND")["total"] ?></h2>
         </div>
         <div class="body">
             <span><?= $ttl > 1 ? "Students" : "Student" ?> left to register</span>
@@ -50,7 +50,7 @@
                 "join" => "cssps enrol_table",
                 "alias" => "c e", "on" => "indexNumber indexNumber"
                 ], 
-                ["c.schoolID=$user_school_id", "e.interest LIKE '%Athletics%'", "c.current_data=TRUE"], 
+                ["c.schoolID=$user_school_id", "e.interest LIKE '%Athletics%'", "c.academic_year='$academic_year'"], 
                 where_binds: "AND")["total"] ?>
             </h2>
         </div>
@@ -65,7 +65,7 @@
                 "join" => "cssps enrol_table",
                 "alias" => "c e", "on" => "indexNumber indexNumber"
                 ], 
-                ["c.schoolID=$user_school_id", "e.interest LIKE '%Football%'", "c.current_data=TRUE"], 
+                ["c.schoolID=$user_school_id", "e.interest LIKE '%Football%'", "c.academic_year='$academic_year'"], 
                 where_binds: "AND")["total"] ?></h2>
         </div>
         <div class="body">
@@ -80,7 +80,7 @@
                     "join" => "cssps enrol_table",
                     "alias" => "c e", "on" => "indexNumber indexNumber"
                     ], 
-                    ["c.schoolID=$user_school_id", "e.interest LIKE '%Debating Club%'", "c.current_data=TRUE"], 
+                    ["c.schoolID=$user_school_id", "e.interest LIKE '%Debating Club%'", "c.academic_year='$academic_year'"], 
                     where_binds: "AND")["total"] ?>
             </h2>
         </div>
@@ -96,7 +96,7 @@
                     "join" => "cssps enrol_table",
                     "alias" => "c e", "on" => "indexNumber indexNumber"
                     ], 
-                    ["c.schoolID=$user_school_id", "e.interest LIKE '%Others%'", "c.current_data=TRUE"], 
+                    ["c.schoolID=$user_school_id", "e.interest LIKE '%Others%'", "c.academic_year='$academic_year'"], 
                     where_binds: "AND")["total"] ?>
             </h2>
         </div>
@@ -112,7 +112,7 @@
                     "join" => "cssps enrol_table",
                     "alias" => "c e", "on" => "indexNumber indexNumber"
                     ], 
-                    ["c.schoolID=$user_school_id", "e.interest LIKE '%Not Defined%'", "c.current_data=TRUE"], 
+                    ["c.schoolID=$user_school_id", "e.interest LIKE '%Not Defined%'", "c.academic_year='$academic_year'"], 
                     where_binds: "AND")["total"] ?>
             </h2>
         </div>
@@ -131,7 +131,7 @@
                 <?php
                     //get current sum of prices
                     $amount = $role_price * fetchData("SUM(amountPaid) as ttl",
-                        "transaction", "current_data=TRUE AND academic_year = '$academic_year' AND schoolBought=$user_school_id AND Transaction_Expired=TRUE"
+                        "transaction", "academic_year = '$academic_year' AND schoolBought=$user_school_id AND Transaction_Expired=TRUE"
                     )["ttl"];
                     $amount = number_format(round($amount,2), 2);
                     echo $amount;
@@ -147,8 +147,8 @@
         <div class="head">
             <h2>GHC
             <?php
-                $wk_amt = fetchData("COUNT(amountPaid) as total", "transaction", 
-                    ["current_data = TRUE", "academic_year = '$academic_year'", "schoolBought = $user_school_id", "YEAR(NOW()) = YEAR(Transaction_DATE)", "WEEK(NOW()) - 1", "WEEK(Transaction_Date)"], where_binds: "AND"
+                $wk_amt = fetchData("SUM(amountPaid) as total", "transaction", 
+                    ["current_data = TRUE", "academic_year = '$academic_year'", "schoolBought = $user_school_id", "YEARWEEK(Transaction_Date, 1) = YEARWEEK(CURDATE() - INTERVAL 1 WEEK, 1)", "Transaction_Expired = TRUE"], where_binds: "AND"
                 )["total"];
                 
                 $amount = $role_price * $wk_amt;
@@ -166,8 +166,8 @@
         <div class="head">
             <h2>GHC
             <?php
-                $wk_amt = fetchData("COUNT(amountPaid) as total", "transaction", 
-                    ["current_data = TRUE", "academic_year = '$academic_year'", "schoolBought = $user_school_id", "YEAR(NOW()) = YEAR(Transaction_DATE)", "WEEK(NOW())", "WEEK(Transaction_Date)"], where_binds: "AND"
+                $wk_amt = fetchData("SUM(amountPaid) as total", "transaction", 
+                    ["current_data = TRUE", "academic_year = '$academic_year'", "schoolBought = $user_school_id", "YEARWEEK(Transaction_Date, 1) = YEARWEEK(CURDATE(), 1)", "Transaction_Expired = TRUE"], where_binds: "AND"
                 )["total"];
                 
                 $amount = $role_price * $wk_amt;
@@ -188,7 +188,7 @@
             <h2>GHC
                 <?php
                     $amount = fetchData("SUM(amountPaid) as total",
-                        "transaction", "current_data=TRUE AND academic_year='$academic_year' AND schoolBought=$user_school_id AND Transaction_Expired = TRUE"
+                        "transaction", "academic_year='$academic_year' AND schoolBought=$user_school_id AND Transaction_Expired = TRUE"
                     );
                     
                     $head_id = (int) $role_id + 1;
