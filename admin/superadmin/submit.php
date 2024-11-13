@@ -351,6 +351,7 @@
         }elseif($submit == "search_transaction"){
             $search = $_REQUEST['txt_search'];
             $contactSearch = $_REQUEST["searchByContact"];
+            $academic_year = getAcademicYear(now(), false);
 
             if($contactSearch == "true"){
                 $sql = "SELECT transactionID, contactName, contactNumber, contactEmail, schoolBought, Transaction_Date, Transaction_Expired, Transaction_Date
