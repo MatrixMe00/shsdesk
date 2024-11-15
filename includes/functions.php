@@ -529,6 +529,16 @@
     }
 
     /**
+     * Used to close the connections for a specified script
+     */
+    function close_connections(){
+        global $connect, $connect2;
+
+        $connect->close();
+        $connect2->close();
+    }
+
+    /**
      * This function queries the database, usually for select statements
      * 
      * @param mysqli $adapter The sql connection adapter

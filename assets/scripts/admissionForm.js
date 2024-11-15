@@ -32,7 +32,7 @@ $(document).ready(function(){
  
              break;
          }else if($(".tabs span.tab_button:nth-child(" + i + ")").hasClass("active") && i == total){
-             $("button[name=submit_admission] span").html("Save");
+             $("button[name=submit_admission] span").html("Submit");
              $("button[name=submit_admission]").prop("disabled", checkForm(i));
  
              break;
