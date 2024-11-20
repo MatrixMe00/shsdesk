@@ -26,7 +26,7 @@
             </div>
         </form>
     </section>
-<?php exit; endif; ?>
+<?php close_connections(); exit; endif; ?>
 <?php 
     $accessCode = decimalIndexArray(fetchData1("*", "accesstable", ["indexNumber={$student['indexNumber']}"], order_by: "expiryDate", asc: false, limit: 0));
     $schoolHasApproved = fetchData1("access_price","accesspay","school_id={$student['school_id']} AND active=1");
@@ -169,3 +169,4 @@ endif; ?>
 
 <script src="https://js.paystack.co/v1/inline.js" defer></script>
 <script src="<?= "$url/assets/scripts/accesscode.js?v=".time() ?>"></script>
+<?php close_connections() ?>

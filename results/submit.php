@@ -274,4 +274,5 @@ if(isset($_REQUEST["submit"])){
 }else{
     echo "No submit request was made";
 }
+close_connections();
 ?>

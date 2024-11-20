@@ -222,3 +222,4 @@
     <script src="<?php echo $url?>/assets/scripts/head_foot.min.js?v=<?php echo time()?>"></script>
 </body>
 </html>
+<?php close_connections() ?>

@@ -16,7 +16,7 @@
     ];
 
     $navFoot = [
-        /*[
+        [
             "name" => "payment",
             "title" => "Payments",
             "data-url" => "/admin/trans.php",
@@ -24,7 +24,7 @@
             "imgAlt" => "payment",
             "display_title" => "Payments",
             "admin_mode" => "admission records"
-        ],*/
+        ],
         /*[
             "name" => "account",
             "title" => "Account Update",

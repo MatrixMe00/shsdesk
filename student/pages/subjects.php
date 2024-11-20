@@ -241,4 +241,4 @@
     <h2 class="sm-xlg-b">Statistics</h2>
     <p class="sm-lg-t txt-fl1">Please purchase an access code from the 'Get Access Code' menu to view statistics</p>
 </section>
-<?php endif; ?>
+<?php endif; close_connections(); ?>

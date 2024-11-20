@@ -37,4 +37,5 @@
     else:
         header("location: $url/");
     endif;
+    close_connections();
 ?>

@@ -229,3 +229,4 @@
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce.js?v=<?php echo time()?>"></script>
 </body>
 </html>
+<?php close_connections() ?>

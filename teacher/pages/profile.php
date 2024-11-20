@@ -84,3 +84,4 @@
         console.log(response);
     })
 </script>
+<?php close_connections() ?>

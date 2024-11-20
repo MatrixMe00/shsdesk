@@ -64,4 +64,6 @@
             echo throwableMessage($th);
         }
     }
+
+    close_connections();
     

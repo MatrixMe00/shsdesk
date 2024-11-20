@@ -108,3 +108,4 @@
         $("#announcement").addClass("no_disp")
     })*/
 </script>
+<?php close_connections() ?>

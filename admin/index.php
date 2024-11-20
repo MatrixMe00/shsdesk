@@ -110,7 +110,6 @@
 </body>
 </html>
 <?php 
-        //close the connection
-        $connect->close();
-    endif; 
+    endif;
+    close_connections();
 ?>

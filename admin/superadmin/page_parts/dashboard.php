@@ -176,4 +176,4 @@
         </div>
     </div>
 </section>
-<?php endif; ?>
+<?php endif; close_connections() ?>

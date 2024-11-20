@@ -343,3 +343,4 @@
 <script src="<?php echo $url?>/admin/admin/assets/scripts/addHouse.min.js?v=<?php echo time()?>"></script>
 <?php } ?>
 <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
+<?php close_connections() ?>

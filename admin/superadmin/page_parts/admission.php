@@ -101,3 +101,4 @@
     </form>
 
     <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
+    <?php close_connections() ?>

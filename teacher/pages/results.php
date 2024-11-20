@@ -132,4 +132,4 @@
 </section>
 
 <script src="<?= "$url/assets/scripts/results.js?v=".time() ?>"></script>
-<?php endif; ?>
+<?php endif; close_connections() ?>

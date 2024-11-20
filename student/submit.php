@@ -300,4 +300,6 @@
     }else{
         echo "No submission detail";
     }
+
+    close_connections();
 ?>

@@ -89,3 +89,4 @@
 <?php endif; ?>
 
 <script src="<?= "$url/admin/admin/assets/scripts/messaging.js?v=".time() ?>"></script>
+<?php close_connections() ?>

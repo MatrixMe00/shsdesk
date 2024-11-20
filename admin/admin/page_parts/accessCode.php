@@ -253,7 +253,7 @@
         </div>
     </form>
 </section>
-<?php endif; ?>
+<?php endif; close_connections() ?>
 
 <script src="https://js.paystack.co/v1/inline.js" defer></script>
 <script src="<?= "$url/admin/admin/assets/scripts/accesscode.js?v=".time() ?>"></script>

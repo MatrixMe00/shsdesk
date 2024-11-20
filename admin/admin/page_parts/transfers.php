@@ -364,3 +364,4 @@
         })
     })
 </script>
+<?php close_connections() ?>

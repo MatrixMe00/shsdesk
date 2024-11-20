@@ -84,3 +84,4 @@
         </div>
     </div>
 </form>
+<?php close_connections() ?>

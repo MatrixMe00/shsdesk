@@ -269,3 +269,4 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
         }
     }
 ?>
+<?php close_connections() ?>

@@ -250,3 +250,4 @@
         $("#table_del input[name=indexNumber]").val(item_id);
     })
 </script>
+<?php close_connections() ?>

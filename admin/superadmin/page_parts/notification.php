@@ -617,3 +617,4 @@
 <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>
 <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
 <script src="<?php echo $url?>/admin/assets/scripts/tinymce.min.js"></script>
+<?php close_connections() ?>

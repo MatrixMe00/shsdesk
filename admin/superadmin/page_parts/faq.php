@@ -59,3 +59,4 @@
         </div>
     </div> -->
 </section>
+<?php close_connections() ?>

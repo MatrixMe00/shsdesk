@@ -209,7 +209,7 @@
     <div id="adminAdd" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
         <?php require_once($rootPath."/admin/adminAdd.php") ?>
     </div>
-    <?php endif; ?>
+    <?php endif; close_connections() ?>
 
     <script type="text/javascript" src="<?= $url?>/admin/assets/scripts/person.min.js?v=<?= time()?>"></script>
     <script src="<?= $url?>/assets/scripts/form/general.min.js?v=<?= time()?>"></script>

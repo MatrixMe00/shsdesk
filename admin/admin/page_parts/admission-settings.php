@@ -191,4 +191,4 @@
     <section class="txt-al-c p-xlg-lr p-xxlg-tp stud_list">
         <p>You current have no student data uploaded from the CSSPS</p>
     </section>
-<?php endif; ?>
+<?php endif; close_connections() ?>

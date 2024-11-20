@@ -353,3 +353,4 @@ $trans_current = [
         })
     })
 </script>
+<?php close_connections() ?>

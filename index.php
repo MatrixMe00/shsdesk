@@ -84,3 +84,4 @@
     <script src="assets/scripts/form/payForm.min.js?v=<?= time();?>"></script>
 </body>
 </html>
+<?php close_connections(); ?>

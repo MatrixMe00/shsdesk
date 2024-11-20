@@ -310,6 +310,8 @@
         .checkbox{margin-top: 3mm; padding: 2mm 2mm 1mm}
     }
     CSS;
+
+    close_connections();
 ?>
 
 <!DOCTYPE html>

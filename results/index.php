@@ -373,3 +373,4 @@
     </script>
 </body>
 </html>
+<?php close_connections() ?>

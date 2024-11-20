@@ -6,4 +6,6 @@
     $connect2->query($sql);
 
     echo "Update affected $connect2->affected_rows rows";
+
+    $connect2->close();
 ?>

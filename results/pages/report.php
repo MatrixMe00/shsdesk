@@ -198,4 +198,4 @@
 <section class="sp-xxlg border txt-al-c">
     <p>Please Go to the 'Get Access Code' tab to make a purchase</p>
 </section>
-<?php endif ?>
+<?php endif; close_connections() ?>

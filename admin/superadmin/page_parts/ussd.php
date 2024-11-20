@@ -204,3 +204,4 @@
         $(".control_btn[data-section-id=" + current_tab + "]").click()
     })
 </script>
+<?php close_connections() ?>

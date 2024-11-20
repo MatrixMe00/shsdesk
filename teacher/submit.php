@@ -774,4 +774,6 @@
     }else{
         echo "No submit request delivered. No operation is performed.";
     }
+
+    close_connections();
 ?>

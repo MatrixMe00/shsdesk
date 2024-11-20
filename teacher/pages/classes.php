@@ -188,3 +188,4 @@
 <?php endif; ?>
 
 <script src="<?= "$url/assets/scripts/classes.js?v=".time() ?>"></script>
+<?php close_connections() ?>

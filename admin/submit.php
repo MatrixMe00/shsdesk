@@ -515,12 +515,13 @@
                 $where[] = "s.id=$user_school_id";
             }
 
-            $columns = ["DISTINCT s.id", "SUM(t.amountPaid) as amountPaid", "COUNT(t.transactionID) as ttl", "a.role"];
+            $columns = ["DISTINCT s.id", "sc.head", "SUM(t.amountPaid) as amountPaid", "COUNT(t.transactionID) as ttl", "a.role"];
             $tables = [
                 ["join" => "schools transaction", "alias" => "s t", "on" => "id schoolBought"],
                 ["join" => "schools admins_table", "alias" => "s a", "on" => "id school_id"],
                 ["join" => "admins_table roles", "alias" => "a r", "on" => "role id"],
-                ["join" => "transaction enrol_table", "alias" => "t e", "on" => "indexNumber indexNumber"]
+                ["join" => "transaction enrol_table", "alias" => "t e", "on" => "indexNumber indexNumber"],
+                ["join" => "schools school_category", "alias" => "s sc", "on" => "category id"]
             ];
 
             $schools = fetchData($columns, $tables, $where, 0, "AND", group_by: ["s.id", "a.user_id"]);
@@ -529,11 +530,18 @@
             $total_students = array_sum(array_column($schools, "ttl"));
             $total_cash = array_sum(array_column($schools, "amountPaid"));
 
+            $chass_amounts = [
+                "chass" => ["total_amount" => 0, "students" => 0],
+                "chass_t" => ["total_amount" => 0, "students" => 0]
+            ];
+
             //format schools data
             $schools = formatSchoolForPayment($schools);
 
+            // get admin and chass pricing details
             $ad_dev_price = fetchData("price","roles","id < 3", 0);
-
+            $chass_price = decimalIndexArray(fetchData("id, price, title", "roles", "title LIKE 'chass%'"));
+            
             $price_superadmin = $ad_dev_price[1]["price"] / 100;
             $price_developer = $ad_dev_price[0]["price"] / 100;
 
@@ -608,6 +616,10 @@
                             $connect->query($new_sql);
                         }
                     }
+
+                    // cummulate chass price and students
+                    $chass_amounts[$data["head"]]["total_amount"] += $data["amountPaid"];
+                    $chass_amounts[$data["head"]]["students"] += $data["students"];
                 }
 
                 //calculate for admin
@@ -652,14 +664,47 @@
                                 VALUES (2, 0, $amount_superadmin, $student, 'Pending')";
                             $connect->query($new_sql);
                         }
-                    }    
+                    }
+                }
+
+                if($admin_access > 3 || str_contains($user_role, "chass")){
+                    // calculate for chass
+                    if($chass_price){
+                        // get chass users
+                        $chass_users = decimalIndexArray(fetchData("user_id, role", "admins_table", "role IN (".implode(",", array_column($chass_price, "id")).")", 2));
+                        
+                        if($chass_users){
+                            $chass_users = pluck($chass_users, "role", "user_id");
+
+                            foreach($chass_price as $chass){
+                                // percentage form of price
+                                $price = $chass["price"] / 100;
+
+                                // get existing amount
+                                $gen_chass = getTotalMoney($chass_users[$chass["id"]], 0);
+                                // current total amount
+                                $amount = ($chass_amounts[$chass["title"]]["total_amount"] * $price) - $gen_chass["amount"];
+                                $student_count = $chass_amounts[$chass["title"]]["students"] - $gen_chass["students"];
+
+                                if($amount > 0){
+                                    $payment_data = fetchData("id", "payment", ["user_role = {$chass['id']}", "status = 'Pending'", "current_data = TRUE"], where_binds: "AND");
+                                    if(is_array($payment_data)){
+                                        $connect->query("UPDATE payment SET amount = $amount, studentNumber = $student_count WHERE school_id = 0 AND user_role = {$chass['id']} AND status = 'Pending' AND current_data = TRUE");
+                                    }else{
+                                        $connect->query("INSERT INTO payment(user_role, school_id, amount, studentNumber, status) VALUE ({$chass['id']}, 0, $amount, $student_count, 'Pending')");
+                                    }
+                                }
+                            }   
+                        }
+                                             
+                    }
                 }
 
                 echo "success";
             }
         }elseif($submit == "updateSelectedPayment"){
-            $trans_ref = $_REQUEST["trans_ref"];
-            $update_channel = $_REQUEST["update_channel"];
+            $trans_ref = trim($_REQUEST["trans_ref"]);
+            $update_channel = trim($_REQUEST["update_channel"]);
             $amount = floatval(str_replace([","," "], "", $_REQUEST["amount"]));
             $deduction = floatval($_REQUEST["deduction"]);
             
@@ -672,8 +717,8 @@
 
             $update_status = $_REQUEST["update_status"];
             $row_id = $_REQUEST["row_id"];
-            $send_name = $_REQUEST["send_name"];
-            $send_phone = $_REQUEST["send_phone"];
+            $send_name = trim($_REQUEST["send_name"]);
+            $send_phone = trim($_REQUEST["send_phone"]);
 
             $payment = fetchData(
                 ["p.*", "r.price as user_price"],
@@ -794,4 +839,6 @@
     }else{
         echo "no-submission";
     }
+
+    close_connections();
 ?>

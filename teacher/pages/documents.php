@@ -123,3 +123,4 @@
 </section>
 
 <script src="<?= "$url/assets/scripts/docs.js?v=".time() ?>"></script>
+<?php close_connections() ?>

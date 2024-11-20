@@ -160,3 +160,4 @@
         $(this).parents("#content").children(".head").children(".btn").children("button").click();
     })
 </script>
+<?php close_connections() ?>

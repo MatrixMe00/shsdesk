@@ -1656,14 +1656,9 @@
         if(is_array($schools)){
             //rearrange into form ["school_id" => "admin_role_id"]
             $schools = decimalIndexArray($schools);
-            $schools_new = [];
-            foreach($schools as $school){
-                $schools_new[$school["id"]] = [
-                    "role" => (int) $school["role"],
-                    "amountPaid" => (float) $school["amountPaid"],
-                    "students" => (int) $school["ttl"]
-                ];
-            }
+            $schools_new = pluck($schools, "id", "array", true, [
+                "ttl" => "students"
+            ]);
         }else{
             $schools_new = false;
         }
@@ -1880,21 +1875,37 @@
      * @param $array The array. Rejects non-arrays
      * @param string $key The key values
      * @param string $value The value key or use "array" to store the remainder
+     * @param bool $reserve_keys Set to true if it should reserve the internal keys in the default format
+     * @param array $rename Use this to rename columns to different names. Used especially for value = 'array'
      * @return array
      */
-    function pluck(mixed $array, string $key, string $value) :array{
+    function pluck(mixed $array, string $key, string $value, bool $reserve_keys = false, array $rename = []) :array{
         $response = [];
 
         if(empty($array) || !is_array($array)){
             return $response;
         }
         
-        array_map(function($object) use (&$response, $key, $value){
+        array_map(function($object) use (&$response, $key, $value, $reserve_keys, $rename){
             $keyValue = strtoupper($object[$key]);
 
             if ($value === 'array') {
                 unset($object[$key]);
-                $response[$keyValue] = array_change_key_case($object, CASE_UPPER);
+                $response[$keyValue] = $reserve_keys ? $object : array_change_key_case($object, CASE_UPPER);
+
+                if($rename){
+                    foreach($response as $n_key => $n_response){
+                        if(is_array($n_response)){
+                            foreach($rename as $existing_key => $new_key){
+                                if(isset($n_response[$existing_key])){
+                                    $n_response[$new_key] = $n_response[$existing_key];
+                                    unset($n_response[$existing_key]);
+                                }
+                            }
+                        }
+                        $response[$n_key] = $n_response;
+                    }
+                }
             } else {
                 $response[$keyValue] = strtoupper($object[$value]);
             }

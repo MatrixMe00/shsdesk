@@ -661,5 +661,5 @@
     }
 
     //close connections
-    $connect->close();
+    close_connections();
 ?>

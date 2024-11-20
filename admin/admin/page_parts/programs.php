@@ -368,3 +368,4 @@
 </div>
 
 <script src="<?= "$url/admin/admin/assets/scripts/programs.min.js?v=".time() ?>"></script>
+<?php close_connections() ?>

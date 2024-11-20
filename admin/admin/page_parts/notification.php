@@ -365,3 +365,4 @@
 
 <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/admin/assets/scripts/notification.min.js?v=<?php echo time()?>" async></script>
+<?php close_connections() ?>

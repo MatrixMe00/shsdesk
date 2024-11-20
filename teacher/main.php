@@ -30,4 +30,4 @@
 <?php
         else:
             header("location: ./");
-    endif ?>
+    endif; close_connections()  ?>

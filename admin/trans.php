@@ -2,17 +2,12 @@
 
     $_SESSION["nav_point"] = "payment";
 
-    if($admin_access === 2){
-        $isAdmin = true;
-    }else{
-        $isAdmin = false;
-    }
+    $isAdmin = $admin_access === 2;
+    $isHead = $admin_access === 1 && str_contains($user_role, "head");
+    $is_chass = str_contains($user_role, "chass");
 
-    if($admin_access === 1 && str_contains($user_role, "head")){
-        $isHead = true;
-    }else{
-        $isHead = false;
-    }
+    // hold the rows to prevent multiple requests from db about role titles
+    $role_array = [];
 ?>
 <head>
     <style>
@@ -123,7 +118,7 @@
 </section>
 <?php endif; ?>
 
-<?php if(($isAdmin || $isHead) || $role_id <= 2): ?>
+<?php if(($isAdmin || $isHead) || $role_id <= 2 || $is_chass): ?>
 <section>
     <div class="head txt-al-c">
         <h3>Controls</h3>
@@ -190,7 +185,13 @@
                     <td class="td_number">
                         <?= empty($row["contactNumber"]) ? "Not set" : $row["contactNumber"] ?>
                     </td>
-                    <td class="td_role"><?= formatName(getRole($row["user_role"])) ?></td>
+                    <td class="td_role"><?php
+                        if(!isset($role_array[$row["user_role"]])){
+                            $role_array[$row["user_role"]] = getRole($row["user_role"]);
+                        }
+                        
+                        echo $role_array[$row["user_role"]];
+                    ?></td>
                     <td class="td_student"><?= number_format($row["studentNumber"]) ?></td>
                     <td class="td_channel">
                         <?= empty($row["method"]) ? "Not set" : $row["method"] ?>
@@ -228,6 +229,100 @@
     <?php } ?>
 </section>
 <?php }?>
+
+<?php if($is_chass || $admin_access > 3): ?>
+<section class="section_block">
+    <div class="head">
+        <h3><?= $admin_access > 3 ? "Chass Heads" : "Payment History" ?></h3>
+    </div>
+    <?php 
+        if($admin_access > 3){
+            $chass_ids = decimalIndexArray(fetchData("id", "roles", "title LIKE 'chass%'", 0));
+
+            if($chass_ids){
+                $chass_ids = implode(",", array_column($chass_ids, "id"));
+                $chass_payments = decimalIndexArray(fetchData("*","payment","user_role IN ($chass_ids)", 0));
+            }else{
+                $chass_payments = false;
+            }
+            
+        }else{
+            $chass_payments = decimalIndexArray(fetchData("*","payment","user_role = $role_id", 0));
+        }
+
+        if($chass_payments):
+    ?>
+    <div class="body">
+        <table id="table_4">
+            <thead>
+                <tr>
+                    <td>Transaction Reference</td>
+                    <td>Sent To</td>
+                    <td>Contact Number</td>
+                    <?php if($admin_access > 3): ?>
+                    <td>User Role</td>
+                    <?php endif; ?>
+                    <td>Students Cleared</td>
+                    <td>Channel</td>
+                    <td>Amount</td>
+                    <td>Date</td>
+                    <td>Status</td>
+                </tr>
+            </thead>
+            <tbody><?php foreach($chass_payments as $count => $row): ?>
+                <tr data-row-count="<?php echo ($count + 1)?>" class="<?= $row["status"] == "Pending" ? "pending" : "" ?>" data-row-id="<?php echo $row["id"]?>">
+                    <td class="td_transaction">
+                        <?= empty($row["transactionReference"]) ? "Not set" : $row["transactionReference"] ?>
+                    </td>
+                    <td class="td_name">
+                        <?= $row["contactName"] == "-" ? "Not set" : $row["contactName"] ?>
+                    </td>
+                    <td class="td_number">
+                        <?= empty($row["contactNumber"]) ? "Not set" : $row["contactNumber"] ?>
+                    </td>
+                    <?php if($admin_access > 3) : ?>
+                    <td class="td_role"><?php
+                        if(!isset($role_array[$row["user_role"]])){
+                            $role_array[$row["user_role"]] = getRole($row["user_role"]);
+                        }
+                        
+                        echo $role_array[$row["user_role"]] == "chass_t" ? "CHASS [Tech]" : "CHASS [SHS/SHTS]";
+                    ?></td>
+                    <?php endif; ?>
+                    <td class="td_student"><?= number_format($row["studentNumber"]) ?></td>
+                    <td class="td_channel">
+                        <?= empty($row["method"]) ? "Not set" : $row["method"] ?>
+                    </td>
+                    <td class="td_amount">
+                        <?= number_format(($row["amount"] - $row["deduction"]),2) ?>
+                    </td>
+                    <td class="td_deduction no_disp">
+                        <?= $row["deduction"]?>
+                    </td>
+                    <td class="td_date"><?php
+                        if(empty($row["date"])){
+                            echo "Not set";
+                        }else{
+                            echo date("M d, Y",strtotime($row["date"]));
+                        }
+                    ?></td>
+                    <td><?= $row["status"]?></td>
+                </tr><?php endforeach; ?>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="8">End of Data Table</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <?php else: ?>
+    <div class="body empty">
+        <p>No results to display.</p>
+    </div>
+    <?php endif; ?>
+</section>
+<?php endif;?>
 
 <?php if($isAdmin || $admin_access > 3){?>
 <section class="section_block">
@@ -344,6 +439,7 @@
 </section>
 <?php } ?>
 
+<?php if(!$is_chass): ?>
 <section class="section_block">
     <div class="head">
         <h3>School Head<?php if($user_details["role"] <= 2){echo "s"; }?></h3>
@@ -464,6 +560,7 @@
     </div>
     <?php } ?>
 </section>
+<?php endif; ?>
 
 <?php if($isAdmin): 
     //check if user is taking a share from the system
@@ -765,6 +862,6 @@
         <p>No transaction details are available for this account.</p>
     </div>
 </section>
-<?php endif; ?>
+<?php endif; close_connections(); ?>
 
 <script src="<?= "$url/admin/assets/scripts/trans.js?v=".time() ?>"></script>

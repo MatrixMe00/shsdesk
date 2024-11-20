@@ -102,3 +102,4 @@
         </label>
     </div>
 </form>
+<?php close_connections() ?>

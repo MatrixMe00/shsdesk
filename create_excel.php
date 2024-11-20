@@ -263,5 +263,7 @@
 
     //save to php output
     $writer->save("php://output");
+
+    close_connections();
     
 ?>

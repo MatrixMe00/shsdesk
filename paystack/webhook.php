@@ -147,4 +147,6 @@
         file_put_contents("$directory/unknown_webhook_$month.log", json_encode($event, JSON_PRETTY_PRINT) . PHP_EOL, FILE_APPEND);
     }
 
+    close_connections();
+
 ?>

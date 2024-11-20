@@ -36,7 +36,7 @@
     </div>
 
     <script src="<?= "$url/admin/admin/assets/scripts/admission_records.js?v=".time() ?>"></script>
-    <?php endif; ?>
+    <?php endif; close_connections() ?>
 
     <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js"></script>

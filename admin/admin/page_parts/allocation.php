@@ -401,3 +401,4 @@
         $(this).parents(".table_section").children(".head").children(".btn").children("button").click();
     })
 </script>
+<?php close_connections() ?>

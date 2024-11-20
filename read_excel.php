@@ -509,4 +509,6 @@
     } catch (\Throwable $th) {
         echo throwableMessage($th);
     }
+
+    close_connections();
 ?>

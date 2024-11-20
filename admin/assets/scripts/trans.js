@@ -85,7 +85,8 @@ $("#data_details input[name=student_count]").on({
         $(this).select();
     },
     blur: function(){
-        $(this).val($(this).val() + " enroled students");
+        if($(this).val().indexOf("enroled students") == -1)
+            $(this).val($(this).val() + " enroled students");
     }
 })
 

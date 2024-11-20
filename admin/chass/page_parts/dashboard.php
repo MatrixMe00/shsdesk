@@ -3,7 +3,7 @@
     $_SESSION["nav_point"] = "dashboard";
     $school_type = decimalIndexArray(fetchData("id", "school_category", "head = '$user_role'", 0));
     if($school_type){
-        $school_type = implode(array_column($school_type, "id"));
+        $school_type = implode(",",array_column($school_type, "id"));
     }
     $school_type_name = $user_role == "chass_t" ? "Technical" : "SHS/SHT";
     $current_admission_year = getAcademicYear(now());
@@ -45,7 +45,7 @@
     </div>
     <div class="content light">
         <div class="head">
-            <h2>GH¢ <?= number_format($role_price, 2) ?></h2>
+            <h2>GH¢ <?= number_format($role_price * $system_usage_price, 2) ?></h2>
         </div>
         <div class="body">
             <span>Price per enroled student</span>
@@ -72,3 +72,4 @@
         </div>
     </div>
 </section>
+<?php close_connections() ?>

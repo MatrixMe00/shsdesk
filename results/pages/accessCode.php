@@ -169,3 +169,4 @@ endif; ?>
 
 <script src="https://js.paystack.co/v1/inline.js" defer></script>
 <script src="<?= "$url/assets/scripts/accesscode.js?v=".time() ?>"></script>
+<?php close_connections() ?>

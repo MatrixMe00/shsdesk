@@ -189,5 +189,7 @@
         <?php require_once($rootPath."/admin/adminAdd.php") ?>
     </div>
 
+    <?php close_connections(); ?>
+
     <script type="text/javascript" src="<?php echo $url?>/admin/assets/scripts/person.min.js?v=<?php echo time()?>" async></script>
     <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>

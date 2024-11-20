@@ -211,5 +211,7 @@
 
 <script src="<?php echo $url?>/admin/superadmin/assets/scripts/page_parts/home.min.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/admin/assets/scripts/tinymce/jquery.tinymce.min.js" async></script>
-    <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js" async></script>
-    <script src="<?php echo $url?>/admin/assets/scripts/tinymce.min.js?v=<?php echo time()?>" async></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js" async></script>
+<script src="<?php echo $url?>/admin/assets/scripts/tinymce.min.js?v=<?php echo time()?>" async></script>
+
+<?php close_connections() ?>

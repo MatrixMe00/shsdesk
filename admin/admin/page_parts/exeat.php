@@ -228,3 +228,4 @@
 
 <script src="<?php echo $url?>/admin/admin/assets/scripts/exeat.min.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
+<?php close_connections() ?>

@@ -8,6 +8,7 @@
         $submit = $_REQUEST["submit"];
     }else{
         echo "Invalid request received";
+        close_connections();
         exit();
     }
 
@@ -286,4 +287,6 @@
 
     //save to php output
     $writer->save("php://output");
+
+    close_connections();
 ?>

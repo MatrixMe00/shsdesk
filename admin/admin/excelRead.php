@@ -335,4 +335,6 @@ if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
         echo "Submit not found";
     }
 }
+
+close_connections();
 ?>

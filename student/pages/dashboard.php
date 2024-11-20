@@ -222,4 +222,4 @@
             <p>Please purchase an access code from the 'Get Access Code' menu to view statistics</p>
         </section>
     </div>
-    <?php endif ?>
+    <?php endif; close_connections() ?>

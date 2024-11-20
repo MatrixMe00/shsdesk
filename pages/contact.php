@@ -79,3 +79,4 @@
 
 <script src="<?php echo $url?>/assets/scripts/contact.min.js?v=<?php echo time()?>"></script>
 </html>
+<?php close_connections() ?>

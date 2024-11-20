@@ -276,4 +276,6 @@
             "message" => "No index number specified"
         ]);
     }
+
+    close_connections();
 ?>

@@ -42,6 +42,6 @@
     <p>Use this section to make searches and edits to information of an individual student</p>
 </section>
 
-<?php require "$rootPath/admin/student-search.php" ?>
+<?php require "$rootPath/admin/student-search.php"; close_connections() ?>
 
 <script src="<?= "$url/admin/assets/scripts/student-search.min.js?v=".time() ?>"></script>

@@ -12,12 +12,49 @@
     include_once("includes/session.php");
 
     // test the send_email function
-    $message = "This is a test email for the test email function";
-    $subject = "Testing send_email Function";
+    // $message = "This is a test email for the test email function";
+    // $subject = "Testing send_email Function";
     // formatDump(send_request_email(1));
     // header("Cache-Control: no-cache, must-revalidate");
     // header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+    $school_id = $shs_placed = 3;
+    $ad_gender = "Male";
+    $course_name = "Automobile Engineering";
+    $ad_index = "123456";
+    $gender = "Male";
+    $boardingStatus = "Boarder";
+    $last_student_order = "e.enrolDate";
+
+    $columns = ["DISTINCT s.id", "sc.head", "SUM(t.amountPaid) as amountPaid", "COUNT(t.transactionID) as ttl", "a.role"];
+    $tables = [
+        ["join" => "schools transaction", "alias" => "s t", "on" => "id schoolBought"],
+        ["join" => "schools admins_table", "alias" => "s a", "on" => "id school_id"],
+        ["join" => "admins_table roles", "alias" => "a r", "on" => "role id"],
+        ["join" => "transaction enrol_table", "alias" => "t e", "on" => "indexNumber indexNumber"],
+        ["join" => "schools school_category", "alias" => "s sc", "on" => "category id"]
+    ];
+    $where = [
+        "t.current_data=TRUE", "t.Transaction_Expired=TRUE", "s.Active=TRUE", "r.school_id=0",
+        "r.title LIKE 'admin%'"
+    ];
+
+    $chass_amounts = [
+        "chass" => ["total_amount" => 0, "students" => 0],
+        "chass_t" => ["total_amount" => 0, "students" => 0]
+    ];
+
+    $schools = fetchData($columns, $tables, $where, 0, "AND", group_by: ["s.id", "a.user_id"]);
+    $schools = formatSchoolForPayment($schools);
     
+    if($schools){
+        foreach($schools as $school_id => $data){
+            $chass_amounts[$data["head"]]["total_amount"] += $data["amountPaid"];
+            $chass_amounts[$data["head"]]["students"] += $data["students"];
+        }
+    }
+
+    formatDump($schools, $chass_amounts);
     /*$user_school_id = 3;
     
     function setHouse1($gender, $shs_placed, $ad_index, $house, $boardingStatus, $is_new = true){
@@ -239,5 +276,7 @@
         }else{
             echo "no affected tokens to be processed";
         }*/
+
+        close_connections();
     ?>
 </html>

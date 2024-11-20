@@ -2635,4 +2635,6 @@
     }else{
         echo "no-submission";
     }
+
+    close_connections();
 ?>

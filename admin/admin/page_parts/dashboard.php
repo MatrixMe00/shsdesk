@@ -206,3 +206,4 @@
     <?php endif; ?>
 </section>
 <?php endif; ?>
+<?php close_connections() ?>

@@ -353,3 +353,4 @@
 </section>
 
 <script src="<?= "$url/assets/scripts/uploaded.js?v=".time() ?>"></script>
+<?php close_connections() ?>

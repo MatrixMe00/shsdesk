@@ -158,3 +158,4 @@
     </div>
 </div>
 <script src="<?php echo $url?>/admin/superadmin/assets/scripts/schools.min.js?v=<?php echo time()?>" async></script>
+<?php close_connections() ?>

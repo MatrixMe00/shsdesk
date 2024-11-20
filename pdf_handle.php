@@ -169,4 +169,6 @@
     }else{
         echo "No result to deliver";
     }
+
+    close_connections();
 ?>

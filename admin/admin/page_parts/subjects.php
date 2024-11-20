@@ -165,3 +165,4 @@
 </div>
 
 <script src="<?= "$url/admin/admin/assets/scripts/subjects.min.js?v=".time() ?>"></script>
+<?php close_connections() ?>

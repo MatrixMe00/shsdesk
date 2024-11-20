@@ -143,4 +143,4 @@
 </body>
 </html>
 
-<?php $connect->close() ?>
+<?php close_connections(); ?>

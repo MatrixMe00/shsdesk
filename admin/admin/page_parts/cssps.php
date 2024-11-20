@@ -305,3 +305,4 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
         $(this).parents(".display").children("#content").children(".head").children(".btn").children("button").click();
     })
 </script>
+<?php close_connections() ?>
