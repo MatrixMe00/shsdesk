@@ -506,9 +506,10 @@
 
             echo json_encode($data);
         }elseif($submit == "updatePayment"){
+            $academic_year = getAcademicYear(now(), false);
             $where = [
                 "t.current_data=TRUE", "t.Transaction_Expired=TRUE", "s.Active=TRUE", "r.school_id=0",
-                "r.title LIKE 'admin%'"
+                "r.title LIKE 'admin%'", "t.academic_year='$academic_year'"
             ];
 
             if($admin_access < 3){

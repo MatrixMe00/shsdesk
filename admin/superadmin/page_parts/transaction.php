@@ -13,14 +13,28 @@ $academic_year = getAcademicYear(now(), false);
 $trans_this_year = [
     "total" => (int) fetchData("COUNT(transactionID) as total", "transaction", "YEAR(Transaction_Date) = $current_year")["total"],
     "expired" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["YEAR(Transaction_Date) = $current_year", "Transaction_Expired=TRUE"], where_binds: "AND")["total"],
-    "shsdesk" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["YEAR(Transaction_Date) = $current_year", "LOWER(contactName)='shsdesk'"], where_binds: "AND")["total"],
+    // "shsdesk" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["YEAR(Transaction_Date) = $current_year", "LOWER(contactName)='shsdesk'"], where_binds: "AND")["total"],
 ];
 
 $trans_current = [
     "total" => (int) fetchData("COUNT(transactionID) as total", "transaction", "academic_year='$academic_year'")["total"],
     "expired" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["academic_year='$academic_year'", "Transaction_Expired=TRUE"], where_binds: "AND")["total"],
-    "shsdesk" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["academic_year='$academic_year'", "LOWER(contactName)='shsdesk'"], where_binds: "AND")["total"],
+    // "shsdesk" => (int) fetchData("COUNT(transactionID) as total", "transaction", ["academic_year='$academic_year'", "LOWER(contactName)='shsdesk'"], where_binds: "AND")["total"],
 ];
+
+// get transactions which cannot be traced to enrol table
+$no_trace = decimalIndexArray(fetchData(
+    ["t.transactionID", "t.indexNumber", "s.schoolName", "s.abbr", "t.Transaction_Date", "CONCAT(c.Lastname,' ', c.Othernames) as fullname"],
+    [
+        ["join" => "transaction enrol_table", "on" => "transactionID transactionID", "alias" => "t e"],
+        ["join" => "transaction schools", "on" => "schoolBought id", "alias" => "t s"],
+        ["join" => "transaction cssps", "on" => "indexNumber indexNumber", "alias" => "t c"]
+    ],
+    [
+        "t.academic_year = '$academic_year'", "t.Transaction_Expired = TRUE", "e.indexNumber IS NULL"
+    ], 0, "AND", "LEFT"
+));
+$no_trace_count = $no_trace ? count($no_trace) : 0;
 ?>
 
 <section class="section_container" id="transaction_summary_old">
@@ -50,15 +64,6 @@ $trans_current = [
             <span>Transactions left to Expire [<?= $current_year ?>]</span>
         </div>
     </div>
-
-    <div class="content" style="background-color: #dc3545">
-        <div class="head">
-            <h2><?= $trans_this_year["shsdesk"] ?></h2>
-        </div>
-        <div class="body">
-            <span>SHSDesk Transactions [<?= $current_year ?>]</span>
-        </div>
-    </div>
 </section>
 
 <section class="section_container" id="transaction_summary">
@@ -73,7 +78,7 @@ $trans_current = [
 
     <div class="content" style="background-color: #20c997">
         <div class="head" id="trans_expired">
-            <h2><?= $trans_current["expired"] ?></h2>
+            <h2><?= $trans_current["expired"] - $no_trace_count ?></h2>
         </div>
         <div class="body">
             <span>Transactions Expired [<?= $academic_year ?>]</span>
@@ -91,16 +96,16 @@ $trans_current = [
 
     <div class="content" style="background-color: #dc3545">
         <div class="head">
-            <h2><?= $trans_current["shsdesk"] ?></h2>
+            <h2><?= $no_trace_count ?></h2>
         </div>
         <div class="body">
-            <span>SHSDesk Transactions [<?= $academic_year ?>]</span>
+            <span>No Traces [<?= $academic_year ?>]</span>
         </div>
     </div>
 </section>
 
 <section style="text-align: center;">
-    <p>This section is used to add and view transactions currently in the system</p>
+    <p>This section is used to add and view transactions currently in the system. Transactions which cannot be traced (thus have been used but student data is not in enrolment data are listed in the no trace button)</p>
     <p>Click any button to continue</p>
 </section>
 
@@ -110,15 +115,16 @@ $trans_current = [
             <h2>Transaction Actions</h2>
         </div>
         <div class="body flex flex-wrap btn p-lg gap-sm">
-                <button class="cyan wmax-3xs" id="transaction_new_btn">Make New</button>
-                <button class="teal wmax-3xs" id="btn_search">Search a transaction</button>
-                <button class="red wmax-3xs" id="btn_close" style="display: none">Close Container</button>
+                <button class="cyan wmax-3xs section_btn" data-section-id="new_transaction">Make New</button>
+                <button class="teal wmax-3xs section_btn" data-section-id="search">Search a transaction</button>
+                <button class="secondary wmax-3xs section_btn" data-section-id="no_trace">No Trace List</button>
+                <button class="red wmax-3xs section_btn" id="btn_close" style="display: none">Close Container</button>
             </div>
         </div>
     </div>
 </section>
 
-<section id="new_transaction" style="display:none;">
+<section id="new_transaction" class="section_block" style="display:none;">
     <form action="<?php echo $url?>/admin/superadmin/submit.php" method="post" name="newTransactionForm">
         <div class="head">
             <h3>Add a new Transaction</h3>
@@ -174,7 +180,7 @@ $trans_current = [
     </form>
 </section>
 
-<section id="search" style="display: none">
+<section id="search" class="section_block" style="display: none">
     <form action="<?php echo $url?>/admin/superadmin/submit.php" method="post">
         <div class="head">
             <h3>Search an existing transaction</h3>
@@ -196,7 +202,41 @@ $trans_current = [
     </form>
 </section>
 
-<section id="results" style="display: none">
+<section id="no_trace" class="section_block" style="display: none">
+    <div class="head">
+        <h2>Non Traceable transactions</h2>
+    </div>
+    <div class="body <?= !$no_trace ? "empty" : "" ?>">
+        <?php if($no_trace): ?>
+            <table class="full">
+                <thead>
+                    <tr>
+                        <td>Transaction ID</td>
+                        <td>Index Number</td>
+                        <td>Full Name</td>
+                        <td>School Bought</td>
+                        <td>Transaction Date</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach($no_trace as $data): ?>
+                    <tr>
+                        <td><?= $data["transactionID"] ?></td>
+                        <td><?= $data["indexNumber"] ?></td>
+                        <td><?= $data["fullname"] ?? "Undefined" ?></td>
+                        <td title="<?= $data["schoolName"] ?>"><?= $data["abbr"] ?></td>
+                        <td><?= date("dS F, Y g:i:s A", strtotime($data["Transaction_Date"])) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p>All used transactions can be traced to their respective enrolment data</p>
+        <?php endif; ?>
+    </div>
+</section>
+
+<section id="results" class="section_block" style="display: none">
     <div class="head">
         <h2>Results</h2>
     </div>
@@ -330,20 +370,14 @@ $trans_current = [
         //start the autorefresh
         autoRefresh();
 
-        //display or hide search or new transaction sections
-        $("button#transaction_new_btn, span#new_trans").click(function(){
-            $("section#new_transaction").show();
-            $("section#search, section#results").hide();
-            $("button#btn_close").show();
-        })
-        $("button#btn_search").click(function(){
-            $("section#new_transaction").hide();
-            $("section#search").show();
-            $("button#btn_close").show();
+        $(".section_btn").click(function(){
+            const section = $(this).attr("data-section-id");
+            $(".section_block").hide();
+            $("#" + section + ", button#btn_close").show();
         })
 
         $("button#btn_close").click(function(){
-            $("#new_transaction, section#search, section#results").hide();
+            $(".section_block").hide();
             $(this).hide();
         })
 

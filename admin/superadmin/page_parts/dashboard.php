@@ -74,8 +74,9 @@
             <h2>GHC
                 <?php
                     //get current sum of prices
-                    $amount = $role_price * fetchData("SUM(amountPaid) as ttl",
-                        "transaction", "academic_year='$academic_year' AND Transaction_Expired=TRUE"
+                    $amount = $role_price * fetchData("SUM(t.amountPaid) as ttl",
+                        ["join" => "transaction enrol_table", "on" => "transactionID transactionID", "alias" => "t e"], 
+                        "t.academic_year='$academic_year' AND t.Transaction_Expired=TRUE"
                     )["ttl"];
                     $amount = number_format(round($amount,2), 2);
                     echo $amount;
@@ -91,8 +92,8 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $wk_amt = fetchData("SUM(amountPaid) as total", "transaction", 
-                        ["academic_year = '$academic_year'", "YEARWEEK(Transaction_Date, 1) = YEARWEEK(CURDATE() - INTERVAL 1 WEEK, 1)", "Transaction_Expired = TRUE"], where_binds: "AND"
+                    $wk_amt = fetchData("SUM(amountPaid) as total", ["join" => "transaction enrol_table", "on" => "transactionID transactionID", "alias" => "t e"], 
+                        ["t.academic_year = '$academic_year'", "YEARWEEK(Transaction_Date, 1) = YEARWEEK(CURDATE() - INTERVAL 1 WEEK, 1)", "Transaction_Expired = TRUE"], where_binds: "AND"
                     )["total"];
                     
                     $amount = $role_price * $wk_amt;
@@ -110,8 +111,8 @@
         <div class="head">
             <h2>GHC
                 <?php
-                    $wk_amt = fetchData("SUM(amountPaid) as total", "transaction", 
-                        ["academic_year = '$academic_year'", "YEARWEEK(Transaction_Date, 1) = YEARWEEK(CURDATE(), 1)", "Transaction_Expired = TRUE"], where_binds: "AND"
+                    $wk_amt = fetchData("SUM(amountPaid) as total", ["join" => "transaction enrol_table", "on" => "transactionID transactionID", "alias" => "t e"], 
+                        ["t.academic_year = '$academic_year'", "YEARWEEK(Transaction_Date, 1) = YEARWEEK(CURDATE(), 1)", "Transaction_Expired = TRUE"], where_binds: "AND"
                     )["total"];
                     
                     $amount = $role_price * $wk_amt;
@@ -130,7 +131,8 @@
             <h2>GHC
                 <?php
                     $amount = fetchData("SUM(amountPaid) as total, SUM(deduction) as deduction",
-                        "transaction", "academic_year='$academic_year' AND Transaction_Expired = TRUE"
+                    ["join" => "transaction enrol_table", "on" => "transactionID transactionID", "alias" => "t e"], 
+                    "t.academic_year='$academic_year' AND Transaction_Expired = TRUE"
                     );
                     $amount = ($system_price * $amount["total"]) - $amount["deduction"];
                     $amount = number_format(round($amount,2), 2);
