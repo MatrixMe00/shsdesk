@@ -73,10 +73,21 @@ function count_issues(){
     return $issues;
 }
 
+function count_empty_boarding_status(){
+    global $user_school_id;
+    $total = fetchData("COUNT(indexNumber) AS total", "cssps", "schoolID=$user_school_id AND boardingStatus = ''")["total"];
+
+    return $total;
+}
+
+$issues = array_sum([
+    count_issues(), count_old_new(), count_empty_boarding_status()
+]);
+
 $message = [
     "notification" => count_notifications(), 
     "displaced" => count_displaced(),
-    "issues" => count_issues() + count_old_new(), 
+    "issues" => $issues, 
     "transfers" => get_transfers(true)
 ];
 

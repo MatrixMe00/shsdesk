@@ -737,6 +737,10 @@
     */
     function setHouse($gender, $shs_placed, $ad_index, $house, $boardingStatus, $is_new = true){
         $next_house = null;
+
+        if(empty($boardingStatus)){
+            return $next_house;
+        }
     
         //allow whole database details to be passed here
         $house = decimalIndexArray($house);

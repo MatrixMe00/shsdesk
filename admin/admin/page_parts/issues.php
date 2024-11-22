@@ -20,6 +20,11 @@
         ["e.shsID=$user_school_id", "e.current_data = TRUE", "e.indexNumber NOT LIKE '%$year'", "e.academic_year = '$academic_year'"],
         0, "AND"
     ));
+
+    // boarding issues
+    $boarding_issues = decimalIndexArray(fetchData(
+        ["indexNumber", "Lastname", "Othernames", "programme"], 
+        "cssps", "schoolID=$user_school_id AND boardingStatus = ''", 0));
 ?>
 
 <section class="section_container">
@@ -49,11 +54,21 @@
             <span>Carried-Over Records</span>
         </div>
     </div>
+
+    <div class="content <?= $boarding_issues ? "orange":"purple" ?>">
+        <div class="head">
+            <h2><?= $boarding_issues ? count($boarding_issues) : 0 ?></h2>
+        </div>
+        <div class="body">
+            <span>No Boarding Status</span>
+        </div>
+    </div>
 </section>
 
 <section class="btn w-full flex-all-center p-lg gap-md">
     <button class="section-btn plain-r <?= $n_enroled ? "red":"green" ?>" data-section="enrolment">Enrolment Issues</button>
     <button class="section-btn plain-r <?= $old_in_new ? "pink":"cyan" ?>" data-section="carried-over">Carried Over Records</button>
+    <button class="section-btn plain-r <?= $old_in_new ? "orange":"purple" ?>" data-section="no-boarding">No Boarding Records</button>
 </section>
 
 <section class="section_item enrolment no_disp">
@@ -126,7 +141,50 @@
             <tfoot></tfoot>
         </table>
         <?php else: ?>
-            <p>You have no carried-over records</p>
+            <p>You have no carried over records</p>
+        <?php endif; ?>
+    </div>
+</section>
+
+<section class="p-xlg txt-al-c section_item no-boarding no_disp"><p>This section shows students who were uploaded without a boarding location (status)</p></section>
+<section class="section_item no-boarding no_disp">
+    <div class="body <?= !$boarding_issues ? "empty" : "" ?>">
+        <?php if($boarding_issues): ?>
+        <table>
+            <thead>
+                <tr>
+                    <td>Index Number</td>
+                    <td>Lastname</td>
+                    <td>Othernames</td>
+                    <td>Programme</td>
+                    <td>Boarding Status</td>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach($boarding_issues as $student): ?>
+                <tr data-index="<?= $student["indexNumber"] ?>">
+                    <td><?= $student["indexNumber"] ?></td>
+                    <td><?= $student["Lastname"] ?></td>
+                    <td><?= $student["Othernames"] ?></td>
+                    <td><?= $student["programme"] ?></td>
+                    <td>
+                        <div class="form inline-form sp-sm-tp" style="box-shadow: unset !important;">
+                            <div class="label flex-column w-full">
+                                <select name="change_status" id="change_status" data-student = "<?= $student["indexNumber"] ?>">
+                                    <option value="" disabled selected>Set Status</option>
+                                    <option value="Day">Day</option>
+                                    <option value="Boarder">Boarder</option>
+                                </select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach ?>
+            </tbody>
+            <tfoot></tfoot>
+        </table>
+        <?php else: ?>
+            <p>You have no student records without boarding status</p>
         <?php endif; ?>
     </div>
 </section>
@@ -193,6 +251,38 @@
                 })
             }else{
                 alert_box("Unapproved status defined");
+            }
+        })
+
+        $("select[name=change_status]").change(function(){
+            const element = $(this);
+            const status = element.val();
+            const confirmed = confirm("Are you sure you want to set the status as '" + status + "'?");
+
+            if(confirmed){
+                const student = element.attr("data-student");
+                ajaxCall({
+                    url: "./admin/submit.php",
+                    formData: {submit: "change_boarding_status", index_number: student, status: status},
+                    beforeSend: function(){
+                        element.prop("disabled", true);
+                    },
+                    method: "POST"
+                }).then((response) => {
+                    element.prop("disabled", false).prop("selectedIndex", 0);
+
+                    if(response == "success"){
+                        const parent = element.parents("td").first();
+                        parent.html("Status: " + status);
+                    }else{
+                        alert_box(response, "danger");
+                    }
+                }).catch((error) => {
+                    element.prop("disabled", false).prop("selectedIndex", 0);
+                    console.error(error);                    
+                })
+            }else{
+                element.prop("selectedIndex", 0);
             }
         })
     })
