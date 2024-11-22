@@ -13,16 +13,16 @@
                 "display_title" => "Dashboard",
                 "admin_mode" => "admission"
             ],
-            /*[
+            [
                 "item_class"=> "relative",
                 "name" => "issues",
                 "title" => "Admission Issues",
                 "data-url" => "/admin/admin/page_parts/issues.php",
                 "imgSrc" => "/assets/images/icons/person-outline.svg",
                 "imgAlt" => "issues",
-                "display_title" => "Admission Issues <span class='absolute right txt-bold sm-med-r rounded hmax-fit' id='issues_element'>$issues</span>",
+                "display_title" => "Admission Issues <span class='absolute right txt-bold sm-med-r rounded hmax-fit' id='issues_element'></span>",
                 "admin_mode" => "admission"
-            ],*/
+            ],
             [
                 "item_class"=> "relative",
                 "name" => "transfers",

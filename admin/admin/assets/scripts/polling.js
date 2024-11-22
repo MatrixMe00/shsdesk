@@ -1,6 +1,6 @@
 $(document).ready(function() {
     const poll_elements = [
-        "notification", "displaced", "transfers"
+        "notification", "displaced", "transfers", "issues"
     ];
     
     polling(poll_elements); // Start polling for all elements

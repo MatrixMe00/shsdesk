@@ -44,6 +44,24 @@ function count_displaced(){
     return $displaced_studs;
 }
 
+function count_old_new(){
+    global $user_school_id;
+
+    $academic_year = getAcademicYear(now(), false);
+    $year = date("y");
+
+    $total = fetchData(
+        ["COUNT(c.indexNumber) AS total"],
+        [
+            "join" => "enrol_table cssps", "on" => "indexNumber indexNumber", "alias" => "e c",
+        ],
+        ["e.shsID=$user_school_id", "e.current_data = TRUE", "e.indexNumber NOT LIKE '%$year'", "e.academic_year = '$academic_year'", "accept_old = 0"],
+        0, "AND"
+    )["total"];
+
+    return $total;
+}
+
 function count_issues(){
     global $user_school_id;
 
@@ -57,7 +75,8 @@ function count_issues(){
 
 $message = [
     "notification" => count_notifications(), 
-    "displaced" => count_displaced(), 
+    "displaced" => count_displaced(),
+    "issues" => count_issues() + count_old_new(), 
     "transfers" => get_transfers(true)
 ];
 

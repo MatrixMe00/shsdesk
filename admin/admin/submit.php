@@ -2629,6 +2629,47 @@
             echo json_encode([
                 "status" => $status ?? false, "data" => $message
             ]);
+        }elseif($submit == "old_new_status"){
+            $index_number = $_POST["index_number"] ?? null;
+            $status = $_POST["status"] ?? null;
+    
+            if(empty($index_number)){
+                $message = "Student identity not provided";
+            }elseif(empty($status)){
+                $message = "Status not defined";
+            }elseif($status != 1 && $status != 2){
+                $message = "Unapproved status value defined";
+            }else{
+                try {
+                    $connect->begin_transaction();
+    
+                    $academic_year = getAcademicYear(now(), false);
+                    if($status == 1){
+                        $sql = "UPDATE cssps SET academic_year = ?, accept_old = ? WHERE indexNumber = ?";
+                        $stmt = $connect->prepare($sql);
+                        $stmt->bind_param("sis", $academic_year, $status, $index_number);
+                    }else{
+                        $sql = "UPDATE cssps SET accept_old = ? WHERE indexNumber = ?";
+                        $stmt = $connect->prepare($sql);
+                        $stmt->bind_param("is", $status, $index_number);
+                    }
+    
+                    $message = $stmt->execute() === true ? "success" : $stmt->error;
+                    $stmt->close();
+
+                    if($message == "success" && $status == 2){
+                        $connect->query("DELETE FROM enrol_table WHERE indexNumber = '$index_number'");
+                        $connect->query("DELETE FROM house_allocation WHERE indexNumber = '$index_number'");
+                    }
+
+                    $connect->commit();
+                } catch (\Throwable $th) {
+                    $connect->rollback();
+                    $message = throwableMessage($th);
+                }
+            }
+    
+            echo $message;
         }else{
             echo "Procedure for submit value '$submit' was not found";
         }

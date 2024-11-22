@@ -17,24 +17,17 @@
     // header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 
     // get all transactions with null academic year
-    $null_transactions = fetchData("transactionID, Transaction_Date", "transaction", "academic_year IS NULL", 0);
-
-    if(is_array($null_transactions)){
-        $null_transactions = decimalIndexArray($null_transactions);
-        $sql = "UPDATE transaction SET academic_year = ? WHERE transactionID = ?";
-        $affected = 0;
-        foreach($null_transactions as $transaction){
-            $academic_year = getAcademicYear($transaction["Transaction_Date"], false);
-            $stmt = $connect->prepare($sql);
-            $stmt->bind_param("ss", $academic_year, $transaction["transactionID"]);
-            $stmt->execute();
-            $affected += $stmt->affected_rows;
-        }
-
-        echo $affected." rows were updated";
-    }else{
-        echo "No changes to be made"; formatDump($null_transactions);
-    }
+    $user_school_id = 3;
+    $academic_year = getAcademicYear(now(), false);
+    $year = date("y");
+    echo create_query_string(
+        ["c.indexNumber", "c.Lastname", "c.Othernames", "e.enrolDate", "c.accept_old"],
+        [
+            "join" => "enrol_table cssps", "on" => "indexNumber indexNumber", "alias" => "e c",
+        ],
+        ["e.shsID=$user_school_id", "e.current_data = TRUE", "e.indexNumber IS NOT LIKE '%$year'", "e.academic_year = '$academic_year'"],
+        0, "AND"
+    );
 
     /*$user_school_id = 3;
     
