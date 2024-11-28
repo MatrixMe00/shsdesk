@@ -894,4 +894,17 @@ function positionFormat(number) {
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+/**
+ * Used in the admin section to redirect to a menu item
+ * @param {string} menu_name The menu unique name
+ * @param {string} menu_parent The root parent of the menu
+ * @param {string} menu_class The class name for the menu item
+ */
+function menu_route(menu_name, menu_parent = "lhs", menu_class = "item"){
+    const menu = $("#" + menu_parent).find("." + menu_class + "[name=" + menu_name + "]");
+    if(menu_name && menu.length > 0){
+        menu.click();
+    }
+}
   

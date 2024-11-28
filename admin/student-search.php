@@ -89,6 +89,10 @@
                         <span class="label_title">Boarding Status</span>
                         <input type="text" name="boarding_status" id="boarding_status" readonly>
                     </label>
+                    <label for="admission_year" class="flex-column gap-sm">
+                        <span class="label_title">Admission Year</span>
+                        <input type="text" name="admission_year" id="admission_year" readonly>
+                    </label>
 
                     <?php if($role_id < 3): ?>
                     <label for="witness_name" class="flex-column gap-sm">
@@ -124,7 +128,8 @@
             </fieldset>
 
             <div class="btn w-full flex-wrap flex flex-eq gap-sm sm-auto wmax-3xs sm-lg-t">
-                <button name="submit" type="button" class="primary" disabled>Save</button>
+                <!-- <button name="submit" type="button" class="primary" disabled>Save</button> -->
+                <button name="button" type="button" class="primary" id="can_activate" disabled>Activate</button>
                 <button type="reset" name="close" id="search_result_close" class="red">Close</button>
             </div>
         </div>

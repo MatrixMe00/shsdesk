@@ -107,7 +107,7 @@
     <?php endif ?>
 </section>
 
-<section class="p-xlg txt-al-c section_item carried-over no_disp"><p>Carried over records are students whose registration numbers are older than the current academic year's format</p></section>
+<section class="p-xlg txt-al-c section_item carried-over no_disp"><p>Carried over records are students whose registration numbers are older than the current academic year's format. If you want to add an old placed student to the current admission year, click <a href="javascript:void()" onclick="menu_route('admission-settings')">here</a></p></section>
 <section class="section_item carried-over no_disp">
     <div class="body <?= !$old_in_new ? "empty" : "" ?>">
         <?php if($old_in_new): ?>

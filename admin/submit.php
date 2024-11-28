@@ -789,7 +789,7 @@
 
                 $student = fetchData(
                     [
-                        "c.indexNumber","c.Lastname","c.Othernames","c.Gender","c.schoolID",
+                        "c.indexNumber","c.Lastname","c.Othernames","c.Gender","c.schoolID", "c.academic_year",
                         "c.programme", "c.boardingStatus", "s.schoolName", "e.primaryPhone",
                         "e.secondaryPhone","e.enrolCode", "e.witnessName", "e.witnessPhone", "h.title AS house_name"
                     ],
@@ -823,6 +823,9 @@
                             }
                         }
 
+                        // can activate status
+                        $student["can_activate"] = $student["enrolCode"] == "Not Set" && $student["academic_year"] != getAcademicYear(now(), false);
+
                         $message = $student;
                         $error = false;
                     }
@@ -834,6 +837,26 @@
 
             $response = ["error" => $error, "data" => $message];
             echo json_encode($response);
+        }elseif($submit == "activate_student_admission"){
+            $index_number = $_POST["index_number"] ?? null;
+            $academic_year = $_POST["academic_year"] ?? null;
+            $admission_year = getAcademicYear(now(), false);
+
+            if(empty($index_number)){
+                $message = "Index Number not provided";
+            }elseif(empty($academic_year)){
+                $message = "Academic year not parsed";
+            }elseif($academic_year == $admission_year){
+                $message = "Student already activated";
+            }else{
+                $sql = "UPDATE cssps SET academic_year = ? WHERE indexNumber = ?";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("ss", $admission_year, $index_number);
+                $message = $stmt->execute() ? "success" : $stmt->error;
+            }
+
+            header("Content-type: application/json");
+            echo json_encode(["message" => $message, "admission_year" => $message == "success" ? $admission_year : null]);
         }else{
             echo "Submission value '$submit' is invalid";
         }
