@@ -635,27 +635,34 @@
             }else{
                 $indexNumber = $_GET["indexNumber"];
                 $student = fetchData(
-                    ["c.schoolID", "c.Gender", "c.enroled", "c.Lastname", "s.schoolName", "s.abbr"],
+                    ["c.schoolID", "c.Gender", "c.academic_year", "c.enroled", "c.Lastname", "s.schoolName", "s.abbr"],
                     [ "join" => "schools cssps", "alias" => "s c", "on" => "id schoolID"],
                     "c.indexNumber='$indexNumber'"
                 );
 
                 if(is_array($student)){
                     if($student["enroled"] == false){
-                        $active = (int) fetchData("COUNT(id) as total","houses","schoolID=".$student["schoolID"])["total"];
+                        $academic_year = getAcademicYear(now(), false);
+
+                        if(formatAcademicYear($student["academic_year"], false) == $academic_year){
+                            $active = (int) fetchData("COUNT(id) as total","houses","schoolID=".$student["schoolID"])["total"];
                         
-                        if($active > 0){
-                            $message = $student;
-                            $message["status"] = "success";
-                            if(strtolower($student["Gender"]) == "male"){
-                                $sal = "Mr";
+                            if($active > 0){
+                                $message = $student;
+                                $message["status"] = "success";
+                                if(strtolower($student["Gender"]) == "male"){
+                                    $sal = "Mr";
+                                }else{
+                                    $sal = "Mad";
+                                }
+                                $message["successMessage"] = "Congratulations $sal. ".$student["Lastname"]." on your admission to ".$student["abbr"];
                             }else{
-                                $sal = "Mad";
+                                $message["status"] = "Your school is not ready for admission. Please try again at another time";
                             }
-                            $message["successMessage"] = "Congratulations $sal. ".$student["Lastname"]." on your admission to ".$student["abbr"];
                         }else{
-                            $message["status"] = "Your school is not ready for admission. Please try again at another time";
+                            $message["status"] = "You are not registered for this admission year. Contact school admin for help";
                         }
+                        
                     }else{
                         $message["status"] = "This index number has already been enroled. Visit the Student Menu to get your documents";
                     }                        
@@ -762,5 +769,5 @@
     }else{
         echo "No recognized submission detected. Please try again, else use the message us button";
     }
-    // echo date("Y-m-d H:i:s")
+    close_connections();
 ?>

@@ -657,12 +657,12 @@ function fillTable({
                 tr += "<td>" + (i+1) + "</td>"
 
                 if(mark_index && !reduceMarkIndex) {--mark_index; reduceMarkIndex = true}
-            }
+            }            
 
             for(j = 0; j < keys.length; j++){
-                if((has_mark && (mark_index - 1) == j) && mark_first === true){
+                if((has_mark && (mark_index - 1) == j) && mark_first === false){
                     tr += "<td>" + giveGrade(result_data[i][keys[j]], mark_result_type) + "</td>\n"
-                }
+                }                
                 
                 if(indexes && indexes.some(item => item.indexKey === j)){
                     const index = indexes.find(item => item.indexKey === j);
@@ -689,7 +689,7 @@ function fillTable({
                     tr += "<td>" + result_data[i][keys[j]] + "</td>\n"
                 }
 
-                if((has_mark && (mark_index - 1) == j) && mark_first === false){
+                if((has_mark && (mark_index - 1) == j) && mark_first === true){
                     tr += "<td>" + giveGrade(result_data[i][keys[j]], mark_result_type) + "</td>"
                 }
                 

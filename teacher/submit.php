@@ -208,7 +208,7 @@
                     $teacher_id = $teacher["teacher_id"];
 
                     try {
-                        $sql = "SELECT s.indexNumber, CONCAT(s.Lastname, ' ', s.Othernames) AS fullname, s.gender, ROUND(r.mark, 1)
+                        $sql = "SELECT s.indexNumber, CONCAT(s.Lastname, ' ', s.Othernames) AS fullname, s.gender, ROUND(r.mark, 1) AS mark
                             FROM results r JOIN students_table s ON r.indexNumber = s.indexNumber
                             WHERE r.teacher_id=$teacher_id AND s.studentYear=$program_year AND s.program_id=$program_id AND r.course_id=$course_id
                                 AND r.semester=$semester AND YEAR(date) = $year_period

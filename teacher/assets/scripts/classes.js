@@ -62,7 +62,7 @@ $(".form-element button[name=list_search]").click(function(){
                 }else{
                     fillTable({
                         table_id: "class_list_table", result_data: data["message"], first_countable: false,
-                        has_mark: true, mark_index: 6, mark_first: false, mark_result_type: $("#mark_result_type").val()
+                        has_mark: true, mark_index: 4, mark_first: true, mark_result_type: $("#mark_result_type").val()
                     })
 
                     //add a view td

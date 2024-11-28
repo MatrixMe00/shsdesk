@@ -2665,7 +2665,7 @@
                         $stmt = $connect->prepare($sql);
                         $stmt->bind_param("sis", $academic_year, $status, $index_number);
                     }else{
-                        $sql = "UPDATE cssps SET accept_old = ? WHERE indexNumber = ?";
+                        $sql = "UPDATE cssps SET accept_old = ?, enroled = FALSE WHERE indexNumber = ?";
                         $stmt = $connect->prepare($sql);
                         $stmt->bind_param("is", $status, $index_number);
                     }
