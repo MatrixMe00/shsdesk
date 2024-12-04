@@ -52,7 +52,7 @@
 <section class="lt-shade white d-section no_disp sm-xlg-tp" id="sub_term_form">
     <div class="form txt-al-c wmax-md sm-auto">
         <?php $show_select = date("m") <= 11 && date("m") >= 9; ?>
-        <p>Please provide the subject<?= $show_select ? ", academic year" : " " ?> and current semester to proceed</p>
+        <p>Please provide the subject, academic year and current semester to proceed</p>
         <div class="flex gap-sm sp-med-tp">
             <label for="subject">
                 <select class="w-full sp-xlg" name="subject" id="subject">
@@ -83,9 +83,15 @@
             </label>
             <label for="academic_year">
                 <?php 
-                    $academic_year = $show_select ? getAcademicYear(date("d-m-Y", strtotime("-1 year")), false) : getAcademicYear(date("d-m-Y"), false);
+                    // $academic_year = $show_select ? getAcademicYear(date("d-m-Y", strtotime("-1 year")), false) : getAcademicYear(date("d-m-Y"), false);
+                    $last_academic_year = getAcademicYear(date("d-m-Y", strtotime("-1 year")));
+                    $current_academic_year = getAcademicYear(date("d-m-Y"), false);
                 ?>
-                <input type="text" class="sp-xlg" name="academic_year" id="academic_year" value="<?= $academic_year ?>" readonly />
+                <!-- <input type="text" class="sp-xlg" name="academic_year" id="academic_year" value="" readonly /> -->
+                <select name="academic_year" id="academic_year" class="sp-xlg">
+                    <option value="<?= $last_academic_year ?>"><?= $last_academic_year ?></option>
+                    <option value="<?= $current_academic_year ?>" <?= !$show_select ? "selected" : "" ?>><?= $current_academic_year ?></option>
+                </select>
             </label>
         </div>
     </div>
