@@ -246,5 +246,3 @@ if(isset($_REQUEST['submit'])){
 }else{
     echo "No submission was received";
 }
-
-close_connections();
