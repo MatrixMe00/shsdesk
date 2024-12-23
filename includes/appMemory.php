@@ -88,7 +88,7 @@
                     "hostpassword" => "Password@2020",
                     "hostname" => "shsdeskc_matrixme",
                     "db1" => "shsdeskc_shsdesk",
-                    "db2" => "shsdeskc_shsdesk2"
+                    "db2" => "shsdeskc_shsdesk1"
                 ];
 
                 $priceKey = $priceKeys["live"];

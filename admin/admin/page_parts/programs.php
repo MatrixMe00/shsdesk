@@ -325,7 +325,10 @@
 <!-- end of broken table -->
 
 <section id="newProgram" class="sp-xlg-tp section_box no_disp">
-    <?php eval("?>".file_get_contents("$url/admin/admin/page_parts/subTeaForms.php?form_type=addProgram&school_id=$user_school_id")) ?>
+    <?php 
+        $form_type = "addProgram";
+        include "$rootPath/admin/admin/page_parts/subTeaForms.php";
+    ?>
 </section>
 
 <div id="table_del" class="modal_yes_no outmost-modal fixed flex flex-center-content flex-center-align form_modal_box no_disp">
@@ -337,7 +340,10 @@
         <div id="getLoader"></div>
         <span class="item-event" id="cancelUpdate" style="color: white; margin-top: 10px; padding-left: 10px; text-align: center">Cancel</span>
     </div>
-    <?php eval("?>".file_get_contents("$url/admin/admin/page_parts/subTeaForms.php?form_type=updateProgram&school_id=$user_school_id")) ?>
+    <?php 
+        $form_type = "updateProgram";
+        include "$rootPath/admin/admin/page_parts/subTeaForms.php";
+    ?>
 </div>
 
 <div id="view_results" class="fixed flex-all-center flex-column form_modal_box no_disp">

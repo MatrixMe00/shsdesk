@@ -98,7 +98,10 @@
 
 <section class="sp-xlg-tp hmax-unset-child section_box no_disp" id="add_course">
     <div class="body">
-    <?php eval("?>".file_get_contents("$url/admin/admin/page_parts/subTeaForms.php?form_type=course_add&school_id=$user_school_id")) ?>
+    <?php 
+        $form_type = "course_add";
+        include "$rootPath/admin/admin/page_parts/subTeaForms.php";
+    ?>
     </div>
 </section>
 
@@ -146,7 +149,10 @@
 
 <section class="sp-xlg-tp hmax-unset-child section_box no_disp" id="add_teacher">
     <div class="body">
-    <?php eval("?>".file_get_contents("$url/admin/admin/page_parts/subTeaForms.php?form_type=teacher_add&school_id=$user_school_id")) ?>
+    <?php 
+        $form_type = "teacher_add";
+        include "$rootPath/admin/admin/page_parts/subTeaForms.php";
+    ?>
     </div>
 </section>
 <?php endif; ?>
@@ -160,8 +166,14 @@
         <div id="getLoader"></div>
         <span class="item-event" id="cancelUpdate" style="color: white; margin-top: 10px; padding-left: 10px; text-align: center">Cancel</span>
     </div>
-    <?php eval("?>".file_get_contents("$url/admin/admin/page_parts/subTeaForms.php?form_type=course_update&school_id=$user_school_id")) ?>
-    <?php eval("?>".file_get_contents("$url/admin/admin/page_parts/subTeaForms.php?form_type=teacher_update&school_id=$user_school_id")) ?>
+    <?php 
+        $form_type = "course_update";
+        include "$rootPath/admin/admin/page_parts/subTeaForms.php";
+    ?>
+    <?php 
+        $form_type = "teacher_update";
+        include "$rootPath/admin/admin/page_parts/subTeaForms.php";
+    ?>
 </div>
 
 <script src="<?= "$url/admin/admin/assets/scripts/subjects.min.js?v=".time() ?>"></script>

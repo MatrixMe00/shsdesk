@@ -216,7 +216,10 @@
 </div>
 
 <div id="modal" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">
-    <?php eval("?>".file_get_contents($url."/admin/admin/page_parts/newStudent.php?db2=true&sid=$user_school_id"))?>
+    <?php 
+        $db2 = true;
+        include "$rootPath/admin/admin/page_parts/newStudent.php";
+    ?>
 </div>
 
 <div id="updateStudent" class="fixed flex flex-center-content flex-center-align form_modal_box no_disp">

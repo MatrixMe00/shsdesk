@@ -1,7 +1,4 @@
 <?php 
-    $form_type = $_GET["form_type"];
-    $user_school_id = $_GET["school_id"];
-
     include_once("auth.php");
     global $courses, $teachers, $classes;
 

@@ -30,6 +30,8 @@
                       "S","T","U","V","W","X",
                       "Y","Z");
 
+    $connection = $connect;
+
     //sql statement
     if($submit == "enrolment"){
         $sql = "SELECT e.*, s.schoolName, h.title AS houseName, c.boardingStatus
@@ -60,23 +62,27 @@
 
         $filename = "House Allocation | ";
     }elseif($submit == "exeat"){
-        $sql = "SELECT c.Lastname, c.Othernames, e.*,  h.title AS house 
-        FROM exeat e JOIN cssps c
-        ON e.indexNumber = c.indexNumber
-        JOIN houses h
-        on e.houseID = h.id
+        $houses = fetchData("id, title", "houses", "schoolID = $user_school_id");
+        if($houses){
+            $houses = pluck(decimalIndexArray($houses), "id", "title");
+        }
+
+        $sql = "SELECT s.Lastname, s.Othernames, e.*,  e.houseID AS house 
+        FROM exeat e JOIN students_table s
+        ON e.indexNumber = s.indexNumber
         WHERE e.school_id= $user_school_id
         ORDER BY e.houseID ASC";
 
         $exception_headers = array("id","houseID","school_id","");
 
         $filename = "Exeat Report | ";
+        $connection = $connect2;
     }
 
     //complete file name
     $filename .= getSchoolDetail($user_school_id)["schoolName"];
     
-    $query = $connect->query($sql);
+    $query = $connection->query($sql);
 
     //generate nothing if there are no rows
     if($query->num_rows <= 0){
@@ -85,7 +91,8 @@
     }
 
     //take field names
-    $field_names = array_keys($query->fetch_assoc());
+    $results = $query->fetch_all(MYSQLI_ASSOC);
+    $field_names = array_keys($results[0]);
 
     $current_col_names = array();
 
@@ -142,13 +149,11 @@
     $exceptionCounter = 0;
     $headerCounter = 0;
     $rowCounter = 3;
-
-    //send value into selected cells
-    $query = $connect->query($sql);
     
     //variable to check a house break
-    $house_break = ""; $date_break = "";
-    while($result=$query->fetch_assoc()){
+    $house_break = ""; $date_break = ""; $result_row_count = 0; $max_result_row = count($results);
+    while($result_row_count < $max_result_row){
+        $result = $results[$result_row_count++];
         if($submit == "houses"){
             //check the former house name and provide space where the need be
             if($house_break != "" && $house_break != $result["house name"]){
@@ -190,7 +195,7 @@
             $house_break = $result["house name"];
         }elseif($submit == "exeat" && $query->num_rows > 1){
             //check former house
-            if($house_break != "" && $house_break != $result["house"]){
+            if($house_break != "" && $house_break != $houses($result["house"])){
                 ++$rowCounter;
                 
                 //merge cells to take create a space
@@ -200,7 +205,7 @@
                 //next line
                 ++$rowCounter;
 
-                $house_break = $result["house"];
+                $house_break = $houses($result["house"]);
             }
         }
 
@@ -211,6 +216,8 @@
             }else{
                 $result["returnStatus"] = "Not Returned";
             }
+
+            $result["house"] = $houses[$result["house"]];
         }
 
         //divide enroled candidates into months and years

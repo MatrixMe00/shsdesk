@@ -1,6 +1,6 @@
 <?php include_once("auth.php") ?>
 
-<?php if(isset($_GET["db2"])): $user_school_id=$_GET["sid"] ?>
+<?php if(isset($db2)): ?>
 <form action="<?php echo $url?>/admin/admin/submit.php" method="get" class="fixed" name="adminAddStudent">
     <div class="head">
         <h2>Add A Student</h2>

@@ -1086,15 +1086,17 @@
             }
         }elseif($submit == "getExeat" || $submit == "getExeat_ajax"){
             $id = $_REQUEST["id"];
+            $houses = fetchData("id, title", "houses", "schoolID = $user_school_id");
+            if($houses){
+                $houses = pluck(decimalIndexArray($houses), "id", "title");
+            }
 
-            $sql = "SELECT c.Lastname, c.Othernames, e.*, h.title
-                FROM exeat e JOIN cssps c
-                ON e.indexNumber = c.indexNumber
-                JOIN houses h
-                ON e.houseID = h.id
+            $sql = "SELECT s.Lastname, s.Othernames, e.*
+                FROM exeat e JOIN students_table s
+                ON e.indexNumber = s.indexNumber
                 WHERE e.id = $id";
             
-            $res = $connect->query($sql);
+            $res = $connect2->query($sql);
 
             $data = array();
             if($res->num_rows > 0){
@@ -1103,7 +1105,7 @@
                 $data = array(
                     "indexNumber" => $row["indexNumber"],
                     "fullname" => $row["Lastname"]." ".$row["Othernames"],
-                    "house" => $row["title"],
+                    "house" => $houses[$row["houseID"]] ?? "Not Defined",
                     "exeat_town" => $row["exeatTown"],
                     "exeat_date" => date("jS F, Y", strtotime($row["exeatDate"])),
                     "exp_date" => date("jS F, Y", strtotime($row["expectedReturn"])),
@@ -1629,7 +1631,7 @@
                                                     $yid = $part[2];
 
                                                     // sql syntax would go here
-                                                    $detailsExist = fetchData1("COUNT(teacher_id) AS total","teacher_classes", "school_id=$user_school_id AND program_id=$pid AND course_id=$cid AND class_year=$yid");
+                                                    $detailsExist = fetchData1("COUNT(teacher_id) AS total, id","teacher_classes", "school_id=$user_school_id AND program_id=$pid AND course_id=$cid AND class_year=$yid");
                                                     if(intval($detailsExist["total"]) < 1){
                                                         $sql = "INSERT INTO teacher_classes (school_id, teacher_id, program_id, course_id, class_year) VALUES (?,?,?,?,?)";
                                                         $stmt = $connect2->prepare($sql);
@@ -1637,7 +1639,7 @@
 
                                                         $stmt->execute();
                                                     }else{
-                                                        $detailsExist = fetchData1("t.lname","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.course_id=$cid AND tc.program_id=$pid");
+                                                        $detailsExist = fetchData1("t.lname","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.id = {$detailsExist['id']}");
                                                         if(is_array($detailsExist)){
                                                             $message = "Teacher data updated, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($cid,"SID")." for Year $yid";
                                                         }else{

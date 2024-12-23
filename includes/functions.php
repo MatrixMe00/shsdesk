@@ -534,8 +534,11 @@
     function close_connections(){
         global $connect, $connect2;
 
-        $connect->close();
-        $connect2->close();
+        if($connect)
+            $connect->close();
+
+        if($connect2)
+            $connect2->close();
     }
 
     /**

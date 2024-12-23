@@ -2,7 +2,7 @@
     include_once("auth.php");
 
     //set nav_point session
-    $_SESSION["nav_point"] = "programs";
+    $_SESSION["nav_point"] = "exeat";
 ?>
 <section>
     <form action="<?php echo $url?>/admin/admin/submit.php" method="post" name="exeatForm">
@@ -101,10 +101,10 @@
                 <tr data-item-id="<?php echo $row["id"] ?>">
                     <td><?php 
                             $column = "Lastname, Othernames";
-                            $table = "cssps";
+                            $table = "students_table";
                             $where = "indexNumber='".$row["indexNumber"]."'";
 
-                            $data = fetchData($column, $table, $where);
+                            $data = fetchData1($column, $table, $where);
 
                             echo $data["Lastname"]." ".$data["Othernames"];
                         ?>
