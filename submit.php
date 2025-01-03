@@ -330,15 +330,16 @@
 
                         // insert student data into database
                         if(!empty($program_id)){
+                            $password = password_hash("Password@1", PASSWORD_DEFAULT);
                             $sql = "INSERT INTO students_table (
                                 indexNumber, profile_pic, Lastname, Othernames, Gender, 
                                 houseID, school_id, studentYear, guardianContact, programme, program_id, 
-                                boardingStatus) VALUES ('a','a','a','a','a','a','a','a','a','a','a','a')";
+                                boardingStatus, password) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
                             $stmt = $connect2->prepare($sql);
                             $house_id = intval($_SESSION["ad_stud_house"]);
                             $year = 1;
-                            $stmt->bind_param("sssssiiissis", $ad_index, $ad_profile_pic, $ad_lname, $ad_oname, $ad_gender, $house_id, $shs_placed,
-                                $year, $ad_phone, $ad_course, $program_id, $student["boardingStatus"]);
+                            $stmt->bind_param("sssssiiississ", $ad_index, $ad_profile_pic, $ad_lname, $ad_oname, $ad_gender, $house_id, $shs_placed,
+                                $year, $ad_phone, $ad_course, $program_id, $student["boardingStatus"], $password);
                             $stmt->execute();
                             $stmt->close();
                         }

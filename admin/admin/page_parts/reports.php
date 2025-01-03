@@ -189,7 +189,14 @@
                     status_area.addClass("no_disp");
 
                     const thead = resp.data.thead;
-                    const data = resp.data.data;
+                    const data = Object.entries(resp.data.data).map(([index_number, report]) => ({
+                        index_number,
+                        ...report
+                        }));     
+
+                    // Sort the array by 'total' in descending order
+                    data.sort((a, b) => b.total - a.total);
+
                     create_thead(content_area.find("thead"), thead);
 
                     // insert data into body
@@ -199,11 +206,13 @@
                     let last_position = 0;
                     let count = 1;
 
-                    $.each(data, (index_number, record) => {                            
-                        let tr = "<tr>\n<td>" + index_number + "</td>\n";
+                    $.each(data, (index, record) => {                            
+                        let tr = "<tr>\n<td>" + record.index_number + "</td>\n";
 
                         thead.forEach((element) => {
-                            tr += "<td>" + (record[element] ?? "N/A") + "</td>\n";
+                            let value = record[element] != undefined || record[element] != null ? record[element] : "N/A";
+                            value = value != "N/A" ? parseFloat(value).toFixed(1) : value;
+                            tr += "<td>" + value + "</td>\n";
                         })
 
                         // insert the position

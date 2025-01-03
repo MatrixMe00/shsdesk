@@ -85,7 +85,7 @@
                 <?php 
                     // $academic_year = $show_select ? getAcademicYear(date("d-m-Y", strtotime("-1 year")), false) : getAcademicYear(date("d-m-Y"), false);
                     $last_academic_year = getAcademicYear(date("d-m-Y", strtotime("-1 year")));
-                    $current_academic_year = getAcademicYear(date("d-m-Y"), false);
+                    $current_academic_year = getAcademicYear(now(), false);
                 ?>
                 <!-- <input type="text" class="sp-xlg" name="academic_year" id="academic_year" value="" readonly /> -->
                 <select name="academic_year" id="academic_year" class="sp-xlg">

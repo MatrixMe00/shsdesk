@@ -87,7 +87,7 @@
                 ?>
                 <option value="<?= date("Y", strtotime($date)) ?>"><?= getAcademicYear(date("d-m-Y", strtotime($date))) ?></option>
                 <?php endforeach; else: ?>
-                <option value="<?= date("Y") ?>"><?= getAcademicYear(date("d-m-Y")) ?></option>
+                <option value="<?= date("Y") ?>"><?= getAcademicYear(now()) ?></option>
                 <?php endif;?>
             </select>
         </label>

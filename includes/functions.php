@@ -585,16 +585,16 @@
     ){
         global $connect;
 
-        try{
-            // generate an sql
-            $sql = create_query_string(
-                $columns, $table, $where, $limit, $where_binds, 
-                $join_type, $group_by, $order_by, $asc, $multiple_table
-            );
+        // generate an sql
+        $sql = create_query_string(
+            $columns, $table, $where, $limit, $where_binds, 
+            $join_type, $group_by, $order_by, $asc, $multiple_table
+        );
 
+        try{
             $result = fetch_query($connect, $sql);
         }catch(Throwable $th){
-            $result = throwableMessage($th);
+            $result = throwableMessage($th, $sql);
         }
 
         return $result;
@@ -622,16 +622,16 @@
     ){
         global $connect2;
 
-        try{
-            // generate an sql
-            $sql = create_query_string(
-                $columns, $table, $where, $limit, $where_binds, 
-                $join_type, $group_by, $order_by, $asc, $multiple_table
-            );
+        // generate an sql
+        $sql = create_query_string(
+            $columns, $table, $where, $limit, $where_binds, 
+            $join_type, $group_by, $order_by, $asc, $multiple_table
+        );
 
+        try{
             $result = fetch_query($connect2, $sql);
         }catch(Throwable $th){
-            $result = throwableMessage($th);
+            $result = throwableMessage($th, $sql);
         }
 
         return $result;
@@ -1061,8 +1061,9 @@
     /**
      * Logs a throwable error
      * @param Throwable $throwable The throwable message
+     * @param ?string $additional Additional message to be added
      */
-    function logThrowable(Throwable $throwable) {
+    function logThrowable(Throwable $throwable, ?string $additional = null) {
         // Define the path to the logs directory
         $logDir = $_SERVER["DOCUMENT_ROOT"] . '/logs';
         
@@ -1089,6 +1090,11 @@
         $logEntry .= "Message: $errorMessage\n";
         $logEntry .= "File: $errorFile (Line $errorLine)\n";
         $logEntry .= "Stack Trace:\n$errorTrace\n";
+
+        if($additional){
+            $logEntry .= "Additional Message: $additional\n";
+        }
+
         $logEntry .= str_repeat("-", 80) . "\n"; // Separator for readability
     
         // Append the log entry to the log file
@@ -1359,13 +1365,14 @@
     /**
      * This function determines what message should be displayed in a try/catch throwable block
      * @param Throwable $throwable This takes the throwable variable
+     * @param ?string $additional_message An additional message to be logged into the error log file
      * @return string
      */
-    function throwableMessage(Throwable $throwable):string{
+    function throwableMessage(Throwable $throwable, ?string $additional_message = null):string{
         global $developmentServer;
         
         $message = "";
-        logThrowable($throwable);
+        logThrowable($throwable, $additional_message);
         if($developmentServer){
             if(str_contains($_SERVER["SERVER_NAME"], ".local") === true)
                 $message = $throwable->getMessage()." in ".$throwable->getFile()." on line ".$throwable->getLine();
@@ -2379,4 +2386,20 @@
         }
 
         return $response;
+    }
+
+    /**
+     * This function is used to ensure that data is in utf-8 format
+     * @param $data The data to be processed
+     * @return mixed
+     */
+    function convertToUtf8($data) {
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = convertToUtf8($value);
+            }
+        } elseif (is_string($data)) {
+            $data = mb_convert_encoding($data, 'UTF-8', 'UTF-8');
+        }
+        return $data;
     }

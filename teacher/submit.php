@@ -255,18 +255,14 @@
                     if(!is_array($message)){
                         $message = "No results to be displayed for this search. Data not yet uploaded";
                     }else{
-                        if(array_key_exists("indexNumber", $message)){
-                            $message_n = $message;
-                            $message = null;
-                            $message[0] = $message_n;
-                        }
+                        $message = decimalIndexArray($message);
                         $status = true;
                     }
                 }
 
-                $response = array("status"=>$status??false, "message"=>$message);
+                $response = array("status" => $status ?? false, "message" => $message);
                 header("Content-Type: application/json");
-                echo json_encode($response);
+                echo json_encode(convertToUtf8($response));
                 break;
 
             case "getToken":
@@ -369,7 +365,7 @@
                     $academic_year = $_POST["academic_year"] ?? 0;
 
                     if(!$academic_year){
-                        $academic_year = getAcademicYear(date("d-m-Y"), false);
+                        $academic_year = getAcademicYear(now(), false);
                     }
 
                     $sql = "INSERT INTO recordapproval (result_token, school_id, teacher_id, program_id, course_id, exam_year, semester, academic_year) VALUES (?,?,?,?,?,?,?,?)";
@@ -393,7 +389,7 @@
                     $isFinal = $_POST["isFinal"] ?? false;
                     $program_id = $_POST["program_id"] ?? null;
                     $new_save = $_POST["saved"] ?? null;
-                    $academic_year = getAcademicYear(date('d-m-Y'), false);
+                    $academic_year = $_POST["academic_year"] ?? getAcademicYear(now(), false);
                     
                     if(empty($student_index) || is_null($student_index) ||
                         empty($result_token) || is_null($course_id) || 

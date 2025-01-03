@@ -60,8 +60,8 @@
                     "host" => "localhost",
                     "hostpassword" => "",
                     "hostname" => "root",
-                    "db1" => "shsdesk",
-                    "db2" => "shsdesk2"
+                    "db1" => "shsdesk3",
+                    "db2" => "shsdesk4"
                 ];
 
                 $priceKey = $priceKeys["development"];

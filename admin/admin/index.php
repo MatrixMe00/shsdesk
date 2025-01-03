@@ -175,7 +175,9 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             })
         })
     </script>
+    <?php if($_SESSION["admin_mode"] == "admission"): ?>
     <script src="<?php echo $url?>/admin/admin/assets/scripts/polling.min.js?v=<?php echo time()?>"></script>
+    <?php endif; ?>
 
     <?php }
         //close connection

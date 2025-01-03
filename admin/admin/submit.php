@@ -203,10 +203,11 @@
                 
                 if($valid == "empty"){
                     //insert data into students table
-                    $sql = "INSERT INTO students_table (indexNumber,Lastname,Othernames,Gender, houseID, school_id, studentYear, guardianContact, programme, program_id, boardingStatus)
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+                    $password = password_hash("Password@1", PASSWORD_DEFAULT);
+                    $sql = "INSERT INTO students_table (indexNumber,Lastname,Othernames,Gender, houseID, school_id, studentYear, guardianContact, programme, program_id, boardingStatus, password)
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
                     $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("ssssiiissis",$student_index,$lname,$oname,$gender,$house,$school_id,$student_year,$guardian_contact,$student_course, $program_id,$boarding_status);
+                    $stmt->bind_param("ssssiiississ",$student_index,$lname,$oname,$gender,$house,$school_id,$student_year,$guardian_contact,$student_course, $program_id,$boarding_status, $password);
                     $stmt->execute();
 
                     $message = "success";
@@ -1148,12 +1149,13 @@
                         if(is_array(fetchData1("indexNumber","students_table","indexNumber='".$row["indexNumber"]."'"))){
                             continue;
                         }else{
-                            $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, guardianContact, programme, boardingStatus)
-                                VALUES (?,?,?,?,?,?,?,?,?,?)";
+                            $password = password_hash("Password@1", PASSWORD_DEFAULT);
+                            $sql = "INSERT INTO students_table (indexNumber, Lastname, Othernames, Gender, houseID, school_id, studentYear, guardianContact, programme, boardingStatus, password)
+                                VALUES (?,?,?,?,?,?,?,?,?,?,?)";
                             $studentYear = 1;
                             $stmt = $connect2->prepare($sql);
                             $stmt->bind_param("ssssiiisss",$row["indexNumber"], $row["Lastname"], $row["Othernames"], $row["Gender"], $row["houseID"], $user_school_id, $studentYear,
-                                $row["primaryPhone"], $row["programme"], $row["boardingStatus"]);
+                                $row["primaryPhone"], $row["programme"], $row["boardingStatus"], $password);
                             if(!$stmt->execute()){
                                 echo "Student with index number '".$row["indexNumber"]."' could not be saved. Procedure was stopped";
                                 break;
@@ -2623,11 +2625,6 @@
                             $message[$result["indexNumber"]]["total"] = $result["total"];
                         }
                     }
-
-                    // arrange in descending order
-                    uasort($message, function($a, $b) {
-                        return $b['total'] <=> $a['total'];
-                    });
 
                     $thead = array_unique($thead);
                     $thead[] = "total";
