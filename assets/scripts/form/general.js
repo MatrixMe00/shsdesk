@@ -34,9 +34,10 @@ $("form").submit(function(e){
     e.preventDefault();
 })
 
-$(".message_box .close").click(function(){
-    $(".message_box span.message").html('');
-    $(".message_box").slideUp(200);
+$("body").on("click", ".message_box .close", function(){
+    const parent = $(this).parent().first();
+    $(this).siblings("span.message").html('');
+    parent.slideUp(200);
 })
 
 $("label input").click(function(){

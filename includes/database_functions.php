@@ -150,5 +150,26 @@
         $rhs = empty($alias2) ? $table2 : $alias2;
 
         $new_table .= " ON $lhs.$ref1 = $rhs.$ref2";
+
+        // if an add on has been added, append to this
+        if(isset($table["add_on"])){
+            addOnTableString($new_table, $table["add_on"]);
+        }
+    }
+
+    /**
+     * This add special conditions to the ON section
+     * @param mixed $new_table The table been created
+     * @param array|string $add_on The add on value, a list array or a full script 
+     */
+    function addOnTableString(&$new_table, $add_on){
+        if(array_is_list($add_on)){
+            $response = implode(" AND ", $add_on);
+            $new_table .= " AND $response";
+        }elseif(is_string($add_on)){
+            $add_on = trim($add_on);
+            $add_on = (strpos(strtoupper($add_on), "AND ") === 0 || strpos(strtoupper($add_on), "OR ") === 0) ? $add_on : "AND $add_on";
+            $new_table .= " $add_on";
+        }
     }
 ?>

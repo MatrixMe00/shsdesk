@@ -39,8 +39,8 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
             //check if house and students are set
             $house_check = fetchData("COUNT(DISTINCT(title)) AS total", "houses", "schoolID=$user_school_id")["total"];
             if($house_check >= 1){
-                //check if there is at least one student uploaded on the system
-                $students = fetchData("COUNT(indexNumber) AS total", "cssps", "schoolID=$user_school_id")["total"];
+                //check if there is at least one student uploaded on the system [check for only admission section]
+                $students = $_SESSION["admin_mode"] == "admission" ? fetchData("COUNT(indexNumber) AS total", "cssps", "schoolID=$user_school_id")["total"] : true;
                 if($students == 0){
                     echo "<nav id='not-display'>";
                     $status = "Status: Not Active [No Student Uploaded]";
@@ -179,10 +179,7 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     <script src="<?php echo $url?>/admin/admin/assets/scripts/polling.min.js?v=<?php echo time()?>"></script>
     <?php endif; ?>
 
-    <?php }
-        //close connection
-        $connect->close();
-    ?>
+    <?php } ?>
 </body>
 </html>
 <?php

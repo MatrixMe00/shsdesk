@@ -4,23 +4,32 @@
         <span class="self-align-start">Total Subjects</span>
         <span class="txt-fl3 txt-bold self-align-end"><?php 
             if(!is_null($student["program_id"])){
-                $subjects = fetchData1(...[
+                $courses = !isset($_SESSION["program_courses"]) ? 
+                           fetchData1("course_ids", "program", "program_id = {$student['program_id']}") :
+                           $_SESSION["program_courses"];
+                
+                if($courses && is_array($courses)){
+                    $courses = explode(" ",trim($courses["course_ids"]));
+                    $courses = implode(", ", $courses);
+                    $_SESSION["program_courses"] = $courses;
+                }
+
+                $subjects = !$courses ? null : fetchData1(...[
                     "columns" => [
                         "c.course_id", "c.course_name", "c.short_form", 
                         "c.credit_hours", "CONCAT(t.lname, ' ', t.oname) as fullname"
                     ],
                     "table" => [
-                        ["join" => "courses teacher_classes", "alias" => "c tc", "on" => "course_id course_id"],
-                        ["join" => "teacher_classes teachers", "alias" => "tc t", "on" => "teacher_id teacher_id"],
-                        ["join" => "teacher_classes program", "alias" => "tc p", "on" => "program_id program_id"]
+                        ["join" => "courses teacher_classes", "alias" => "c tc", "on" => "course_id course_id", "add_on" => ["tc.program_id={$student['program_id']}", "tc.class_year={$student['studentYear']}"]],
+                        ["join" => "teacher_classes teachers", "alias" => "tc t", "on" => "teacher_id teacher_id"]
                     ],
                     "where" => [
-                        "tc.program_id={$student['program_id']}", "tc.class_year={$student['studentYear']}",
-                        "(p.course_ids LIKE CONCAT(tc.course_id,' %')", "p.course_ids LIKE CONCAT('% ',tc.course_id,' %')", "p.course_ids LIKE CONCAT('% ',tc.course_id))"
+                        "c.course_id IN ($courses)"
                     ],
-                    "limit" => 0, "where_binds" => ["AND", "AND", "OR", "OR"],
-                    "join_type" => "left outer", "order_by" => "c.course_id"
+                    "limit" => 0, "where_binds" => "AND",
+                    "join_type" => "left", "order_by" => "c.course_id"
                 ]);
+
                 $no_subjects = "<span class='txt-fl2'>No courses assigned</span>";
 
                 echo is_array($subjects) ? count($subjects) : $no_subjects;
@@ -84,7 +93,7 @@
                 <td><?= formatItemId($subject["course_id"], "SID") ?></td>
                 <td><?= ucwords(strtolower($subject["course_name"])) ?></td>
                 <td><?= $subject["short_form"] ?></td>
-                <td><?= !empty($subject["fullname"]) ? ucwords(strtolower($subject["fullname"])) : "Teacher Not Set" ?></td>
+                <td><?= !empty($subject["fullname"]) ? ucwords(strtolower($subject["fullname"])) : "N/A" ?></td>
                 <td><?= $subject["credit_hours"] ?? "Not Set" ?></td>
             </tr>
             <?php 

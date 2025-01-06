@@ -1577,14 +1577,14 @@
             header("Content-Type: application/json");
             echo json_encode($final);
         }elseif($submit == "updateTeacher" || $submit == "updateTeacher_ajax"){
-            @$teacher_lname = $_GET["teacher_lname"];
-            @$teacher_oname = $_GET["teacher_oname"];
-            @$teacher_gender = $_GET["teacher_gender"];
-            @$teacher_email = $_GET["teacher_email"];
-            @$teacher_phone = $_GET["teacher_phone"];
-            @$course_ids = $_GET["course_ids"];
-            @$class_ids = $_GET["class_ids"];
-            @$teacher_id = $_GET["teacher_id"];
+            $teacher_lname = $_GET["teacher_lname"] ?? null;
+            $teacher_oname = $_GET["teacher_oname"] ?? null;
+            $teacher_gender = $_GET["teacher_gender"] ?? null;
+            $teacher_email = $_GET["teacher_email"] ?? null;
+            $teacher_phone = $_GET["teacher_phone"] ?? null;
+            $course_ids = $_GET["course_ids"] ?? null;
+            $class_ids = $_GET["class_ids"] ?? null;
+            $teacher_id = $_GET["teacher_id"] ?? null;
 
             $message = ""; $status = false; $final = array();
 
@@ -1607,6 +1607,7 @@
             }elseif(empty($teacher_id)){
                 $message = "No teacher selected. Please check and try again";
             }else{
+                $connect2->begin_transaction();
                 try {
                     $sql = "UPDATE teachers SET lname=?, oname=?, gender=?, email=?, phone_number=? WHERE teacher_id=?";
                     $stmt = $connect2->prepare($sql);
@@ -1643,7 +1644,7 @@
                                                     }else{
                                                         $detailsExist = fetchData1("t.lname","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.id = {$detailsExist['id']}");
                                                         if(is_array($detailsExist)){
-                                                            $message = "Teacher data updated, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($cid,"SID")." for Year $yid";
+                                                            $message = "No changes have been applied as ".$detailsExist["lname"]." already handles ".formatItemId($cid,"SID")." for Year $yid";
                                                         }else{
                                                             $message = "Teacher responsible for ".formatItemId($cid,"SID")." has been deleted, but details of him exist. Contact superadmin for help";
                                                         }
@@ -1686,9 +1687,16 @@
                     }else{
                         $message = "Teacher could not be added";
                     }
+
+                    if($status === true){
+                        $connect2->commit();
+                    }else{
+                        $connect2->rollback();
+                    }
                 } catch (\Throwable $th) {
                     $message = $th->getMessage();
                     $status = false;
+                    $connect2->rollback();
                 }
                 
             }
@@ -2724,6 +2732,47 @@
             }
 
             echo $message;
+        }elseif($submit == "update_result_head"){
+            $academic_year = $_POST["academic_year"] ?? null;
+            $result_token = $_POST["result_id"];
+
+            if(empty($academic_year)){
+                $message = "Academic year not specified";
+            }elseif(empty($result_token)){
+                $message = "Result slip could not be parsed or is not defined";
+            }else{
+                try {
+                    $connect2->begin_transaction();
+
+                    $sql = "UPDATE recordapproval SET academic_year = ? WHERE result_token = ?";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("ss", $academic_year, $result_token);
+
+                    if($stmt->execute()){
+                        $sql = "UPDATE results SET academic_year = ? WHERE result_token = ?";
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param("ss", $academic_year, $result_token);
+                        $status = $stmt->execute();
+
+                        if($status !== true){
+                            throw new Exception("Statement Error: ".$stmt->error);
+                        }
+
+                        $message = $stmt->affected_rows." records updated";
+                        $connect2->commit();
+                    }else{
+                        throw new Exception("Statement Error: ".$stmt->error);
+                    }
+                } catch (\Throwable $th) {
+                    $message = throwableMessage($th);
+                    $connect2->rollback();
+                }
+                
+            }
+
+            echo json_encode([
+                "status" => $status ?? false, "message" => $message
+            ]);
         }else{
             echo "Procedure for submit value '$submit' was not found";
         }

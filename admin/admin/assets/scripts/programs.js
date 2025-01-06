@@ -389,7 +389,7 @@ $(document).ready(function(){
         section.find("span.selected_rows").html(selected);
     }
 
-    $("tbody td:not(.options)").click(function(){
+    $("tbody td:not(.options):not(.result-edit)").click(function(){
         const row = $(this).parent();
         const section = $(this).parents("section").first();
 
@@ -476,5 +476,43 @@ $(document).ready(function(){
                 $("#lhs .item.active").click();
             }
         }
+    })
+
+    $(".result-edit").click(function(){
+        const parent = $(this).parent();
+        const form = $("form[name=updateResultForm]");
+
+        // fill in details
+        form.find("input[name=teacher_name]").val(parent.find(".teacher_name").text());
+        form.find("input[name=semester]").val(parent.find(".semester").text());
+        form.find("select[name=academic_year]").val(parent.find(".academic_year").text());
+        form.find("input[name=submit_date]").val(parent.find(".result_date").text());
+        form.find("input[name=form_level]").val(parent.find(".exam_year").text());
+        form.find("input[name=subject]").val(parent.find(".course_name").text());
+        form.find("input[name=program_name]").val(parent.find(".program_name").text());
+        form.find("input[name=result_id]").val(parent.attr("data-item-id"));
+
+        $("#updateResult").removeClass("no_disp");
+
+    })
+
+    $("form[name=updateResultForm]").submit(function(e){
+        e.preventDefault();
+        const form = $(this);
+        const response = jsonFormSubmit(form, form.find("button[name=submit]"));
+        
+        response.then((resp) => {
+            resp = JSON.parse(JSON.stringify(resp));
+            let time = 0;
+            let type = "error";
+
+            if(resp.status){
+                time = 5; type = "success"; 
+                const row = $("tr[data-item-id=" + form.find("input[name=result_id]").val() + "]");
+                row.find(".academic_year").text(form.find("select[name=academic_year]").val());
+            }
+
+            messageBoxTimeout(form.attr("name"), resp.message, type, time);
+        })
     })
 })

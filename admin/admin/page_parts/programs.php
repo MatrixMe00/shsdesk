@@ -159,7 +159,7 @@
         <?php foreach($resultPending as $counter => $result) : ?>
             <tr data-item-id="<?= $result["result_token"] ?>">
                 <td><?= ($counter + 1) ?></td>
-                <td class="program_name"><?= empty($result["short_form"]) ? $result["program_name"] : $result["short_form"] ?></td>
+                <td class="program_name result-edit cursor-p-h color-purple" title="Edit"><?= empty($result["short_form"]) ? $result["program_name"] : $result["short_form"] ?></td>
                 <td class="exam_year"><?= $result["exam_year"] ?></td>
                 <td class="semester"><?= $result["semester"] ?></td>
                 <td class="course_name"><?= empty($result["short_form_c"]) ? $result["course_name"] : $result["short_form_c"] ?></td>
@@ -234,7 +234,7 @@
             <?php foreach($resultAttended as $counter => $result) : ?>
             <tr class="<?= $result["result_status"] === "rejected" ? "red-i" : "" ?>" data-item-id="<?= $result["result_token"] ?>">
                 <td><?= ($counter+1) ?></td>
-                <td class="program_name"><?= $result["short_form"] ?? $result["program_name"] ?></td>
+                <td class="program_name result-edit cursor-p-h color-purple" title="Edit"><?= $result["short_form"] ?? $result["program_name"] ?></td>
                 <td class="exam_year"><?= $result["exam_year"] ?></td>
                 <td class="semester"><?= $result["semester"] ?></td>
                 <td class="course_name"><?= empty($result["short_form_c"]) ? $result["course_name"] : $result["short_form_c"] ?></td>
@@ -298,7 +298,7 @@
             <?php foreach($brokenResults as $counter => $result) : ?>
             <tr data-item-id="<?= $result["result_token"] ?>">
                 <td><?= ($counter+1) ?></td>
-                <td class="program_name"><?= $result["short_form"] ?? $result["program_name"] ?></td>
+                <td class="program_name result-edit cursor-p-h color-purple" title="Edit"><?= $result["short_form"] ?? $result["program_name"] ?></td>
                 <td class="exam_year"><?= $result["exam_year"] ?></td>
                 <td class="semester"><?= $result["semester"] ?></td>
                 <td class="course_name"><?= empty($result["short_form_c"]) ? $result["course_name"] : $result["short_form_c"] ?></td>
@@ -342,6 +342,13 @@
     </div>
     <?php 
         $form_type = "updateProgram";
+        include "$rootPath/admin/admin/page_parts/subTeaForms.php";
+    ?>
+</div>
+
+<div id="updateResult" class="modal_yes_no fixed flex flex-center-content flex-center-align form_modal_box no_disp">
+    <?php 
+        $form_type = "updateResult";
         include "$rootPath/admin/admin/page_parts/subTeaForms.php";
     ?>
 </div>

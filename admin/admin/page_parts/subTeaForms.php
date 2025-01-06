@@ -194,10 +194,6 @@
         <div class="head">
             <h2>Update Teacher <span id="teacherID"></span></h2>
         </div>
-        <div class="message_box no_disp sticky top">
-            <span class="message"></span>
-            <div class="close"><span>&cross;</span></div>
-        </div>
         <div class="body">
             <?php if($classes) : ?>
             <div class="joint gap-sm">
@@ -283,6 +279,12 @@
                     </tbody>
                 </table>
             </label>
+
+            <!-- message box -->
+            <div class="message_box no_disp sticky top sm-lg-b">
+                <span class="message"></span>
+                <div class="close"><span>&cross;</span></div>
+            </div>
 
             <div class="flex flex-wrap w-full gap-sm flex-eq wmax-xs sm-auto">
                 <label for="submit" class="btn w-full sm-unset sp-unset">
@@ -428,4 +430,66 @@
             <?php endif; ?>
         </div>
     </form>
+    <?php break; case "updateResult": ?>
+        <form action="<?= $url ?>/admin/admin/submit.php" name="updateResultForm" class="wmax-md w-full sm-auto" method="POST">
+            <div class="head">
+                <h2>Update Result Head</h2>
+            </div>
+            <div class="message_box no_disp">
+                <span class="message"></span>
+                <div class="close"><span>&cross;</span></div>
+            </div>
+            <div class="body flex flex-column gap-md">
+                <!-- hidden inputs -->
+                <input type="hidden" name="result_id" value="">
+
+                <div class="joint">
+                    <label for="r_program_name" class="flex-column gap-sm">
+                        <span class="label_title">Name of Class</span>
+                        <input type="text" name="program_name" id="r_program_name" readonly>
+                    </label>
+                    <label for="r_subject" class="flex-column gap-sm">
+                        <span class="label_title">Subject</span>
+                        <input type="text" name="subject" id="r_subject" readonly>
+                    </label>
+                    <label for="r_form_level" class="flex-column gap-sm">
+                        <span class="label_title">Form level</span>
+                        <input type="text" name="form_level" id="r_form_level" readonly>
+                    </label>
+                    <label for="r_submit_date" class="flex-column gap-sm">
+                        <span class="label_title">Semester</span>
+                        <input type="text" name="semester" id="r_submit_date" readonly>
+                    </label>
+                    <label for="r_academic_year" class="flex-column gap-sm">
+                        <span class="label_title">Academic Year</span>
+                        <?php 
+                            $last_academic_year = getAcademicYear(date("d-m-Y", strtotime("-1 year")));
+                            $current_academic_year = getAcademicYear(now());
+                        ?>
+                        <!-- <input type="text" class="sp-xlg" name="academic_year" id="academic_year" value="" readonly /> -->
+                        <select name="academic_year" id="r_academic_year">
+                            <option value="<?= formatAcademicYear($last_academic_year, false) ?>"><?= $last_academic_year ?></option>
+                            <option value="<?= formatAcademicYear($current_academic_year, false) ?>"><?= $current_academic_year ?></option>
+                        </select>
+                    </label>
+                    <label for="r_submit_date" class="flex-column gap-sm">
+                        <span class="label_title">Submission Date</span>
+                        <input type="text" name="submit_date" id="r_submit_date" readonly>
+                    </label>
+                    <label for="r_teacher_name" class="flex-column gap-sm">
+                        <span class="label_title">Submitted By</span>
+                        <input type="text" name="teacher_name" id="r_teacher_name" readonly>
+                    </label>
+                </div>
+
+                <div class="flex flex-wrap w-full gap-sm flex-eq wmax-xs sm-auto">
+                    <label for="submit" class="btn w-full sm-unset sp-unset">
+                        <button type="submit" name="submit" class="primary w-fluid sp-med xs-rnd" value="update_result_head">Update</button>
+                    </label>
+                    <label for="cancel" class="btn w-full sm-unset sp-unset">
+                        <button type="reset" name="cancel" class="red w-fluid sp-med xs-rnd" onclick="$('#updateResult').addClass('no_disp')">Cancel</button>
+                    </label>
+                </div>
+            </div>
+        </form>
 <?php endswitch; ?>
