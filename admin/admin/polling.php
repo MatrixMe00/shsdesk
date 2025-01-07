@@ -45,17 +45,16 @@ function count_displaced(){
 }
 
 function count_old_new(){
-    global $user_school_id;
+    global $user_school_id, $index_end;
 
     $academic_year = getAcademicYear(now(), false);
-    $year = date("y");
 
     $total = fetchData(
         ["COUNT(c.indexNumber) AS total"],
         [
             "join" => "enrol_table cssps", "on" => "indexNumber indexNumber", "alias" => "e c",
         ],
-        ["e.shsID=$user_school_id", "e.current_data = TRUE", "e.indexNumber NOT LIKE '%$year'", "e.academic_year = '$academic_year'", "accept_old = 0"],
+        ["e.shsID=$user_school_id", "e.current_data = TRUE", "e.indexNumber NOT LIKE '%$index_end'", "e.academic_year = '$academic_year'", "accept_old = 0"],
         0, "AND"
     )["total"];
 

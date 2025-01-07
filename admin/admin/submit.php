@@ -359,7 +359,7 @@
             if(empty($db)){
                 if($registered == "true"){
                     $sql = "SELECT c.*, e.enrolCode, h.houseID 
-                        FROM cssps c JOIN house_allocation h
+                        FROM cssps c LEFT JOIN house_allocation h
                         ON c.indexNumber = h.indexNumber 
                         JOIN enrol_table e ON c.indexNumber = e.indexNumber
                         WHERE c.indexNumber='$index_number'";

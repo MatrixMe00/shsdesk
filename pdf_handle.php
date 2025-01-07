@@ -51,7 +51,7 @@
                 //check if student is allocated a house
                 $allocated = fetchData("indexNumber","house_allocation","indexNumber='".$_GET["indexNumber"]."'");
                 
-                if(!is_array($allocated)){
+                if(!is_array($allocated) && !empty($student["boardingStatus"])){
                     //insert data into database
                     $sql = "INSERT INTO `house_allocation` (`indexNumber`, `schoolID`, `studentLname`, `studentOname`, `houseID`, `studentYearLevel`, `studentGender`, `boardingStatus`) VALUES (?, ?, ?, ?, NULL, 1, ?, ?)";
                     $stmt = $connect->prepare($sql);

@@ -11,13 +11,12 @@
     $enroled = fetchData("COUNT(indexNumber) as total", "enrol_table", "shsID=$user_school_id AND current_data = TRUE AND academic_year = '$academic_year'")["total"];
 
     // get students of old students currently admitted
-    $year = date("y");
     $old_in_new = decimalIndexArray(fetchData(
         ["c.indexNumber", "c.Lastname", "c.Othernames", "e.enrolDate", "c.accept_old"],
         [
             "join" => "enrol_table cssps", "on" => "indexNumber indexNumber", "alias" => "e c",
         ],
-        ["e.shsID=$user_school_id", "e.current_data = TRUE", "e.indexNumber NOT LIKE '%$year'", "e.academic_year = '$academic_year'"],
+        ["e.shsID=$user_school_id", "e.current_data = TRUE", "e.indexNumber NOT LIKE '%$index_end'", "e.academic_year = '$academic_year'"],
         0, "AND"
     ));
 
