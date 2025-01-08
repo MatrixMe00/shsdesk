@@ -268,7 +268,7 @@
                         required file to manually place students in required houses</p>";
                 }
 
-                echo "<p>
+                $message_detail = "<p>
                    <u>Default Login Details</u><br><br>
                    <b>Username</b>: New User<br>
                    <b>Password</b>: Password@1<br><br>
@@ -276,8 +276,16 @@
                    Upon registration, you shall be asked for your full name [$technical_name] and email [$school_email]. 
                    Please do well to provide the right details to activate your account
                 </p>";
-    
+                echo $message_detail;
                 echo "<p>Click <a href=\"$url/admin/\">here</a> to log into your portal</p>";
+
+                $email_message = <<< HTML
+                <p>Welcome to the SHSDesk platform. We are pleased to have you on board. </p>
+                $message_detail<br>
+                Best regards,<br>
+                SHSDesk Team
+                HTML;
+                send_email($email_message, "Welcome to SHSDesk", $school_email);
             }
         }else{
             echo "<p>An unexpected error occured! Please go back and resubmit the form again</p>";

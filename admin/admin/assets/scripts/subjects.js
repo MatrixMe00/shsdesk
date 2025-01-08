@@ -81,7 +81,7 @@ $("form").submit(function(e){
         response.then((return_data)=>{
             return_data = JSON.parse(JSON.stringify(return_data))
             
-            messageBoxTimeout($(this).prop("name"), return_data["message"], return_data["status"] ? "success" : "error", 0)
+            messageBoxTimeout($(this).prop("name"), return_data["message"], return_data["status"] ? "success" : "error", return_data["status"] ? 5 : 0)
 
             if(return_data["sms-message"] && return_data["sms-message"] != "no-message"){
                 alert_box(return_data["sms-message"],"danger")
@@ -192,15 +192,13 @@ $(".item-event").click(function(){
                         $("#updateItem form[name=" + formName + "] input[name=teacher_id]").val(results["teacher_id"])
 
                         //parse data into table
-                        let course_ids = results["course_id"].split(" ");
+                        let course_ids = results["course_id"].trim().split(" ");
                         let course_names = results["course_names"].split(",");
                         const tbody = $("#updateItem form table tbody");
 
-                        course_ids.pop();
-                        course_names.pop();
-
-                        if(course_ids.length !== course_names.length){
-                            alert_box("Invalid identities presented for classes and subjects", "danger", 0);
+                        if(course_ids.length !== course_names.length){                            
+                            alert_box("Invalid identities presented for classes and subjects", "danger");
+                            messageBoxTimeout(formName, "Click on update to correct anomaly", "load", 0)
                         }else{
                             //clean arrays
                             $(course_ids).each(function(index, value) {

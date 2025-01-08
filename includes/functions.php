@@ -1193,26 +1193,114 @@
      * @return string returns a string which compiles all arrays into one string in the format [pname|cname] 
      */
     function stringifyClassNames($arrayData){
-        $newString = "";
+        $newString = null;
         if(is_array($arrayData) && !array_key_exists(0,$arrayData)){
+            $newString = "";
             $newString .= "[";
             $newString .= empty($arrayData["short_p"]) ? $arrayData["program_name"] : $arrayData["short_p"];
             $newString .= "|";
             $newString .= empty($arrayData["short_c"]) ? $arrayData["course_name"] : $arrayData["short_c"];
-            $newString .= "],";
+            $newString .= "]";
         }elseif(is_array($arrayData[0])){
+            $newString = [];
             foreach($arrayData as $data){
-                $newString .= "[";
-                $newString .= empty($data["short_p"]) ? $data["program_name"] : $data["short_p"];
-                $newString .= "|";
-                $newString .= empty($data["short_c"]) ? $data["course_name"] : $data["short_c"];
-                $newString .= "],";
+                $string = "";
+                $string .= "[";
+                $string .= empty($data["short_p"]) ? $data["program_name"] : $data["short_p"];
+                $string .= "|";
+                $string .= empty($data["short_c"]) ? $data["course_name"] : $data["short_c"];
+                $string .= "]";
+
+                $newString[] = $string;
             }
+
+            $newString = implode(",", $newString);
         }else{
             return "wrong array data";
         }
 
         return $newString;
+    }
+
+    /**
+     * This function is used to insert teacher class information
+     * @param string $data The teacher data
+     * @param int $teacher_id The id of the teacher
+     * @return array
+     */
+    function insert_teacher_classes(string $data, int $teacher_id){
+        global $connect2, $user_school_id;
+
+        // get all the programs for the school
+        $programs = fetchData1("program_id as id", "program", "school_id = $user_school_id", 0);
+        $skip = false;
+
+        if(is_array($programs)){
+            $programs = array_column(decimalIndexArray($programs), "id");
+
+            $parts = explode(" ", $data);
+            if(is_array($parts)){
+                // remove trailing empty part
+                if(end($parts) === ""){
+                    array_pop($parts);
+                }
+                foreach($parts as $part){
+                    $part = trim($part,"[]");
+                    if(!empty($part)){
+                        if(strpos($part,'|') !== false){
+                            $part = explode("|",$part);
+                            if(is_array($part) && count($part) == 3){
+                                $pid = $part[0];
+                                $cid = $part[1];
+                                $yid = $part[2];
+
+                                // if the program is not found, skip
+                                if(!in_array($pid, $programs)){
+                                    $skip = true;
+                                    continue;
+                                }
+
+                                // sql syntax would go here
+                                $detailsExist = fetchData1("COUNT(teacher_id) AS total, id","teacher_classes", "school_id=$user_school_id AND program_id=$pid AND course_id=$cid AND class_year=$yid");
+                                if(intval($detailsExist["total"]) < 1){
+                                    $sql = "INSERT INTO teacher_classes (school_id, teacher_id, program_id, course_id, class_year) VALUES (?,?,?,?,?)";
+                                    $stmt = $connect2->prepare($sql);
+                                    $stmt->bind_param("iiiii", $user_school_id, $teacher_id, $pid, $cid, $yid);
+
+                                    $stmt->execute();
+                                }else{
+                                    $detailsExist = fetchData1("t.lname, t.teacher_id","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.id = {$detailsExist['id']}");
+                                    if(is_array($detailsExist)){
+                                        $message = "No changes have been applied as ".$detailsExist["lname"]." (". formatItemId($detailsExist["teacher_id"], "TID") .") already handles ".formatItemId($cid,"SID")." for Year $yid";
+                                    }else{
+                                        $message = "Teacher responsible for ".formatItemId($cid,"SID")." has been deleted, but details of him exist. Contact superadmin for help";
+                                    }
+                                    break;
+                                }
+                            }else{
+                                $message = "Class and subject is not properly separated. Process discontinued";
+                                break;
+                            }
+                        }else{
+                            $message = "An invalid split format was rejected";
+                            break;
+                        }
+                    }else{
+                        $message = "An empty detail was rejected";
+                        break;
+                    }
+                }
+            }else{
+                $message = "Invalid class and subject format projected. Process terminated";
+            }
+
+            if(empty($message) || !isset($message)){
+                $status = true;
+                $message = $skip ? "Teacher data updated. Reopen modal to see changes" : "success";
+            }
+        }
+
+        return ["status" => $status ?? false, "message" => $message ?? "No classes have been provided"];
     }
 
     /**

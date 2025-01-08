@@ -1255,59 +1255,11 @@
                             $connect2->query("INSERT INTO teacher_login (user_id, user_password) VALUES ($teacher_id, '$password')");
                             
                             //teacher courses and classes are in the format [program_id|course_id] [program_id|course_id]
-                            $parts = explode(' ', $course_ids);
-                            if(is_array($parts)){
-                                if(end($parts) === ""){
-                                    array_pop($parts);
-                                }
-                                foreach($parts as $part){
-                                    $part = trim($part,"[]");
-                                    if(!empty($part)){
-                                        if(strpos($part,'|') !== false){
-                                            $part = explode("|",$part);
-                                            if(is_array($part) && count($part) == 3){
-                                                $pid = $part[0];
-                                                $cid = $part[1];
-                                                $yid = $part[2];
-
-                                                // sql syntax would go here
-                                                $detailsExist = fetchData1("COUNT(teacher_id) AS total","teacher_classes", "school_id=$user_school_id AND program_id=$pid AND course_id=$cid AND class_year=$yid");
-                                                if(intval($detailsExist["total"]) < 1){
-                                                    $sql = "INSERT INTO teacher_classes (school_id, teacher_id, program_id, course_id, class_year) VALUES (?,?,?,?,?)";
-                                                    $stmt = $connect2->prepare($sql);
-                                                    $stmt->bind_param("iiiii", $user_school_id, $teacher_id, $pid, $cid, $yid);
-
-                                                    $stmt->execute();
-                                                }else{
-                                                    $detailsExist = fetchData1("t.lname","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.course_id=$cid AND tc.program_id=$pid");
-                                                    if(is_array($detailsExist)){
-                                                        $message = "Teacher added, but subject addition was halted halfway as ".$detailsExist["lname"]." already handles ".formatItemId($cid,"SID")." for Year $yid";
-                                                    }else{
-                                                        $message = "Teacher responsible for ".formatItemId($cid,"SID")." has been deleted, but details of him exist. Contact superadmin for help";
-                                                    }
-                                                    break;
-                                                }
-
-                                            }else{
-                                                $message = "Class and subject is not properly separated. Process discontinued";
-                                                break;
-                                            }
-                                        }else{
-                                            $message = "An invalid split format was rejected";
-                                            break;
-                                        }
-                                    }else{
-                                        $message = "An empty detail was rejected";
-                                        break;
-                                    }
-                                }
-                            }else{
-                                $message = "Invalid class and subject format projected. Process terminated";
-                            }
+                            list("status" => $status, "message" => $message) = insert_teacher_classes($course_ids, $teacher_id);
                             
-                            if(empty($message)){
-                                $message = "Teacher has been added";
-                                $status = true;
+                            if($status){
+                                if($message = "success")
+                                    $message = "Teacher has been added";
 
                                 $school_name = getSchoolDetail($user_school_id)["schoolName"];
                                 $teacher_portal = "teacher.$url";
@@ -1437,6 +1389,14 @@
                         $db->query("DELETE FROM results WHERE result_token='$item_id'");
                     }elseif($table_name == "results" && isset($items)){
                         assignPositions(end($items));
+                    }elseif($table_name == "program"){
+                        $db->query("DELETE FROM teacher_classes WHERE program_id = $item_id");
+                        $db->query("DELETE FROM results WHERE program_id = $item_id");
+                        $db->query("DELETE FROM recordapproval WHERE program_id = $item_id");
+                        $db->query("DELETE FROM saved_results WHERE program_id = $item_id");
+                        $db->query("UPDATE students_table SET program_id = NULL WHERE program_id = $item_id");
+                    }elseif($table_name == "courses"){
+                        $db->query("DELETE FROM teacher_classes WHERE course_id = $item_id");
                     }
                     echo "success";
                 }else{
@@ -1520,7 +1480,7 @@
                 $message = $result->fetch_all(MYSQLI_ASSOC);
                 if($isTeacher === true || strtolower($isTeacher) === "true"){
                     $message[0]["course_id"] = stringifyClassIDs(fetchData1("program_id, course_id, class_year", "teacher_classes","teacher_id={$message[0]['teacher_id']}",0));
-                    $message[0]["course_names"] = stringifyClassNames(fetchData1("p.program_name, p.short_form as short_p, c.course_name, c.short_form as short_c",
+                    $message[0]["course_names"] = stringifyClassNames(fetchData1("p.program_name, p.short_form as short_p, c.course_name, c.short_form as short_c, t.class_year",
                     "teacher_classes t JOIN program p ON t.program_id = p.program_id JOIN courses c ON c.course_id=t.course_id",
                     "t.teacher_id={$message[0]['teacher_id']}", 0));
                 }
@@ -1618,60 +1578,10 @@
                         if($connect2->query("DELETE FROM teacher_classes WHERE teacher_id=$teacher_id")){
                             //insert into login
                             if(!is_null($teacher_id) && !empty($teacher_id)){                                
-                                $parts = explode(' ', $course_ids);
-                                if(is_array($parts)){
-                                    if(end($parts) === ""){
-                                        array_pop($parts);
-                                    }
-                                    foreach($parts as $part){
-                                        $part = trim($part,"[]");
-                                        if(!empty($part)){
-                                            if(strpos($part,'|') !== false){
-                                                $part = explode("|",$part);
-                                                if(is_array($part) && count($part) == 3){
-                                                    $pid = $part[0];
-                                                    $cid = $part[1];
-                                                    $yid = $part[2];
-
-                                                    // sql syntax would go here
-                                                    $detailsExist = fetchData1("COUNT(teacher_id) AS total, id","teacher_classes", "school_id=$user_school_id AND program_id=$pid AND course_id=$cid AND class_year=$yid");
-                                                    if(intval($detailsExist["total"]) < 1){
-                                                        $sql = "INSERT INTO teacher_classes (school_id, teacher_id, program_id, course_id, class_year) VALUES (?,?,?,?,?)";
-                                                        $stmt = $connect2->prepare($sql);
-                                                        $stmt->bind_param("iiiii", $user_school_id, $teacher_id, $pid, $cid, $yid);
-
-                                                        $stmt->execute();
-                                                    }else{
-                                                        $detailsExist = fetchData1("t.lname","teachers t JOIN teacher_classes tc ON t.teacher_id=tc.teacher_id","tc.id = {$detailsExist['id']}");
-                                                        if(is_array($detailsExist)){
-                                                            $message = "No changes have been applied as ".$detailsExist["lname"]." already handles ".formatItemId($cid,"SID")." for Year $yid";
-                                                        }else{
-                                                            $message = "Teacher responsible for ".formatItemId($cid,"SID")." has been deleted, but details of him exist. Contact superadmin for help";
-                                                        }
-                                                        break;
-                                                    }
-                                                }else{
-                                                    $message = "Class and subject is not properly separated. Process discontinued";
-                                                    break;
-                                                }
-                                            }else{
-                                                $message = "An invalid split format was rejected";
-                                                break;
-                                            }
-                                        }else{
-                                            $message = "An empty detail was rejected";
-                                            break;
-                                        }
-                                    }
-                                }else{
-                                    $message = "Invalid class and subject format projected. Process terminated";
-                                }
+                                list("status" => $status, "message" => $message) = insert_teacher_classes($course_ids, $teacher_id);
                                 
-                                if(empty($message)){
+                                if($status && $message == "success"){
                                     $message = "Teacher data has been updated";
-                                    $status = true;
-                                }else{
-                                    $status = false;
                                 }
                             }else{
                                 $message = "Teacher's unique identity missing. Please refresh your page and try again";
@@ -1681,9 +1591,7 @@
                         if(empty($message) || is_null($message)){
                             $message = "Details for $teacher_lname has been updated";
                             $status = true;
-                        }else{
-                            $status = false;
-                        }                        
+                        }
                     }else{
                         $message = "Teacher could not be added";
                     }
