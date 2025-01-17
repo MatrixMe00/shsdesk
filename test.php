@@ -17,7 +17,7 @@
     // header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 
     // get all transactions with null academic year
-    $user_school_id = 3;
+    /*$user_school_id = 3;
     $academic_year = getAcademicYear(now(), false);
     $year = date("y");
     echo create_query_string(
@@ -27,7 +27,56 @@
         ],
         ["e.shsID=$user_school_id", "e.current_data = TRUE", "e.indexNumber IS NOT LIKE '%$year'", "e.academic_year = '$academic_year'"],
         0, "AND"
-    );
+    );*/
+    function get_salutation(string $gender){
+        return strtolower($gender) == "male" ? "Mr" : "Mrs";
+    }
+
+    function get_username($email){
+        $username_ = explode("@", $email)[0];
+        $count = -1;
+
+        do {
+            ++$count;
+            $username = $username_ . ($count > 0 ? "$count" : "");
+        } while (is_array(fetchData1("user_username", "teacher_login", "user_username = '$username'", 0)));
+
+        return $username;
+    }
+
+    $sql = "SELECT l.user_id, l.user_username, t.lname, t.oname, t.gender, t.email FROM teacher_login l JOIN teachers t ON l.user_id = t.teacher_id WHERE l.user_username REGEXP '^[0-9]+$'";
+    $faulters = $connect2->query($sql)->fetch_all(MYSQLI_ASSOC);
+
+    if($faulters){
+        $subject = "Update to Your Account Username";
+        $sql = "UPDATE teacher_login SET user_username = ? WHERE user_username = ?";
+        foreach($faulters as $user){
+            extract($user);
+            $new_username = get_username($email);
+            $salutation = get_salutation($gender);
+            $teacher_id = formatItemId($user_id, "TID");
+
+            $mail_body = <<< HTML
+            <p>Helo $salutation $lname,</p>
+            <p>We would like to inform you of an update to our user naming policy. Upon review, your current username (<strong>$user_username</strong>) has been flagged as invalid. As a result, a new username has been assigned to your account.</p>
+            <p>Please log in with your Teacher ID (<strong>$teacher_id</strong>) to update your username. Your password remains unchanged.</p>
+            <p><strong>New Username</strong>: $new_username</p>
+            <p>Rest assured that all your data remains secure and unmodified. If you encounter any issues, please contact your school administrator for assistance.</p>
+            <p>Best regards,</p>
+            <p>SHSDesk Team</p>
+            HTML;
+
+            $stmt = $connect2->prepare($sql);
+            $stmt->bind_param("ss", $new_username, $user_username);
+
+            if($stmt->execute()){
+                send_email($mail_body, $subject, $email);
+                echo "<p>Email sent to $email</p>";
+            }else{
+                echo "<p>Problem occured when updating for $email</p>";
+            }
+        }
+    }
 
     /*$user_school_id = 3;
     

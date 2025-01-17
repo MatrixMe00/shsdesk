@@ -2389,9 +2389,9 @@
         global $rootPath, $mailserver_email, $mailserver_password, $mailserver;
 
         // require the phpmailer
-        require "$rootPath/phpmailer/src/Exception.php";
-        require "$rootPath/phpmailer/src/PHPMailer.php";
-        require "$rootPath/phpmailer/src/SMTP.php";
+        require_once "$rootPath/phpmailer/src/Exception.php";
+        require_once "$rootPath/phpmailer/src/PHPMailer.php";
+        require_once "$rootPath/phpmailer/src/SMTP.php";
 
         $mail = new PHPMailer(true);
 

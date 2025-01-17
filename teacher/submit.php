@@ -23,9 +23,9 @@
                         $teacher_id = formatItemId(strtoupper($teacher_id), "TID", true);
                     }
 
-                    $sql = "SELECT user_id, user_username, user_password FROM teacher_login WHERE (user_id=? OR user_username=?)";
+                    $sql = "SELECT user_id, user_username, user_password FROM teacher_login WHERE (user_id = ? AND user_username != ?) OR (user_id != ? AND user_username = ?)";
                     $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("is", $teacher_id, $teacher_id);
+                    $stmt->bind_param("isis", $teacher_id, $teacher_id, $teacher_id, $teacher_id);
                     if($stmt->execute()){
                         $result = $stmt->get_result();
 
@@ -78,7 +78,6 @@
 
                 break;
             case "new_user_update":
-            case "new_user_update_ajax":
                 $teacher_id = $_POST["teacher_id"] ?? null;
                 $lname = $_POST["lname"] ?? null;
                 $oname = $_POST["oname"] ?? null;
@@ -103,10 +102,16 @@
                     $message = "Please provide your username";
                 }elseif(strtolower($new_username) === "new user"){
                     $message = "You are not permitted to use the same username. Please provide a new one";
+                }elseif(strlen($new_username) < 5){
+                    $message = "Provide a username with more than 4 characters";
+                }elseif(is_numeric($new_username)){
+                    $message = "Your username cannot be all numeric";
                 }elseif(is_null($new_password) || empty($new_password)){
                     $message = "Please provide your new password";
                 }elseif(strtolower($new_password) === "password@1"){
                     $message = "Password cannot be same as the old one. Please provide a new password";
+                }elseif(strlen($new_password) < 8){
+                    $message = "Please provide a password of at least 8 characters";
                 }elseif(is_null($phone_number) || empty($phone_number)){
                     $message = "Please provide your Phone number";
                 }elseif(strlen($phone_number) < 10 || strlen($phone_number) > 16){
@@ -477,6 +482,10 @@
                     $message = "Please provide your username";
                 }elseif(strtolower($username) == "new user"){
                     $message = "You cannot use the default username";
+                }elseif(strlen($username) < 5){
+                    $message = "Provide a username with more than 4 characters";
+                }elseif(is_numeric($username)){
+                    $message = "Your username cannot be all numeric";
                 }elseif(is_null($primary_contact) || empty($primary_contact)){
                     $message = "Please provide your phone number to continue";
                 }elseif(strlen(remakeNumber($primary_contact, false, false)) != 10){
@@ -730,6 +739,10 @@
                         $message = "No new password was provided";
                     }elseif(is_null($password_c) || empty($password_c)){
                         $message = "Confirm password box cannot be empty";
+                    }elseif(strtolower($password) === "password@1"){
+                        $message = "This password is not acceptable";
+                    }elseif(strlen($password) < 8){
+                        $message = "Please provide a password of at least 8 characters";
                     }else{
                         //validate user
                         $user = fetchData1("user_id, user_password",["join" => "teachers teacher_login", "on" => "teacher_id user_id", "alias" => "t tl"],"email='$email'");
@@ -765,10 +778,29 @@
                 break;
 
             default:
-                echo "Submission value has not been programmed. Value: $submit";
+                $message = "Submission value has not been programmed. Value: $submit";
+                if($_REQUEST["response_type"] == "json"){
+                    header("Content-type: application/json");
+                    $message = [
+                        "status" => $status ?? false,
+                        "message" => $message
+                    ];
+                }
+                
+                echo $message;
         }
     }else{
-        echo "No submit request delivered. No operation is performed.";
+        $message = "No submit request delivered. No operation is performed.";
+
+        if($_REQUEST["response_type"] == "json"){
+            header("Content-type: application/json");
+            $message = [
+                "status" => $status ?? false,
+                "message" => $message
+            ];
+        }
+        
+        echo $message;
     }
 
     close_connections();

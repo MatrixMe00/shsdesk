@@ -541,7 +541,7 @@
 
             // get admin and chass pricing details
             $ad_dev_price = fetchData("price","roles","id < 3", 0);
-            $chass_price = decimalIndexArray(fetchData("id, price, title", "roles", "title LIKE 'chass%'"));
+            $chass_price = decimalIndexArray(fetchData("id, price, title", "roles", "title IN ('".implode("','", array_keys($chass_amounts))."') AND price > 0", 0));
             
             $price_superadmin = $ad_dev_price[1]["price"] / 100;
             $price_developer = $ad_dev_price[0]["price"] / 100;
@@ -672,7 +672,7 @@
                     // calculate for chass
                     if($chass_price){
                         // get chass users
-                        $chass_users = decimalIndexArray(fetchData("user_id, role", "admins_table", "role IN (".implode(",", array_column($chass_price, "id")).")", 2));
+                        $chass_users = decimalIndexArray(fetchData("user_id, role", "admins_table", "role IN (".implode(",", array_column($chass_price, "id")).")", 0));
                         
                         if($chass_users){
                             $chass_users = pluck($chass_users, "role", "user_id");

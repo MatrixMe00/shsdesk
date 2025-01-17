@@ -8,7 +8,7 @@
                 $course_total = countProgramSubjects($student["program_id"]);
 
                 if($course_total === false){
-                    echo "<span class='txt-fl2'>No courses assigned</span>";
+                    echo "<span class='txt-fl2'>No subjects assigned</span>";
                 }else{
                     echo $course_total;
                 }
@@ -20,10 +20,9 @@
     <div class="card v-card gap-lg orange sm-rnd flex-wrap">
         <span class="self-align-start">Average Score (Overall)</span>
         <span class="txt-fl3 txt-bold self-align-end"><span id="avg_score"><?php 
-            $average = fetchData1("AVG(mark) as Mark","results","indexNumber='".$student["indexNumber"]."' AND accept_status=1");
-            if($average == "empty"){
-                $average = 0;
-            }else{
+            $average = 0;
+            if($course_total){
+                $average = fetchData1("AVG(mark) as Mark","results","indexNumber='".$student["indexNumber"]."' AND accept_status=1");
                 $average = $average["Mark"] ?? 0;
             }
             echo round($average,1);
@@ -34,6 +33,7 @@
         <span class="txt-fl3 txt-bold self-align-end">Grade <span id="avg_grade"><?= giveGrade($average, fetchData("school_result","admissiondetails","schoolID=".$student["school_id"])["school_result"]) ?></span></span>
     </div>
 </section>
+<?php if($course_total): ?>
 <section class="d-section lt-shade white">
     <div class="form flex-all-center flex-eq wmax-md sm-auto flex-wrap gap-sm">
         <label class="p-med" for="report_year">
@@ -115,7 +115,21 @@
 <section id="canvas_section" class="no_disp">
     <canvas id="stats" class="wmax-md" style="max-height: 40vh"></canvas>
 </section>
+<?php else: ?>
+<section>
+    <table class="full lt-shade">
+        <tbody>
+            <tr class="empty">
+                <td colspan="5" class="txt-al-c sp-xxlg">No subjects have been assigned yet.</td>
+            </tr>
+        </tbody>
+        
+    </table>
+    
+</section>
+<?php endif; ?>
 
+<?php if($course_total): ?>
 <script src="assets/scripts/functions.min.js?v=<?php echo time()?>"></script>
 <script src="assets/scripts/chartJS/chart.min.js"></script>
 <script>
@@ -128,12 +142,13 @@
             const report_year = $("select#report_year").val()
             const report_term = $("select#report_term").val()
             const indexNumber = $("input#indexNumber").val()
+            const program_id = $("#report_year option:selected").attr("data-program-id");
 
             $.ajax({
                 url: "./submit.php",
                 data: {
                     report_term: report_term, report_year: report_year, submit: "report_search",
-                    index_number: indexNumber
+                    index_number: indexNumber, program_id: program_id
                 },
                 timeout: 30000,
                 beforeSend: function(){
@@ -177,7 +192,7 @@
             const report_year = $("select#report_year").val()
             const report_term = $("select#report_term").val()
             const indexNumber = $("input#indexNumber").val()
-            const program_id = $("select option:selected").attr("data-program-id");
+            const program_id = $("#report_year option:selected").attr("data-program-id");
             const canvasImage = $("canvas#stats")[0].toDataURL()
             
             if(canvasImage.length <= 22){
@@ -194,7 +209,7 @@
         })
     })
 </script>
-<?php else: ?>
+<?php endif; else: ?>
 <section class="sp-xxlg border txt-al-c">
     <p>Please Go to the 'Get Access Code' tab to make a purchase</p>
 </section>

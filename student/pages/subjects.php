@@ -101,7 +101,7 @@
                 else :
             ?>
                 <tr class="empty">
-                    <td colspan="5" class="txt-al-c sp-xxlg">No subjects have been added to this program yet</td>
+                    <td colspan="5" class="txt-al-c sp-xxlg">No subjects have been assigned yet.</td>
                 </tr>
             <?php
                 endif;
@@ -111,7 +111,7 @@
     </table>
 </section>
 
-<?php if($code !== "empty") : ?>
+<?php if($code !== "empty") : if(is_array($subjects)): ?>
 <section class="d-section white lt-shade flex-all-center flex-column">
     <h2 class="sm-xlg-b">Statistics <span id="subject_name"></span></h2>
     <canvas id="stats" class="wmax-md no_disp" style="max-height: 40vh"></canvas>
@@ -245,7 +245,7 @@
         }
     })
 </script>
-<?php else : ?>
+<?php endif; else : ?>
 <section class="d-section white lt-shade flex-all-center flex-column">
     <h2 class="sm-xlg-b">Statistics</h2>
     <p class="sm-lg-t txt-fl1">Please purchase an access code from the 'Get Access Code' menu to view statistics</p>

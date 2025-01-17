@@ -6,7 +6,7 @@
         $school_type = implode(",",array_column($school_type, "id"));
     }
     $school_type_name = $user_role == "chass_t" ? "Technical" : "SHS/SHT";
-    $current_admission_year = getAcademicYear(now());
+    $current_admission_year = getAcademicYear(now(), false);
     $admission_table_join = ["join" => "schools cssps", "on" => "id schoolID", "alias" => "s c"];
 
     // count the number of registered schools

@@ -100,7 +100,7 @@
                 // mail server configuration
                 $mailserver_email = "_mainaccount@shsdesk.com";
                 $mailserver_password = "Junior2020";
-                $mailserver = "server13.aveshost.net";
+                $mailserver = "mail.shsdesk.com";
 
                 break;
             case "test.shsdesk.com":
@@ -128,7 +128,7 @@
                 // mail server configuration
                 $mailserver_email = "_mainaccount@shsdesk.com";
                 $mailserver_password = "Junior2020";
-                $mailserver = "server13.aveshost.net";
+                $mailserver = "mail.shsdesk.com";
 
                 break;
 

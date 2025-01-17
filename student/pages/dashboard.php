@@ -9,7 +9,7 @@
                             $course_total = countProgramSubjects($student["program_id"]);
 
                             if($course_total === false){
-                                echo "<span class='txt-fl2'>No courses assigned</span>";
+                                echo "<span class='txt-fl2'>No subjects assigned</span>";
                             }else{
                                 echo $course_total;
                             }
@@ -57,6 +57,7 @@
             <?php if($code !== "empty") : ?>
             <section class="d-section white lt-shade flex-all-center flex-column" style="flex: 3 1 auto">
                 <h2 class="sm-xlg-b">Statistics</h2>
+                <?php if($course_total): ?>
                 <div class="form flex-all-center flex-eq wmax-md sm-auto flex-wrap gap-sm" id="searchStats">
                     <label for="stat_year" class="p-med">
                         <select name="stat_year" id="stat_year">
@@ -97,7 +98,8 @@
                     </label>
                 </div>
                 <canvas id="stats" class="wmax-md sm-auto w-full no_disp" style="max-height: 40vh"></canvas>
-                <p id="canvas_status" class="txt-al-c sp-lg sm-xlg-tp txt-fl1">Make a results preview search in the stats box above</p>
+                <?php endif; ?>
+                <p id="canvas_status" class="txt-al-c sp-lg sm-xlg-tp txt-fl1"><?= $course_total ? "Make a results preview search in the stats box above" : "No subjects have been assigned yet." ?></p>
             </section>
         </div>
         
