@@ -130,7 +130,7 @@
                     <select name="class_id" id="class_id" multiple>
                         <option value="" disabled selected>Select a class</option>
                         <?php foreach($classes as $counter => $class) : ?>
-                            <option value="<?= $class['program_id'] ?>"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></option>
+                            <option value="<?= $class['program_id'] ?>" data-courses="<?= $class["course_ids"] ?>"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></option>
                         <?php endforeach; ?>
                     </select>
                     <span class="w-full txt-al-c item-event info">Hold down the control key to select multiple classes</span>
@@ -229,7 +229,7 @@
                     <select name="class_id" id="u_class_id" multiple>
                         <option value="" disabled selected>Select a class</option>
                         <?php foreach($classes as $counter => $class) : ?>
-                            <option value="<?= $class['program_id'] ?>"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></option>
+                            <option value="<?= $class['program_id'] ?>" data-courses="<?= $class["course_ids"] ?>"><?= is_null($class["short_form"]) || empty($class["short_form"]) ? $class["program_name"] : $class["short_form"] ?></option>
                         <?php endforeach; ?>
                     </select>
                     <span class="w-full txt-al-c item-event info">Hold down the control key to select multiple classes</span>

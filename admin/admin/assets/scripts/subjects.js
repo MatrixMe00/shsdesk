@@ -115,9 +115,13 @@ $("select[name=class_id]").change(function(){
 
     selectedOptions.each(function() {
         let element = $(this)
+        let course_ids = $.trim(element.attr("data-courses"));
+        course_ids = course_ids != "" ? course_ids = course_ids.split(" ") : null;
+        
         selectedClasses.push({
             "option_name":$(element).text(),
-            "option_value": $(element).val()
+            "option_value": $(element).val(),
+            "course_ids": course_ids
         }); // Add text of each selected option to the array
     });
 })
@@ -286,32 +290,40 @@ $(".add_detail").click(function(){
         messageBoxTimeout(form.attr("name"), message, "error");
     }else{
         for(i=0; i < selectedClasses.length; i++){
-            const dat = "[" + selectedClasses[i]["option_value"] + "|" + selectedSubject["value"] + "|" + form_level.val() + "] "
-            //get content of course ids
-            let course_ids = $(form).find("input[name=course_ids]").val()
-
-            //reset course_ids
-            if(course_ids === "wrong array data"){
-                $(form).find("input[name=course_ids]").val()
-                course_ids = ""
-            }
-
-            if(course_ids.includes(dat)){
-                alert_box("Teacher has been assigned this detail already, " + selectedSubject["option"] + " at " + selectedClasses[i]["option_name"])
+            const class_courses = selectedClasses[i]["course_ids"];
+            // prevent insertion if there are no subjects assigned to the class
+            if(class_courses == null){
+                alert_box("Cannot assign teacher for " + selectedClasses[i]["option_name"] + " as it has no subjects assigned.", "danger");
+            }else if(!class_courses.includes(selectedSubject["value"])){
+                alert_box(selectedClasses[i]["option_name"] + " does not have " + selectedSubject["option"] + " assigned to it", "danger");
             }else{
-                let tr = "<tr>"
-                    tr += "<td class=\"cid\">" + formatItemId(selectedClasses[i]["option_value"], "CID") + "</td>"
-                    tr += "<td>" + selectedClasses[i]["option_name"] +"</td>"
-                    tr += "<td class=\"sid\">" + formatItemId(selectedSubject["value"], "SID") + "</td>"
-                    tr += "<td>" + selectedSubject["option"] + "</td>"
-                    tr += "<td class=\"yid\">Year " + form_level.val() + "</td>"
-                    tr += "<td>" + "<span class='item-event' onclick='removeRow($(this))'>Remove</span>" + "</td>"
-                tr += "</tr>"
+                const dat = "[" + selectedClasses[i]["option_value"] + "|" + selectedSubject["value"] + "|" + form_level.val() + "] "
+                //get content of course ids
+                let course_ids = $(form).find("input[name=course_ids]").val()
 
-                $(table).find("tbody").append(tr)
-                
-                //push new response into course ids
-                $(form).find("input[name=course_ids]").val(course_ids + dat)
+                //reset course_ids
+                if(course_ids === "wrong array data"){
+                    $(form).find("input[name=course_ids]").val()
+                    course_ids = ""
+                }
+
+                if(course_ids.includes(dat)){
+                    alert_box("Teacher has been assigned this detail already, " + selectedSubject["option"] + " at " + selectedClasses[i]["option_name"])
+                }else{
+                    let tr = "<tr>"
+                        tr += "<td class=\"cid\">" + formatItemId(selectedClasses[i]["option_value"], "CID") + "</td>"
+                        tr += "<td>" + selectedClasses[i]["option_name"] +"</td>"
+                        tr += "<td class=\"sid\">" + formatItemId(selectedSubject["value"], "SID") + "</td>"
+                        tr += "<td>" + selectedSubject["option"] + "</td>"
+                        tr += "<td class=\"yid\">Year " + form_level.val() + "</td>"
+                        tr += "<td>" + "<span class='item-event' onclick='removeRow($(this))'>Remove</span>" + "</td>"
+                    tr += "</tr>"
+
+                    $(table).find("tbody").append(tr)
+                    
+                    //push new response into course ids
+                    $(form).find("input[name=course_ids]").val(course_ids + dat)
+                }
             }
         }
 
