@@ -456,9 +456,12 @@
                         <span class="label_title">Form level</span>
                         <input type="text" name="form_level" id="r_form_level" readonly>
                     </label>
-                    <label for="r_submit_date" class="flex-column gap-sm">
+                    <label for="r_submit_semester" class="flex-column gap-sm">
                         <span class="label_title">Semester</span>
-                        <input type="text" name="semester" id="r_submit_date" readonly>
+                        <select name="semester" id="r_submit_semester">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
                     </label>
                     <label for="r_academic_year" class="flex-column gap-sm">
                         <span class="label_title">Academic Year</span>

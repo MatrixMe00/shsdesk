@@ -200,7 +200,18 @@ $(document).ready(function(){
                                 display_name: "School Name",
                                 variable_name: "school_name",
                                 value: formData.school_name
+                            },
+                            {
+                                display_name: "Payment Type",
+                                variable_name: "payment_type",
+                                value: "access_code_bulk"
+                            },
+                            {
+                                display_name: "Paid For",
+                                variable_name: "payment_for",
+                                value: formData.recipients
                             }
+                            
                         ]
                     },
                     callback: function(response){

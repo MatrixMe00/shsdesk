@@ -484,7 +484,7 @@ $(document).ready(function(){
 
         // fill in details
         form.find("input[name=teacher_name]").val(parent.find(".teacher_name").text());
-        form.find("input[name=semester]").val(parent.find(".semester").text());
+        form.find("select[name=semester]").val(parent.find(".semester").text());
         form.find("select[name=academic_year]").val(parent.find(".academic_year").text());
         form.find("input[name=submit_date]").val(parent.find(".result_date").text());
         form.find("input[name=form_level]").val(parent.find(".exam_year").text());
@@ -510,6 +510,7 @@ $(document).ready(function(){
                 time = 5; type = "success"; 
                 const row = $("tr[data-item-id=" + form.find("input[name=result_id]").val() + "]");
                 row.find(".academic_year").text(form.find("select[name=academic_year]").val());
+                row.find(".semester").text(form.find("select[name=semester]").val());
             }
 
             messageBoxTimeout(form.attr("name"), resp.message, type, time);

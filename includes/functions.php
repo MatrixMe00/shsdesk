@@ -2017,6 +2017,38 @@
     }
 
     /**
+     * This is used to create a new access pay for a specified student or students
+     * @param ?string $recipients The recipient(s)
+     * @param string $transaction_id The transaction reference
+     * @param int $school_id The id of the request school
+     * @param ?string $purchase_date The date the item was purchased
+     */
+    function activate_access_pay(?string $recipients, string $transaction_id, int $school_id, ?string $purchase_date = null){
+        global $connect2;
+
+        if($recipients){
+            // convert recipients to array
+            $recipients = explode(", ", $recipients);
+
+            $sql = "INSERT INTO accesstable(indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
+            $purchase_date = $purchase_date ?? date("Y-m-d H:i:s");
+            $end_date = date("Y-m-d 23:59:59",strtotime($purchase_date." +4 months +1 day"));
+            foreach($recipients as $recipient){
+                // check if data already exists
+                if(!is_array(fetchData1("id", "accesstable", ["indexNumber = '$recipient'", "transactionID = '$transaction_id'"], where_binds: "AND"))){
+                    do{
+                        $access_token = generateToken(rand(1,9), $school_id);
+                    }while(is_array(fetchData1("accessToken","accesstable","accessToken='$access_token'")));
+
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("ssisss", $recipient, $access_token, $school_id, $purchase_date, $end_date, $transaction_id);
+                    $stmt->execute();
+                }
+            }
+        }
+    }
+
+    /**
      * This function is used to make a value numeric
      * @param mixed $value The value to be processed
      * @return int

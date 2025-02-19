@@ -64,6 +64,10 @@
 </section>
 
 <section id="upload" class="d-section sm-lg-t lt-shade white section_block no_disp">
+    <?php 
+        $can_enter_results = checkResultsEntry($teacher["school_id"]);
+        if($can_enter_results):
+    ?>
     <form action="<?= "$url/docs.php" ?>" method="post" class="m-lg-tp wmax-md sm-auto" name="upload_results_form" enctype="multipart/form-data">
         <h2 class="txt-al-c">Upload your document here</h2>
         <div class="joint gap-sm">
@@ -103,8 +107,17 @@
                 </select>
             </label>
             <label for="academic_year" class="flex flex-column gap-sm">
+                <?php 
+                    // $academic_year = $show_select ? getAcademicYear(date("d-m-Y", strtotime("-1 year")), false) : getAcademicYear(date("d-m-Y"), false);
+                    $last_academic_year = getAcademicYear(date("d-m-Y", strtotime("-1 year")));
+                    $current_academic_year = getAcademicYear(now(), false);
+                    $show_select = date("m") <= 11 && date("m") >= 9;
+                ?>
                 <span class="label_title">Academic Year</span>
-                <input type="text" readonly name="academic_year" value="<?= getAcademicYear(now(), false) ?>">
+                <select name="academic_year" id="academic_year">
+                    <option value="<?= $last_academic_year ?>"><?= $last_academic_year ?></option>
+                    <option value="<?= $current_academic_year ?>" <?= !$show_select ? "selected" : "" ?>><?= $current_academic_year ?></option>
+                </select>
             </label>
         </div>
         <label for="document_file" class="relative gap-md flex flex-column">
@@ -120,6 +133,9 @@
             <button class="primary sp-lg" type="submit" name="submit" value="upload_result">Upload Results</button>
         </div>
     </form>
+    <?php else: ?>
+    <p class="txt-al-c txt-fl sp-xlg">Results entry session is currently closed</p>
+    <?php endif; ?>
 </section>
 
 <script src="<?= "$url/assets/scripts/docs.js?v=".time() ?>"></script>

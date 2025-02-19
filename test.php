@@ -28,7 +28,7 @@
         ["e.shsID=$user_school_id", "e.current_data = TRUE", "e.indexNumber IS NOT LIKE '%$year'", "e.academic_year = '$academic_year'"],
         0, "AND"
     );*/
-    function get_salutation(string $gender){
+    /*function get_salutation(string $gender){
         return strtolower($gender) == "male" ? "Mr" : "Mrs";
     }
 
@@ -76,7 +76,11 @@
                 echo "<p>Problem occured when updating for $email</p>";
             }
         }
-    }
+    }*/
+    $recipients = "059247852, 059240313, 059248632, 059249601, 059242771, 059247420, 059243666, 059248698";
+    $transaction_id = "T727852147828886";
+    $role_school_id = 48;
+    activate_access_pay($recipients, $transaction_id, $user_school_id);
 
     /*$user_school_id = 3;
     

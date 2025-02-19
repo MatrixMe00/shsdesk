@@ -41,6 +41,11 @@ function payWithPaystack(){
                             display_name: "School Name",
                             variable_name: "school_name",
                             value: $("#school_admission_case #school_select option:selected").html()
+                        },
+                        {
+                            display_name: "Payment Type",
+                            variable_name: "payment_type",
+                            value: "admission"
                         }
                     ]
                 },

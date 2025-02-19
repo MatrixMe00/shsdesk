@@ -87,6 +87,11 @@ $(document).ready(function(){
                             display_name: "Index Number",
                             variable_name: "index_number",
                             value: $("input[name=indexNumber]").val()
+                        },
+                        {
+                            display_name: "Payment Type",
+                            variable_name: "payment_type",
+                            value: "access_code"
                         }
                     ]
                 },

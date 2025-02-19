@@ -58,9 +58,10 @@
         $deduction = round($data["fees"] / 100, 2);
         $paid_at = date("Y-m-d H:i:s", strtotime($data["paidAt"]));
         $customer_number = $metadata[0]["value"];
+        $payment_type = $metadata[3]["value"];
 
         // for admissions
-        if($amount > 15){
+        if($payment_type == "admission"){
             //use the connection that is set
             global $connect;
             $academic_year = getAcademicYear(now(), false);
@@ -78,7 +79,7 @@
                 // pass payment to database
                 $result->execute();
             }   
-        }else{
+        }elseif($payment_type == "access_code_bulk" || $payment_type == "access_code"){
             // use connection set
             global $connect2;
 
@@ -87,45 +88,23 @@
 
             if(!is_array($exist)){
                 try{
-                    $index_number = $metadata[3]["value"];
+                    $index_number = $payment_type == "access_code_bulk" ? null : $metadata[3]["value"];
+                    $type = $payment_type == "access_code_bulk" ? "bulk" : "single";
 
-                    $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email, index_number) VALUES (?,?,?,?,?,?,?)";
+                    if($payment_type == "access_code_bulk"){
+                        $index_number = $metadata[4]["value"] ?? null;
+                    }
+
+                    $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email, index_number, pay_type) VALUES (?,?,?,?,?,?,?,?)";
                     $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("siddsss", $reference, $school_id, $amount, $deduction, $customer_number, $customer_email, $index_number);
+                    $stmt->bind_param("siddssss", $reference, $school_id, $amount, $deduction, $customer_number, $customer_email, $index_number, $type);
                     
                     // pass payment to database
                     $stmt->execute();
 
-                    do{
-                        $accessToken = generateToken(rand(1,9), $school_id);
-                    }while(is_array(fetchData1("accessToken","accesstable","accessToken='$accessToken'")));
-
-                    $purchaseDate = date("Y-m-d H:i:s");
-                    $expiryDate = date("Y-m-d 23:59:59",strtotime($purchaseDate." +4 months +1 day"));
-
-                    $transaction_id = $reference;
-                    $phoneNumber = $customer_number;
-
-                    $sql = "INSERT INTO accesstable(indexNumber, accessToken, school_id, datePurchased, expiryDate, transactionID, status) VALUES (?,?,?,?,?,?,1)";
-                    $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("ssisss", $index_number, $accessToken, $school_id, $purchaseDate, $expiryDate, $transaction_id);
-
-                    if($stmt->execute()){
-                        $status = true;
-                        $message = "success";
-                    }else{
-                        $status = false;
-                        $message = "Student token was not captured appropriately. Token ID is <b>$accessToken</b>";
-                    }
-
-                    $_REQUEST = [
-                        "submit" => "sendTransaction",
-                        "phone" => $customer_number,
-                        "message" => "Access code purchase was successful. Your transaction reference is '$transaction_id'. In case of any challenge, send this code to the school admin"
-                    ];
-                    include "./sms/sms.php";
+                    activate_access_pay($index_number, $reference, $school_id);
                     
-                    file_put_contents("$directory/paystack_check_$month.log", $reference." confirmed entry for connect2 with message => $message" . PHP_EOL, FILE_APPEND);
+                    file_put_contents("$directory/paystack_check_$month.log", $reference." confirmed entry for connect2 with message => ok" . PHP_EOL, FILE_APPEND);
                 }catch(Throwable $th){
                     file_put_contents("$directory/paystack_check_$month.log", $reference." has error -> ". $th->getMessage() . PHP_EOL, FILE_APPEND);
                 }

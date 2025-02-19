@@ -552,7 +552,7 @@
             $school_id = $_POST["school_id"];
             $programs = decimalIndexArray(fetchData("DISTINCT programme", "cssps", "schoolID=$school_id", 0));
             if($programs){
-                $response = json_encode(["data" => array_column($programs, "programme")]);
+                $response = json_encode(convertToUtf8(["data" => array_column($programs, "programme")]));
             }else{
                 $response = json_encode(["data" => "No student record found"]);
             }
@@ -574,12 +574,12 @@
                 $students = decimalIndexArray(fetchData("indexNumber, hidden_index, CONCAT(Lastname,' ',Othernames) as fullname", "cssps", "schoolID=$school_id AND academic_year='$academic_year' AND enroled=FALSE AND hidden_index IS NOT NULL AND programme='$programme'", 0));
             
                 if($students){
-                    $response = json_encode(["data" => $students]);
+                    $response = json_encode(convertToUtf8(["data" => $students]));
                 }else{
                     $response = json_encode(["data" => "No student record found"]);
                 }
             }else{
-                $response = json_encode(["data" => $message]);
+                $response = json_encode(convertToUtf8(["data" => $message]));
             }
 
             header("Content-type: application/json");
@@ -624,7 +624,7 @@
             }
 
             header("Content-type: application/json");
-            echo json_encode($array);
+            echo json_encode(convertToUtf8($array));
         }elseif($submit == "studentSchool" || $submit == "studentSchool_ajax"){
             $message = array();
             if(!isset($_GET["indexNumber"]) || $_GET["indexNumber"] === ""){
@@ -673,7 +673,7 @@
             }
             
             header("Content-type: application/json");
-            echo json_encode($message);
+            echo json_encode(convertToUtf8($message));
         }elseif($submit == "getContact" || $submit == "getContact_ajax"){
             $schoolID = $_REQUEST["schoolID"];
 
@@ -760,7 +760,7 @@
                         "courses" => implode(", ", array_column($courses, "course_name"))
                     ];
                 }
-                echo json_encode($progs);
+                echo json_encode(convertToUtf8($progs));
             }else{
                 echo "none";
             }

@@ -385,7 +385,8 @@
                 $result = array("status" => "no-result", "sql" => $sql);
             }
 
-            echo json_encode($result);
+            header("Content-type: application/json");
+            echo json_encode(convertToUtf8($result));
         }elseif($submit == "fetchStudentsDetail" || $submit == "fetchStudentsDetail_ajax"){
             $index_number = $_REQUEST["index_number"];
 
@@ -1995,6 +1996,7 @@
             $email = $_REQUEST["email"] ?? null;
             $amount = $_REQUEST["amount"] ?? null;
             $recipients = $_REQUEST["recipients"] ?? null;
+            $transaction_id = $_REQUEST["transaction_id"] ?? null;
 
             if(is_null($fullname) || empty($fullname)){
                 $message = "Your fullname has not been specified";
@@ -2030,6 +2032,10 @@
                 }
             }else{
                 $message = "success";
+            }
+
+            if($message == "success" && !empty($transaction_id)){
+                activate_access_pay($recipients, $transaction_id, $user_school_id);
             }
 
             echo $message;
@@ -2643,37 +2649,50 @@
         }elseif($submit == "update_result_head"){
             $academic_year = $_POST["academic_year"] ?? null;
             $result_token = $_POST["result_id"];
+            $semester = $_POST["semester"];
 
             if(empty($academic_year)){
                 $message = "Academic year not specified";
             }elseif(empty($result_token)){
                 $message = "Result slip could not be parsed or is not defined";
+            }elseif(empty($semester)){
+                $message = "Invalid semester number provided";
             }else{
-                try {
-                    $connect2->begin_transaction();
+                $result = fetchData1("*", "recordapproval", "result_token='$result_token'");
 
-                    $sql = "UPDATE recordapproval SET academic_year = ? WHERE result_token = ?";
-                    $stmt = $connect2->prepare($sql);
-                    $stmt->bind_param("ss", $academic_year, $result_token);
-
-                    if($stmt->execute()){
-                        $sql = "UPDATE results SET academic_year = ? WHERE result_token = ?";
+                // ensure that we do not have this same class details in the system
+                if(fetchData1("result_token", "recordapproval", [
+                    "academic_year='$academic_year'", "semester=$semester", "program_id={$result['program_id']}",
+                    "exam_year={$result['exam_year']}", "course_id={$result['course_id']}"
+                ], where_binds: "AND") == "empty"){
+                    try {
+                        $connect2->begin_transaction();
+    
+                        $sql = "UPDATE recordapproval SET academic_year = ?, semester = ? WHERE result_token = ?";
                         $stmt = $connect2->prepare($sql);
-                        $stmt->bind_param("ss", $academic_year, $result_token);
-                        $status = $stmt->execute();
-
-                        if($status !== true){
+                        $stmt->bind_param("sis", $academic_year, $semester, $result_token);
+    
+                        if($stmt->execute()){
+                            $sql = "UPDATE results SET academic_year = ?, semester = ? WHERE result_token = ?";
+                            $stmt = $connect2->prepare($sql);
+                            $stmt->bind_param("sis", $academic_year, $semester, $result_token);
+                            $status = $stmt->execute();
+    
+                            if($status !== true){
+                                throw new Exception("Statement Error: ".$stmt->error);
+                            }
+    
+                            $message = $stmt->affected_rows." records updated";
+                            $connect2->commit();
+                        }else{
                             throw new Exception("Statement Error: ".$stmt->error);
                         }
-
-                        $message = $stmt->affected_rows." records updated";
-                        $connect2->commit();
-                    }else{
-                        throw new Exception("Statement Error: ".$stmt->error);
+                    } catch (\Throwable $th) {
+                        $message = throwableMessage($th);
+                        $connect2->rollback();
                     }
-                } catch (\Throwable $th) {
-                    $message = throwableMessage($th);
-                    $connect2->rollback();
+                }else{
+                    $message = "There is an exisiting record with this information";
                 }
                 
             }
