@@ -1989,7 +1989,7 @@
         }
         
         array_map(function($object) use (&$response, $key, $value, $reserve_keys, $rename){
-            $keyValue = strtoupper($object[$key]);
+            $keyValue = $object[$key];
 
             if ($value === 'array') {
                 unset($object[$key]);
@@ -2522,4 +2522,81 @@
             $data = mb_convert_encoding($data, 'UTF-8', 'UTF-8');
         }
         return $data;
+    }
+
+    /**
+     * Gets the schools's settings
+     * @return array
+     */
+    function get_school_settings() :array{
+        global $user_school_id;
+        $settings = decimalIndexArray(fetchData1("name, value", "school_settings", "school_id=$user_school_id", limit: 0));
+        return $settings !== false ? pluck($settings, "name", "value", true) : [];
+    }
+
+    /**
+     * Fetches all promotional class information
+     * @return array
+     */
+    function promotion_classes(){
+        global $user_school_id;
+        $response = decimalIndexArray(fetchData1("id, year1, year2, year3", "promotion_table", "school_id=$user_school_id", limit: 0));
+        return $response !== false ? $response : [];
+    }
+
+    /**
+     * Ensures that the json header is sent if a json request is received
+     */
+    function ensureJsonHeader() {
+        foreach (headers_list() as $header) {
+            if (stripos($header, "Content-Type: application/json") !== false) {
+                return; // The header is already set, so we exit the function
+            }
+        }
+    
+        // If not found, send the Content-Type header
+        header("Content-Type: application/json");
+    }
+
+    /**
+     * This is used to insert the program ids once promotion is processed
+     */
+    function process_promotion_classes(){
+        $change_classes = get_school_settings()["program_swap"] ?? false;
+        if($change_classes){
+            $promotion_classes = promotion_classes();
+
+            if($promotion_classes){
+                global $connect2;
+
+                // Promote students for each year
+                foreach ($promotion_classes as $promotion_class) {
+                    for ($year = 1; $year < 3; $year++) {
+                        $current_class = "year" . $year;
+                        $next_class = "year" . ($year + 1);
+                
+                        // Ensure the array has both values before updating
+                        if (!isset($promotion_class[$current_class]) || !isset($promotion_class[$next_class])) {
+                            continue; // Skip if missing data
+                        }
+                
+                        // Correct studentYear to match their new level
+                        $new_student_year = $year + 1;
+                
+                        $sql = "UPDATE students_table 
+                                SET program_id = ?
+                                WHERE program_id = ? AND studentYear = ?";
+                
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param("iii", 
+                            $promotion_class[$next_class], // New class (promotion)
+                            $promotion_class[$current_class], // Current class
+                            $new_student_year // The new `studentYear` just assigned
+                        );
+                
+                        $stmt->execute();
+                    }
+                }
+            }
+        }
     }

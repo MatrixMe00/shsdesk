@@ -11,17 +11,37 @@
 ?>
     <?php if($_SESSION["admin_mode"] == "admission") :
         require_once("components/school_details.php");
-    else: ?>
+    else: 
+        $school_settings = get_school_settings();
+?>
     <section class="btn_section sp-xlg-tp">
         <div class="btn flex flex-wrap gap-sm sm-auto p-lg">
             <button class="plain-r primary btn-item" data-section="record_type">Result Type</button>
             <button class="plain-r primary btn-item" data-section="record_date">Result Entry Period</button>
+            <button class="plain-r primary btn-item" data-section="system_settings">System Settings</button>
+            <?php if(isset($school_settings["program_swap"]) && $school_settings["program_swap"]): ?>
+            <button class="plain-r primary btn-item" data-section="program_swap_section">Class Promotions</button>
+            <?php endif; ?>
         </div>
     </section>
     
     <section class="section_container sp-lg-tp btn_connect" id="record_date">
         <?php require_once("components/records_date_form.php") ?>
     </section>
+
+    <section class="section_container sp-lg-tp btn_connect" id="system_settings">
+        <div class="body">
+            <?php require_once("components/system_settings.php") ?>
+        </div>
+    </section>
+
+    <?php if(isset($school_settings["program_swap"]) && $school_settings["program_swap"]): ?>
+    <section class="section_container sp-lg-tp btn_connect" id="program_swap_section">
+        <div class="body">
+            <?php require_once("components/program-swap.php") ?>
+        </div>
+    </section>
+    <?php endif; ?>
     
     <div class="btn_connect" id="record_type">
         <section class="section_container">
@@ -43,3 +63,4 @@
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce/tinymce.min.js"></script>
     <script src="<?php echo $url?>/admin/assets/scripts/tinymce.min.js?v=<?php echo time()?>"></script>
     <script src="<?php echo $url?>/admin/admin/assets/scripts/admission.min.js?v=<?php echo time()?>"></script>
+    <script src="<?php echo $url?>/admin/admin/assets/scripts/school_settings.js?v=<?php echo time()?>"></script>

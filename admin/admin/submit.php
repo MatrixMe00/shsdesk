@@ -912,6 +912,7 @@
                                         $connect2->query($sql);
                                         
                                         $message = "success";
+                                        process_promotion_classes();
                                     }else{
                                         $message = "Promotion from Year 1 to Year 2 failed";
                                     }
@@ -2700,11 +2701,127 @@
             echo json_encode([
                 "status" => $status ?? false, "message" => $message
             ]);
+        }elseif($submit == "modify_settings"){
+            $key = $_POST["key"] ?? null;
+            $value = $_POST["value"];
+
+            if(empty($user_school_id)){
+                $message = "User might be logged out";
+            }elseif(is_null($key)){
+                $message = "Settings type not found";
+            }else{
+                $settings = fetchData1("id", "school_settings", ["school_id=$user_school_id", "name='$key'"], where_binds: "AND");
+
+                if($settings == "empty"){
+                    $sql = "INSERT INTO school_settings (school_id, name, value) VALUES (?,?,?)";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("sss", $user_school_id, $key, $value);
+                }elseif(is_array($settings)){
+                    $id = $settings["id"];
+                    $sql = "UPDATE school_settings SET value = ? WHERE id = ?";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("si", $value, $id);
+                }else{
+                    $message = is_string($settings) ? $settings : "Unknown error occured. Check logs";
+                }
+
+                if($stmt){
+                    $message = ($status = $stmt->execute()) ? "success" : $stmt->error;
+                }
+            }
+
+            header("Content-type: application/json");
+            echo json_encode([
+                "status" => $status ?? false, "message" => $message ?? "no message"
+            ]);
+        }elseif($submit == "remove_promotion_row"){
+            $id = $_POST["id"] ?? null;
+
+            if(empty($id)){
+                $message = "Promotion data is invalid or does not exist";
+            }else{
+                $sql = "DELETE FROM promotion_table WHERE id = ?";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("i", $id);
+                $message = ($status = $stmt->execute()) ? "success" : $stmt->error;
+            }
+
+            header("Content-type: application/json");
+            echo json_encode([
+                "status" => $status ?? false, "message" => $message ?? "no message"
+            ]);
+        }elseif($submit == "save_promotion_row"){
+            $id = $_POST["id"] ?? null;
+            $year1 = $_POST["year1"] ?? null;
+            $year2 = $_POST["year2"] ?? null;
+            $year3 = $_POST["year3"] ?? null;
+            $years = [$year1, $year2, $year3];
+
+            if(empty($year1)){
+                $message = "Year 1 Class not specified or is invalid";
+            }elseif(empty($year2)){
+                $message = "Year 2 Class not specified or is invalid";
+            }elseif(empty($year3)){
+                $message = "Year 3 Class not specified or is invalid";
+            }elseif(empty($user_school_id)){
+                $message = "User session has expired. Please login again";
+            }elseif(count($years) !== count(array_unique($years))){
+                $message = "One or more classes have been selected more than once";
+            }else{
+                try {
+                    if($id > 0){
+                        $sql = "UPDATE promotion_table SET year1 = ?, year2 = ?, year3 = ? WHERE id = ?";
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param("iiii", $year1, $year2, $year3, $id);
+                    }elseif($id == 0){
+                        $sql = "INSERT INTO promotion_table (school_id, year1, year2, year3) VALUES (?,?,?,?)";
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param("iiii", $user_school_id, $year1, $year2, $year3);
+                    }else{
+                        $message = "Invalid row selected";
+                    }
+
+                    if($stmt){
+                        $message = ($status = $stmt->execute()) ? "Data has been saved" : $stmt->error;
+
+                        if($id == 0){
+                            $id = $connect2->insert_id;
+                        }elseif($stmt->affected_rows > 0){
+                            $message = "Updates was successful";
+                        }else{
+                            $message = "No new changes were done";
+                        }
+                    }
+                } catch (\Throwable $th) {
+                    $message = throwableMessage($th);
+                    if ($th->getCode() == 1062) { 
+                        preg_match("/Duplicate entry '.*' for key '(.*?)'/", $th->getMessage(), $matches);
+                        $duplicateColumn = isset($matches[1]) ? $matches[1] : "unknown column";
+                        $message = "Class registerd for $duplicateColumn has already been assigned to a different group";
+                    }
+                }
+            }
+
+            header("Content-type: application/json");
+            echo json_encode([
+                "status" => $status ?? false, "message" => $message ?? "no message", "id" => $id ?? 0
+            ]);
+
+        }elseif($submit == "fix_anomalies"){
+            process_promotion_classes();
+            header("Content-type: application/json");
+            echo json_encode([
+                "message" => $connect2->affected_rows > 0 ? "Changes have been made" : "No new changes were made"
+            ]);
         }else{
             echo "Procedure for submit value '$submit' was not found";
         }
     }else{
         echo "no-submission";
+    }
+
+    if(isset($_REQUEST["response_type"]) && $_REQUEST["response_type"] == "json"){
+        ensureJsonHeader();
     }
 
     close_connections();

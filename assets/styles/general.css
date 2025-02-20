@@ -1735,7 +1735,7 @@ td{
     right: 0;
     top: 0.5em;
     text-align: right;
-    z-index: 10;
+    z-index: 999;
 }
 /*end of custom alert box*/
 
