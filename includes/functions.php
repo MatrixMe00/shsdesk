@@ -659,7 +659,7 @@
         }
 
         //return name
-        return implode(" ", $name);
+        return trim(implode(" ", $name));
     }
 
     /**
@@ -1971,6 +1971,27 @@
     }
 
     /**
+     * This is used inside the pluck to trim the keys in an array
+     * @param array $array The array to be checked
+     */
+    function trim_array_keys(array $array): array {
+        $response_array = [];
+    
+        foreach ($array as $key => $value) {
+            $trimmed_key = trim($key); // Trim the key
+    
+            if (is_array($value)) {
+                // Recursively trim keys of the internal array
+                $response_array[$trimmed_key] = trim_array_keys($value);
+            } else {
+                $response_array[$trimmed_key] = $value;
+            }
+        }
+    
+        return $response_array;
+    }
+
+    /**
      * Used to pluck an array to the form [key => value, key => value]...
      * If $value is "array", it will store the remainder of the keys as an array.
      * All internal keys are uppercase by default
@@ -1979,9 +2000,10 @@
      * @param string $value The value key or use "array" to store the remainder
      * @param bool $reserve_keys Set to true if it should reserve the internal keys in the default format
      * @param array $rename Use this to rename columns to different names. Used especially for value = 'array'
+     * @param bool $trim_keys Used to trim the array keys
      * @return array
      */
-    function pluck(mixed $array, string $key, string $value, bool $reserve_keys = false, array $rename = []) :array{
+    function pluck(mixed $array, string $key, string $value, bool $reserve_keys = false, array $rename = [], bool $trim_keys = false) :array{
         $response = [];
 
         if(empty($array) || !is_array($array)){
@@ -2013,7 +2035,7 @@
             }
         }, $array);
 
-        return $response;
+        return $trim_keys ? trim_array_keys($response) : $response;
     }
 
     /**
@@ -2120,7 +2142,7 @@
      * @param int $school_id The id of the school
      * @return bool
      */
-    function access_without_payment(int $school_id) :bool{
+    function access_without_payment(?int $school_id) :bool{
         $no_payment = [64];
 
         return in_array($school_id, $no_payment);

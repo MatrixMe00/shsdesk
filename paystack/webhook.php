@@ -83,6 +83,10 @@
             // use connection set
             global $connect2;
 
+            if(!$school_id){
+                $school_id = fetchData1("school_id", "students_table", "indexNumber = '".$metadata[3]["value"]."'");
+            }
+
             // pass data if its not in the database
             $exist = fetchData1("transactionID", "transaction", "transactionID='$reference'");
 
@@ -108,7 +112,7 @@
                 }catch(Throwable $th){
                     file_put_contents("$directory/paystack_check_$month.log", $reference." has error -> ". $th->getMessage() . PHP_EOL, FILE_APPEND);
                 }
-            }            
+            }
         }
     }
     

@@ -297,10 +297,12 @@
                             $message = ""; $insert_count = 0; $houses = [];
                             $house_data = fetchData("id, title", "houses", "schoolID=$user_school_id", 0);
                             $houses = $house_data == "empty" ? [] : array_change_key_case(pluck(decimalIndexArray($house_data), "title", "id"));
+                            $houses = trim_array_keys($houses);
+                            
                             $program_data = fetchData1("program_id, program_name, short_form", "program", "school_id=$user_school_id", 0);
                             $programs = $program_data == "empty" ? [] : array_change_key_case(pluck(decimalIndexArray($program_data), "program_name", "program_id"));
                             $programs_ = $program_data == "empty" ? [] : array_change_key_case(pluck(decimalIndexArray($program_data), "short_form", "program_id"));
-                            $programs = array_merge($programs, $programs_);
+                            $programs = trim_array_keys(array_merge($programs, $programs_));
                             
                             $connect2->begin_transaction();
                             for($row=$row_start; $row <= $max_row; $row++){

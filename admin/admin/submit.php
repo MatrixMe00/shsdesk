@@ -1242,6 +1242,10 @@
                 $message = "No school selected. Please check and try again";
             }else{
                 try {
+                    if(fetchData1("lname", "teachers", "email='$teacher_email' AND status = 1") != "empty"){
+                        throw new Exception("Email provided already exists");
+                    }
+
                     $sql = "INSERT INTO teachers (lname, oname, gender, email, phone_number, school_id, joinDate)
                         VALUES (?,?,?,?,?,?,NOW())";
                     $stmt = $connect2->prepare($sql);
@@ -1316,11 +1320,11 @@
         }elseif($submit == "addProgram" || $submit == "addProgram_ajax"){
             $message = ""; $status = false; $final = array();
 
-            $program_name = $_GET["program_name"];
+            $program_name = trim($_GET["program_name"]);
             $school_id = $_GET["school_id"];
             $course_ids = $_GET["course_ids"];
-            $short_form = $_GET["short_form"];
-            $associate_program = $_GET["associate_program"];
+            $short_form = trim($_GET["short_form"]);
+            $associate_program = trim($_GET["associate_program"]);
             
             if(empty($program_name)){
                 $message = "Please provide the name of the program";
@@ -1430,11 +1434,11 @@
         }elseif($submit == "updateProgram" || $submit == "updateProgram_ajax"){
             $message = ""; $status = false; $final = array();
 
-            $program_name = $_GET["program_name"];
+            $program_name = trim($_GET["program_name"]);
             $program_id = $_GET["program_id"];
             $course_ids = $_GET["course_ids"];
-            $short_form = $_GET["short_form"];
-            $associate_program = $_GET["associate_program"];
+            $short_form = trim($_GET["short_form"]);
+            $associate_program = trim($_GET["associate_program"]);
             
             if(empty($program_id) || intval($program_id) < 0){
                 $message = "Class could not be selected. Please refresh the page and try again";
