@@ -1065,7 +1065,7 @@
      */
     function logThrowable(Throwable $throwable, ?string $additional = null) {
         // Define the path to the logs directory
-        $logDir = $_SERVER["DOCUMENT_ROOT"] . '/logs';
+        $logDir = $_SERVER["DOCUMENT_ROOT"] . '/logs/'. date('F_Y');
         
         // Check if the logs directory exists, create it if it doesn't
         if (!is_dir($logDir)) {
@@ -1073,7 +1073,7 @@
         }
     
         // Define the log file name based on the current month and year
-        $logFile = $logDir . '/' . date('F_Y') . '.log';
+        $logFile = $logDir . '/log_' . date('d_m_Y') . '.log';
     
         // Gather error details
         $timestamp = date('Y-m-d H:i:s');
@@ -2621,4 +2621,15 @@
                 }
             }
         }
+    }
+
+    /**
+     * This is used by teachers to verify if a selected result slip matches classes they have been assigned to
+     * @param $teacher_id The teacher id
+     * @param $program_id The class of the student
+     * @param $year The year of the selected class
+     * @return bool
+     */
+    function teacher_class_is_valid($teacher_id, $program_id, $year){
+        return is_array(fetchData1("id", "teacher_classes", ["program_id=$program_id", "class_year=$year", "teacher_id=$teacher_id"], where_binds: "AND"));
     }

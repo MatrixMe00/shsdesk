@@ -253,7 +253,7 @@
                 ];
 
                 //write some html
-                $pdf->writeHTML($content);
+                $pdf->writeHTML(convertToUtf8($content));
 
                 //output html
                 $pdf->Output("Semester Report | {$student['Lastname']}.pdf", "D");

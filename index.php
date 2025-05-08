@@ -62,7 +62,7 @@
     </main>
     
     <!-- message us button -->
-    <a href="https://wa.me/233257973550">
+    <a href="https://wa.me/233552140885">
         <span id="message_us" class="primary">
             Message Us
         </span>

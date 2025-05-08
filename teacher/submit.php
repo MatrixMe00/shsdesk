@@ -251,18 +251,25 @@
                 $class = $_GET["class"] ?? null;
                 $year = $_GET["year"] ?? null;
 
-                if(empty($class) || is_null($class)){
+                if(empty($teacher)){
+                    $message = "Your session could not be verified. Please login again";
+                }elseif(empty($class) || is_null($class)){
                     $message = "No class has been selected. Please select a class to continue";
                 }elseif(empty($year) || is_null($year)){
                     $message = "Please select the current year of the program";
                 }else{
-                    $message = fetchData1("indexNumber, Lastname, Othernames", "students_table","program_id=$class AND studentYear=$year",0, order_by: ["Lastname", "Othernames", "indexNumber"]);
-                    if(!is_array($message)){
-                        $message = "No results to be displayed for this search. Data not yet uploaded";
+                    if(teacher_class_is_valid($teacher["teacher_id"], $class, $year)){
+                        $message = fetchData1("indexNumber, Lastname, Othernames", "students_table","program_id=$class AND studentYear=$year",0, order_by: ["Lastname", "Othernames", "indexNumber"]);
+                        if(!is_array($message)){
+                            $message = "No results to be displayed for this search. Data not yet uploaded";
+                        }else{
+                            $message = decimalIndexArray($message);
+                            $status = true;
+                        }
                     }else{
-                        $message = decimalIndexArray($message);
-                        $status = true;
+                        $message = "Class not assigned to you. Please verify or contact admin.";
                     }
+                    
                 }
 
                 $response = array("status" => $status ?? false, "message" => $message);

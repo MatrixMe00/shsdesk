@@ -90,7 +90,7 @@
                 }
 
                 $student_program = $student["programme"];
-                $class_result_data = fetchData1("COUNT(DISTINCT indexNumber) as total, academic_year", "results","program_id=$program_id AND exam_year=$exam_year AND semester=$semester");
+                $class_result_data = fetchData1("COUNT(DISTINCT indexNumber) as total, academic_year", "results","program_id=$program_id AND exam_year=$exam_year AND semester=$semester", group_by:["indexNumber","academic_year"]);
                 
                 $academicYear = $class_result_data["academic_year"];
 
@@ -253,7 +253,7 @@
                 ];
 
                 //write some html
-                $pdf->writeHTML($content);
+                $pdf->writeHTML(convertToUtf8($content));
 
                 //output html
                 $pdf->Output("Semester Report | {$student['Lastname']}.pdf", "D");
