@@ -3,7 +3,13 @@
     $_SESSION["active-page"] = "dashboard";
 
     //variable to use within the script
-    $result_type = fetchData("school_result","admissiondetails","schoolID=".$teacher["school_id"])["school_result"];
+    $result_type = fetchData("school_result","admissiondetails","schoolID=".$teacher["school_id"]);
+    
+    if(is_array($result_type)){
+        $result_type = $result_type["school_result"];
+    }else{
+        $result_type = null;
+    }
 ?>
 <section class="d-section lt-shade white">
     <div class="img txt-al-c">
@@ -11,7 +17,7 @@
     </div>
     <div class="time flex flex-column gap-md txt-al-c">
         <div class="flex flex-space-content txt-fs">
-            <span>Current Year: <?= fetchData("academicYear","admissiondetails","schoolID=".$teacher["school_id"])["academicYear"] ?></span>
+            <span>Current Year: <?= fetchData("academicYear","admissiondetails","schoolID=".$teacher["school_id"])["academicYear"] ?? getAcademicYear(now()) ?></span>
             <span>Current Term: 1</span>
         </div>
         <div class="flex flex-column">

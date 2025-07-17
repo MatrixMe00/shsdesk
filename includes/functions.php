@@ -1231,12 +1231,14 @@
     function insert_teacher_classes(string $data, int $teacher_id){
         global $connect2, $user_school_id;
 
-        // get all the programs for the school
+        // get all the programs and courses for the school
         $programs = fetchData1("program_id as id", "program", "school_id = $user_school_id", 0);
+        $courses = fetchData1("course_id as id", "courses", "school_id = $user_school_id", 0);
         $skip = false;
 
-        if(is_array($programs)){
+        if(is_array($programs) && is_array($courses)){
             $programs = array_column(decimalIndexArray($programs), "id");
+            $courses = array_column(decimalIndexArray($courses), "id");
 
             $parts = explode(" ", $data);
             if(is_array($parts)){
@@ -1254,8 +1256,8 @@
                                 $cid = $part[1];
                                 $yid = $part[2];
 
-                                // if the program is not found, skip
-                                if(!in_array($pid, $programs)){
+                                // if the program or course is not found, skip
+                                if(!in_array($pid, $programs) || !in_array($cid, $courses)){
                                     $skip = true;
                                     continue;
                                 }
@@ -1296,7 +1298,7 @@
 
             if(empty($message) || !isset($message)){
                 $status = true;
-                $message = $skip ? "Teacher data updated. Reopen modal to see changes" : "success";
+                $message = $skip ? "Anomaly has been fixed. Reopen modal to see changes" : "success";
             }
         }
 

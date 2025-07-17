@@ -1,5 +1,5 @@
 <?php include_once("compSession.php"); $_SESSION["active-page"] = "classes" ?>
-<input type="hidden" name="mark_result_type" value="<?= fetchData("school_result","admissiondetails","schoolID={$teacher['school_id']}")["school_result"] ?>" id="mark_result_type">
+<input type="hidden" name="mark_result_type" value="<?= fetchData("school_result","admissiondetails","schoolID={$teacher['school_id']}")["school_result"] ?? null ?>" id="mark_result_type">
 
 <section id="cards-section" class="flex d-section flex-wrap gap-sm p-lg card-section">
     <div class="card v-card gap-lg purple p-med sm-rnd flex-wrap">
@@ -15,7 +15,7 @@
         <span class="txt-fl3 txt-bold"><?= fetchData1("COUNT(DISTINCT program_id) as total","teacher_classes","teacher_id={$teacher['teacher_id']}")["total"] ?></span>
     </div>
 </section><?php 
-    $academicYear = fetchData("academicYear","admissiondetails","schoolID={$teacher['school_id']}")["academicYear"];
+    $academicYear = fetchData("academicYear","admissiondetails","schoolID={$teacher['school_id']}")["academicYear"] ?? getAcademicYear(now());
 ?>
 
 <h1 class="txt-al-c sm-lg-t no_d" id="page_title">My Classes</h1>

@@ -2,7 +2,7 @@
     include_once("compSession.php"); 
     $_SESSION["active-page"] = "res_sum";
 
-    $result_type = fetchData("school_result","admissiondetails","schoolID=".$teacher["school_id"])["school_result"];
+    $result_type = fetchData("school_result","admissiondetails","schoolID=".$teacher["school_id"])["school_result"] ?? null;
 ?>
 
 <input type="hidden" name="result_type" id="result_type" value="<?= $result_type ?>">

@@ -3,7 +3,7 @@
     $_SESSION["active-page"] = "results";
 
     //useful variables in this page
-    $result_type = fetchData("school_result","admissiondetails","schoolID=".$teacher["school_id"])["school_result"];
+    $result_type = fetchData("school_result","admissiondetails","schoolID=".$teacher["school_id"])["school_result"] ?? null;
     $can_enter_results = checkResultsEntry($teacher["school_id"]);
 ?>
 
