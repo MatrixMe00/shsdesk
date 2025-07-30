@@ -2066,10 +2066,38 @@
 
                     $stmt = $connect2->prepare($sql);
                     $stmt->bind_param("ssisss", $recipient, $access_token, $school_id, $purchase_date, $end_date, $transaction_id);
-                    $stmt->execute();
+                    if(!$stmt->execute()){
+                        return false;
+                    }
                 }
             }
         }
+
+        return true;
+    }
+
+    /**
+     * Generates one or multiple unique transaction IDs
+     * @param int $count The number of transaction IDs to generate. Default is 1.
+     * @return string|array Returns a single transaction ID as a string if $count is 1, otherwise an array of transaction IDs.
+     */
+    function generateTransactionID(int $count = 1): string|array {
+        $count = max(1, $count); // Ensure count is at least 1
+        $transactionIDs = [];
+
+        while (count($transactionIDs) < $count) {
+            // Generate a random transaction ID
+            $transactionID = "T" . str_pad(rand(0, 999999999999), 12, "0", STR_PAD_LEFT);
+
+            // Check if it already exists in the transaction table
+            $exists = fetchData1("transactionID", "transaction", "transactionID='$transactionID'");
+
+            if (!is_array($exists)) {
+                $transactionIDs[] = $transactionID;
+            }
+        }
+
+        return $count === 1 ? $transactionIDs[0] : $transactionIDs;
     }
 
     /**

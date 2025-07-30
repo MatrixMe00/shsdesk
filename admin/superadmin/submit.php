@@ -653,6 +653,115 @@
             }
             
             echo $message;
+        }elseif ($submit == "check_school_students") {
+            $school_id = $_POST["school_id"] ?? null;
+            $response = ["has_students" => false];
+        
+            if ($school_id) {
+                $count = fetchData1("COUNT(indexNumber) as total", "students_table", "school_id=$school_id")['total'];
+        
+                if ($count > 0) {
+                    $programs = fetchData1(["program_id", "program_name", "short_form"], "program", "school_id=$school_id",0);
+                    $response["has_students"] = true;
+                    $response["programs"] = is_array($programs) ? pluck($programs, "program_id", "array", true) : [];
+                }
+            }
+        
+            header('Content-Type: application/json');
+            echo json_encode($response);
+        }elseif ($submit == "search_student_by_name") {
+            $query = $_POST["term"] ?? null;
+            $school_id = $_POST["school_id"] ?? null;
+        
+            $response = [
+                "students" => [],
+                "message" => "",
+                "status" => false
+            ];
+        
+            if (empty($query)) {
+                $response["message"] = "No search term was provided";
+            } else {
+                $where = [
+                    "(CONCAT(Othernames, ' ', Lastname) LIKE '%$query%' OR CONCAT(Lastname, ' ', Othernames) LIKE '%$query%')",
+                    "NOT EXISTS (
+                        SELECT 1
+                        FROM accesstable a
+                        WHERE a.indexNumber = students_table.indexNumber
+                        AND a.status = 1
+                    )"
+                ];
+        
+                // Add school_id condition if present
+                if (!empty($school_id)) {
+                    $where[] = "school_id = $school_id";
+                }
+        
+                // Default binder is AND
+                $students = decimalIndexArray(fetchData1(
+                    ["indexNumber", "Othernames", "Lastname", "program_id", "studentYear"], 
+                    "students_table", 
+                    $where, 0, "AND"
+                ));
+        
+                if (is_array($students) && count($students) > 0) {
+                    $response["students"] = $students;
+                    $response["status"] = true;
+                } else {
+                    $response["message"] = "No student matched your search";
+                }
+            }
+        
+            header('Content-Type: application/json');
+            echo json_encode($response);
+        }elseif ($_POST['submit'] == 'create_access_code') {
+            $school_id = $_POST['school_id'] ?? null;
+            $students = $_POST['students'] ?? [];
+        
+            if (!$school_id || empty($students)) {
+                echo json_encode([
+                    'status' => false,
+                    'message' => 'School or students missing.'
+                ]);
+                exit;
+            }
+        
+            $transactions = generateTransactionID(count($students));
+            $connect2->begin_transaction();
+        
+            foreach ($students as $position => $student) {
+                $reference = $transactions[$position] ?? $transactions[0];
+        
+                $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email, index_number, pay_type)
+                        VALUES (?, ?, 0, 0, '0249100268', 'successinnovativehub@gmail.com', ?, 'single')";
+                $stmt = $connect2->prepare($sql);
+                $stmt->bind_param("sis", $reference, $school_id, $student);
+        
+                // Rollback and return if INSERT fails
+                if (!$stmt->execute()) {
+                    $connect2->rollback();
+                    echo json_encode([
+                        'status' => false,
+                        'message' => 'Failed to create transaction for student ID: ' . $student
+                    ]);
+                    exit;
+                }
+        
+                // Now handle access code
+                if (!activate_access_pay($student, $reference, $school_id)) {
+                    $connect2->rollback();
+                    echo json_encode([
+                        'status' => false,
+                        'message' => 'Failed to generate access code for student ID: ' . $student
+                    ]);
+                    exit;
+                }
+            }
+        
+            $connect2->commit();
+            echo json_encode([
+                'status' => true
+            ]);
         }else{
             echo "Submission value was not present";
         }
