@@ -290,83 +290,98 @@
                 echo json_encode($response);
                 break;
 
-            case "submit_result":
-                $student_index = $_POST["student_index"] ?? null;
-                $mark = $_POST["mark"] ?? null;
-                $class_mark = $_POST["class_mark"] ?? null;
-                $exam_mark = $_POST["exam_mark"] ?? null;
-                $result_token = $_POST["result_token"] ?? null;
-                $course_id = $_POST["course_id"] ?? null;
-                $exam_year = $_POST["exam_year"] ?? null;
-                $semester = $_POST["semester"] ?? null;
-                $isFinal = $_POST["isFinal"] ?? false;
-                $program_id = $_POST["program_id"] ?? null;
-                $prev_token = isset($_POST["prev_token"]) ? $_POST["prev_token"] : null;
-                $academic_year = $_POST["academic_year"] ?? getAcademicYear(now(), false);
-                $position = $_POST["position"] ?? 0;
-
-                if(empty($student_index) || is_null($student_index) ||
-                    empty($result_token) || is_null($course_id) || 
-                    empty($course_id) || is_null($result_token) || 
-                    empty($semester) || is_null($semester) || 
-                    empty($program_id) || is_null($program_id)){
-                    $message = "false";
-                }elseif(!isset($_POST["mark"], $_POST["class_mark"], $_POST["exam_mark"])){
-                    $message  = "false";
-                }elseif(is_null($exam_year) || is_null($semester)){
-                    $message = "false";
-                }else{
-                    $isInserted = fetchData1(
-                        "COUNT(indexNumber) as total",
-                        "results",
-                        "indexNumber='$student_index' AND course_id=$course_id 
-                        AND exam_year=$exam_year AND semester=$semester AND
-                        academic_year='$academic_year'"
-                    )["total"];
-                    if(intval($isInserted) > 0){
-                        $message = "Results already exist";
-                    }else{
-                        $sql = "INSERT INTO results (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, result_token, teacher_id, exam_year, semester, academic_year, date, position) VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?,?, NOW(),?)";
-                        $stmt = $connect2->prepare($sql);
-                        $stmt->bind_param("siiidddsiiisi",$student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, $mark, $result_token, $teacher["teacher_id"], $exam_year, $semester, $academic_year, $position);
-
-                        if($stmt->execute()){
-                            $message = "true";
-                        }else{
-                            $message = "Error inserting result";
+                case "submit_results":
+                    $students = isset($_POST["students"]) ? json_decode($_POST["students"], true) : [];
+                    $result_token = $_POST["result_token"] ?? null;
+                    $course_id = $_POST["course_id"] ?? null;
+                    $exam_year = $_POST["exam_year"] ?? null;
+                    $semester = $_POST["semester"] ?? null;
+                    $program_id = $_POST["program_id"] ?? null;
+                    $academic_year = $_POST["academic_year"] ?? getAcademicYear(now(), false);
+                    $prev_token = $_POST["prev_token"] ?? null;
+                    $assign_positions = $_POST["assign_positions"] ?? 0;
+                
+                    $response = [
+                        "success" => false,
+                        "failed" => [],
+                        "message" => ""
+                    ];
+                
+                    if(empty($students) || empty($result_token) || empty($course_id) || empty($exam_year) || empty($semester) || empty($program_id)){
+                        $response["message"] = "Missing required parameters";
+                        echo json_encode($response);
+                        break;
+                    }
+                
+                    foreach($students as $stud){
+                        $student_index = $stud["student_index"] ?? null;
+                        $mark = $stud["mark"] ?? null;
+                        $class_mark = $stud["class_mark"] ?? null;
+                        $exam_mark = $stud["exam_mark"] ?? null;
+                        $position = $stud["position"] ?? 0;
+                
+                        if(empty($student_index) || $mark === null || $class_mark === null || $exam_mark === null){
+                            $response["failed"][] = $student_index;
+                            continue;
                         }
-
-                        if($isFinal == "true" || $isFinal === true || $isFinal == 1){
-                            $found = fetchData1("result_token", "recordapproval", "result_token='$result_token'");
-
-                            // if request to assign position is provided
-                            if(isset($_POST["assign_positions"]) && $_POST["assign_positions"] == 1){
-                                assignPositions($result_token);
-                            }
-
-                            if($found == "empty"){
-                                $sql = "INSERT INTO recordapproval (result_token, school_id, teacher_id, program_id, course_id, exam_year, semester, academic_year) VALUES (?,?,?,?,?,?,?,?)";
-                                $stmt = $connect2->prepare($sql);
-                                $stmt->bind_param("siiiiiis", $result_token, $teacher["school_id"], $teacher["teacher_id"], $program_id, $course_id, $exam_year, $semester, $academic_year);
-                                $found = $stmt->execute();
-                            }
-                            
-                            if($found){
-                                // delete the records in the save results table
-                                if(!is_null($prev_token)){
-                                    $connect2->query("DELETE FROM saved_results WHERE token='$prev_token'");
-                                }
-                                $message = "true";
-                            }else{
-                                $message = "Results could not be compiled for approval";
-                            }
+                
+                        $isInserted = fetchData1(
+                            "COUNT(indexNumber) as total",
+                            "results",
+                            "indexNumber='$student_index' 
+                             AND course_id=$course_id 
+                             AND exam_year=$exam_year 
+                             AND semester=$semester 
+                             AND academic_year='$academic_year'"
+                        )["total"];
+                
+                        if(intval($isInserted) > 0){
+                            $response["failed"][] = $student_index;
+                            continue;
+                        }
+                
+                        $sql = "INSERT INTO results 
+                                (indexNumber, school_id, course_id, program_id, exam_type, class_mark, exam_mark, mark, result_token, teacher_id, exam_year, semester, academic_year, date, position) 
+                                VALUES (?,?,?,?,'Exam',?,?,?,?,?,?,?,?, NOW(),?)";
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param(
+                            "siiidddsiiisi", $student_index, $teacher["school_id"], $course_id, $program_id, $class_mark, $exam_mark, 
+                            $mark, $result_token, $teacher["teacher_id"], $exam_year, $semester, 
+                            $academic_year, $position
+                        );
+                
+                        if(!$stmt->execute()){
+                            $response["failed"][] = $student_index;
                         }
                     }
-                }
-
-                echo $message;
-
-                break;
+                
+                    // Insert into recordapproval if not already there
+                    $found = fetchData1("result_token", "recordapproval", "result_token='$result_token'");
+                    if($found == "empty"){
+                        $sql = "INSERT INTO recordapproval 
+                                (result_token, school_id, teacher_id, program_id, course_id, exam_year, semester, academic_year) 
+                                VALUES (?,?,?,?,?,?,?,?)";
+                        $stmt = $connect2->prepare($sql);
+                        $stmt->bind_param(
+                            "siiiiiis", $result_token, $teacher["school_id"], $teacher["teacher_id"], 
+                            $program_id, $course_id, $exam_year, $semester, $academic_year
+                        );
+                        $stmt->execute();
+                    }
+                
+                    // assign positions if requested
+                    if($assign_positions == 1){
+                        assignPositions($result_token);
+                    }
+                
+                    // Clean up old saved results if provided
+                    if(!is_null($prev_token)){
+                        $connect2->query("DELETE FROM saved_results WHERE token='$prev_token'");
+                    }
+                
+                    $response["success"] = true;
+                    echo json_encode($response);
+                break;                               
 
                 case "submit_result_head":
                     $result_token = $_POST["result_token"];
@@ -558,7 +573,7 @@
                 }else{
                     try {
                         if($response_type == "saved"){
-                            $sql = "SELECT s.indexNumber, st.Lastname, st.Othernames, s.class_mark, s.exam_mark, s.mark
+                            $sql = "SELECT s.indexNumber, st.Lastname, st.Othernames, s.class_mark, s.exam_mark, s.mark, s.academic_year
                                 FROM saved_results s JOIN students_table st ON s.indexNumber=st.indexNumber
                                 WHERE token='$token_id'";
                         }else{
@@ -568,7 +583,7 @@
                         }
 
                         if($results = $connect2->query($sql)){
-                            if($results->num_rows > 1){
+                            if($results->num_rows > 0){
                                 $message = $results->fetch_all(MYSQLI_ASSOC);
                                 $error = false;
 
@@ -582,6 +597,7 @@
                                     if($students){
                                         // compare the index number counts
                                         $is_equal = count(array_column($students, "indexNumber")) == count($listed = array_column($message, "indexNumber"));
+                                        $academic_year = $message[0]["academic_year"] ?? getAcademicYear(now(), false);
                                         
                                         // merge with new data if they are not equal
                                         if(!$is_equal){
@@ -592,16 +608,13 @@
                                                     }
                                                 }
 
-                                                return array_merge($student, ["class_mark" => "0.0", "exam_mark" => "0.0", "mark" => 0]);
+                                                return array_merge($student, ["class_mark" => "0.0", "exam_mark" => "0.0", "mark" => 0, "added" => true]);
                                             }, $students));
 
                                             $message = array_merge($message, $new_students);
                                         }
                                     }
                                 }
-                            }elseif($results->num_rows == 1){
-                                $message = [$results->fetch_assoc()];
-                                $error = false;
                             }else{
                                 $message = "This results has been either deleted or been changed";
                             }
@@ -616,7 +629,8 @@
                 header("Content-Type: application/json");
                 echo json_encode([
                     "error"=>$error ?? true,
-                    "message"=>$message ?? "No message was returned"
+                    "message"=>$message ?? "No message was returned",
+                    "academic_year" => $academic_year ?? null
                 ]);
 
                 break;
@@ -628,7 +642,7 @@
                     $message = "No token was provided";
                 }else{
                     try {
-                        $sql = "SELECT program_id, course_id, exam_year, semester FROM saved_results WHERE token='$token' LIMIT 1";
+                        $sql = "SELECT program_id, course_id, exam_year, semester, from_reject FROM saved_results WHERE token='$token' LIMIT 1";
                         $result = $connect2->query($sql);
 
                         if($result->num_rows > 0){
@@ -715,13 +729,15 @@
                 if(empty($token) || is_null($token)){
                     $message = "Please provide a token to continue";
                 }else{
-                    $sql = $table == "save" ? "DELETE FROM saved_results WHERE result_token=? AND from_reject=0" : "DELETE FROM results WHERE result_token=?";
+                    $sql = $table == "save" ? "DELETE FROM saved_results WHERE token=? AND from_reject=0" : "DELETE FROM results WHERE result_token=?";
                     $stmt = $connect2->prepare($sql);
                     $stmt->bind_param("s", $token);
                     
                     if($stmt->execute()){
                         //remove from saved records if it finds itself there
-                        $connect2->query("DELETE FROM recordapproval WHERE result_token='$token'");
+                        if($table !== "save"){
+                            $connect2->query("DELETE FROM recordapproval WHERE result_token='$token'");
+                        }
 
                         $message = "success";
                     }else{

@@ -300,13 +300,14 @@
             </thead>
             <tbody>
                 <tr class="empty">
-                    <td colspan="5">No data has been processed yet</td>
+                    <td colspan="6">No data has been processed yet</td>
                 </tr>
             </tbody>
         </table>
 
         <table class="full light no_disp" id="save_data_table">
             <thead>
+                <td></td>
                 <td>Index Number</td>
                 <td>Full Name</td>
                 <td>Class Mark (30)</td>
@@ -317,7 +318,7 @@
             </thead>
             <tbody>
                 <tr class="p-lg empty">
-                    <td colspan="6">No data has been processed yet</td>
+                    <td colspan="8">No data has been processed yet</td>
                 </tr>
             </tbody>
             <tfoot class="no_disp">

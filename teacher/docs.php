@@ -172,6 +172,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
             $message = "Subject has not been selected";
         }elseif(empty($class_year)){
             $message = "Form year has not been selected";
+        }elseif(!teacher_class_is_valid($teacher["teacher_id"], $program_id, $class_year)){
+            $message = "Teacher does not teach the selected class or form level";
         }else{
             if(isset($_FILES['document_file']) && $_FILES["document_file"]["tmp_name"] != NULL){
                 //retrieve file extension

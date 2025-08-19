@@ -60,89 +60,109 @@ $(document).ready(function(){
         }else{
             e.preventDefault();
             const response = await jsonFileUpload(form, submit_btn, false);
-            
-            if(response.status){
+
+            if (response.status) {
                 let token = await ajaxCall({
-                    url: "./submit.php", formData: {submit: "getToken"}, returnType: "json", beforeSend: function(){
+                    url: "./submit.php",
+                    formData: { submit: "getToken" },
+                    returnType: "json",
+                    beforeSend: function () {
                         submit_btn.html("Acquiring Token...").prop("disabled", true);
                     }
                 });
 
-                if(token.error){
+                if (token.error) {
                     alert_box("Error acquiring token. Please try again", "danger", 7);
                     submit_btn.html("Upload Results").prop("disabled", false);
-                }else{
+                } else {
                     token = token.data;
 
                     // create the result token head
-                    const head_created = await create_result_head(token, response.data.course_id, response.data.program_id, response.data.semester, response.data.exam_year);
-                    let complete = true; const total_data = response.data.records.length;
-                    
+                    const head_created = await create_result_head(
+                        token,
+                        response.data.course_id,
+                        response.data.program_id,
+                        response.data.semester,
+                        response.data.exam_year
+                    );
+
+                    if (!head_created) {
+                        alert_box("Could not create result header", "danger", 7);
+                        submit_btn.html("Upload Results").prop("disabled", false);
+                        return;
+                    }
+
+                    const students = response.data.records;
+                    const total_data = students.length;
+
+                    // delete extra fields
+                    delete response.data.records;
+                    delete response.status;
+
+                    // build payload for bulk submit
+                    const payload = {
+                        submit: "submit_results",
+                        result_token: token,
+                        students: JSON.stringify(students),
+                        course_id: response.data.course_id,
+                        program_id: response.data.program_id,
+                        exam_year: response.data.exam_year,
+                        semester: response.data.semester,
+                        academic_year: response.data.academic_year,
+                        assign_positions: 1 // since we are sending all at once, do positions at the end
+                    };
+
+                    let progress = 0;
+                    const progressInterval = setInterval(() => {
+                        if (progress < total_data) {
+                            progress++;
+                            submit_btn.html(`Uploading... [${progress} of ${total_data}]`);
+                        }
+                    }, 150);
+
                     try {
-                        if (head_created) {
-                            const data = response.data.records;
-                            const submit_value = "submit_result";
+                        const bulkResponse = await $.ajax({
+                            url: "./submit.php",
+                            type: "POST",
+                            data: payload,
+                            timeout: 20000
+                        });
 
-                            // delete records and status so that they can be easily 
-                            // passed into the individual records
-                            delete response.data.records;
-                            delete response.status;
+                        clearInterval(progressInterval);
 
-                            for (let i = 0; i < total_data; i++) {
-                                const record = data[i];
-                                const isFinal = i + 1 === total_data;
-                                const assign_positions = isFinal ? 1 : 0;
-                                const data_ = { 
-                                    ...record, ...response.data, 
-                                    isFinal: isFinal, submit: submit_value, 
-                                    result_token: token, assign_positions: assign_positions 
-                                };
-                                                
-                                // upload resource
-                                const response_ = await ajaxCall({
-                                    url: "./submit.php",
-                                    formData: data_,
-                                    method: "POST",
-                                    beforeSend: function(){
-                                        submit_btn.html(`Uploading ${record.student_index} [${i + 1} of ${total_data}]`);
-                                    }
-                                })
-    
-                                if(response_ != "true"){
-                                    alert_box(response_ == "false" ? record.student_index + " could not be saved for unknown reason" : response_);
-                                    complete = false;
-                                    break;
-                                }
-    
-                                // mimic a delay
-                                await delay(300);
+                        let parsed;
+                        try {
+                            parsed = typeof bulkResponse === "string" ? JSON.parse(bulkResponse) : bulkResponse;
+                        } catch (e) {
+                            parsed = { success: false, message: bulkResponse };
+                        }
+
+                        if (parsed.success) {
+                            if (parsed.failed.length > 0) {
+                                alert_box(`Some records failed: ${parsed.failed.join(", ")}`, "warning", 8);
+                            } else {
+                                alert_box(`All ${total_data} records successfully added`, "success", 5);
                             }
-
-                            complete = true;
+                            submit_btn.html(`Upload Complete (${total_data} records)`);
+                        } else {
+                            deleteTokenResults(token);
+                            alert_box(parsed.message || "Upload failed", "danger", 8);
+                            submit_btn.html(`Upload was not completed`).prop("disabled", false);
                         }
                     } catch (error) {
-                        alert_box(error.toString(), "danger");
-                        complete = false;
+                        clearInterval(progressInterval);
+                        deleteTokenResults(token);
+                        alert_box(error.statusText || error.toString(), "danger", 8);
+                        submit_btn.html("Upload Results").prop("disabled", false);
                     }
 
-                    if(complete){
-                        submit_btn.html(`All ${total_data} records successfully added`);
-                    }else{
-                        // remove the token and its results
-                        deleteTokenResults(token);
-                        submit_btn.html(`Upload was not completed`).prop("disabled", false);
-                    }
-        
                     setTimeout(() => {
-                        // reset form
                         form[0].reset();
                         form.find("input[type=file]").change();
-
-                        // enable
                         submit_btn.html("Upload Results").prop("disabled", false);
                     }, 3000);
                 }
-            }else{
+            } else {
                 alert_box(response.data, "danger", 5);
             }
         }

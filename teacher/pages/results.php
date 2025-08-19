@@ -99,7 +99,7 @@
 
 <section class="lt-shade white d-section sm-xlg-t m-xlg-tp" id="table_section">
     <div class="head">
-        <h2>Result Slip For <span id="head_class_name">Classname</span></h2>
+        <h2>Result Slip For <span id="head_class_name"></span></h2>
     </div>
     <div class="form sm-xlg-b no_disp" id="search_form">
         <label for="search" class="flex flex-column">
@@ -111,6 +111,7 @@
 
     <table id="result_slip" class="full light">
         <thead>
+            <td></td>
             <td>Index Number</td>
             <td>Full Name</td>
             <td>Class Mark (30)</td>
@@ -121,7 +122,7 @@
         </thead>
         <tbody>
             <tr class="p-lg empty">
-                <td colspan="6">Draw out a class list to start entering class details</td>
+                <td colspan="8">Draw out a class list to start entering class details</td>
             </tr>
         </tbody>
         <tfoot class="no_disp">

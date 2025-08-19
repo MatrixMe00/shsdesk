@@ -54,6 +54,9 @@ $(".reset_table").click(function(){
     $("#result_slip").find(".class_score, .exam_score").html("0")
     $("#result_slip").find(".class_score").blur()
     $("#table_status").html("")
+
+    // check back all students
+    $(".include-student:not(:checked)").prop("checked", true).change();
 })
 
 $("#search").keyup(function(){
@@ -103,8 +106,9 @@ $("form").submit(function(e){
                 $("#result_slip tbody").html("")
                 for(var i=0; i < tableData.length; i++){
                     let tr = "<tr class=\"p-lg\">\n"
-                        tr += " <td>" + tableData[i]["indexNumber"] + "</td>\n"
-                        tr += " <td>" + tableData[i]["Lastname"] + " " + tableData[i]["Othernames"] + "</td>\n"
+                        tr += " <td class=\"td-student cursor-p\"><input type=\"checkbox\" id=\"student" + i + "\" class=\"include-student\" checked tabindex=\"-1\" style=\"min-width: unset !important\" /></td>"
+                        tr += " <td class=\"index_number\">" + tableData[i]["indexNumber"] + "</td>\n"
+                        tr += " <td class=\"lastname\">" + tableData[i]["Lastname"] + " " + tableData[i]["Othernames"] + "</td>\n"
                         tr += " <td contenteditable=\"true\" class=\"white class_score\" data-max=\"30\">0</td>\n"
                         tr += " <td contenteditable=\"true\" class=\"white exam_score\" data-max=\"70\">0</td>\n"
                         tr += " <td class=\"total_score\">0</td>\n"
@@ -136,6 +140,57 @@ $("form").submit(function(e){
         }
     })
 })
+
+$("body").on("click", ".td-student", function(e) {
+    // If the actual click was *on* the checkbox, ignore it
+    if ($(e.target).is('input[type="checkbox"]')) {
+        return;
+    }
+
+    const $row = $(this).closest("tr");
+    const $checkbox = $row.find('input[type="checkbox"]');
+
+    // Toggle the checkbox state programmatically
+    const isChecked = !$checkbox.prop("checked");
+    $checkbox.prop("checked", isChecked).change();
+});
+
+// Only react to changes (whether programmatic or not)
+$("body").on("change", ".td-student input[type='checkbox']", function () {
+    const $row = $(this).closest("tr");
+    const isChecked = $(this).prop("checked");
+    const $tbody = $row.closest("tbody");
+
+    // Apply your row logic
+    $row.find(".class_score, .exam_score")
+        .attr("contenteditable", isChecked)
+        .toggleClass("white", isChecked);
+
+    if (isChecked) {
+        // Find the last checked row (excluding current one)
+        const $lastChecked = $tbody.find(".td-student input[type='checkbox']:checked")
+                                   .not(this)
+                                   .closest("tr")
+                                   .last();
+
+        if ($lastChecked.length) {
+            $row.detach().insertAfter($lastChecked);
+        } else {
+            $row.detach().prependTo($tbody);
+        }
+
+        // Scroll smoothly to new row position
+        $row[0].scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
+
+    } else {
+        // Move unchecked rows to bottom
+        $row.detach().appendTo($tbody);
+    }
+});
+
 
 $("select[name=class]").change(function(){
     const index = $(this).val()
@@ -169,114 +224,156 @@ $("select[name=subject], select[name=semester]").change(function(){
 
 $("#submit_result").click(async function(){
     $(this).prop("disabled", true);
-    let isHaveToken = false; let token = ""
-    const c_id = $("select[name=subject]").val()
+    let isHaveToken = false; let token = "";
+    const c_id = $("select[name=subject]").val();
+    const checked_students = $("#result_slip tbody tr:not(.empty) input[type=checkbox]:checked");
 
-    if(c_id == ""){
-        alert_box("Course has not been selected yet. Please select one to continue", "danger", 8)
-        return
+    if(checked_students.length == 0){
+        alert_box("No student has been selected. Please select at least one to continue", "danger", 8);
+        $(this).prop("disabled", false);
+        return;
     }
 
-    //get a token from the server
+    if(c_id == ""){
+        alert_box("Course has not been selected yet. Please select one to continue", "danger", 8);
+        $(this).prop("disabled", false);
+        return;
+    }
+
+    // 1. Get token
     await $.ajax({
         url: "./submit.php",
-        data: {submit: "getToken"},
+        data: { submit: "getToken" },
         beforeSend: function(){
-            $("#table_status").html("Generating results token...")
+            $("#table_status").html("Generating results token...");
         },
         success: function(response){
-            response = JSON.parse(JSON.stringify(response))
-
-            if(response["error"] == true){
-                $("#table_status").html("Token Generation failed. Please try again later")
+            response = JSON.parse(JSON.stringify(response));
+            if(response["error"] === true){
+                $("#table_status").html("Token Generation failed. Please try again later");
             }else{
-                $("#table_status").html("Token acquired.")
-                token = response["data"]
-                isHaveToken = true
+                $("#table_status").html("Token acquired.");
+                token = response["data"];
+                isHaveToken = true;
             }
         }
-    })
+    });
 
     if(isHaveToken){
-        let success = 0; let fail = 0; let failIndex = []
-        const total = $("#result_slip tbody tr:not(.empty)").length;
-
         const sem = $("select[name=semester]").val();
-        const c_id = $("select[name=subject]").val();
         const p_id = $("select[name=class]").attr("data-selected-class");
         const e_year = $("select[name=year]").attr("data-selected-year");
         const academic_year = $("#academic_year").val();
 
-        // create the result head first
-        await create_result_head(
-            token, c_id, p_id, sem, e_year
-        );
-        
-        for(let i = 0; i < total; i++){
-            const element = $("#result_slip tbody tr").eq(i);
-            const stud_index = element.children("td:first-child").html();
-            const score = parseFloat(element.children(".total_score").html()).toFixed(1);
-            const c_mark = parseFloat(element.children(".class_score").html()).toFixed(1);
-            const e_mark = parseFloat(element.children(".exam_score").html()).toFixed(1);
-            const isLast = (success+fail+1) == total ? true : false;
-            const position = parseInt(element.children(".position").attr("data-position-value"));
-            
-            try{
-                const response = await $.ajax({
-                    url: "./submit.php",
-                    data: {
-                        submit: "submit_result", student_index: stud_index, mark: score,
-                        exam_mark: e_mark, class_mark: c_mark, course_id: c_id, result_token: token,
-                        exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id,
-                        position: position, academic_year: academic_year
-                    },
-                    type: "POST",
-                    timeout: 5000
-                });
+        // 2. Build student data array
+        let students = [];
+        checked_students.each(function(){
+            const $row = $(this).closest("tr");
+            const stud_index = $row.children(".index_number").html();
+            const score = parseFloat($row.children(".total_score").html()).toFixed(1);
+            const c_mark = parseFloat($row.children(".class_score").html()).toFixed(1);
+            const e_mark = parseFloat($row.children(".exam_score").html()).toFixed(1);
+            const position = parseInt($row.children(".position").attr("data-position-value"));
 
-                if(response == "true"){
-                    success += 1
-                }else{
-                    if(response !== "false"){
-                        alert_box(response, "danger", 8)
-                    }
-                    fail += 1
-                    failIndex.push(stud_index)
-                }
+            students.push({
+                student_index: stud_index,
+                mark: score,
+                class_mark: c_mark,
+                exam_mark: e_mark,
+                position: position
+            });
+        });
 
-                if(isLast){
-                    alert_box("Process completed", "success", 3);
-                }
-            }catch(error){
-                let message = "";
-                if(error.statusText == "timeout"){
-                    message = "Connection was timed out due to poor network connection. Please try again later";
-                }else{
-                    message = error.responseText;
-                }
+        // 3. Create the result head first
+        await create_result_head(token, c_id, p_id, sem, e_year);
 
-                alert_box(message, "danger", 8);
+        // 4. Send all students in ONE call with simulated progress
+        let index = 0;
+        const total = students.length;
+
+        // simulate per-student progress messages
+        const progressInterval = setInterval(() => {
+            if(index < total){
+                $("#table_status").html(`Processing ${index+1}/${total}...`);
+                index++;
             }
-            $("#table_status").html("Saving " + stud_index + " | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total);
-        }
+        }, 150);
 
-        $("#table_status").html("Submission completed! | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
+        try {
+            const response = await $.ajax({
+                url: "./submit.php",
+                type: "POST",
+                timeout: 15000,
+                data: {
+                    submit: "submit_results",
+                    students: JSON.stringify(students),
+                    course_id: c_id,
+                    result_token: token,
+                    exam_year: e_year,
+                    semester: sem,
+                    program_id: p_id,
+                    academic_year: academic_year
+                }
+            });
 
-        if(fail > 0){
-            $("#table_status").append("<br>Failed Submission: " + failIndex.join(", "));
-            deleteTokenResults(token);
+            clearInterval(progressInterval);
+            $("#table_status").html(`Processing ${total}/${total}...`);
+
+            let parsed;
+            try {
+                parsed = JSON.parse(response);
+            } catch(e) {
+                parsed = { success: false, message: response };
+            }
+
+            if(parsed.success){
+                const failIndex = parsed.failed || [];
+                const fail = failIndex.length;
+                const success = total - fail;
+
+                $("#table_status").html(
+                    `Submission completed! | Success: ${success} of ${total} | Fail: ${fail} of ${total}`
+                );
+
+                if(fail > 0){
+                    $("#table_status").append("<br>Failed Submission: " + failIndex.join(", "));
+                    deleteTokenResults(token); // rollback if failures exist
+                } else {
+                    alert_box("Results have been submitted for review", "success", 3);
+                }
+            } else {
+                alert_box(parsed.message || "Submission failed", "danger", 8);
+                deleteTokenResults(token);
+            }
+
+        } catch(error) {
+            clearInterval(progressInterval);
+            let message = "";
+            if(error.statusText === "timeout"){
+                message = "Connection timed out. Please try again later.";
+            }else{
+                message = error.responseText;
+            }
+            alert_box(message, "danger", 8);
         }
     }
 
     $(this).prop("disabled", false);
-})
+});
 
 $("#save_result").click(async function(){
     $(this).prop("disabled", true);
     let isHaveToken = false; let token = ""
-    const c_id = $("select[name=subject]").val()
+    const c_id = $("select[name=subject]").val();
+    const checked_students = $("#result_slip tbody tr:not(.empty) input[type=checkbox]:checked");
     const new_save = true;
 
+    if(checked_students.length == 0){
+        alert_box("No student has been selected. Please select at least one to continue", "danger", 8);
+        $(this).prop("disabled", false);
+        return;
+    }
+    
     if(c_id == ""){
         alert_box("Course has not been selected yet. Please select one to continue", "danger", 8)
         return
@@ -305,7 +402,7 @@ $("#save_result").click(async function(){
 
     if(isHaveToken){
         let success = 0; let fail = 0; let failIndex = []
-        const total = $("#result_slip tbody tr:not(.empty)").length;
+        const total = checked_students.length;
 
         const sem = $("select[name=semester]").val();
         const c_id = $("select[name=subject]").val();
@@ -313,8 +410,8 @@ $("#save_result").click(async function(){
         const e_year = $("select[name=year]").attr("data-selected-year");
         
         for(let i = 0; i < total; i++){
-            const element = $("#result_slip tbody tr").eq(i);
-            const stud_index = element.children("td:first-child").html();
+            const element = checked_students.eq(i).closest("tr");
+            const stud_index = element.children(".index_number").html();
             const score = parseFloat(element.children(".total_score").html()).toFixed(1);
             const c_mark = parseFloat(element.children(".class_score").html()).toFixed(1);
             const e_mark = parseFloat(element.children(".exam_score").html()).toFixed(1);

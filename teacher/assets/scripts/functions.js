@@ -794,7 +794,9 @@ async function deleteTokenResults(token, table="results"){
         timeout: 30000,
         success: function(response){
             if(response == "success"){
-                alert_box("Result ready for re-entry", "secondary");
+                if(table == "results"){
+                    alert_box("Result ready for re-entry", "secondary");
+                }
             }else{
                 alert_box(response, "danger");
                 console.log(response);

@@ -1,4 +1,6 @@
-saved_token = null
+var saved_token = null;
+var academic_year = null;
+
 $(document).ready(function(){
     const current_tab = $("#lhs .tab.active").attr("data-current-tab")
 
@@ -154,15 +156,17 @@ $("button.class_single, .back.class_single").click(function(){
 
                     if(table_id == "save_data_table"){
                         saved_token = token;
+                        academic_year = response["academic_year"] || null;
                         tbody.html("");
                         const tableData = response["message"];
 
                         for(var i=0; i < tableData.length; i++){
                             let tr = "<tr class=\"p-lg\">\n"
-                                tr += " <td>" + tableData[i]["indexNumber"] + "</td>\n"
-                                tr += " <td>" + tableData[i]["Lastname"] + " " + tableData[i]["Othernames"] + "</td>\n"
-                                tr += " <td contenteditable=\"true\" class=\"white class_score\" data-max=\"30\" data-initial=\"" + tableData[i]["class_mark"] + "\">" + tableData[i]["class_mark"] + "</td>\n"
-                                tr += " <td contenteditable=\"true\" class=\"white exam_score\" data-max=\"70\" data-initial=\"" + tableData[i]["exam_mark"] + "\">"+ tableData[i]["exam_mark"] +"</td>\n"
+                                tr += " <td class=\"td-student cursor-p\"><input type=\"checkbox\" id=\"student" + i + "\" class=\"include-student\" " + (tableData[i]?.added ? "":"checked") + " tabindex=\"-1\" style=\"min-width: unset !important\" /></td>"
+                                tr += " <td class=\"index_number\">" + tableData[i]["indexNumber"] + "</td>\n"
+                                tr += " <td class=\"lastname\">" + tableData[i]["Lastname"] + " " + tableData[i]["Othernames"] + "</td>\n"
+                                tr += " <td contenteditable=\"" + (tableData[i]?.added ? "false" : "true") + "\" class=\"" + (tableData[i]?.added ? "" : "white") + " class_score\" data-max=\"30\" data-initial=\"" + tableData[i]["class_mark"] + "\">" + tableData[i]["class_mark"] + "</td>\n"
+                                tr += " <td contenteditable=\"" + (tableData[i]?.added ? "false" : "true") + "\" class=\"" + (tableData[i]?.added ? "" : "white") + " exam_score\" data-max=\"70\" data-initial=\"" + tableData[i]["exam_mark"] + "\">"+ tableData[i]["exam_mark"] +"</td>\n"
                                 tr += " <td class=\"total_score\">" + tableData[i]["mark"] + "</td>\n"
                                 tr += " <td class=\"grade\">" + giveGrade(tableData[i]["mark"],$("input#result_type").val()) + "</td>\n"
                                 tr += " <td class=\"position\"></td>\n"
@@ -216,16 +220,72 @@ $("button.class_single, .back.class_single").click(function(){
     }
 })
 
+$("body").on("click", ".td-student", function(e) {
+    // If the actual click was *on* the checkbox, ignore it
+    if ($(e.target).is('input[type="checkbox"]')) {
+        return;
+    }
+
+    const $row = $(this).closest("tr");
+    const $checkbox = $row.find('input[type="checkbox"]');
+
+    // Toggle the checkbox state programmatically
+    const isChecked = !$checkbox.prop("checked");
+    $checkbox.prop("checked", isChecked).change();
+});
+
+$("body").on("change", ".td-student input[type='checkbox']", function () {
+    const $row = $(this).closest("tr");
+    const isChecked = $(this).prop("checked");
+    const $tbody = $row.closest("tbody");
+
+    // Apply your row logic
+    $row.find(".class_score, .exam_score")
+        .attr("contenteditable", isChecked)
+        .toggleClass("white", isChecked);
+
+    if (isChecked) {
+        // Find the last checked row (excluding current one)
+        const $lastChecked = $tbody.find(".td-student input[type='checkbox']:checked")
+                                   .not(this)
+                                   .closest("tr")
+                                   .last();
+
+        if ($lastChecked.length) {
+            $row.detach().insertAfter($lastChecked);
+        } else {
+            $row.detach().prependTo($tbody);
+        }
+
+        // Scroll smoothly to new row position
+        $row[0].scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
+
+    } else {
+        // Move unchecked rows to bottom
+        $row.detach().appendTo($tbody);
+    }
+});
+
+
 $("#submit_result").click(async function(){
     $(this).prop("disabled", true);
     let isHaveToken = false; let token = ""
     let c_id = 0, p_id = 0, e_year = 0, sem = 0;
+    const checked_students = $("#save_data_table tbody tr:not(.empty) input[type=checkbox]:checked");
+    if(checked_students.length == 0){
+        alert_box("No student has been selected. Please select at least one to continue", "danger", 8);
+        $(this).prop("disabled", false);
+        return;
+    }
 
     //search for other details about the school
     await getPCES(saved_token).then((response) => {
         response = JSON.parse(JSON.stringify(response))
-        c_id = parseInt(response["course_id"]); p_id = parseInt(response["program_id"])
-        e_year = parseInt(response["exam_year"]); sem = parseInt(response["semester"])
+        c_id = parseInt(response["course_id"]); p_id = parseInt(response["program_id"]);
+        e_year = parseInt(response["exam_year"]); sem = parseInt(response["semester"]);
     }).catch((err)=>{
         alert_box(err, "danger", 7)
     })
@@ -244,70 +304,108 @@ $("#submit_result").click(async function(){
     })
 
     if(isHaveToken){
-        let success = 0; let fail = 0; let failIndex = []
-        const total = $("#save_data_table tbody tr:not(.empty)").length;
+        let success = 0; let fail = 0; let failIndex = [];
+
+        // 2. Build student data array
+        let students = [];
+        checked_students.each(function(){
+            const $row = $(this).closest("tr");
+            const stud_index = $row.children(".index_number").html();
+            const score = parseFloat($row.children(".total_score").html()).toFixed(1);
+            const c_mark = parseFloat($row.children(".class_score").html()).toFixed(1);
+            const e_mark = parseFloat($row.children(".exam_score").html()).toFixed(1);
+            const position = parseInt($row.children(".position").attr("data-position-value"));
+
+            students.push({
+                student_index: stud_index,
+                mark: score,
+                class_mark: c_mark,
+                exam_mark: e_mark,
+                position: position
+            });
+        });
 
         // create a header slip
         await create_result_head(
             token, c_id, p_id, sem, e_year
         );
-        
-        for(let i = 0; i < total; i++){
-            const element = $("#save_data_table tbody tr").eq(i);
-            const stud_index = element.children("td:first-child").html();
-            const score = parseFloat(element.children(".total_score").html()).toFixed(1);
-            const c_mark = parseFloat(element.children(".class_score").html()).toFixed(1);
-            const e_mark = parseFloat(element.children(".exam_score").html()).toFixed(1);
-            const isLast = (success+fail+1) == total ? true : false;
-            const position = parseInt(element.children(".position").attr("data-position-value"));
-            
-            try{
-                const response = await $.ajax({
-                    url: "./submit.php",
-                    data: {
-                        submit: "submit_result", student_index: stud_index, mark: score,
-                        exam_mark: e_mark, class_mark: c_mark, course_id: c_id, result_token: token,
-                        exam_year: e_year, semester: sem, isFinal: isLast, program_id: p_id, prev_token: saved_token,
-                        position: position
-                    },
-                    type: "POST",
-                    timeout: 5000
-                });
 
-                if(response == "true"){
-                    success += 1
-                }else{
-                    fail += 1
-                    failIndex.push(stud_index)
-                }
+        // 4. Send all students in ONE call with simulated progress
+        let index = 0;
+        const total = students.length;
 
-                if(isLast){
-                    alert_box("Process completed", "success", 3);
-                }
-            }catch(error){
-                let message = "";
-                if(error.statusText == "timeout"){
-                    message = "Connection was timed out due to poor network connection. Please try again later";
-                }else{
-                    message = error.responseText;
-                }
-
-                alert_box(message, "danger", 8);
+        // simulate per-student progress messages
+        var progressInterval = setInterval(() => {
+            if(index < total){
+                $("#table_status").html(`Processing ${index+1}/${total}...`);
+                index++;
             }
-            $("#table_status").html("Saving " + stud_index + " | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total);
-        }
+        }, 150);
+        
+        try {
+            const response = await $.ajax({
+                url: "./submit.php",
+                type: "POST",
+                timeout: 15000,
+                data: {
+                    submit: "submit_results",
+                    students: JSON.stringify(students),
+                    course_id: c_id,
+                    result_token: token,
+                    exam_year: e_year,
+                    semester: sem,
+                    program_id: p_id,
+                    academic_year: academic_year || null,
+                    prev_token: saved_token,
+                }
+            });            
 
-        $("#table_status").html("Submission completed! | Success: " + success + " of " + total + " | " + "Fail: " + fail + " of " + total)
+            clearInterval(progressInterval);
+            $("#table_status").html(`Processing ${total}/${total}...`);
 
-        if(fail > 0){
-            $("#table_status").append("<br>Failed Submission: " + failIndex.join(", "));
-            deleteTokenResults(token);
-            alert_box(fail + " results could not be submitted", "error", 8);
-        }else{
-            // reload page
-            setTimeout(function(){
-                $(".nav_links .tab.active").click();
-            }, 2000);
+            let parsed;
+            try {
+                parsed = JSON.parse(response);
+            } catch(e) {
+                parsed = { success: false, message: response };
+            }
+
+            if(parsed.success){
+                const failIndex = parsed.failed || [];
+                const fail = failIndex.length;
+                const success = total - fail;
+
+                $("#table_status").html(
+                    `Submission completed! | Success: ${success} of ${total} | Fail: ${fail} of ${total}`
+                );
+
+                if(fail > 0){
+                    $("#table_status").append("<br>Failed Submission: " + failIndex.join(", "));
+                    deleteTokenResults(token, "save"); // rollback if failures exist
+                } else{
+                    alert_box("Results have been submitted for review", "success", 3);
+                    deleteTokenResults(saved_token, "save"); // remove old token records
+                    deleteTokenResults(token, "save"); // remove old token records
+
+                    // reload page
+                    setTimeout(function(){
+                        $(".nav_links .tab.active").click();
+                    }, 2000);
+                }
+            } else {
+                alert_box(parsed.message || "Submission failed", "danger", 8);
+                deleteTokenResults(token, "save");
+            }
+
+        } catch(error) {
+            clearInterval(progressInterval);
+            let message = "";
+            if(error.statusText === "timeout"){
+                message = "Connection timed out. Please try again later.";
+            }else{
+                message = error.responseText;
+            }
+            alert_box(message, "danger", 8);
         }
     }
 
@@ -319,12 +417,21 @@ $("#save_result").click(async function(){
     let isHaveToken = false; let token = saved_token
     let c_id = 0, p_id = 0, e_year = 0, sem = 0;
     const new_save = false;
+    const checked_students = $("#save_data_table tbody tr:not(.empty) input[type=checkbox]:checked");
+    let from_reject = false;
+
+    if(checked_students.length == 0){
+        alert_box("No student has been selected. Please select at least one to continue", "danger", 8);
+        $(this).prop("disabled", false);
+        return;
+    }
 
     //search for other details about the school
     await getPCES(saved_token).then((response) => {
         response = JSON.parse(JSON.stringify(response))
-        c_id = parseInt(response["course_id"]); p_id = parseInt(response["program_id"])
-        e_year = parseInt(response["exam_year"]); sem = parseInt(response["semester"])
+        c_id = parseInt(response["course_id"]); p_id = parseInt(response["program_id"]);
+        e_year = parseInt(response["exam_year"]); sem = parseInt(response["semester"]);
+        from_reject = response["from_reject"] || false;
     }).catch((err)=>{
         alert_box(err, "danger", 7)
     })
@@ -336,20 +443,29 @@ $("#save_result").click(async function(){
 
     //get a token from the server
     if(token !== ""){
-        isHaveToken = true;
+        if(from_reject){
+            isHaveToken = true;
+        }else{
+            token = await getAToken("table_status").then((response)=>{
+                isHaveToken = true; return response;
+            }).catch((err)=>{
+                alert_box(err,"danger"); isHaveToken = false;
+                return "";
+            })
+        }
     }
 
     if(isHaveToken){
         let success = 0; let fail = 0; let failIndex = []
-        const total = $("#save_data_table tbody tr:not(.empty)").length;
+        const total = checked_students.length;
         
         for(let i = 0; i < total; i++){
-            const element = $("#save_data_table tbody tr").eq(i);
-            const stud_index = element.children("td:first-child").html();
+            const element = checked_students.eq(i).closest("tr");
+            const stud_index = element.children(".index_number").html();
             const score = parseFloat(element.children(".total_score").html()).toFixed(1);
             const c_mark = parseFloat(element.children(".class_score").html()).toFixed(1);
             const e_mark = parseFloat(element.children(".exam_score").html()).toFixed(1);
-            const isLast = (success+fail+1) == total ? true : false
+            const isLast = (i+1) == total ? true : false
             
             try{
                 const response = await $.ajax({
@@ -391,8 +507,15 @@ $("#save_result").click(async function(){
 
         if(fail > 0){
             $("#table_status").append("<br>Failed Saves: " + failIndex.join(", "));
-            deleteTokenResults(token, "save");
+
+            if(!from_reject){
+                deleteTokenResults(token, "save");
+            }
             alert_box(fail + " results could not be saved", "error", 8);
+        }else if(!from_reject){
+            // set the button with this new token
+            $("button.class_single[data-token=" + saved_token + "]").attr("data-token", token);
+            saved_token = token; // update the saved token
         }
     }
 
