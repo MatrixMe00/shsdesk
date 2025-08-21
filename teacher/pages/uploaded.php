@@ -332,6 +332,7 @@
             </tfoot>
         </table>
         <p>Status: <span id="table_status"></span></p>
+        <span class="item-event cursor-p no_disp" id="fail-reason">See Fail Reasons</span>
     </div>
 </section>
 
@@ -352,6 +353,8 @@
                 </div>
             </form>
 </section>
+
+<?php require_once "reason_block.php" ?>
 
 <script src="<?= "$url/assets/scripts/uploaded.js?v=".time() ?>"></script>
 <?php close_connections() ?>

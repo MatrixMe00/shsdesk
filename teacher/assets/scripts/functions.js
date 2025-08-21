@@ -909,6 +909,61 @@ function assignPositions(table_element){
 }
 
 /**
+ * Populates the "failed reasons" table with data
+ * @param {Object} data - Failed reasons in the format { index_number: reason }
+ * @param {Object} names - Mapping of { index_number: fullname }
+ * @param {string} parent_id - ID of the table container (default: "fail_block")
+ */
+function insertFailedReason(data, names = {}, button_id = "fail-reason", parent_id = "fail_block") {
+    const tbody = $("#" + parent_id).find("tbody");
+    tbody.empty(); // clear existing rows
+
+    if (data && Object.keys(data).length > 0) {
+        Object.entries(data).forEach(([index_number, reason]) => {
+            const fullname = names[index_number] || "";
+            const tr = `
+                <tr>
+                    <td class="index_number">${index_number}</td>
+                    <td class="lastname">${fullname}</td>
+                    <td>${reason}</td>
+                </tr>`;
+            tbody.append(tr);
+        });
+    } else {
+        tbody.append(`
+            <tr>
+                <td colspan="3">No failed reasons found</td>
+            </tr>`);
+    }
+
+    $("#" + button_id).removeClass("no_disp"); // Show the button if it was hidden
+}
+
+/**
+ * Extracts selected students from the table into { index_number: fullname }
+ * @param {jQuery} $table - jQuery element of the table
+ * @returns {Object} - Mapping of { index_number: fullname } for checked rows
+ */
+function getSelectedStudents($table) {
+    const selected = {};
+
+    $table.find("tbody tr").each(function() {
+        const $row = $(this);
+        const isChecked = $row.find(".td-student input[type=checkbox]").is(":checked");
+
+        if (isChecked) {
+            const index_number = $row.find("td.index_number").text().trim();
+            const fullname = $row.find("td.lastname").text().trim();
+            if (index_number) {
+                selected[index_number] = fullname || "";
+            }
+        }
+    });
+
+    return selected;
+}
+
+/**
  * Returns a promise
  * @param {*} ms Time in miliseconds
  * @returns {Promise}

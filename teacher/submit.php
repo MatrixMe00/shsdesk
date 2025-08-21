@@ -297,13 +297,14 @@
                     $exam_year = $_POST["exam_year"] ?? null;
                     $semester = $_POST["semester"] ?? null;
                     $program_id = $_POST["program_id"] ?? null;
-                    $academic_year = $_POST["academic_year"] ?? getAcademicYear(now(), false);
+                    $academic_year = formatAcademicYear($_POST["academic_year"] ?? getAcademicYear(now()), false);
                     $prev_token = $_POST["prev_token"] ?? null;
                     $assign_positions = $_POST["assign_positions"] ?? 0;
                 
                     $response = [
                         "success" => false,
                         "failed" => [],
+                        "reason" => [], // to hold reasons for failure
                         "message" => ""
                     ];
                 
@@ -311,6 +312,15 @@
                         $response["message"] = "Missing required parameters";
                         echo json_encode($response);
                         break;
+                    }
+
+                    // get all data inserted for this course
+                    $inserted_data = decimalIndexArray(fetchData1("indexNumber", "results", 
+                        "course_id=$course_id AND exam_year=$exam_year AND semester=$semester AND academic_year='$academic_year'", 0
+                    ));
+
+                    if($inserted_data){
+                        $inserted_data = array_column($inserted_data, "indexNumber");
                     }
                 
                     foreach($students as $stud){
@@ -322,21 +332,13 @@
                 
                         if(empty($student_index) || $mark === null || $class_mark === null || $exam_mark === null){
                             $response["failed"][] = $student_index;
+                            $response["reason"][$student_index] = "Missing mark data for this student";
                             continue;
                         }
                 
-                        $isInserted = fetchData1(
-                            "COUNT(indexNumber) as total",
-                            "results",
-                            "indexNumber='$student_index' 
-                             AND course_id=$course_id 
-                             AND exam_year=$exam_year 
-                             AND semester=$semester 
-                             AND academic_year='$academic_year'"
-                        )["total"];
-                
-                        if(intval($isInserted) > 0){
+                        if($inserted_data && in_array($student_index, $inserted_data)){
                             $response["failed"][] = $student_index;
+                            $response["reason"][$student_index] = "Result for this student already exists";
                             continue;
                         }
                 
@@ -352,6 +354,7 @@
                 
                         if(!$stmt->execute()){
                             $response["failed"][] = $student_index;
+                            $response["reason"][$student_index] = "Error inserting result information for this student";
                         }
                     }
                 
@@ -393,6 +396,8 @@
 
                     if(!$academic_year){
                         $academic_year = getAcademicYear(now(), false);
+                    }else{
+                        $academic_year = formatAcademicYear($academic_year, false);
                     }
 
                     $sql = "INSERT INTO recordapproval (result_token, school_id, teacher_id, program_id, course_id, exam_year, semester, academic_year) VALUES (?,?,?,?,?,?,?,?)";
@@ -559,7 +564,7 @@
                 break;
             case "pull_results":
                 $token_id = $_POST["token_id"] ?? null;
-                $response_type = strtolower($_POST["response_type"]) ?? null;
+                $response_type = strtolower($_POST["response_type"] ?? "");
                 $responses = ["approved","rejected","pending","saved"];
 
                 if(is_null($token_id) || empty($token_id)){
@@ -815,7 +820,7 @@
     }else{
         $message = "No submit request delivered. No operation is performed.";
 
-        if($_REQUEST["response_type"] == "json"){
+        if(isset($_REQUEST["response_type"]) && $_REQUEST["response_type"] == "json"){
             header("Content-type: application/json");
             $message = [
                 "status" => $status ?? false,

@@ -98,7 +98,7 @@
                                 for($row=$row_start; $row <= $max_row; $row++){
                                     //grab columns
                                     for($col = 0; $col < $headerCounter; $col++){
-                                        $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
+                                        $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue() ?? "";
                                         
                                         switch ($col) {
                                             case 0:
@@ -182,7 +182,7 @@
                                     $hidden_index = null;
                                     //grab columns [reject last column, column H]
                                     for($col = 0; $col <= $headerCounter; $col++){
-                                        $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
+                                        $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue() ?? "";
                                         switch ($col) {
                                             case 0:
                                                 $indexNumber = $cellValue;
@@ -297,8 +297,6 @@
                             $message = ""; $insert_count = 0; $houses = [];
                             $house_data = fetchData("id, title", "houses", "schoolID=$user_school_id", 0);
                             $houses = $house_data == "empty" ? [] : array_change_key_case(pluck(decimalIndexArray($house_data), "title", "id"));
-                            $houses = trim_array_keys($houses);
-                            
                             $program_data = fetchData1("program_id, program_name, short_form", "program", "school_id=$user_school_id", 0);
                             $programs = $program_data == "empty" ? [] : array_change_key_case(pluck(decimalIndexArray($program_data), "program_name", "program_id"));
                             $programs_ = $program_data == "empty" ? [] : array_change_key_case(pluck(decimalIndexArray($program_data), "short_form", "program_id"));
@@ -309,7 +307,7 @@
                                 $skip_row = 0;
                                 //grab columns
                                 for($col = 0; $col < $headerCounter; $col++){
-                                    $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue();
+                                    $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue() ?? "";
                                     $cellValue = trim($cellValue);
 
                                     switch ($col) {
@@ -334,6 +332,11 @@
                                             break;
                                         case 4:
                                             $studentYear = numeric_strict($cellValue);
+                                            if($studentYear > 3){
+                                                echo "Invalid form level provided. From level ranges from 1 to 3";
+                                                $connect2->rollback();
+                                                exit(1);
+                                            }
                                             break;
                                         case 5:
                                             $house = strtolower($cellValue);
@@ -383,7 +386,7 @@
         
                                 try {
                                     //check if index number exists and insert data into database
-                                    $index = fetchData1("indexNumber, program_id","students_table","indexNumber='$indexNumber' OR (Lastname='$Lastname' AND Othernames='$Othernames')");
+                                    $index = fetchData1("indexNumber, program_id, studentYear","students_table","indexNumber='$indexNumber' OR (Lastname='$Lastname' AND Othernames='$Othernames')");
             
                                     if($index == "empty"){
                                         $password = password_hash("Password@1", PASSWORD_DEFAULT);
@@ -407,6 +410,17 @@
                                         $sql = "UPDATE students_table SET program_id=? WHERE indexNumber=?";
                                         $stmt = $connect2->prepare($sql);
                                         $stmt->bind_param("is",$program_id,$indexNumber);
+    
+                                        if($stmt->execute()){
+                                            if($row == $max_row){
+                                                $message = "success";
+                                            }
+                                            ++$insert_count;
+                                        }
+                                    }elseif($index["studentYear"] == 0 || empty($index["studentYear"])){
+                                        $sql = "UPDATE students_table SET studentYear=? WHERE indexNumber=?";
+                                        $stmt = $connect2->prepare($sql);
+                                        $stmt->bind_param("is",$studentYear,$indexNumber);
     
                                         if($stmt->execute()){
                                             if($row == $max_row){

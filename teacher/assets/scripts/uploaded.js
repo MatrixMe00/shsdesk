@@ -286,6 +286,9 @@ $("#submit_result").click(async function(){
         response = JSON.parse(JSON.stringify(response))
         c_id = parseInt(response["course_id"]); p_id = parseInt(response["program_id"]);
         e_year = parseInt(response["exam_year"]); sem = parseInt(response["semester"]);
+
+        $("#fail-reason").addClass("no_disp");
+        $("#fail_block table tbody").html("");
     }).catch((err)=>{
         alert_box(err, "danger", 7)
     })
@@ -381,11 +384,10 @@ $("#submit_result").click(async function(){
 
                 if(fail > 0){
                     $("#table_status").append("<br>Failed Submission: " + failIndex.join(", "));
-                    deleteTokenResults(token, "save"); // rollback if failures exist
+                    insertFailedReason(parsed.reason, getSelectedStudents($("#save_data_table")));
+                    deleteTokenResults(token); // rollback if failures exist
                 } else{
                     alert_box("Results have been submitted for review", "success", 3);
-                    deleteTokenResults(saved_token, "save"); // remove old token records
-                    deleteTokenResults(token, "save"); // remove old token records
 
                     // reload page
                     setTimeout(function(){
@@ -597,7 +599,12 @@ $(".reset_table").click(function(){
         return $(this).attr("data-initial")
     })
     $("#save_data_table").find(".class_score").blur()
+    $("#fail-reason").addClass("no_disp");
+
     $("#table_status").html("")
+
+    // check back all students
+    $(".include-student:not(:checked)").prop("checked", true).change();
 })
 
 $("button.pass_to_save").click(function(){
@@ -702,4 +709,8 @@ $("body").on("blur",".class_score, .exam_score", function(){
     grade.html(giveGrade(total_score, result_type));
 
     assignPositions(element.parents("table"));
+})
+
+$("#fail-reason").click(function(){
+    $("#fail_block").removeClass("no_disp");
 })
