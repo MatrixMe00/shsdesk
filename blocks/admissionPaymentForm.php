@@ -44,8 +44,7 @@
                     <input type="text" name="pay_amount" id="pay_amount" 
                     title="This is the amount you will be charged from your mobile money wallet" value="GHC <?= $system_usage_price ?>" data-init="<?= $system_usage_price ?>" readonly>
                 </label>
-                    <span class="item-event info" style="color:red">NB: This is only complementing the manual admission procedure
-                    (you will be charged at most GHC <?= $system_usage_price ?>.45 as processing fee [e-tax inclusive])</span>
+                    <span class="item-event info" style="color:red">NB: You will be charged an extra GHC <?= number_format($system_up_gross, 2) ?> as bank charge</span>
                 </label>
             </div>
         </section>

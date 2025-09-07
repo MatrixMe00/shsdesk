@@ -4,6 +4,7 @@ let payment_received = false;
 let transaction_reference = "";
 let retry_counter = 0;
 let api_key = ""; let school_split_code = "";
+let cust_amount = 0;
 
 //elements
 const paymentForm = $("form[name=paymentForm]");
@@ -12,10 +13,27 @@ const selectedSchool = $("#school_select");
 //variable to be used for tracking
 trackKeeper = null;
 
+// get the system price
+$(document).ready(async function(){
+    cust_amount = await ajaxCall({
+        url: "submit.php",
+        formData: {submit: "get_admission_price"},
+        method: "POST",
+        returnType: "json"
+    });
+    
+    cust_amount = parseFloat(cust_amount["price"]) || 0;
+})
+
 function payWithPaystack(){
+    if(parseFloat(cust_amount) <= 0){
+        alert_box("Could not find payment price");
+        return;
+    }
+
     return new Promise((resolve, reject) => {
-        let cust_amount = $("#pay_amount").val().split(" ");
-        cust_amount = parseInt(cust_amount[1]) * 100;
+        // cust_amount = parseInt(cust_amount[1]) * 100;
+        cust_amount = cust_amount * 100;
         const cust_email = paymentForm.find("#pay_email").val();
 
         try {

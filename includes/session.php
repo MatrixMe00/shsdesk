@@ -68,6 +68,9 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
     if(!isset($_SESSION["admin_mode"])){
         $_SESSION["admin_mode"] = "admission";
     }
+
+    // staff portal menu
+    $staff_menu = $_SESSION["staff_menu"] ?? false;
 }
 if(isset($_SESSION["student_id"]) && !is_null($_SESSION["student_id"])){
     $student = fetchData1("*","students_table","indexNumber='".$_SESSION["student_id"]."'");

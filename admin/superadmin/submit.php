@@ -762,6 +762,119 @@
             echo json_encode([
                 'status' => true
             ]);
+        }elseif($submit == "edit_user_role"){
+            $role_id = $_POST["id"] ?? null;
+            $price = $_POST["price"] ?? 0;
+
+            if(is_null($role_id) || empty($role_id) || intval($role_id) <= 0){
+                $message = "No role was selected";
+            }elseif($price < 0){
+                $message = "Please provide at least one permission for this role";
+            }else{
+                $sql = "UPDATE roles SET price=? WHERE id=?";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("di", $price, $role_id);
+
+                if($stmt->execute()){
+                    $message = "success";
+                    $success = true;
+                }else{
+                    $message = "An error occured while sending data into database. Please try again later";
+                }
+            }
+
+            echo json_encode(["success" => $success ?? false, "message" => $message]);
+        }elseif($submit == "add_user_role"){
+            $title = $_POST["title"] ?? null;
+            $price = $_POST["price"] ?? 0;
+            $access = $_POST["access"] ?? 3;
+            $is_system = $_POST["system_role"] ?? 0;
+
+            if(is_null($title) || empty($title)){
+                $message = "No title was provided for the role";
+            }elseif($price < 0){
+                $message = "Invalid price value for this role";
+            }elseif(decimalIndexArray(fetchData("title", "roles", ["title='$title'", "school_id = 0"], 0, "AND")) != false){
+                $message = "Role title already exists. Please choose another title";
+            }else{
+                $sql = "INSERT INTO roles (title, price, access, is_system) VALUES (?,?,?,?)";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("sdii", $title, $price, $access, $is_system);
+
+                if($stmt->execute()){
+                    $message = "success";
+                    $success = true;
+                }else{
+                    $message = "An error occured while sending data into database. Please try again later";
+                }
+            }
+
+            echo json_encode(["success" => $success ?? false, "message" => $message]);
+        }elseif($submit == "delete_user_role"){
+            $role_id = $_POST["id"] ?? null;
+
+            if(is_null($role_id) || empty($role_id) || intval($role_id) <= 0){
+                $message = "No role was selected";
+            }elseif(intval(fetchData("COUNT(user_id) as total", "admins_table", "role=$role_id")["total"]) > 0){
+                $message = "Role is currently assigned to some users. You cannot delete it";
+                $can_switch = true;
+            }else{
+                $sql = "DELETE FROM roles WHERE id=?";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("i", $role_id);
+
+                if($stmt->execute()){
+                    $message = "success";
+                    $success = true;
+                }else{
+                    $message = "An error occured while sending data into database. Please try again later";
+                }
+            }
+
+            echo json_encode(["success" => $success ?? false, "message" => $message, "can_switch" => $can_switch ?? false]);
+        }elseif($submit == "switch_user_role"){
+            $delete_id = $_POST["delete_id"] ?? null;
+            $new_id = fetchData("id", "roles", ["title='{$_POST['switch_title']}'", "school_id = 0"], 1, "AND")["id"] ?? null;
+            $should_delete = $_POST["should_delete"] ?? 0;
+            
+            if(is_null($delete_id) || empty($delete_id) || intval($delete_id) <= 0){
+                $message = "No role was selected for deletion";
+            }elseif(is_null($new_id) || empty($new_id) || intval($new_id) <= 0){
+                $message = "No new role or an unidentified role was selected to switch to";
+            }elseif($delete_id == $new_id){
+                $message = "You cannot switch to the same role";
+            }else{
+                $connect->begin_transaction();
+                $sql = "UPDATE admins_table SET role=? WHERE role=?";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("ii", $new_id, $delete_id);
+
+                if($stmt->execute()){
+                    if(intval($should_delete) === 1){
+                        $sql = "DELETE FROM roles WHERE id=?";
+                        $stmt = $connect->prepare($sql);
+                        $stmt->bind_param("i", $delete_id);
+
+                        if($stmt->execute()){
+                            $connect->commit();
+                            $message = "success";
+                            $success = true;
+                        }else{
+                            $connect->rollback();
+                            $message = "An error occured while deleting the old role from database. Please try again later";
+                        }
+                    }else{
+                        $connect->commit();
+                        $message = "success";
+                        $success = true;
+                    }
+                }else{
+                    $connect->rollback();
+                    $message = "An error occured while sending data into database. Please try again later";
+                }
+            }
+            
+            echo json_encode(["success" => $success ?? false, "message" => $message]);
         }else{
             echo "Submission value was not present";
         }

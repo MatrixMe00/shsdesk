@@ -125,14 +125,14 @@
     </div>
     <div class="body flex">
         <div class="btn p-med wmax-sm flex-eq flex flex-wrap sm-auto gap-sm w-full">
-            <button id="auto_gen" class="teal"><?php
+            <button id="auto_gen" class="teal" data-refresh-at="<?= $url ?>/admin/submit.php"><?php
                 if($user_details["role"] > 2){
                     echo "Get Latest Results";
                 }else{
                     echo "Update";
                 }
             ?></button>
-            <?php if($isAdmin): ?>
+            <?php if($isAdmin && !$staff_menu): ?>
             <button id="trans_split" class="pink">Trans Account</button>
             <button id="close_trans" class="red no_disp">Close Block</button>
             <?php endif; ?>
@@ -324,7 +324,7 @@
 </section>
 <?php endif;?>
 
-<?php if($isAdmin || $admin_access > 3){?>
+<?php if(($isAdmin && $staff_menu) || $admin_access > 3){?>
 <section class="section_block">
     <div class="head">
         <h3>Admin<?php if($user_details["role"] <= 2){echo "s"; }?></h3>
@@ -442,7 +442,7 @@
 <?php if(!$is_chass): ?>
 <section class="section_block">
     <div class="head">
-        <h3>School Head<?php if($user_details["role"] <= 2){echo "s"; }?></h3>
+        <h3><?= $role_id <= 2 ? "School Heads" : "School Account" ?></h3>
     </div>
     <?php
         if($user_school_id > 0){

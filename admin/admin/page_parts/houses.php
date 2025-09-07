@@ -35,6 +35,17 @@
         ["join"=>"house_allocation houses", "alias" => "ho h", "on" => "houseID id"],
         ["h.schoolID=$user_school_id", "studentGender='Female'", "boardingStatus='$stat'", "current_data=1"],0,"AND"
     )["total"];
+
+    // academic years for the past 3 years
+    $academic_years = [];
+    $academic_dates = [date("Y"), date("Y", strtotime("-2 year"))];
+    for($i = 0; $i < 3; $i++){
+        $academic_years[] = getAcademicYear(date("Y-m-d", strtotime("-$i year")), false);
+    }
+
+    if($academic_years){
+        $academic_years = "'".implode("', '", $academic_years)."'";
+    }
 ?>
 
 <section class="section_container">
@@ -227,13 +238,13 @@
 
 <section>
     <div class="head">
-        <h2>House Allocation Summary</h2>
+        <h2>House Allocation Summary (<?= implode(" - ",$academic_dates) ?>)</h2>
     </div>
-    <?php 
+    <?php         
         $houses_db = decimalIndexArray(fetchData(
             ["h.title", "COUNT(ho.indexNumber) as total", "ho.studentGender", "ho.boardingStatus"],
             ["join" => "houses house_allocation", "alias" => "h ho", "on" => "id houseID"],
-            ["h.schoolID=$user_school_id"], 0, group_by: ["h.title","ho.studentGender", "ho.boardingStatus"], join_type: "left"
+            ["h.schoolID=$user_school_id", "academic_year IN ($academic_years)"], 0, "AND", group_by: ["h.title","ho.studentGender", "ho.boardingStatus"], join_type: "left"
         ));
 
         $houses = [];

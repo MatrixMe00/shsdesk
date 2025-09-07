@@ -2,6 +2,7 @@
     //set nav_point session
     $_SESSION["nav_point"] = "dashboard";
     $academic_year = getAcademicYear(now(), false);
+    $role_price = !$staff_menu ? 0 : $role_price;
 ?>
 <section class="section_container">
     <div class="content blue">

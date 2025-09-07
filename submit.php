@@ -584,6 +584,9 @@
 
             header("Content-type: application/json");
             echo $response;
+        }elseif($submit == "get_admission_price"){
+            header("Content-type: application/json");
+            echo json_encode(["price" => ($system_usage_price + $system_up_gross)]);
         }
     }elseif(isset($_GET['submit'])){ 
         $submit = $_GET["submit"];

@@ -139,6 +139,14 @@ $navFoot = [
         "display_title" => "Personal Account"
     ],
     [
+        "name" => "user_roles",
+        "title" => "User Roles",
+        "data-url" => "/admin/superadmin/page_parts/roles.php",
+        "imgSrc" => "/assets/images/icons/key-outline.svg",
+        "imgAlt" => "roles",
+        "display_title" => "User Roles"
+    ],
+    [
         "name" => "password",
         "title" => "Change Password",
         "data-url" => "/admin/superadmin/page_parts/change_password.php",

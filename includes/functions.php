@@ -531,15 +531,19 @@
     /**
      * Used to close the connections for a specified script
      */
-    function close_connections(){
+    function close_connections() {
         global $connect, $connect2;
-
-        if($connect)
+    
+        if ($connect instanceof mysqli && $connect->connect_errno === 0) {
             $connect->close();
-
-        if($connect2)
+            $connect = null;
+        }
+    
+        if ($connect2 instanceof mysqli && $connect2->connect_errno === 0) {
             $connect2->close();
-    }
+            $connect2 = null;
+        }
+    }        
 
     /**
      * This function queries the database, usually for select statements

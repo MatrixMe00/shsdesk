@@ -527,6 +527,10 @@
 
             $schools = fetchData($columns, $tables, $where, 0, "AND", group_by: ["s.id", "a.user_id"]);
             
+            if($schools == "empty"){
+                exit("No new payment data found");
+            }
+
             //total details for admins
             $total_students = array_sum(array_column($schools, "ttl"));
             $total_cash = array_sum(array_column($schools, "amountPaid"));

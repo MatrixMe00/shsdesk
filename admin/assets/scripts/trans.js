@@ -153,8 +153,9 @@ function getCellValue(row, index){
 
 $("button#auto_gen").click(function(){
     html = $(this).parent().html();
+    const url = $(this).attr("data-refresh-at");
     $.ajax({
-        url: "submit.php",
+        url: url,
         data: "submit=updatePayment",
         beforeSend: function(){
             $("#stat").removeClass("no_disp");
@@ -172,6 +173,13 @@ $("button#auto_gen").click(function(){
                }, 3000);
             }else{
                 console.log(data);
+                $("#stat span").html(data);
+                $("#stat").removeClass("no_disp");
+
+                setTimeout(function(){
+                    $("#stat span").html("");
+                    $("#stat").addClass("no_disp");
+                }, 3000);
             }
         },
         error: function(jqXHR, textStatus, errorThrown){
