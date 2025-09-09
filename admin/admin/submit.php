@@ -999,68 +999,91 @@
             $old_prospectus = json_decode($_POST["old_prospectus"], true);
             $new_file_uploaded = !empty($_FILES["male_prospectus"]["tmp_name"]) || !empty($_FILES["female_prospectus"]["tmp_name"]) || !empty($_FILES["prospectus"]["tmp_name"]);
 
-            if($new_file_uploaded){
-                if ($multi_prospectus) {
-                    // MULTIPLE case
-                    $prospectusData["type"] = "multiple";
-                    $prospectusData["files"] = is_array($old_prospectus["files"]) ? $old_prospectus["files"] : [];
-    
-                    // male prospectus
-                    if (isset($_FILES["male_prospectus"]) && !empty($_FILES["male_prospectus"]["tmp_name"])) {
-                        $ext = strtolower(fileExtension("male_prospectus"));
-                        if ($ext == "pdf") {
-                            $file_input_name = "male_prospectus";
-                            $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
-                            $maleDirectory = getFileDirectory($file_input_name, $local_storage_directory);
-    
-                            // remove root path
-                            $maleDirectory = explode("$rootPath/", $maleDirectory)[1];
-                            $prospectusData["files"]["male"] = $maleDirectory;
-                        } else {
-                            echo "<p>Male prospectus must be a PDF</p>";
-                            exit(1);
-                        }
-                    }
-    
-                    // female prospectus
-                    if (isset($_FILES["female_prospectus"]) && !empty($_FILES["female_prospectus"]["tmp_name"])) {
-                        $ext = strtolower(fileExtension("female_prospectus"));
-                        if ($ext == "pdf") {
-                            $file_input_name = "female_prospectus";
-                            $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
-                            $femaleDirectory = getFileDirectory($file_input_name, $local_storage_directory);
-    
-                            // remove root path
-                            $femaleDirectory = explode("$rootPath/", $femaleDirectory)[1];
-                            $prospectusData["files"]["female"] = $femaleDirectory;
-                        } else {
-                            echo "<p>Female prospectus must be a PDF</p>";
-                            exit(1);
-                        }
-                    }
-    
-                } else {
-                    // SINGLE case
-                    $prospectusData["type"] = "single";
-    
-                    if (isset($_FILES["prospectus"]) && !empty($_FILES["prospectus"]["tmp_name"])) {
-                        $ext = strtolower(fileExtension("prospectus"));
-                        if ($ext == "pdf") {
-                            $file_input_name = "prospectus";
-                            $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
-                            $prospectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
-    
-                            // remove root path
-                            $prospectusDirectory = explode("$rootPath/", $prospectusDirectory)[1];
-                            $prospectusData["files"] = $prospectusDirectory;
-                        } else {
-                            echo "<p>Prospectus must be a PDF</p>";
-                            exit(1);
-                        }
+            if ($multi_prospectus) {
+                // MULTIPLE case
+                $prospectusData["type"] = "multiple";
+                $prospectusData["files"] = is_array($old_prospectus["files"]) ? $old_prospectus["files"] : [];
+                
+                // male prospectus
+                if (isset($_FILES["male_prospectus"]) && !empty($_FILES["male_prospectus"]["tmp_name"])) {
+                    $ext = strtolower(fileExtension("male_prospectus"));
+                    if ($ext == "pdf") {
+                        $file_input_name = "male_prospectus";
+                        $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+                        $maleDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                        // remove root path
+                        $maleDirectory = explode("$rootPath/", $maleDirectory)[1];
+                        $prospectusData["files"]["male"] = $maleDirectory;
                     } else {
-                        // keep old prospectus path
-                        $prospectusData["files"] = $old_prospectus["files"] ?? "";
+                        echo "<p>Boarding Male prospectus must be a PDF</p>";
+                        exit(1);
                     }
+                }else if(empty($prospectusData["files"]["male"])){
+                    echo "<p>Boarding Male prospectus is required</p>";
+                    exit(1);
+                }
+
+                // female prospectus
+                if (isset($_FILES["female_prospectus"]) && !empty($_FILES["female_prospectus"]["tmp_name"])) {
+                    $ext = strtolower(fileExtension("female_prospectus"));
+                    if ($ext == "pdf") {
+                        $file_input_name = "female_prospectus";
+                        $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+                        $femaleDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                        // remove root path
+                        $femaleDirectory = explode("$rootPath/", $femaleDirectory)[1];
+                        $prospectusData["files"]["female"] = $femaleDirectory;
+                    } else {
+                        echo "<p>Boarding Female prospectus must be a PDF</p>";
+                        exit(1);
+                    }
+                }elseif(empty($prospectusData["files"]["female"])){
+                    echo "<p>Boarding Female prospectus is required</p>";
+                    exit(1);
+                }
+
+                if (isset($_FILES["day_prospectus"]) && !empty($_FILES["day_prospectus"]["tmp_name"])) {
+                    $ext = strtolower(fileExtension("day_prospectus"));
+                    if ($ext == "pdf") {
+                        $file_input_name = "day_prospectus";
+                        $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+                        $dayDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                        // remove root path
+                        $dayDirectory = explode("$rootPath/", $dayDirectory)[1];
+                        $prospectusData["files"]["day"] = $dayDirectory;
+                    } else {
+                        echo "<p>Day student prospectus must be a PDF</p>";
+                        exit(1);
+                    }
+                }elseif(empty($prospectusData["files"]["day"])){
+                    echo "<p>Day Students prospectus is required</p>";
+                    exit(1);
+                }
+
+            } else {
+                // SINGLE case
+                $prospectusData["type"] = "single";
+
+                if (isset($_FILES["prospectus"]) && !empty($_FILES["prospectus"]["tmp_name"])) {
+                    $ext = strtolower(fileExtension("prospectus"));
+                    if ($ext == "pdf") {
+                        $file_input_name = "prospectus";
+                        $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+                        $prospectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                        // remove root path
+                        $prospectusDirectory = explode("$rootPath/", $prospectusDirectory)[1];
+                        $prospectusData["files"] = $prospectusDirectory;
+                    } else {
+                        echo "<p>Prospectus must be a PDF</p>";
+                        exit(1);
+                    }
+                } else {
+                    // keep old prospectus path
+                    $prospectusData["files"] = $old_prospectus["files"] ?? "";
                 }
             }
 

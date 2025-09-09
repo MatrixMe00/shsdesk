@@ -146,7 +146,7 @@
 
         <label for="multi_prospectus" class="checkbox">
             <input type="checkbox" name="multi_prospectus" id="multi_prospectus" <?= $prospectus_array["type"] == "multiple" ? "checked" : "" ?> />
-            <span class="label_title">Upload Prospectus for males and females</span>
+            <span class="label_title">Separate prospectuses: boarders (male/female) and day students.</span>
         </label>
 
         <div class="joint <?= $prospectus_array["type"] == "single" ? "no_disp" : "" ?>" id="multi_prospectus_container">
@@ -176,6 +176,20 @@
                 </span>
                 <?php endif; ?>
             </label>
+
+            <label for="day_prospectus" class="file_label">
+                <span class="label_title">Prospectus for days (PDF format)</span>
+                <div class="fore_file_display">
+                    <input type="file" name="day_prospectus" id="day_prospectus" accept=".pdf">
+                    <span class="plus">+</span>
+                    <span class="display_file_name">Choose or drag your file here</span>
+                </div>
+                <?php if(!empty($prospectus["day"])): ?>
+                <span class="label_title">Current Filename: 
+                    <a href="<?= $url.'/'.$prospectus["day"] ?>"><?= getFileName($prospectus["day"]) ?></a>
+                </span>
+                <?php endif; ?>
+            </label>
         </div>
         
         <label for="prospectus" id="single_prospectus" class="file_label <?= $prospectus_array["type"] == "multiple" ? "no_disp" : "" ?>">
@@ -191,7 +205,7 @@
             </span>
             <?php endif; ?>
         </label>
-        <input type="hidden" name="old_prospectus" value="<?= $schoolDetail["prospectusPath"] ?>">
+        <input type="hidden" name="old_prospectus" value='<?= $schoolDetail["prospectusPath"] ?>'>
         
         <label for="autoHousePlace" class="checkbox">
             <input type="checkbox" name="autoHousePlace" id="autoHousePlace" <?php 

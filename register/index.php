@@ -164,7 +164,7 @@
                 
                 <label for="multi_prospectus" class="checkbox">
                     <input type="checkbox" name="multi_prospectus" id="multi_prospectus" />
-                    <span class="label_title">Upload Prospectus for males and females</span>
+                    <span class="label_title">Separate prospectuses: boarders (male/female) and day students.</span>
                 </label>
 
                 <div class="joint no_disp" id="multi_prospectus_container">
@@ -180,6 +180,14 @@
                         <span class="label_title">Prospectus for females (PDF format)</span>
                         <div class="fore_file_display">
                             <input type="file" name="female_prospectus" id="female_prospectus" accept=".pdf">
+                            <span class="plus">+</span>
+                            <span class="display_file_name">Choose or drag your file here</span>
+                        </div>
+                    </label>
+                    <label for="day_prospectus" class="file_label">
+                        <span class="label_title">Prospectus for Day Students (PDF format)</span>
+                        <div class="fore_file_display">
+                            <input type="file" name="day_prospectus" id="day_prospectus" accept=".pdf">
                             <span class="plus">+</span>
                             <span class="display_file_name">Choose or drag your file here</span>
                         </div>

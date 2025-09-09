@@ -193,7 +193,7 @@
             $prospectusData["type"] = "multiple";
             $prospectusData["files"] = [];
 
-            if(empty($_FILES["male_prospectus"]["tmp_name"]) || empty($_FILES["female_prospectys"]["tmp_name"])){
+            if(empty($_FILES["male_prospectus"]["tmp_name"]) || empty($_FILES["female_prospectus"]["tmp_name"] || empty($_FILES["day_prospectus"]["tmp_name"]))){
                 echo "<p>Both prospectus documents for males and females are required</p>";
                 exit(1);
             }
@@ -210,7 +210,7 @@
                     $maleDirectory = explode("$rootPath/", $maleDirectory)[1];
                     $prospectusData["files"]["male"] = $maleDirectory;
                 } else {
-                    echo "<p>Male prospectus must be a PDF</p>";
+                    echo "<p>Boarding Male prospectus must be a PDF</p>";
                     exit(1);
                 }
             }
@@ -227,7 +227,24 @@
                     $femaleDirectory = explode("$rootPath/", $femaleDirectory)[1];
                     $prospectusData["files"]["female"] = $femaleDirectory;
                 } else {
-                    echo "<p>Female prospectus must be a PDF</p>";
+                    echo "<p>Boarding Female prospectus must be a PDF</p>";
+                    exit(1);
+                }
+            }
+
+            // day students
+            if (isset($_FILES["day_prospectus"]) && !empty($_FILES["day_prospectus"]["tmp_name"])) {
+                $ext = strtolower(fileExtension("day_prospectus"));
+                if ($ext == "pdf") {
+                    $file_input_name = "day_prospectus";
+                    $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+                    $dayDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                    // remove root path
+                    $dayDirectory = explode("$rootPath/", $dayDirectory)[1];
+                    $prospectusData["files"]["day"] = $dayDirectory;
+                } else {
+                    echo "<p>Day students prospectus must be a PDF</p>";
                     exit(1);
                 }
             }

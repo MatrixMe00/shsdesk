@@ -140,7 +140,11 @@
             if($prospectus_array && $prospectus_array["type"] == "single"){
                 $prospectus = $prospectus_array["files"];
             }else{
-                $prospectus = $prospectus_array["files"][strtolower($_SESSION["ad_stud_gender"])];
+                if(strtolower($_SESSION["ad_stud_residence"]) == "day"){
+                    $prospectus = $prospectus_array["files"]["day"];
+                }else{
+                    $prospectus = $prospectus_array["files"][strtolower($_SESSION["ad_stud_gender"])];
+                }
             }
         }
     ?>
