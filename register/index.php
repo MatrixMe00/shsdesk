@@ -162,7 +162,31 @@
                     </label>
                 </div>
                 
-                <label for="prospectus" class="file_label">
+                <label for="multi_prospectus" class="checkbox">
+                    <input type="checkbox" name="multi_prospectus" id="multi_prospectus" />
+                    <span class="label_title">Upload Prospectus for males and females</span>
+                </label>
+
+                <div class="joint no_disp" id="multi_prospectus_container">
+                    <label for="male_prospectus" class="file_label">
+                        <span class="label_title">Prospectus for males (PDF format)</span>
+                        <div class="fore_file_display">
+                            <input type="file" name="male_prospectus" id="male_prospectus" accept=".pdf">
+                            <span class="plus">+</span>
+                            <span class="display_file_name">Choose or drag your file here</span>
+                        </div>
+                    </label>
+                    <label for="female_prospectus" class="file_label">
+                        <span class="label_title">Prospectus for females (PDF format)</span>
+                        <div class="fore_file_display">
+                            <input type="file" name="female_prospectus" id="female_prospectus" accept=".pdf">
+                            <span class="plus">+</span>
+                            <span class="display_file_name">Choose or drag your file here</span>
+                        </div>
+                    </label>
+                </div>
+                
+                <label for="prospectus" id="single_prospectus" class="file_label">
                     <span class="label_title">Please upload your Prospectus (PDF format)</span>
                     <div class="fore_file_display">
                         <input type="file" name="prospectus" id="prospectus" accept=".pdf">

@@ -162,7 +162,7 @@
             exit(1);
         }
 
-        //allow user to upload prospectus
+        /*//allow user to upload prospectus
         if(isset($_FILES["prospectus"]) && !empty($_FILES["prospectus"]["tmp_name"])){
             //get file extension
             $ext = strtolower(fileExtension("prospectus"));
@@ -181,6 +181,80 @@
             
             echo "<p>Please go back and complete the form</p>";
             exit(1);
+        }*/
+
+        // prospectus type
+        $multi_prospectus = isset($_POST["multi_prospectus"]);
+        $prospectusData = [];
+
+        //allow user to upload prospectus
+        if ($multi_prospectus) {
+            // multiple prospectus case
+            $prospectusData["type"] = "multiple";
+            $prospectusData["files"] = [];
+
+            if(empty($_FILES["male_prospectus"]["tmp_name"]) || empty($_FILES["female_prospectys"]["tmp_name"])){
+                echo "<p>Both prospectus documents for males and females are required</p>";
+                exit(1);
+            }
+
+            // male
+            if (isset($_FILES["male_prospectus"]) && !empty($_FILES["male_prospectus"]["tmp_name"])) {
+                $ext = strtolower(fileExtension("male_prospectus"));
+                if ($ext == "pdf") {
+                    $file_input_name = "male_prospectus";
+                    $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+                    $maleDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                    // remove root path
+                    $maleDirectory = explode("$rootPath/", $maleDirectory)[1];
+                    $prospectusData["files"]["male"] = $maleDirectory;
+                } else {
+                    echo "<p>Male prospectus must be a PDF</p>";
+                    exit(1);
+                }
+            }
+
+            // female
+            if (isset($_FILES["female_prospectus"]) && !empty($_FILES["female_prospectus"]["tmp_name"])) {
+                $ext = strtolower(fileExtension("female_prospectus"));
+                if ($ext == "pdf") {
+                    $file_input_name = "female_prospectus";
+                    $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+                    $femaleDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                    // remove root path
+                    $femaleDirectory = explode("$rootPath/", $femaleDirectory)[1];
+                    $prospectusData["files"]["female"] = $femaleDirectory;
+                } else {
+                    echo "<p>Female prospectus must be a PDF</p>";
+                    exit(1);
+                }
+            }
+        } else {
+            // single prospectus case
+            if (isset($_FILES["prospectus"]) && !empty($_FILES["prospectus"]["tmp_name"])) {
+                $ext = strtolower(fileExtension("prospectus"));
+                if ($ext == "pdf") {
+                    $file_input_name = "prospectus";
+                    $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+                    $prospectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                    // remove root path
+                    $prospectusDirectory = explode("$rootPath/", $prospectusDirectory)[1];
+
+                    $prospectusData = [
+                        "type" => "single",
+                        "files" => $prospectusDirectory
+                    ];
+                } else {
+                    echo "<p>File provided for prospectus is not a PDF</p>";
+                    exit(1);
+                }
+            } else {
+                echo "<p>Please provide your prospectus</p>";
+                exit(1);
+            }
         }
 
         $template_dir = null;
@@ -207,13 +281,12 @@
             }
         }
 
-        //remove the root path
-        $image_directory = explode("$rootPath/",$image_directory);
-        $prostectusDirectory = explode("$rootPath/", $prostectusDirectory);
-
-        //store only the direct file paths
+        //remove the root path for image
+        $image_directory = explode("$rootPath/", $image_directory);
         $image_directory = $image_directory[1];
-        $prostectusDirectory = $prostectusDirectory[1];
+
+        // encode prospectus data
+        $prospectusData = json_encode($prospectusData, JSON_UNESCAPED_SLASHES);
 
         //query the database
         $query = "INSERT INTO schools (logoPath, prospectusPath, admissionPath, admissionHead, schoolName, postalAddress, abbr, 
@@ -223,7 +296,7 @@
 
         //prepare query for entry into database
         $result = $connect->prepare($query);
-        $result->bind_param("ssssssssssssissis", $image_directory, $prostectusDirectory, $admission_letter, $admission_letter_head,
+        $result->bind_param("ssssssssssssissis", $image_directory, $prospectusData, $admission_letter, $admission_letter_head,
         $school_name, $postal_address, $abbreviation, $head_name, $technical_name, $technical_phone, $school_email, $description, 
         $category, $residence_status, $sector, $autoHousePlace, $template_dir);
 

@@ -286,6 +286,26 @@
         return $file_name;
     }
 
+    /**
+     * Used to get the file name from a path
+     * @param ?string $path The path to the file
+     * @return string
+     */
+    function getFileName(?string $path) :string{
+        $response = "";
+
+        if($path){
+            $paths = explode("/",$path);
+            $file = end($paths);
+            
+            if(str_contains($file, ".")){
+                $response = $file;
+            }
+        }
+
+        return $response;
+    }
+
     /** 
     * Function to retrieve file extension
     * @param string $file_input_name Receives input field name for file
@@ -2177,7 +2197,7 @@
      * @return bool
      */
     function access_without_payment(?int $school_id) :bool{
-        $no_payment = [64];
+        $no_payment = [64, 32];
 
         return in_array($school_id, $no_payment);
     }

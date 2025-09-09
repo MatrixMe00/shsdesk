@@ -58,3 +58,13 @@ $("form[name=admissiondetailsForm]").submit(function(e){
         }
     });
 })
+
+$('#multi_prospectus').on('change', function () {
+    if ($(this).is(':checked')) {
+        $('#multi_prospectus_container').removeClass('no_disp');
+        $('#single_prospectus').addClass('no_disp');
+    } else {
+        $('#multi_prospectus_container').addClass('no_disp');
+        $('#single_prospectus').removeClass('no_disp');
+    }
+});

@@ -134,35 +134,78 @@
             </label>
         </div>
 
-        <div class="joint">
-            <label for="prospectus" class="file_label">
-                <span class="label_title">Please upload your Prospectus (PDF format)</span>
+        <?php 
+            // prospectus information
+            $prospectus_array = $schoolDetail["prospectusPath"];
+
+            if($prospectus_array){
+                $prospectus_array = json_decode($prospectus_array, true);
+                $prospectus = $prospectus_array["files"];
+            }
+        ?>
+
+        <label for="multi_prospectus" class="checkbox">
+            <input type="checkbox" name="multi_prospectus" id="multi_prospectus" <?= $prospectus_array["type"] == "multiple" ? "checked" : "" ?> />
+            <span class="label_title">Upload Prospectus for males and females</span>
+        </label>
+
+        <div class="joint <?= $prospectus_array["type"] == "single" ? "no_disp" : "" ?>" id="multi_prospectus_container">
+            <label for="male_prospectus" class="file_label">
+                <span class="label_title">Prospectus for males (PDF format)</span>
                 <div class="fore_file_display">
-                    <input type="file" name="prospectus" id="prospectus" accept=".pdf">
+                    <input type="file" name="male_prospectus" id="male_prospectus" accept=".pdf">
                     <span class="plus">+</span>
                     <span class="display_file_name">Choose or drag your file here</span>
                 </div>
-                <span class="label_title">Current Filename: <a href="<?php 
-                    $prospectus = explode("/",$schoolDetail["prospectusPath"]);
-                    echo $url."/".$schoolDetail["prospectusPath"];
-                ?>"><?php echo end($prospectus) ?></a></span>
-                <input type="hidden" name="old_prospectus" value="<?= $schoolDetail["prospectusPath"] ?>">
-            </label>
-
-            <label for="autoHousePlace" class="checkbox">
-                <input type="checkbox" name="autoHousePlace" id="autoHousePlace" <?php 
-                    if($schoolDetail["autoHousePlace"]){
-                        echo "checked";
-                    } 
-                ?>>
-                <span class="label_title">
-                    Automatically Place students into houses<br>
-                    This feature is used by the system to place students into houses upon form fill.
-                    Not enabling this feature would require you to upload students manually using the default
-                    <a href="<?php echo $url?>/admin/admin/files/default files/house_allocation.xlsx">file</a>;
+                <?php if(!empty($prospectus["male"])): ?>
+                <span class="label_title">Current Filename: 
+                    <a href="<?= $url.'/'.$prospectus["male"] ?>"><?= getFileName($prospectus["male"]) ?></a>
                 </span>
+                <?php endif; ?>
+            </label>
+            <label for="female_prospectus" class="file_label">
+                <span class="label_title">Prospectus for females (PDF format)</span>
+                <div class="fore_file_display">
+                    <input type="file" name="female_prospectus" id="female_prospectus" accept=".pdf">
+                    <span class="plus">+</span>
+                    <span class="display_file_name">Choose or drag your file here</span>
+                </div>
+                <?php if(!empty($prospectus["female"])): ?>
+                <span class="label_title">Current Filename: 
+                    <a href="<?= $url.'/'.$prospectus["female"] ?>"><?= getFileName($prospectus["female"]) ?></a>
+                </span>
+                <?php endif; ?>
             </label>
         </div>
+        
+        <label for="prospectus" id="single_prospectus" class="file_label <?= $prospectus_array["type"] == "multiple" ? "no_disp" : "" ?>">
+            <span class="label_title">Please upload your Prospectus (PDF format)</span>
+            <div class="fore_file_display">
+                <input type="file" name="prospectus" id="prospectus" accept=".pdf">
+                <span class="plus">+</span>
+                <span class="display_file_name">Choose or drag your file here</span>
+            </div>
+            <?php if(is_string($prospectus)): ?>
+            <span class="label_title">Current Filename: 
+                <a href="<?= "$url/$prospectus"?>"><?= getFileName($prospectus) ?></a>
+            </span>
+            <?php endif; ?>
+        </label>
+        <input type="hidden" name="old_prospectus" value="<?= $schoolDetail["prospectusPath"] ?>">
+        
+        <label for="autoHousePlace" class="checkbox">
+            <input type="checkbox" name="autoHousePlace" id="autoHousePlace" <?php 
+                if($schoolDetail["autoHousePlace"]){
+                    echo "checked";
+                } 
+            ?>>
+            <span class="label_title">
+                Automatically Place students into houses<br>
+                This feature is used by the system to place students into houses upon form fill.
+                Not enabling this feature would require you to upload students manually using the default
+                <a href="<?php echo $url?>/admin/admin/files/default files/house_allocation.xlsx">file</a>;
+            </span>
+        </label>
 
         <div class="joint">
             <label for="admission_template" class="file_label">

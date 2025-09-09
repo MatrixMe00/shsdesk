@@ -131,11 +131,30 @@
 </head>
 
 <body>
+    <?php 
+        $prospectus_array = $_SESSION["ad_school_prospectus"];
+
+        if($prospectus_array){
+            $prospectus_array = json_decode($prospectus_array, true);
+
+            if($prospectus_array && $prospectus_array["type"] == "single"){
+                $prospectus = $prospectus_array["files"];
+            }else{
+                $prospectus = $prospectus_array["files"][strtolower($_SESSION["ad_stud_gender"])];
+            }
+        }
+    ?>
     <div id="container">
         <div class="member_div">
-            <a href="<?php echo $url."/".$_SESSION["ad_school_prospectus"] ?>" rel="nofollow">
+            <?php if(!empty($prospectus)): ?>
+            <a href="<?php echo $url."/".$prospectus ?>" rel="nofollow">
                 <button id="btn_pros">Download School's Prospectus | Download [PDF]</button>
             </a>
+            <?php else: ?>
+                <a href="javascript:void(0)" rel="nofollow">
+                    <button id="btn_pros">No Prospectus provided</button>
+                </a>
+            <?php endif; ?>
         </div>
         <div class="member_div">
             <a href="<?php echo $url?>/enrolPDF.php" rel="nofollow">
