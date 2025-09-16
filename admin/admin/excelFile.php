@@ -145,8 +145,7 @@
     $results = $results->fetch_all(MYSQLI_ASSOC);
 
     if(count($results) == 0){
-        $message = "No results were returned. File not created";
-        $error = true;
+        exit("No results were returned. File not created");
     }
 
     $field_names = array_keys($results[0]);

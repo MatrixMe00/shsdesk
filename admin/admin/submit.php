@@ -2756,14 +2756,14 @@
                     try {
                         $connect2->begin_transaction();
     
-                        $sql = "UPDATE recordapproval SET academic_year = ?, semester = ?, exam_year WHERE result_token = ?";
+                        $sql = "UPDATE recordapproval SET academic_year = ?, semester = ?, exam_year = ? WHERE result_token = ?";
                         $stmt = $connect2->prepare($sql);
-                        $stmt->bind_param("siis", $academic_year, $semester, $exam_type, $result_token);
+                        $stmt->bind_param("siis", $academic_year, $semester, $exam_year, $result_token);
     
                         if($stmt->execute()){
-                            $sql = "UPDATE results SET academic_year = ?, semester = ? WHERE result_token = ?";
+                            $sql = "UPDATE results SET academic_year = ?, semester = ?, exam_year = ? WHERE result_token = ?";
                             $stmt = $connect2->prepare($sql);
-                            $stmt->bind_param("sis", $academic_year, $semester, $result_token);
+                            $stmt->bind_param("siis", $academic_year, $semester, $exam_year, $result_token);
                             $status = $stmt->execute();
     
                             if($status !== true){
