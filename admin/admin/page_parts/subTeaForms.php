@@ -454,7 +454,7 @@
                     </label>
                     <label for="r_form_level" class="flex-column gap-sm">
                         <span class="label_title">Form level</span>
-                        <input type="text" name="form_level" id="r_form_level" readonly>
+                        <input type="text" name="form_level" id="r_form_level">
                     </label>
                     <label for="r_submit_semester" class="flex-column gap-sm">
                         <span class="label_title">Semester</span>

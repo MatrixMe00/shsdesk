@@ -2732,6 +2732,7 @@
             $academic_year = $_POST["academic_year"] ?? null;
             $result_token = $_POST["result_id"];
             $semester = $_POST["semester"];
+            $exam_year = $_POST["form_level"];
 
             if(empty($academic_year)){
                 $message = "Academic year not specified";
@@ -2739,20 +2740,25 @@
                 $message = "Result slip could not be parsed or is not defined";
             }elseif(empty($semester)){
                 $message = "Invalid semester number provided";
+            }elseif(empty($exam_year)){
+                $message = "Form level not specified";
+            }elseif($exam_year < 1 || $exam_year > 3){
+                $message = "Invalid form level provided";
             }else{
                 $result = fetchData1("*", "recordapproval", "result_token='$result_token'");
+                $existing_record = fetchData1("result_token", "recordapproval", [
+                    "academic_year='$academic_year'", "semester=$semester", "program_id={$result['program_id']}",
+                    "exam_year=$exam_year", "course_id={$result['course_id']}"
+                ], where_binds: "AND");
 
                 // ensure that we do not have this same class details in the system
-                if(fetchData1("result_token", "recordapproval", [
-                    "academic_year='$academic_year'", "semester=$semester", "program_id={$result['program_id']}",
-                    "exam_year={$result['exam_year']}", "course_id={$result['course_id']}"
-                ], where_binds: "AND") == "empty"){
+                if($existing_record == "empty"){
                     try {
                         $connect2->begin_transaction();
     
-                        $sql = "UPDATE recordapproval SET academic_year = ?, semester = ? WHERE result_token = ?";
+                        $sql = "UPDATE recordapproval SET academic_year = ?, semester = ?, exam_year WHERE result_token = ?";
                         $stmt = $connect2->prepare($sql);
-                        $stmt->bind_param("sis", $academic_year, $semester, $result_token);
+                        $stmt->bind_param("siis", $academic_year, $semester, $exam_type, $result_token);
     
                         if($stmt->execute()){
                             $sql = "UPDATE results SET academic_year = ?, semester = ? WHERE result_token = ?";
@@ -2773,6 +2779,8 @@
                         $message = throwableMessage($th);
                         $connect2->rollback();
                     }
+                }elseif($existing_record["result_token"] == $result_token){
+                    $message = "No new changes were detected";
                 }else{
                     $message = "There is an exisiting record with this information";
                 }

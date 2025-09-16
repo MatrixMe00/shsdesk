@@ -2197,7 +2197,15 @@
      * @return bool
      */
     function access_without_payment(?int $school_id) :bool{
-        $no_payment = [64, 32];
+        global $connect;
+        
+        $no_payment = fetchData("id","schools","free_access=1", 0);
+
+        if(!is_array($no_payment)){
+            return false;
+        }
+
+        $no_payment = array_column($no_payment, "id");
 
         return in_array($school_id, $no_payment);
     }

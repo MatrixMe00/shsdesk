@@ -39,22 +39,22 @@
     </section>
     <?php 
         $approved_results = decimalIndexArray(fetchData1(
-            "r.result_token, r.program_id, r.exam_year, p.program_name, c.course_name, r.submission_date",
+            "r.result_token, r.program_id, r.exam_year, p.program_name, c.course_name, r.submission_date, r.academic_year",
             "recordapproval r JOIN program p ON r.program_id = p.program_id JOIN courses c ON r.course_id = c.course_id",
             "r.teacher_id={$teacher['teacher_id']} AND r.result_status='accepted'", 0
         ));
         $pending_results = decimalIndexArray(fetchData1(
-            "r.result_token, r.program_id, r.exam_year, p.program_name, c.course_name, r.submission_date",
+            "r.result_token, r.program_id, r.exam_year, p.program_name, c.course_name, r.submission_date, r.academic_year",
             "recordapproval r JOIN program p ON r.program_id = p.program_id JOIN courses c ON r.course_id = c.course_id",
             "r.teacher_id={$teacher['teacher_id']} AND r.result_status='pending'", 0
         ));
         $rejected_results = decimalIndexArray(fetchData1(
-            "r.result_token, r.program_id, r.exam_year, p.program_name, c.course_name, r.submission_date",
+            "r.result_token, r.program_id, r.exam_year, p.program_name, c.course_name, r.submission_date, r.academic_year",
             "recordapproval r JOIN program p ON r.program_id = p.program_id JOIN courses c ON r.course_id = c.course_id",
             "r.teacher_id={$teacher['teacher_id']} AND r.result_status='rejected'", 0
         ));
         $saved_results = decimalIndexArray(fetchData1(
-            "DISTINCT s.token, p.program_name, s.exam_year, s.program_id, s.exam_year, s.semester, c.course_name, s.from_reject, DATE(s.save_date) as submission_date",
+            "DISTINCT s.token, p.program_name, s.exam_year, s.program_id, s.exam_year, s.semester, c.course_name, s.from_reject, DATE(s.save_date) as submission_date, s.academic_year",
             "saved_results s JOIN program p ON p.program_id = s.program_id JOIN courses c ON c.course_id = s.course_id",
             "s.teacher_id={$teacher['teacher_id']}",0
         ));
@@ -77,7 +77,7 @@
                 <div class="self-align-start flex gap-sm flex-column">
                     <h2><?= $result["program_name"] ?></h2>
                     <h4><?= $result["course_name"] ?></h4>
-                    <p class="txt-fs"><?= getAcademicYear($result["submission_date"]) ?> | <?= fetchData1("CONCAT('Sem ',semester,' | Year ',exam_year) as year_sem","results","result_token='{$result['result_token']}'")["year_sem"] ?></p>
+                    <p class="txt-fs"><?= $result["academic_year"] ?> | <?= fetchData1("CONCAT('Sem ',semester,' | Year ',exam_year) as year_sem","results","result_token='{$result['result_token']}'")["year_sem"] ?></p>
                 </div>
                 <div class="foot btn self-align-end">
                     <button class="light plain-r sp-lg class_single"
