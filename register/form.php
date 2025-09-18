@@ -148,6 +148,29 @@
             exit(1);
         }
 
+        if(isset($_POST["letter_prefix"])){
+            // check for necessary fields
+            $text = $_POST["prefix_text"];
+            $year = $_POST["prefix_year"];
+            $separator = $_POST["prefix_separator"];
+
+            if(empty($text)){
+                echo "<p>Letter prefix text cannot be empty</p>"; exit;
+            }elseif(is_array(fetchData("prefix_text", "admissiondetails", "prefix_text = '$text' AND schoolID != $school_id"))){
+                echo "<p>Letter prefix text already exists for another school. Please choose another prefix text</p>"; exit;
+            }elseif(!empty($year) && !in_array($year, ["YY", "YYYY"])){
+                echo "<p>Invalid year format selected for letter prefix</p>"; exit;
+            }elseif(empty($separator)){
+                echo "<p>Letter prefix separator cannot be empty</p>"; exit;
+            }else{
+                $letter_prefix = json_encode([
+                    "text" => $text,
+                    "year" => $year,
+                    "separator" => $separator
+                ], JSON_UNESCAPED_SLASHES);
+            }
+        }
+
         //make editing on the profile picture chosen
         if(isset($_FILES['avatar']) && $_FILES["avatar"]["tmp_name"]){
             $image_input_name = "avatar";
@@ -344,9 +367,16 @@
                 $academic_year = getAcademicYear(now());
 
                 //insert data into admission details table
-                $sql = "INSERT INTO admissiondetails (schoolID, headName, admissionYear, academicYear) 
-                VALUES ($school_id,'$head_name', '$admission_year', '$academic_year')";
-                $connect->query($sql);
+                if(isset($_POST["letter_prefix"])){
+                    $sql = "INSERT INTO admissiondetails (schoolID, headName, admissionYear, academicYear, prefix_text, letter_prefix) 
+                        VALUES ($school_id,'$head_name', '$admission_year', '$academic_year', '{$_POST['prefix_text']}', '$letter_prefix')";
+                    $connect->query($sql);
+                }else{
+                    $sql = "INSERT INTO admissiondetails (schoolID, headName, admissionYear, academicYear) 
+                    VALUES ($school_id,'$head_name', '$admission_year', '$academic_year')";
+                    $connect->query($sql);
+                }
+                
 
                 // save all changes to database
                 $connect->commit();

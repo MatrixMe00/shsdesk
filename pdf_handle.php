@@ -7,8 +7,8 @@
         //if user enters via url or already enroled
         if(isset($_GET["indexNumber"]) && !empty($_GET["indexNumber"])){
             //create required session objects
-            $student = fetchData("c.*, e.enrolCode","cssps c JOIN enrol_table e ON c.indexNumber = e.indexNumber", "c.indexNumber='".$_GET["indexNumber"]."'");
-            $school = getSchoolDetail($student["schoolID"], true);
+            $student = fetchData("c.*, e.enrolCode, e.admission_number, e.reopening_date, e.enrolDate","cssps c JOIN enrol_table e ON c.indexNumber = e.indexNumber", "c.indexNumber='".$_GET["indexNumber"]."'");
+            $school = fetchData("s.*, a.reopeningDate, a.letter_prefix", "schools s JOIN admissiondetails a ON s.id = a.schoolID", "s.id=".$student["schoolID"], join_type: "left");
 
             //details for school
             $_SESSION["ad_school_name"] = $school["schoolName"];
@@ -26,7 +26,7 @@
             $_SESSION["ad_message"] = $school["admissionPath"];
             $_SESSION["ad_school_logo"] = $school["logoPath"];
             $_SESSION["ad_admission_title"] = $school["admissionHead"];
-            $_SESSION["ad_reopening"] = fetchData("reopeningDate","admissiondetails","schoolID=".$student["schoolID"])["reopeningDate"];
+            $_SESSION["ad_reopening"] = $student["reopening_date"];
 
             //student details
             $_SESSION["ad_stud_index"] = $student["indexNumber"];
@@ -37,7 +37,22 @@
             $_SESSION["ad_stud_program"] = $student["programme"];
             $_SESSION["ad_stud_gender"] = $student["Gender"];
             $_SESSION["ad_profile_pic"] = $student["profile_pic"];
-            
+
+            // ensure student's admission number is stored in db
+            if(!$student["admission_number"] && !empty($school["letter_prefix"])){
+                $admission_number = generateAdmissionNumber($student["schoolID"], $school["letter_prefix"], $student["enrolDate"]);
+                
+                //update admission number in db
+                $sql = "UPDATE enrol_table SET admission_number=? WHERE indexNumber=?";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("ss", $admission_number, $student["indexNumber"]);
+                $stmt->execute();
+
+                $_SESSION["ad_admission_number"] = $admission_number;
+            }else{
+                $_SESSION["ad_admission_number"] = $student["admission_number"];
+            }
+
             if(is_array(fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'"))){
                 $house_id = fetchData("houseID","house_allocation","indexNumber='".$student["indexNumber"]."'")["houseID"];
                 if(!is_null($house_id)){

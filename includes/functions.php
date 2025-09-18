@@ -1462,6 +1462,18 @@
     }
 
     /**
+     * This is used to get the admission year
+     * @return string
+     */
+    function getAdmissionYear():string{
+        $year = date("Y");
+        $current_month = date("m");
+
+        // show previous year if before September
+        return $current_month < 9 ? ($year - 1) : $year;
+    }
+
+    /**
      * formats the academic year
      * @param string $academic_year The academic year to format
      * @param bool $spaced If there should be spaces
@@ -2500,7 +2512,7 @@
      * @return bool|string
      */
     function send_email(string $message, string $subject, string|array $receipients, 
-        string $sender = null, string $name = null, string|bool $reply = false
+        ?string $sender = null, ?string $name = null, string|bool $reply = false
     ){
         global $rootPath, $mailserver_email, $mailserver_password, $mailserver;
 
@@ -2694,4 +2706,46 @@
      */
     function teacher_class_is_valid($teacher_id, $program_id, $year){
         return is_array(fetchData1("id", "teacher_classes", ["program_id=$program_id", "class_year=$year", "teacher_id=$teacher_id"], where_binds: "AND"));
+    }
+
+    /**
+     * This function is used to generate the admission number of a student during enrolment
+     * @param int $school_id The school id
+     * @param string $prefix_config The json configuration for the prefix
+     * @param ?string $entry_date Optional date of entry. Default is current year
+     * @return ?string
+     */
+    function generateAdmissionNumber(int $school_id, ?string $prefix_config, ?string $entry_date = null) :?string{
+        if(!$prefix_config) return null;
+
+        $prefix_config = json_decode($prefix_config, true);
+        $current_academic_year = getAcademicYear(now(), true);
+
+        list("text" => $text, "year" => $year, "separator" => $separator) = $prefix_config;
+
+        // get number of students enroled at this time
+        // if prefix has year, count by year, else count by total enrolment
+        if($year){
+            $where = $entry_date ? "AND YEAR(enrolDate) = YEAR('$entry_date') AND admission_number IS NOT NULL" : "AND academic_year='{$current_academic_year}' AND current_data = TRUE";
+            
+            $year_string = $year == "YY" ? "y" : "Y";
+            $year = $entry_date ? date($year_string, strtotime($entry_date)) : date($year_string);
+            $year = "{$separator}$year{$separator}";
+        }else{
+            $where = "AND admission_number IS NOT NULL";
+            $year = $separator;
+        }
+
+        $total_students = fetchData("COUNT(indexNumber) as total", "enrol_table", "shsID=$school_id $where")["total"] ?? 0;
+        
+        // create the prefix
+        $prefix = strtoupper($text).$year;
+
+        do {
+            ++$total_students;
+            $admission_number = $prefix.str_pad($total_students, 4, "0", STR_PAD_LEFT);
+        } while (is_array(fetchData("indexNumber", "enrol_table", "admission_number='$admission_number'")));
+
+
+        return $admission_number;
     }

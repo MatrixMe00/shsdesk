@@ -974,174 +974,206 @@
                 $message = "No Reopening date provided";
             }elseif(empty($school_id) || !intval($school_id)){
                 $message = "No School provided or school selection was unsuccessful. Please try again later";
-            }
-
-            //avatar check
-            if(isset($_FILES['avatar']) && !empty($_FILES["avatar"]["tmp_name"])){
-                $image_input_name = "avatar";
-                $local_storage_directory = "$rootPath/admin/admin/assets/images/schools/";
-                $default_image_path = "$rootPath/admin/admin/assets/images/schools/default_user.png";
-    
-                $image_directory = getImageDirectory($image_input_name, $local_storage_directory,$default_image_path);
-
-                //remove the root path
-                $image_directory = explode("$rootPath/",$image_directory);
-                $image_directory = $image_directory[1];
+            }elseif($reopening < date("Y-m-d")){
+                $message = "Reopening date cannot be in the past";
             }else{
-                $image_directory = $_POST["old_avatar"];
-            }
+                if(isset($_POST["letter_prefix"])){
+                    // check for necessary fields
+                    $text = $_POST["prefix_text"];
+                    $year = $_POST["prefix_year"];
+                    $separator = $_POST["prefix_separator"];
 
-            // prospectus check
-            $multi_prospectus = isset($_POST["multi_prospectus"]);
-            $prospectusData = [];
-
-            // default: load old prospectus from form hidden input
-            $old_prospectus = json_decode($_POST["old_prospectus"], true);
-            $new_file_uploaded = !empty($_FILES["male_prospectus"]["tmp_name"]) || !empty($_FILES["female_prospectus"]["tmp_name"]) || !empty($_FILES["prospectus"]["tmp_name"]);
-
-            if ($multi_prospectus) {
-                // MULTIPLE case
-                $prospectusData["type"] = "multiple";
-                $prospectusData["files"] = is_array($old_prospectus["files"]) ? $old_prospectus["files"] : [];
-                
-                // male prospectus
-                if (isset($_FILES["male_prospectus"]) && !empty($_FILES["male_prospectus"]["tmp_name"])) {
-                    $ext = strtolower(fileExtension("male_prospectus"));
-                    if ($ext == "pdf") {
-                        $file_input_name = "male_prospectus";
-                        $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
-                        $maleDirectory = getFileDirectory($file_input_name, $local_storage_directory);
-
-                        // remove root path
-                        $maleDirectory = explode("$rootPath/", $maleDirectory)[1];
-                        $prospectusData["files"]["male"] = $maleDirectory;
-                    } else {
-                        echo "<p>Boarding Male prospectus must be a PDF</p>";
-                        exit(1);
+                    if(empty($text)){
+                        echo "Letter prefix text cannot be empty"; exit;
+                    }elseif(is_array(fetchData("prefix_text", "admissiondetails", "prefix_text = '$text' AND schoolID != $school_id"))){
+                        echo "Letter prefix text already exists for another school. Please choose another prefix text"; exit;
+                    }elseif(!empty($year) && !in_array($year, ["YY", "YYYY"])){
+                        echo "Invalid year format selected for letter prefix"; exit;
+                    }elseif(empty($separator)){
+                        echo "Letter prefix separator cannot be empty"; exit;
+                    }else{
+                        $letter_prefix = json_encode([
+                            "text" => $text,
+                            "year" => $year,
+                            "separator" => $separator
+                        ], JSON_UNESCAPED_SLASHES);
                     }
-                }else if(empty($prospectusData["files"]["male"])){
-                    echo "<p>Boarding Male prospectus is required</p>";
-                    exit(1);
                 }
 
-                // female prospectus
-                if (isset($_FILES["female_prospectus"]) && !empty($_FILES["female_prospectus"]["tmp_name"])) {
-                    $ext = strtolower(fileExtension("female_prospectus"));
-                    if ($ext == "pdf") {
-                        $file_input_name = "female_prospectus";
-                        $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
-                        $femaleDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+                //avatar check
+                if(isset($_FILES['avatar']) && !empty($_FILES["avatar"]["tmp_name"])){
+                    $image_input_name = "avatar";
+                    $local_storage_directory = "$rootPath/admin/admin/assets/images/schools/";
+                    $default_image_path = "$rootPath/admin/admin/assets/images/schools/default_user.png";
+        
+                    $image_directory = getImageDirectory($image_input_name, $local_storage_directory,$default_image_path);
 
-                        // remove root path
-                        $femaleDirectory = explode("$rootPath/", $femaleDirectory)[1];
-                        $prospectusData["files"]["female"] = $femaleDirectory;
-                    } else {
-                        echo "<p>Boarding Female prospectus must be a PDF</p>";
-                        exit(1);
-                    }
-                }elseif(empty($prospectusData["files"]["female"])){
-                    echo "<p>Boarding Female prospectus is required</p>";
-                    exit(1);
-                }
-
-                if (isset($_FILES["day_prospectus"]) && !empty($_FILES["day_prospectus"]["tmp_name"])) {
-                    $ext = strtolower(fileExtension("day_prospectus"));
-                    if ($ext == "pdf") {
-                        $file_input_name = "day_prospectus";
-                        $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
-                        $dayDirectory = getFileDirectory($file_input_name, $local_storage_directory);
-
-                        // remove root path
-                        $dayDirectory = explode("$rootPath/", $dayDirectory)[1];
-                        $prospectusData["files"]["day"] = $dayDirectory;
-                    } else {
-                        echo "<p>Day student prospectus must be a PDF</p>";
-                        exit(1);
-                    }
-                }elseif(empty($prospectusData["files"]["day"])){
-                    echo "<p>Day Students prospectus is required</p>";
-                    exit(1);
-                }
-
-            } else {
-                // SINGLE case
-                $prospectusData["type"] = "single";
-
-                if (isset($_FILES["prospectus"]) && !empty($_FILES["prospectus"]["tmp_name"])) {
-                    $ext = strtolower(fileExtension("prospectus"));
-                    if ($ext == "pdf") {
-                        $file_input_name = "prospectus";
-                        $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
-                        $prospectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
-
-                        // remove root path
-                        $prospectusDirectory = explode("$rootPath/", $prospectusDirectory)[1];
-                        $prospectusData["files"] = $prospectusDirectory;
-                    } else {
-                        echo "<p>Prospectus must be a PDF</p>";
-                        exit(1);
-                    }
-                } else {
-                    // keep old prospectus path
-                    $prospectusData["files"] = $old_prospectus["files"] ?? "";
-                }
-            }
-
-            // encode for DB
-            $prospectusJson = json_encode($prospectusData ?? $old_prospectus, JSON_UNESCAPED_SLASHES);
-
-            //admission template check
-            if(isset($_FILES["admission_template"]) && !empty($_FILES["admission_template"]["tmp_name"])){
-                //get file extension
-                $ext = strtolower(fileExtension("admission_template"));
-    
-                if($ext =="pdf"){
-                    $file_input_name = "admission_template";
-                    $local_storage_directory = "$rootPath/admin/admin/assets/files/admission templates/";
-
-                    if(!is_dir($local_storage_directory)){
-                        mkdir($local_storage_directory, recursive: true);
-                    }
-    
-                    $template_dir = getFileDirectory($file_input_name, $local_storage_directory);
-
-                    //remove rootPath
-                    $template_dir = explode("$rootPath/", $template_dir);
-                    $template_dir = $template_dir[1];
+                    //remove the root path
+                    $image_directory = explode("$rootPath/",$image_directory);
+                    $image_directory = $image_directory[1];
                 }else{
-                    echo "<p>File provided for admission template is not a PDF</p>";
-                    echo "<p>Please provide a valid document</p>";
+                    $image_directory = $_POST["old_avatar"];
                 }
-            }else{
-                $template_dir = empty($_POST["old_admission_template"]) ? null : $_POST["old_admission_template"];
-            }
 
-            if($autoHousePlace == "true" || $autoHousePlace == "on"){
-                $autoHousePlace = true;
-            }
+                // prospectus check
+                $multi_prospectus = isset($_POST["multi_prospectus"]);
+                $prospectusData = [];
 
-            if($message == ""){
-                $sql = "UPDATE schools SET logoPath=?, prospectusPath=?, admissionPath=?, admissionHead=?, schoolName=?, postalAddress=?, headName=?, email=?,
-                        description=?, autoHousePlace=?, admission_template=? WHERE id=?";
-                $stmt = $connect->prepare($sql);
-                $stmt->bind_param("sssssssssisi",$image_directory,$prospectusJson, $admission, $admission_head, $school_name, $postal_address, $head_name,
-                    $school_email, $description, $autoHousePlace, $template_dir, $school_id);
+                // default: load old prospectus from form hidden input
+                $old_prospectus = json_decode($_POST["old_prospectus"], true);
+                $new_file_uploaded = !empty($_FILES["male_prospectus"]["tmp_name"]) || !empty($_FILES["female_prospectus"]["tmp_name"]) || !empty($_FILES["prospectus"]["tmp_name"]);
 
-                if($stmt->execute()){
-                    // current academic year
-                    $academic_year = getAcademicYear(now());
-                    $admission_year = date("Y");
-
-                    //update admission details table
-                    $sql = "UPDATE admissiondetails SET titleOfHead=?, headName=?, admissionYear=?, academicYear=?,
-                    reopeningDate=? WHERE schoolID=?";
-                    $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("sssssi", $head_title, $head_name, $admission_year, $academic_year, $reopening, $school_id);
+                if ($multi_prospectus) {
+                    // MULTIPLE case
+                    $prospectusData["type"] = "multiple";
+                    $prospectusData["files"] = is_array($old_prospectus["files"]) ? $old_prospectus["files"] : [];
                     
-                    $stmt->execute();
-                    $message = "success";
+                    // male prospectus
+                    if (isset($_FILES["male_prospectus"]) && !empty($_FILES["male_prospectus"]["tmp_name"])) {
+                        $ext = strtolower(fileExtension("male_prospectus"));
+                        if ($ext == "pdf") {
+                            $file_input_name = "male_prospectus";
+                            $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+                            $maleDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                            // remove root path
+                            $maleDirectory = explode("$rootPath/", $maleDirectory)[1];
+                            $prospectusData["files"]["male"] = $maleDirectory;
+                        } else {
+                            echo "<p>Boarding Male prospectus must be a PDF</p>";
+                            exit(1);
+                        }
+                    }else if(empty($prospectusData["files"]["male"])){
+                        echo "<p>Boarding Male prospectus is required</p>";
+                        exit(1);
+                    }
+
+                    // female prospectus
+                    if (isset($_FILES["female_prospectus"]) && !empty($_FILES["female_prospectus"]["tmp_name"])) {
+                        $ext = strtolower(fileExtension("female_prospectus"));
+                        if ($ext == "pdf") {
+                            $file_input_name = "female_prospectus";
+                            $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+                            $femaleDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                            // remove root path
+                            $femaleDirectory = explode("$rootPath/", $femaleDirectory)[1];
+                            $prospectusData["files"]["female"] = $femaleDirectory;
+                        } else {
+                            echo "<p>Boarding Female prospectus must be a PDF</p>";
+                            exit(1);
+                        }
+                    }elseif(empty($prospectusData["files"]["female"])){
+                        echo "<p>Boarding Female prospectus is required</p>";
+                        exit(1);
+                    }
+
+                    if (isset($_FILES["day_prospectus"]) && !empty($_FILES["day_prospectus"]["tmp_name"])) {
+                        $ext = strtolower(fileExtension("day_prospectus"));
+                        if ($ext == "pdf") {
+                            $file_input_name = "day_prospectus";
+                            $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+                            $dayDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                            // remove root path
+                            $dayDirectory = explode("$rootPath/", $dayDirectory)[1];
+                            $prospectusData["files"]["day"] = $dayDirectory;
+                        } else {
+                            echo "<p>Day student prospectus must be a PDF</p>";
+                            exit(1);
+                        }
+                    }elseif(empty($prospectusData["files"]["day"])){
+                        echo "<p>Day Students prospectus is required</p>";
+                        exit(1);
+                    }
+
+                } else {
+                    // SINGLE case
+                    $prospectusData["type"] = "single";
+
+                    if (isset($_FILES["prospectus"]) && !empty($_FILES["prospectus"]["tmp_name"])) {
+                        $ext = strtolower(fileExtension("prospectus"));
+                        if ($ext == "pdf") {
+                            $file_input_name = "prospectus";
+                            $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
+                            $prospectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
+
+                            // remove root path
+                            $prospectusDirectory = explode("$rootPath/", $prospectusDirectory)[1];
+                            $prospectusData["files"] = $prospectusDirectory;
+                        } else {
+                            echo "<p>Prospectus must be a PDF</p>";
+                            exit(1);
+                        }
+                    } else {
+                        // keep old prospectus path
+                        $prospectusData["files"] = $old_prospectus["files"] ?? "";
+                    }
+                }
+
+                // encode for DB
+                $prospectusJson = json_encode($prospectusData ?? $old_prospectus, JSON_UNESCAPED_SLASHES);
+
+                //admission template check
+                if(isset($_FILES["admission_template"]) && !empty($_FILES["admission_template"]["tmp_name"])){
+                    //get file extension
+                    $ext = strtolower(fileExtension("admission_template"));
+        
+                    if($ext =="pdf"){
+                        $file_input_name = "admission_template";
+                        $local_storage_directory = "$rootPath/admin/admin/assets/files/admission templates/";
+
+                        if(!is_dir($local_storage_directory)){
+                            mkdir($local_storage_directory, recursive: true);
+                        }
+        
+                        $template_dir = getFileDirectory($file_input_name, $local_storage_directory);
+
+                        //remove rootPath
+                        $template_dir = explode("$rootPath/", $template_dir);
+                        $template_dir = $template_dir[1];
+                    }else{
+                        echo "<p>File provided for admission template is not a PDF</p>";
+                        echo "<p>Please provide a valid document</p>";
+                    }
                 }else{
-                    $message = $stmt->error;
+                    $template_dir = empty($_POST["old_admission_template"]) ? null : $_POST["old_admission_template"];
+                }
+
+                if($autoHousePlace == "true" || $autoHousePlace == "on"){
+                    $autoHousePlace = true;
+                }
+
+                if($message == ""){
+                    $sql = "UPDATE schools SET logoPath=?, prospectusPath=?, admissionPath=?, admissionHead=?, schoolName=?, postalAddress=?, headName=?, email=?,
+                            description=?, autoHousePlace=?, admission_template=? WHERE id=?";
+                    $stmt = $connect->prepare($sql);
+                    $stmt->bind_param("sssssssssisi",$image_directory,$prospectusJson, $admission, $admission_head, $school_name, $postal_address, $head_name,
+                        $school_email, $description, $autoHousePlace, $template_dir, $school_id);
+
+                    if($stmt->execute()){
+                        // current academic year
+                        $academic_year = getAcademicYear(now());
+                        $admission_year = getAdmissionYear();
+
+                        //update admission details table
+                        if(isset($_POST["letter_prefix"])){
+                            $sql = "UPDATE admissiondetails SET titleOfHead=?, headName=?, admissionYear=?, academicYear=?,
+                                reopeningDate=?, prefix_text = ?, letter_prefix = ? WHERE schoolID=?";
+                            $stmt = $connect->prepare($sql);
+                            $stmt->bind_param("sssssssi", $head_title, $head_name, $admission_year, $academic_year, $reopening,  $_POST["prefix_text"], $letter_prefix,$school_id);
+                        }else{
+                            $sql = "UPDATE admissiondetails SET titleOfHead=?, headName=?, admissionYear=?, academicYear=?,
+                            reopeningDate=?, prefix_text = NULL, letter_prefix = NULL WHERE schoolID=?";
+                            $stmt = $connect->prepare($sql);
+                            $stmt->bind_param("sssssi", $head_title, $head_name, $admission_year, $academic_year, $reopening, $school_id);
+                        }                        
+                        
+                        $stmt->execute();
+                        $message = "success";
+                    }else{
+                        $message = $stmt->error;
+                    }
                 }
             }
 

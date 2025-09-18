@@ -204,6 +204,53 @@
                 </label>
                 <p id="demo_doc"><a href="<?php echo $url?>/admin/admin/assets/files/default files/Admission_Form__Demo.pdf">Download Demo Admission Letter [PDF]</a></p>
                 
+                <label for="letter_prefix" class="checkbox">
+                    <input type="checkbox" name="letter_prefix" id="letter_prefix" />
+                    <span class="label_title">Add Prefix & Serial Number to Admission Letters</span>
+                </label>
+
+                <div id="prefix-container" class="no_disp">
+                    <div class="joint">
+                        <!-- Prefix -->
+                        <label for="prefix_text" class="flex flex-column gap-sm sm-xlg-b">
+                            <span class="label_title txt-bold">Prefix</span>
+                            <input type="text" 
+                                name="prefix_text" 
+                                id="prefix_text" 
+                                class="sp-med" 
+                                placeholder="E.g. ADM" 
+                                title="Enter your custom prefix (e.g. school code) to be displayed on admission letters" 
+                                value="">
+                        </label>
+
+                        <!-- Year -->
+                        <label for="prefix_year" class="flex flex-column gap-sm sm-xlg-b">
+                            <span class="label_title txt-bold">Year</span>
+                            <select name="prefix_year" id="prefix_year" class="sp-med" 
+                                    title="Select if you want to include year in the numbering">
+                                <option value="YYYY" data-current-year="<?= date("Y") ?>">YYYY (<?= date("Y") ?>)</option>
+                                <option value="YY" data-current-year="<?= date("y") ?>">YY (<?= date("y") ?>)</option>
+                                <option value="" data-current-year="">No Year</option>
+                            </select>
+                        </label>
+
+                        <!-- Separator -->
+                        <label for="prefix_separator" class="flex flex-column gap-sm sm-xlg-b">
+                            <span class="label_title txt-bold">Separator</span>
+                            <select name="prefix_separator" id="prefix_separator" class="sp-med" 
+                                    title="Choose how parts of the code should be separated">
+                                <option value="-">Hyphene (-)</option>
+                                <option value="/">Slash (/)</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <!-- Example Preview -->
+                    <div class="sm-xlg-l">
+                        <span class="item-event info">Preview: <span id="prefix_preview">SCH-2025-0001</span></span>
+                    </div>
+                </div>
+
                 <label for="admission_letter_head" class="flex flex-column gap-sm">
                     <span class="label_title txt-bold">Admission Letter Heading [Optional]</span>
                     <input type="text" name="admission_letter_head" id="admission_letter_head" class="border sp-med" placeholder="Default: Offer of Admission" title="Provide your custom heading to be displayed on your admission letter">

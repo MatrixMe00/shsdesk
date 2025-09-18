@@ -12,7 +12,7 @@
             $required_profile = [23];
 
             try {
-                $school = getSchoolDetail($_POST["shs_placed"], true);
+                $school = fetchData("s.*, a.reopeningDate, a.letter_prefix", "schools s JOIN admissiondetails a ON s.id = a.schoolID", "s.id=".$_POST["shs_placed"], join_type: "left");
                 $shs_placed = $school["id"];
                 $ad_enrol_code = $_POST["ad_enrol_code"];
                 $ad_index = $_POST["ad_index"];
@@ -91,20 +91,25 @@
                     echo "profile-pic-required";
                 }
 
+                // generate extra info for student
+                $admission_number = generateAdmissionNumber($shs_placed, $school["letter_prefix"]);
+                $reopening_date = $school["reopeningDate"];
+
                 //bind the statement
                 $sql = "INSERT INTO enrol_table (indexNumber, enrolCode, shsID, aggregateScore, program, 
                 lastname, othername, gender, jhsName, jhsTown, jhsDistrict, birthdate, birthPlace, fatherName, 
                 fatherOccupation, motherName, motherOccupation, guardianName, residentAddress, postalAddress, primaryPhone, 
-                secondaryPhone, interest, award, position, witnessName, witnessPhone, transactionID, profile_pic, academic_year) 
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, '$academic_year')" or die($connect->error);
+                secondaryPhone, interest, award, position, witnessName, witnessPhone, transactionID, profile_pic, academic_year, admission_number, reopening_date) 
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, '$academic_year', ?, ?)" or die($connect->error);
 
                 //prepare query for entry into database
                 $result = $connect->prepare($sql);
-                $result->bind_param("ssissssssssssssssssssssssssss", 
+                $result->bind_param("ssissssssssssssssssssssssssssss", 
                 $ad_index,$ad_enrol_code,$shs_placed, $ad_aggregate, $ad_course, $ad_lname, $ad_oname, 
                 $ad_gender, $ad_jhs, $ad_jhs_town, $ad_jhs_district, $ad_birthdate, $ad_birth_place, $ad_father_name, 
                 $ad_father_occupation, $ad_mother_name, $ad_mother_occupation, $ad_guardian_name, $ad_resident, $ad_postal_address, 
-                $ad_phone, $ad_other_phone, $interest, $ad_awards, $ad_position, $ad_witness, $ad_witness_phone, $_POST["ad_transaction_id"], $ad_profile_pic);
+                $ad_phone, $ad_other_phone, $interest, $ad_awards, $ad_position, $ad_witness, $ad_witness_phone, $_POST["ad_transaction_id"], $ad_profile_pic,
+                $admission_number, $reopening_date);
 
                 //check for errors
                 if(!isset($_POST["ad_transaction_id"]) || empty($_POST["ad_transaction_id"])){
@@ -303,7 +308,7 @@
                         $_SESSION["ad_it_admin"] = $school["techName"];
                         $_SESSION["ad_message"] = $school["admissionPath"];
                         $_SESSION["ad_school_prospectus"] = $school["prospectusPath"];
-                        $_SESSION["ad_reopening"] = fetchData("reopeningDate","admissiondetails","schoolID=$shs_placed")["reopeningDate"] ?? "Not Set";
+                        $_SESSION["ad_reopening"] = $school["reopeningDate"] ?? "Not Set";
                         $_SESSION["ad_admission_title"] = $school["admissionHead"];
 
                         //student details
@@ -315,6 +320,7 @@
                         $_SESSION["ad_stud_program"] = $ad_course;
                         $_SESSION["ad_stud_gender"] = $ad_gender;
                         $_SESSION["ad_profile_pic"] = $ad_profile_pic;
+                        $_SESSION["ad_admission_number"] = $admission_number ?? null;
 
                         //convert house name for only auto house placed students
                         /*if($_SESSION["ad_stud_house"] !== "e" && array_search()){

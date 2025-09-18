@@ -187,50 +187,43 @@
             </tbody>
         </table>
         <?php elseif($houses = decimalIndexArray(fetchData("*","houses","schoolID=$user_school_id",0))): ?>
-        <table class="full">
-            <thead>
-                <tr>
-                    <td>No.</td>
-                    <td>House Name</td>
-                    <td>Gender</td>
-                    <td>Rooms</td>
-                    <td>Heads Per Room</td>
-                </tr>
-            </thead>
-            <tbody>
-                <?php $count = 0; foreach($houses as $house): ?>
-                <tr data-item-id="<?php echo $house["id"] ?>">
-                    <td><?= ++$count ?></td>
-                    <td><?= $house["title"] ?></td>
-                    <td><?= strtolower($house["gender"]) == "both" ? "m/f" : ucfirst($house["gender"]) ?></td>
-                    <td>
-                        <?php 
-                            if(strtolower($house["gender"]) == "both"){
-                                echo "{$house['maleTotalRooms']} / {$house['femaleTotalRooms']}";
-                            }else{
-                                echo $house["maleTotalRooms"] ?? $house["femaleTotalRooms"];
-                            }
-                        ?>
-                    </td>
-                    <td>
-                        <?php 
-                            if(strtolower($house["gender"]) == "both"){
-                                echo "{$house['maleHeadPerRoom']} / {$house['femaleHeadPerRoom']}";
-                            }else{
-                                echo $house["maleHeadPerRoom"] ?? $house["femaleHeadPerRoom"];
-                            }
-                        ?>
-                    </td>
-                    <td class="flex flex-wrap">
-                        <span class="item-event edit">Edit</span>
-                        <span class="item-event delete">Delete</span>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+            <table class="full">
+    <thead>
+        <tr>
+            <td>No.</td>
+            <td>House Name</td>
+            <td>Male Rooms</td>
+            <td>Male Heads/Room</td>
+            <td>Female Rooms</td>
+            <td>Female Heads/Room</td>
+            <td>Gender</td>
+            <td>Actions</td>
+        </tr>
+    </thead>
+    <tbody>
+        <?php 
+        $count = 0; 
+        foreach ($houses as $house): 
+        ?>
+            <tr data-item-id="<?php echo $house["id"] ?>">
+                <td><?= ++$count ?></td>
+                <td><?= $house["title"] ?></td>
+                <td><?= $house["maleTotalRooms"] ?></td>
+                <td><?= $house["maleHeadPerRoom"] ?></td>
+                <td><?= $house["femaleTotalRooms"] ?></td>
+                <td><?= $house["femaleHeadPerRoom"] ?></td>
+                <td><?= ucfirst($house["gender"]) ?></td>
+                <td class="flex flex-wrap">
+                    <span class="item-event edit">Edit</span>
+                    <span class="item-event delete">Delete</span>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
         <?php else:
-                echo "<p style=\"margin-top: 5px; padding: 5px; text-align: center; background-color: white; border: 1px dashed lightgrey;\">No data to be displayed</p>";
+                echo "<p style=\"margin-top: 5px; padding: 5px; text-align: center; background-color: white; border: 1px dashed lightgrey;\">No student allocation data available for the current admission.</p>";
             endif;
         ?>
     </div>
@@ -240,11 +233,13 @@
     <div class="head">
         <h2>House Allocation Summary (<?= implode(" - ",$academic_dates) ?>)</h2>
     </div>
-    <?php         
+    <?php 
         $houses_db = decimalIndexArray(fetchData(
             ["h.title", "COUNT(ho.indexNumber) as total", "ho.studentGender", "ho.boardingStatus"],
-            ["join" => "houses house_allocation", "alias" => "h ho", "on" => "id houseID"],
-            ["h.schoolID=$user_school_id", "academic_year IN ($academic_years)"], 0, "AND", group_by: ["h.title","ho.studentGender", "ho.boardingStatus"], join_type: "left"
+            ["join" => "houses house_allocation", "alias" => "h ho", "on" => "id houseID", "add_on" => [
+                "ho.academic_year IN ($academic_years)"
+            ]],
+            ["h.schoolID=$user_school_id"], 0, "AND", group_by: ["h.title","ho.studentGender", "ho.boardingStatus"], join_type: "left"
         ));
 
         $houses = [];

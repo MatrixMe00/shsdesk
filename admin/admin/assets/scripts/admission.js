@@ -68,3 +68,51 @@ $('#multi_prospectus').on('change', function () {
         $('#single_prospectus').removeClass('no_disp');
     }
 });
+
+$('#letter_prefix').on('change', function () {
+    $("#prefix-container").toggleClass('no_disp', !$(this).is(':checked'));
+});
+
+function prefix_preview() {
+    // Get values
+    let prefix = $('#prefix_text').val().trim();
+    let yearOpt = $('#prefix_year').val();
+    let yearVal = $('#prefix_year option:selected').data('current-year') || '';
+    let separator = $('#prefix_separator').val() || '';
+
+    // Use fallback if prefix is empty
+    if (!prefix) {
+        prefix = 'ADM';
+    }
+
+    // Build admission number example
+    let parts = [];
+    if (prefix) parts.push(prefix);
+    if (yearOpt) parts.push(yearVal);
+
+    // Always append a sample number
+    parts.push('0001');
+
+    let preview = parts.join(separator);
+
+    // Update preview span
+    $('#prefix_preview').text(preview);
+}
+
+$(document).ready(function() {
+    prefix_preview();
+});
+
+$('#prefix_text, #prefix_year, #prefix_separator').on('input change', function() {
+    prefix_preview();
+});
+
+$(".remove-template").on("click", function() {
+    const confirm = window.confirm("Are you sure you want to remove this template instead of replacing?");
+
+    if(confirm){
+        $("input[name=old_admission_template]").val("");
+        $(this).addClass("info").html("Save form to finalize changes");
+    }
+    
+});

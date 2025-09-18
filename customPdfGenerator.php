@@ -91,6 +91,11 @@
         $house = $_SESSION["ad_stud_house"];
         $gender = $_SESSION["ad_stud_gender"] == "Male" ? "Sir" : "Madam";
         $profile_pic = $_SESSION["ad_profile_pic"];
+        $admission_number = $_SESSION["ad_admission_number"];
+
+        if($admission_number){
+            $admission_number = "<span>Ref. Number: $admission_number</span><br>";
+        }
 
         if(!empty($profile_pic)){
             $profile_pic = "<img src=\"$url/$profile_pic\" width=\"100%\" height=\"100%\">";
@@ -173,6 +178,7 @@
                         $profile_pic
                     </div>
                     <div class="candidate_info" style="text-align: start;">
+                        $admission_number
                         <span>Enrolment Code: $enrolment_code</span><br>
                         <span>Candidate Name: $candidate</span><br>
                         <span>Residence Status: $residence_status</span><br>
