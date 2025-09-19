@@ -505,7 +505,7 @@ $("button[name=continue]").click(function(){
 
             if(data["status"] == "success"){
                 //successful results should fill the form with needed data
-                $("form[name=admissionForm] #ad_aggregate").val(data["aggregate"]);
+                $("form[name=admissionForm] #ad_aggregate").val(data["aggregate"] ? data["aggregate"] : "N/A");
                 $("form[name=admissionForm] #ad_course").val(data["programme"]);
                 $("form[name=admissionForm] #ad_lname").val(data["Lastname"]);
                 $("form[name=admissionForm] #ad_oname").val(data["Othernames"]);
@@ -738,6 +738,9 @@ $("form[name=admissionForm]").submit(function(e){
                 i = 1;
             }else if(response == "no-aggeregate-score"){
                 message = "Please enter your aggregate score";
+                i = 1;
+            }else if(response == "wrong-aggregate-score"){
+                message = "Aggregate score provided is invalid";
                 i = 1;
             }else if(response == "no-course-set"){
                 message = "Please provide the name of your selected program";

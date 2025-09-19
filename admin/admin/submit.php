@@ -97,6 +97,7 @@
             $jhs = formatName(strip_tags(stripslashes($_REQUEST["jhs"])));
             $dob = strip_tags(stripslashes($_REQUEST["dob"]));
             $track_id = strip_tags(stripslashes($_REQUEST["track_id"]));
+            $guardian_contact = $_REQUEST["guardian_contact"];
             $school_id = $user_school_id;
 
             //variable to hold messages
@@ -114,17 +115,16 @@
                 $message = "boarding-status-not-set";
             }elseif(empty($student_course) || is_null($student_course)){
                 $message = "no-student-program-set";
-            }elseif(empty($aggregate) || is_null($aggregate)){
-                $message = "no-aggregate-set";
-            }elseif(intval($aggregate) < 6 || intval($aggregate) > 81){
+            }elseif(!empty($aggregate) && (intval($aggregate) < 6 || intval($aggregate) > 54)){
                 $message = "aggregate-wrong";
-            }elseif(empty($track_id) || is_null($track_id)){
-                $message = "no-track-id";
             }elseif(empty($school_id) || is_null($school_id)){
                 $message = "no-school-id";
+            }elseif(!empty($guardian_contact) && checkPhoneNumber($guardian_contact) === false){
+                $message = "Phone number is not valid";
             }else{
                 //format date
-                $dob = date("Y-m-d", strtotime($dob));
+                $dob = $dob ? date("Y-m-d", strtotime($dob)) : null;
+                $aggregate = $aggregate ? $aggregate : null;
 
                 //verify if index number is unavailable
                 $valid = fetchData("indexNumber","cssps","indexNumber='$student_index'");
@@ -132,13 +132,24 @@
                 if($valid == "empty"){
                     $academic_year = getAcademicYear(date("d-m-Y"), false);
                     //insert data into CSSPS table
-                    $sql = "INSERT INTO cssps (indexNumber,Lastname,Othernames,Gender,
-                            boardingStatus,programme, aggregate, jhsAttended, dob, trackID, schoolID, academic_year) 
-                            VALUES (?,?,?,?,?,?,?,?,?,?,?,'$academic_year')";
+                    $sql = "INSERT INTO cssps (
+                                indexNumber, Lastname, Othernames, Gender,
+                                boardingStatus, programme, aggregate, jhsAttended,
+                                dob, trackID, schoolID, academic_year, guardian_contact
+                            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    
                     $stmt = $connect->prepare($sql);
-                    $stmt->bind_param("ssssssisssi",$student_index,$lname,$oname,$gender,$boarding_status,$student_course,
-                        $aggregate,$jhs,$dob,$track_id,$school_id);
+                    
+                    $stmt->bind_param("ssssssisssiss",
+                        $student_index, $lname, $oname, $gender,   $boarding_status,
+                        $student_course,$aggregate, $jhs, $dob,$track_id,
+                        $school_id, $academic_year, $guardian_contact
+                    );
                     $stmt->execute();
+
+                    if($guardian_contact){
+                        add_cssps_guardian($student_index, $school_id, $guardian_contact);
+                    }
 
                     $message = "success";
                 }else{
@@ -227,6 +238,7 @@
                 $jhs = strip_tags(stripslashes($_REQUEST["jhs"])) ?? null;
                 $dob = strip_tags(stripslashes($_REQUEST["dob"])) ?? null;
                 $track_id = strip_tags(stripslashes($_REQUEST["track_id"])) ?? null;
+                $guardian_contact = $_REQUEST["guardian_contact"] ?? null;
             }else{
                 $guardianContact = $_REQUEST["guardianContact"] ?? null;
                 $year_level = $_REQUEST["year_level"] ?? null;
@@ -258,14 +270,12 @@
                 $message = "boarding-status-not-set";
             }elseif(is_null($student_course) || empty($student_course)){
                 $message = "no-student-program-set";
-            }elseif($admin_mode == "admission" && (is_null($aggregate) || empty($aggregate))){
-                $message = "no-aggregate-set";
-            }elseif($admin_mode == "admission" && (intval($aggregate) < 6 || intval($aggregate) > 81)){
-                $message = "aggregate-wrong";
-            }elseif($admin_mode == "admission" && (is_null($track_id) || empty($track_id))){
-                $message = "no-track-id";
+            }elseif($admin_mode == "admission" && (intval($aggregate) < 6 || intval($aggregate) > 54)){
+                $message = "Aggregate score provided is invalid";
             }elseif($admin_mode == "admission" && (isset($_REQUEST['house']) && empty($house))){
                 $message = "no-house";
+            }elseif($admin_mode == "admission" && ($guardian_contact && !checkPhoneNumber($guardian_contact))){
+                $message = "Invalid phone number has been provided";
             }elseif($admin_mode == "records" && (is_null($year_level) || empty($year_level))){
                 $message = "Student year was not specified. Please specify before you continue";
             }elseif($admin_mode == "records" && (is_null($program_id) || empty($program_id))){
@@ -303,15 +313,16 @@
                         // $message = "Everything is fine";
                     }else{
                         //format date
-                        $dob = date("Y-m-d", strtotime($dob));
+                        $dob = $dob ? date("Y-m-d", strtotime($dob)) : null;
+                        $aggregate = $aggregate ? $aggregate : null;
 
                         //update data in CSSPS table
                         $sql = "UPDATE cssps SET Lastname=?, Othernames=?, Gender=?, boardingStatus=?,
-                                programme=?, aggregate=?, jhsAttended=?, dob=?, trackID=? 
+                                programme=?, aggregate=?, jhsAttended=?, dob=?, trackID=?, guardian_contact = ?
                                 WHERE indexNumber=?";
                         $stmt = $connect->prepare($sql);
-                        $stmt->bind_param("sssssissss",$lname,$oname,$gender,$boarding_status,$student_course,
-                            $aggregate,$jhs,$dob,$track_id, $student_index);
+                        $stmt->bind_param("sssssisssss",$lname,$oname,$gender,$boarding_status,$student_course,
+                            $aggregate,$jhs,$dob,$track_id, $guardian_contact, $student_index);
                         if($stmt->execute()){
                             //update student enrolment data
                             if(fetchData("enroled","cssps","indexNumber='$student_index'")["enroled"]){
@@ -324,6 +335,10 @@
                                     $stmt = $connect->prepare($sql);
                                     $stmt->bind_param("ssssssss",$student_course, $lname, $oname, $gender, $jhs, $dob, $enrolCode, $student_index);
                                     $stmt->execute();
+                                }
+
+                                if($guardian_contact){
+                                    add_cssps_guardian($student_index, $user_school_id, $guardian_contact);
                                 }
 
                                 //make update to house allocation
@@ -854,23 +869,24 @@
                 if($_REQUEST["db"] === ""){
                     try{
                         if($indexNumber == "all"){
-                            $sql = "DELETE FROM cssps WHERE schoolID=$school_id";
+                            $sql = "DELETE FROM cssps WHERE schoolID=$school_id AND current_data = TRUE";
                         }else{
                             $sql = "DELETE FROM cssps WHERE indexNumber='$indexNumber'";
                         }
                         if($connect->query($sql)){
                             if($indexNumber == "all"){
-                                $sql = "DELETE FROM enrol_table WHERE shsID=$school_id";
+                                $sql = "DELETE FROM enrol_table WHERE shsID=$school_id AND current_data = TRUE";
                             }else{
                                 $sql = "DELETE FROM enrol_table WHERE indexNumber='$indexNumber'";
                             }
                             if($connect->query($sql)){
                                 if($indexNumber == "all"){
-                                    $sql = "DELETE FROM house_allocation WHERE schoolID=$school_id";
+                                    $sql = "DELETE FROM house_allocation WHERE schoolID=$school_id AND current_data = TRUE";
                                 }else{
                                     $sql = "DELETE FROM house_allocation WHERE indexNumber='$indexNumber'";
                                 }
                                 if($connect->query($sql)){
+                                    $connect->query("DELETE FROM cssps_guardians WHERE ".($indexNumber == "all" ? "school_id = $school_id AND current_data = TRUE" : "index_number = '$indexNumber'"));
                                     $message = "success";
                                 }else{
                                     $message = "Student detail could not be removed from house allocated";
@@ -2528,17 +2544,33 @@
             echo $message;
         }elseif($submit == "reset_admission"){
             $academic_year = getAcademicYear(now(), false);
-            $sql = "UPDATE cssps SET current_data = FALSE WHERE schoolID=$user_school_id AND current_data = TRUE AND academic_year != '$academic_year';
-                UPDATE enrol_table SET current_data = FALSE WHERE shsID=$user_school_id AND current_data = TRUE AND academic_year != '$academic_year';
-                UPDATE house_allocation SET current_data = FALSE WHERE schoolID=$user_school_id AND current_data = TRUE AND academic_year != '$academic_year';
-                UPDATE transaction SET current_data = FALSE WHERE schoolBought = $user_school_id AND current_data = TRUE AND academic_year != '$academic_year';
-            ";
-            $response = $connect->multi_query($sql);
+            $queries = [
+                "UPDATE cssps SET current_data = FALSE WHERE schoolID=$user_school_id AND current_data = TRUE AND academic_year != '$academic_year'",
+                "UPDATE enrol_table SET current_data = FALSE WHERE shsID=$user_school_id AND current_data = TRUE AND academic_year != '$academic_year'",
+                "UPDATE house_allocation SET current_data = FALSE WHERE schoolID=$user_school_id AND current_data = TRUE AND academic_year != '$academic_year'",
+                "UPDATE transaction SET current_data = FALSE WHERE schoolBought=$user_school_id AND current_data = TRUE AND academic_year != '$academic_year'",
+                "UPDATE cssps_guardians SET current_data = FALSE WHERE school_id=$user_school_id"
+            ];
+            
+            $response = true;
+            $row_count = 0;
+
+            $connect->begin_transaction();
+            foreach ($queries as $q) {
+                if (!$connect->query($q)) {
+                    $message = "Error: " . $connect->error;
+                    $response = false;
+                    break;
+                }else{
+                    $row_count += $connect->affected_rows;
+                }
+            }
 
             if($response === true){
-                $message = "Admission has been reset. $connect->affected_rows results were updated";
+                $connect->commit();
+                $message = "Admission has been reset. $row_count results were updated";
             }else{
-                $message = "Error: $connect->error";
+                $connect->rollback();
             }
 
             echo json_encode(["status" => $response, "message" => $message]);

@@ -123,7 +123,7 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                             <td>Program</td>
                             <td>Aggregate</td>
                             <td>Gender</td>
-                            <td>Track Id</td>
+                            <td>Contact</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -134,9 +134,9 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                             <td class="fullname"><?php echo $student["Lastname"]." ".$student["Othernames"] ?></td>
                             <td><?php echo $student["boardingStatus"] ?></td>
                             <td><?php echo $student["programme"] ?></td>
-                            <td><?php echo $student["aggregate"]?></td>
+                            <td><?php echo $student["aggregate"] ?? "N/A" ?></td>
                             <td><?php echo $student["Gender"] ?></td>
-                            <td><?php echo $student["trackID"] ?></td>
+                            <td><?php echo $student["guardian_contact"] ?? "N/A" ?></td>
                             <td class="flex flex-wrap">
                                 <span class="item-event edit cssps">Edit</span>
                                 <span class="item-event delete cssps">Delete</span>
@@ -212,9 +212,8 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                             <td>Fullname</td>
                             <td>Boarding Status</td>
                             <td>Program</td>
-                            <td>Aggregate</td>
                             <td>Gender</td>
-                            <td>Track Id</td>
+                            <td>Contact</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -224,9 +223,8 @@ if(isset($_REQUEST["school_id"]) && !empty($_REQUEST["school_id"])){
                             <td class="fullname"><?php echo $student["Lastname"]." ".$student["Othernames"] ?></td>
                             <td><?php echo $student["boardingStatus"] ?></td>
                             <td><?php echo $student["programme"] ?></td>
-                            <td><?php echo $student["aggregate"]?></td>
                             <td><?php echo $student["Gender"] ?></td>
-                            <td><?php echo $student["trackID"] ?></td>
+                            <td><?php echo $student["guardian_contact"] ?? "N/A" ?></td>
                             <td class="flex flex-wrap">
                                 <span class="item-event edit cssps">Edit</span>
                                 <span class="item-event delete cssps">Delete</span>

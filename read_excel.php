@@ -5,7 +5,9 @@
     require($rootPath."/PhpSpreadsheet/autoload.php");
 
     //load IOFactory class
-    use PhpOffice\PhpSpreadsheet\IOFactory;
+
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
     //load spreadsheet class
     use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -13,6 +15,7 @@
     try {
         if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
             $submit = $_REQUEST["submit"];
+            $type = $_REQUEST["type"] ?? "house";
     
             if($submit == "upload" || $submit == "upload_ajax" || $submit == "upload_students" || $submit == "upload_students_ajax"){
                 if(isset($_FILES['import']) && $_FILES["import"]["tmp_name"] != NULL){
@@ -40,7 +43,7 @@
                         $acceptable = ["K","F","H","G","I"];
     
                         //check if right file is sent
-                        if($max_column == "J" || $max_column == "F" || $max_column == "I"){
+                        if($max_column == "J" || $max_column == "F" || $max_column == "I"){     // for houses
                             //grab the detail in the first cell
                             $cell =  $sheet->getCell("A1");
                             $cellValue = $cell->getValue();
@@ -56,7 +59,7 @@
                                     exit("First column not identified as 'index number'. Please follow the format directed in the documents above");
                                 }
                             }
-                        }elseif($max_column == "H" || $max_column == "G"){
+                        }elseif($max_column == "H" || $max_column == "G"){  // for cssps
                             //grab the detail in the first cell
                             $cell = $sheet->getCell("A2");
                             $cellValue = $cell->getValue();
@@ -78,12 +81,59 @@
                         }
     
                         //last heading
-                        $last_heading = ucwords($sheet->getCell($max_column.($row_start-1))->getValue());
-                        
+                        $last_heading = null;
+                        $test_max_column = $max_column;
+
+                        do {
+                            $last_heading = $sheet->getCell($test_max_column . ($row_start - 1))->getValue();
+                            $last_heading = trim($last_heading);
+                            
+                            // Move left if empty
+                            if (empty($last_heading)) {
+                                $colIndex = Coordinate::columnIndexFromString($test_max_column);
+                                $colIndex--;
+                                $headerCounter = $colIndex;
+
+                                if ($colIndex < 1) {
+                                    exit("Couldn't get a valid column value");
+                                }
+
+                                $test_max_column = Coordinate::stringFromColumnIndex($colIndex);
+                            }
+                        } while (empty($last_heading));
+                        $max_column = $test_max_column;
+
                         //create columns for cell number operations
                         $current_col_names = createColumnHeader($max_column);
                         $headerCounter = count($current_col_names);
-                        
+
+                        // get the headings in the file
+                        $headings = [];
+                        for ($col = 0; $col < $headerCounter; $col++) {
+                            $cellValue = $sheet->getCell($current_col_names[$col] . ($row_start - 1))->getValue();
+                            $headings[] = strtolower(trim($cellValue));
+                        }
+
+                        $sheet_data = [];
+
+                        for ($row = $row_start; $row <= $max_row; $row++) {
+                            $rowData = [];
+
+                            for ($col = 0; $col < $headerCounter; $col++) {
+                                $columnLetter = $current_col_names[$col];
+                                $cellValue = $sheet->getCell($columnLetter . $row)->getValue();
+
+                                if(empty($cellValue)){
+                                    $cellValue = $sheet->getCell($columnLetter.$row)->getCalculatedValue();
+                                }
+
+                                // Store using column index (0-based)
+                                $rowData[$headings[$col]] = $cellValue;
+                            }
+
+                            $sheet_data[] = $rowData;
+                        }
+
                         // display content
                         // for placement provided by system
                         if($max_column == "J" && $last_heading != "Guardian Contact"){
@@ -170,10 +220,104 @@
                                 $connect->rollback();
                                 echo throwableMessage($th);
                             }
+                        }elseif($max_column == "G" && $type == "admission" && $last_heading == "Residential"){
+                            // 2025/2026 template
+                            // $headerCounter = 6;
+                            $academic_year = $_REQUEST["academic_year"] ?? getAcademicYear(now(), false);
+                            $not_written = $new_data = 0;
+
+                            // headers required for this section
+                            /*$required_headers = [
+                                "index number" => "indexNumber",
+                                "name" => ["Lastname", "Othernames"],
+                                "date of birth" => "dob",
+                                "contact" => "guardian_contact",
+                                "place program" => "programme",
+                                "gender" => "gender",
+                                "residence" => "boardingStatus",
+                            ];*/
+
+                            $connect->begin_transaction();
+                            try {
+                                foreach($sheet_data as $count => $row){
+                                    $hidden_index = null;
+
+                                    $indexNumber = $row["index number"];
+                                    $name = explode(' ', $row["name"], 2);
+                                    $dob = $row["date of birth"];
+                                    $guardian_contact = $row["contact"];
+                                    $programme = $row["place program"];
+                                    $Gender = $row["gender"];
+                                    $boardingStatus = $row["residential"];
+
+                                    if(empty($indexNumber)){
+                                        exit("Empty index number at row ".($count + 2).". Data before this have been saved");
+                                    }elseif(str_contains($indexNumber, "*")){
+                                        $hidden_index = $indexNumber;   // store the hashed index_number
+                                        do {
+                                            $indexNumber = generateIndexNumber($user_school_id);
+                                        } while (is_array(fetchData("indexNumber","cssps","indexNumber='$indexNumber'")));
+                                    }
+
+                                    if(is_array($name)){
+                                        $Lastname = $name[0];
+                                        $Othernames = $name[1] ?? "";
+                                    }else{
+                                        exit("Student's name for '$indexNumber' could not be retrieved. Check your file and try again later, else report to admin for help");
+                                    }
+
+                                    if(str_contains(strtolower($boardingStatus), "board")){
+                                        $boardingStatus = 'Boarder';
+                                    }
+
+                                    if($guardian_contact){
+                                        $guardian_contact = remakeNumber($guardian_contact, space: false);
+                                    }
+
+                                    if(!is_null($indexNumber) && !empty($indexNumber)){
+                                        if(!$hidden_index || is_null($hidden_index)){
+                                            $index = fetchData("indexNumber","cssps","indexNumber='$indexNumber'");
+                                        }
+                                        else{
+                                            $index = fetchData("indexNumber", "cssps", ["hidden_index = '$hidden_index'", "Lastname = '$Lastname'", "Othernames = '$Othernames'", "programme = '$programme'", "schoolID = $user_school_id"], where_binds: "AND");
+                                        }
+            
+                                        if($index == "empty"){
+                                            $sql = "INSERT INTO cssps(indexNumber, hidden_index, Lastname,Othernames,Gender,boardingStatus,programme,schoolID, guardian_contact, academic_year)
+                                                VALUES (?,?,?,?,?,?,?,?,?, '$academic_year')
+                                            ";
+                                            $stmt = $connect->prepare($sql);
+                                            $stmt->bind_param("sssssssis",$indexNumber,$hidden_index, $Lastname,$Othernames,$Gender,$boardingStatus,$programme,$user_school_id, $guardian_contact);
+                                            if($stmt->execute()){
+                                                ++$new_data;
+
+                                                if(!empty($guardian_contact)){
+                                                    add_cssps_guardian($indexNumber, $user_school_id, $guardian_contact);
+                                                }
+                                            }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
+                                                echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
+                                            }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
+                                                echo "Detail for <b>$indexNumber</b> not written. Gender must either be Male or Female";
+                                            }else{
+                                                throw new Exception("Statment Error: $stmt->error");
+                                            }
+                                        }else{
+                                            $not_written++;
+                                        }     
+                                    }
+                                }
+
+                                $connect->commit();
+
+                                echo $not_written < 1 ? "success" : "$new_data new records have been added";
+                            } catch (\Throwable $th) {
+                                $connect->rollback();
+                                echo "Error: ".throwableMessage($th);
+                            }
                         }elseif($max_column == "H" || $max_column == "G" || $max_column == "I"){
                             //make it end at G
                             $headerCounter = 6;
-                            $academic_year = getAcademicYear(now(), false);
+                            $academic_year = $_REQUEST["academic_year"] ?? getAcademicYear(now(), false);
                             $not_written = $new_data = 0;
 
                             $connect->begin_transaction();

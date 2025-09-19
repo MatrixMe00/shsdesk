@@ -217,7 +217,7 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/hashtag.png" alt="aggregate">
                 </span>
-                <input type="text" name="aggregate" id="aggregate" required pattern="[0-9]+" 
+                <input type="text" name="aggregate" id="aggregate" pattern="[0-9]+" 
                 maxlength="2" minlength="2" title="Enter the aggregate score of the student here" autocomplete="off" placeholder="Aggregate Score">
             </label>
             <label for="jhs">
@@ -238,8 +238,15 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/id card.png" alt="trackid">
                 </span>
-                <input type="text" name="track_id" id="track_id" required title="Enter the track id here"
-                autocomplete="off" placeholder="Student's Track Id*">
+                <input type="text" name="track_id" id="track_id" title="Enter the track id here"
+                autocomplete="off" placeholder="Student's Track Id">
+            </label>
+            <label for="guardian_contact">
+                <span class="label_image">
+                    <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="contno">
+                </span>
+                <input type="tel" name="guardian_contact" id="guardian_contact" title="Enter a contact number"
+                autocomplete="off" placeholder="Contact Number">
             </label>
         </div>
     </div>

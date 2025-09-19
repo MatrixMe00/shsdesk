@@ -12,14 +12,15 @@
             $required_profile = [23];
 
             try {
-                $school = fetchData("s.*, a.reopeningDate, a.letter_prefix", "schools s JOIN admissiondetails a ON s.id = a.schoolID", "s.id=".$_POST["shs_placed"], join_type: "left");
+                $school_name = $connect->real_escape_string($_POST["shs_placed"]);
+                $school = fetchData("s.*, a.reopeningDate, a.letter_prefix", "schools s JOIN admissiondetails a ON s.id = a.schoolID", "s.schoolName='$school_name'", join_type: "left");
                 $shs_placed = $school["id"];
                 $ad_enrol_code = $_POST["ad_enrol_code"];
                 $ad_index = $_POST["ad_index"];
                 $ad_aggregate = $_POST["ad_aggregate"];
 
                 //check if the aggregate is not a single number
-                $ad_aggregate = str_pad($ad_aggregate, 2, "0", STR_PAD_LEFT);
+                $ad_aggregate = is_numeric($ad_aggregate) && $ad_aggregate > 0 ? str_pad(intval($ad_aggregate), 2, "0", STR_PAD_LEFT) : null;
 
                 $ad_course = $_POST["ad_course"];
                 $program_id = isset($_POST["program_id"]) && !empty($_POST["program_id"]) ? $_POST["program_id"] : get_program_from_course($ad_course, $shs_placed);
@@ -124,9 +125,11 @@
                     $message = "enrolment-code-exist";
                 }elseif($shs_placed == "error"){
                     $message = "wrong-school";
-                }elseif(empty($ad_aggregate)){
+                }/*elseif(empty($ad_aggregate)){
                     $message = "no-aggregate-score";
-                }elseif(empty($ad_course)){
+                }elseif($ad_aggregate && (intval($ad_aggregate) < 6 || intval($ad_aggregate) > 54)){
+                    $message = "wrong-aggregate-score";
+                }*/elseif(empty($ad_course)){
                     $message = "no-course-set";
                 }elseif(empty($ad_lname)){
                     $message = "no-lname-set";
@@ -194,10 +197,10 @@
                         $retry = 0;
 
                         $sql = "UPDATE cssps 
-                            SET jhsAttended = ?, dob=?, profile_pic = ?, enroled = 1 
+                            SET jhsAttended = ?, dob=?, profile_pic = ?, aggregate = ?, enroled = 1 
                             WHERE indexNumber = ?";
                         $stmt = $connect->prepare($sql);
-                        $stmt->bind_param("ssss", $ad_jhs, $ad_birthdate, $ad_profile_pic, $ad_index);
+                        $stmt->bind_param("sssis", $ad_jhs, $ad_birthdate, $ad_profile_pic, $ad_aggregate, $ad_index);
                         $stmt->execute();
                         $stmt->close();
 

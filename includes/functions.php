@@ -1853,6 +1853,8 @@
 
         $phone_number = remakeNumber($phone_number, false, false);
         
+        if(strlen($phone_number) != 10) return false;
+        
         if(is_null($network_provider)){
             return in_array(substr($phone_number,0,3), $phoneNumbers);
         }else{
@@ -2749,3 +2751,28 @@
 
         return $admission_number;
     }
+
+    /**
+     * This function upserts a contact details for cssps student
+     * @param string $index_number The index number of the student
+     * @param int $school_id The user school id
+     * @param ?string $contact The phone number
+     */
+    function add_cssps_guardian(string $index_number, int $school_id, ?string $contact) {
+        global $connect;
+    
+        if (!$contact) return false;
+    
+        $academic_year = getAcademicYear(now(), false);
+    
+        $sql = "INSERT INTO cssps_guardians (index_number, contact, academic_year, school_id)
+                VALUES (?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                    contact = VALUES(contact)";
+    
+        $stmt = $connect->prepare($sql);
+        $stmt->bind_param("sssi", $index_number, $contact, $academic_year, $school_id);
+    
+        return $stmt->execute();
+    }
+    

@@ -80,6 +80,7 @@ $("table tbody tr .edit").click(function(){
                     $("form[name=adminUpdateStudent] input[name=jhs]").val(response["jhsAttended"]);
                     $("form[name=adminUpdateStudent] input[name=dob]").val(response["dob"]);
                     $("form[name=adminUpdateStudent] input[name=track_id]").val(response["trackID"]);
+                    $("form[name=adminUpdateStudent] input[name=guardian_contact]").val(response["guardian_contact"]);
                 }else if(student){
                     $("form[name=adminUpdateStudent] select, form[name=adminUpdateStudent] input").css("color", "black");
                     $("form[name=adminUpdateStudent] label[for=house]").removeClass("no_disp");
