@@ -2808,4 +2808,51 @@
 
         return $response;
     }
+
+    /**
+     * Shows the acceptable headers we need for a document type
+     * @param string $type The document type
+     */
+    function getExcelHeadersTable($type) {
+        global $excel_acceptable_headers;
+
+        if (!isset($excel_acceptable_headers[$type])) {
+            return null; // type not found
+        }
+
+        $data = $excel_acceptable_headers[$type];
+
+        $required = implode(", ", $data['required']);
+        $optional = implode(", ", $data['optional']);
+        $otherAccepted = implode(", ", array_keys($data['replace']));
+
+        $table = "<table class='full'>";
+
+        // Row 1: Required Fields
+        $table .= "<tr>
+                    <td>Required Fields</td>
+                    <td colspan='2'>{$required}</td>
+                </tr>";
+
+        // Row 2: Optional Fields
+        $table .= "<tr>
+                    <td>Optional Fields</td>
+                    <td colspan='2'>{$optional}</td>
+                </tr>";
+
+        // Row 3: Other Accepted Fields
+        $table .= "<tr>
+                    <td>Other Accepted Fields</td>
+                    <td colspan='2'>{$otherAccepted}</td>
+                </tr>";
+
+        // Row 4: Note
+        $table .= "<tr>
+                    <td colspan='3' style='text-align:center; font-style:italic;'>Other non-mentioned columns will be ignored</td>
+                </tr>";
+
+        $table .= "</table>";
+
+        return $table;
+    }
     

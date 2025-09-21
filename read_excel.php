@@ -6,16 +6,65 @@
 
     //load IOFactory class
 
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+    use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+    use PhpOffice\PhpSpreadsheet\IOFactory;
+    use PhpOffice\PhpSpreadsheet\RichText\RichText;
+    use PhpOffice\PhpSpreadsheet\Shared\Date;
 
     //load spreadsheet class
     use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
+    /**
+     * Validates the headers of the excel file
+     * @param string $type The type
+     * @param array $headers The headers of the file
+     * @param array $acceptable_headers The array for the acceptable headers
+     * @return array
+     */
+    function validateHeaders($type, $headers, $acceptable_headers) {
+        if (!isset($acceptable_headers[$type])) {
+            return [
+                "status" => false,
+                "error" => "Unknown type: $type"
+            ];
+        }
+    
+        $rules = $acceptable_headers[$type];
+        $required = $rules['required'];
+        $replace  = $rules['replace'];
+    
+        // Normalize headers (lowercase + trim)
+        $normalizedHeaders = array_map('strtolower', array_map('trim', $headers));
+    
+        // Apply replacements
+        foreach ($normalizedHeaders as &$header) {
+            if (isset($replace[$header])) {
+                $header = $replace[$header];
+            }
+        }
+        unset($header);
+    
+        // Check required fields
+        $missing = [];
+        foreach ($required as $req) {
+            if (!in_array(strtolower($req), $normalizedHeaders)) {
+                $missing[] = $req;
+            }
+        }
+    
+        return [
+            "status" => empty($missing),
+            "missing" => $missing,
+            "processed_headers" => $normalizedHeaders
+        ];
+    }
 
     try {
         if(isset($_REQUEST["submit"]) && $_REQUEST["submit"] != null){
             $submit = $_REQUEST["submit"];
             $type = $_REQUEST["type"] ?? "house";
+
+            $acceptable_headers = $excel_acceptable_headers;
     
             if($submit == "upload" || $submit == "upload_ajax" || $submit == "upload_students" || $submit == "upload_students_ajax"){
                 if(isset($_FILES['import']) && $_FILES["import"]["tmp_name"] != NULL){
@@ -42,42 +91,16 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
     
                         $acceptable = ["K","F","H","G","I"];
     
-                        //check if right file is sent
-                        if($max_column == "J" || $max_column == "F" || $max_column == "I"){     // for houses
-                            //grab the detail in the first cell
-                            $cell =  $sheet->getCell("A1");
-                            $cellValue = $cell->getValue();
-    
-                            if(strtolower($cellValue) != "index number" && str_contains(strtolower($cellValue), "index") === false){
-                                $cell =  $sheet->getCell("A2");
-                                $cellValue = $cell->getValue();
-    
-                                $row_start = 3;
-    
-                                if(strtolower($cellValue) != "index number" || !str_contains($cellValue, "index")){
-                                    //display error if the first column isnt the index number
-                                    exit("First column not identified as 'index number'. Please follow the format directed in the documents above");
-                                }
-                            }
-                        }elseif($max_column == "H" || $max_column == "G"){  // for cssps
-                            //grab the detail in the first cell
-                            $cell = $sheet->getCell("A2");
-                            $cellValue = $cell->getValue();
-    
-                            $row_start = 3;
-    
-                            if(!str_contains(strtolower($cellValue), "index")){
-                                $cell =  $sheet->getCell("A1");
-                                $cellValue = $cell->getValue();
-    
-                                $row_start = 2;
-    
-                                if(!str_contains(strtolower($cellValue), "index")){
-                                    exit("The file you sent cannot be defined. Please send a valid file format. Make sure it begins with 'index'");
-                                }
-                            }
-                        }elseif(!in_array($max_column, $acceptable)){
-                            exit("Invalid file detected. Please send the correct file to continue");
+                        //check if right file is sent by grabbing first two cells in column A
+                        $cell1 = strtolower(trim($sheet->getCell("A1")->getValue()));
+                        $cell2 = strtolower(trim($sheet->getCell("A2")->getValue()));
+
+                        if ($cell1 === "index number" || str_contains($cell1, "index")) {
+                            $row_start = 2; // headers on row 1
+                        } elseif ($cell2 === "index number" || str_contains($cell2, "index")) {
+                            $row_start = 3; // headers on row 2
+                        } else {
+                            exit("The file you sent cannot be defined. Please send a valid file format. Make sure it begins with 'index'");
                         }
     
                         //last heading
@@ -114,192 +137,149 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
                             $headings[] = strtolower(trim($cellValue));
                         }
 
-                        $sheet_data = [];
+                        // validate the headings
+                        $validationResult = validateHeaders($type, $headings, $acceptable_headers);
+                        if (!$validationResult['status']) {
+                            $missingHeaders = implode(", ", $validationResult['missing']);
+                            exit("Missing required headers: $missingHeaders");
+                        }
 
+                        $sheet_data = [];
                         for ($row = $row_start; $row <= $max_row; $row++) {
                             $rowData = [];
 
                             for ($col = 0; $col < $headerCounter; $col++) {
                                 $columnLetter = $current_col_names[$col];
-                                $cellValue = $sheet->getCell($columnLetter . $row)->getValue();
+                                $cell = $sheet->getCell($columnLetter . $row);
 
-                                if(empty($cellValue)){
-                                    $cellValue = $sheet->getCell($columnLetter.$row)->getCalculatedValue();
+                                // Prefer calculated value if formula, else raw value
+                                $cellValue = $cell->getCalculatedValue();
+
+                                // Handle rich text
+                                if ($cellValue instanceof RichText) {
+                                    $cellValue = $cellValue->getPlainText();
                                 }
 
-                                // Store using column index (0-based)
-                                $rowData[$headings[$col]] = $cellValue;
+                                // Handle Excel dates
+                                if (\PhpOffice\PhpSpreadsheet\Shared\Date::isDateTime($cell)) {
+                                    $cellValue = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($cell->getValue())->format('Y-m-d H:i:s');
+                                }
+
+                                // Optionally, handle hyperlinks (replace the cell value with the URL if you want)
+                                $hyperlink = $cell->getHyperlink()->getUrl();
+                                if (!empty($hyperlink)) {
+                                    $cellValue = $hyperlink; // <-- comment this out if you want to keep original text instead
+                                }
+
+                                // --- Handle key replacement ---
+                                $key = strtolower(trim($headings[$col])); // normalize heading
+                                if (isset($acceptable_headers[$type]['replace'][$key])) {
+                                    $key = $acceptable_headers[$type]['replace'][$key];
+                                }
+
+                                $rowData[$key] = $cellValue;
                             }
 
                             $sheet_data[] = $rowData;
                         }
 
-                        // display content
-                        // for placement provided by system
-                        if($max_column == "J" && $last_heading != "Guardian Contact"){
+                        if($type == "admission"){
+                            $current_row = $row_start;
                             $academic_year = $_REQUEST["academic_year"] ?? getAcademicYear(now(), false);
-                            $academic_year = formatAcademicYear($academic_year, false);
-
+                            $not_written = $new_data = 0;
+                            
+                            $sql = "INSERT IGNORE INTO cssps(indexNumber, hidden_index, Lastname, Othernames, Gender, dob, boardingStatus, `aggregate`, programme, jhsAttended, trackID, schoolID, guardian_contact, academic_year)
+                                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                                ";
                             $connect->begin_transaction();
-                            $sql = "INSERT IGNORE INTO cssps(indexNumber,Lastname,Othernames,Gender,boardingStatus,programme,aggregate,jhsAttended,dob,trackID,schoolID, academic_year)
-                                        VALUES (?,?,?,?,?,?,?,?,?,?,?,'$academic_year')
-                                    ";
                             try {
-                                for($row=$row_start; $row <= $max_row; $row++){
-                                    //grab columns
-                                    for($col = 0; $col < $headerCounter; $col++){
-                                        $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue() ?? "";
-                                        
-                                        switch ($col) {
-                                            case 0:
-                                                $indexNumber = $cellValue;
-                                                break;
-                                            case 1:
-                                                $Lastname = formatName($cellValue);
-                                                break;
-                                            case 2:
-                                                $Othernames = formatName($cellValue);
-                                                break;
-                                            case 3:
-                                                $Gender = formatName($cellValue);
-                                                break;
-                                            case 4:
-                                                $boardingStatus = formatName($cellValue);
-        
-                                                if(str_contains($boardingStatus, "board")){
-                                                    $boardingStatus = "Boarder";
-                                                }
-                                                break;    
-                                            case 5:
-                                                $programme = formatName($cellValue);
-                                                break;
-                                            case 6:
-                                                $aggregate = $cellValue;
-                                                break;
-                                            case 7:
-                                                if(!empty($cellValue)){
-                                                    $jhsAttended = formatName($cellValue);
-                                                }else{
-                                                    $jhsAttended = null;
-                                                }                                        
-                                                break;
-                                            case 8:
-                                                if(!empty($cellValue)){
-                                                    $val = PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($cellValue);
-                                                    $dob = date("Y-m-d", $val);
-                                                }else{
-                                                    $dob = null;
-                                                }                                        
-                                                break;
-                                            case 9:
-                                                $trackID = $cellValue;
-                                                break;
-            
-                                            default:
-                                                exit("Buffer count is beyond expected input count");
+                                foreach($sheet_data as $row){
+                                    ++$current_row;
+    
+                                    $hidden_index = null;
+    
+                                    $index_number = $row["index number"];
+                                    $dob = $row["date of birth"] ?? null;
+                                    $guardian_contact = $row["contact"] ?? null;
+                                    $programme = $row["programme"];
+                                    $gender = $row["gender"];
+                                    $boarding_status = $row["boarding status"];
+                                    $aggregate = $row["aggregate score"] ?? null;
+                                    $jhs_attended = $row["jhs attended"] ?? null;
+                                    $track_id = $row["track id"] ?? null;
+    
+                                    if(empty($index_number)){
+                                        echo "Empty index number at row $current_row. Kindly rectify";
+                                        continue;
+                                    }elseif(str_contains($index_number, "*")){
+                                        $hidden_index = $index_number;   // store the hashed index_number
+                                        do {
+                                            $index_number = generateIndexNumber($user_school_id);
+                                        } while (is_array(fetchData("indexNumber","cssps","indexNumber='$index_number'")));
+                                    }elseif(strlen($index_number) === 11){
+                                        $index_number = "0$index_number";
+                                    }
+
+                                    if($dob){
+                                        $dob = date("Y-m-d", strtotime($dob));
+                                    }
+    
+                                    if(isset($row["name"])){
+                                        $name = explode(' ', $row["name"], 2);
+                                        $Lastname = $name[0];
+                                        $Othernames = $name[1] ?? "";
+                                    }elseif(isset($row["surname"]) && isset($row["othername"])){
+                                        $Lastname = $row["surname"];
+                                        $Othernames = $row["othername"];
+                                    }else{
+                                        echo "Student's name for '$index_number' could not be retrieved. Check your file and try again later, else report to admin for help";
+                                        continue;
+                                    }
+    
+                                    if(str_contains(strtolower($boarding_status), "board")){
+                                        $boarding_status = 'Boarder';
+                                    }
+    
+                                    if(!in_array(strtolower($boarding_status), ["day", "boarder"])){
+                                        echo "Boarding Status for <b>$index_number</b> should either be Day or Boarder/Boarding<br>";
+                                        continue;
+                                    }
+    
+                                    if($guardian_contact){
+                                        $guardian_contact = remakeNumber($guardian_contact, space: false);
+
+                                        // add 0 to the front if its 9 characters
+                                        if(strlen($guardian_contact) === 9){
+                                            $guardian_contact = "0".$guardian_contact;
                                         }
                                     }
     
-                                    // insert data but ignore any existing student
-                                    $stmt = $connect->prepare($sql);
-                                    $stmt->bind_param("ssssssisssi",$indexNumber,$Lastname,$Othernames,$Gender,$boardingStatus,$programme,$aggregate,$jhsAttended,$dob,$trackID,$user_school_id);
-                                    if($stmt->execute()){
-                                        if($row == $max_row){
-                                            $connect->commit();
-                                            echo "success";
-                                        }
-                                    }elseif(strtolower($boardingStatus) != "day" && strtolower($boardingStatus) != "boarder"){
-                                        echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
-                                    }elseif(strtolower($Gender) != "male" && strtolower($Gender) != "female"){
-                                        echo "Detail for $indexNumber not written. Gender must either be Male or Female";
-                                    }else{
-                                        throw new Exception("Execution Error: $stmt->error");
+                                    if(!in_array(strtolower($gender), ["male", "female"])){
+                                        echo "Gender for <b>$index_number</b> must either be Male or Female";
+                                        continue;
                                     }
-                                }
-                            } catch (\Throwable $th) {
-                                $connect->rollback();
-                                echo throwableMessage($th);
-                            }
-                        }elseif($max_column == "G" && $type == "admission" && $last_heading == "Residential"){
-                            // 2025/2026 template
-                            // $headerCounter = 6;
-                            $academic_year = $_REQUEST["academic_year"] ?? getAcademicYear(now(), false);
-                            $not_written = $new_data = 0;
-
-                            // headers required for this section
-                            /*$required_headers = [
-                                "index number" => "indexNumber",
-                                "name" => ["Lastname", "Othernames"],
-                                "date of birth" => "dob",
-                                "contact" => "guardian_contact",
-                                "place program" => "programme",
-                                "gender" => "gender",
-                                "residence" => "boardingStatus",
-                            ];*/
-
-                            $connect->begin_transaction();
-                            try {
-                                foreach($sheet_data as $count => $row){
-                                    $hidden_index = null;
-
-                                    $indexNumber = $row["index number"];
-                                    $name = explode(' ', $row["name"], 2);
-                                    $dob = $row["date of birth"];
-                                    $guardian_contact = $row["contact"];
-                                    $programme = $row["place program"];
-                                    $Gender = $row["gender"];
-                                    $boardingStatus = $row["residential"];
-
-                                    if(empty($indexNumber)){
-                                        exit("Empty index number at row ".($count + 2).". Data before this have been saved");
-                                    }elseif(str_contains($indexNumber, "*")){
-                                        $hidden_index = $indexNumber;   // store the hashed index_number
-                                        do {
-                                            $indexNumber = generateIndexNumber($user_school_id);
-                                        } while (is_array(fetchData("indexNumber","cssps","indexNumber='$indexNumber'")));
-                                    }elseif(strlen($indexNumber) === 11){
-                                        $indexNumber = "0$indexNumber";
-                                    }
-
-                                    if(is_array($name)){
-                                        $Lastname = $name[0];
-                                        $Othernames = $name[1] ?? "";
-                                    }else{
-                                        exit("Student's name for '$indexNumber' could not be retrieved. Check your file and try again later, else report to admin for help");
-                                    }
-
-                                    if(str_contains(strtolower($boardingStatus), "board")){
-                                        $boardingStatus = 'Boarder';
-                                    }
-
-                                    if($guardian_contact){
-                                        $guardian_contact = remakeNumber($guardian_contact, space: false);
-                                    }
-
-                                    if(!is_null($indexNumber) && !empty($indexNumber)){
-                                        if(!$hidden_index || is_null($hidden_index)){
-                                            $index = fetchData("indexNumber","cssps","indexNumber='$indexNumber'");
-                                        }
-                                        else{
+    
+                                    if(!empty($index_number)){
+                                        $index = null;
+                                        if(!empty($hidden_index)){
                                             $index = fetchData("indexNumber", "cssps", ["hidden_index = '$hidden_index'", "Lastname = '$Lastname'", "Othernames = '$Othernames'", "programme = '$programme'", "schoolID = $user_school_id"], where_binds: "AND");
                                         }
             
-                                        if($index == "empty"){
-                                            $sql = "INSERT INTO cssps(indexNumber, hidden_index, Lastname,Othernames,Gender,boardingStatus,programme,schoolID, guardian_contact, academic_year)
-                                                VALUES (?,?,?,?,?,?,?,?,?, '$academic_year')
-                                            ";
+                                        if(empty($index) || $index == "empty"){
                                             $stmt = $connect->prepare($sql);
-                                            $stmt->bind_param("sssssssis",$indexNumber,$hidden_index, $Lastname,$Othernames,$Gender,$boardingStatus,$programme,$user_school_id, $guardian_contact);
+                                            $stmt->bind_param("sssssssisssiss",
+                                                $index_number, $hidden_index, $Lastname, $Othernames, $gender, $dob, $boarding_status, $aggregate, $programme, $jhs_attended, $track_id, $user_school_id, $guardian_contact, $academic_year
+                                            );
                                             if($stmt->execute()){
-                                                ++$new_data;
-
-                                                if(!empty($guardian_contact)){
-                                                    add_cssps_guardian($indexNumber, $user_school_id, $guardian_contact);
+                                                if($connect->affected_rows){
+                                                    ++$new_data;
+                                                }else{
+                                                    $not_written++;
                                                 }
-                                            }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
-                                                echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
-                                            }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
-                                                echo "Detail for <b>$indexNumber</b> not written. Gender must either be Male or Female";
+    
+                                                if(!empty($guardian_contact)){
+                                                    add_cssps_guardian($index_number, $user_school_id, $guardian_contact);
+                                                }
                                             }else{
                                                 throw new Exception("Statment Error: $stmt->error");
                                             }
@@ -316,129 +296,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
                                 $connect->rollback();
                                 echo "Error: ".throwableMessage($th);
                             }
-                        }elseif($max_column == "H" || $max_column == "G" || $max_column == "I"){
-                            //make it end at G
-                            $headerCounter = 6;
-                            $academic_year = $_REQUEST["academic_year"] ?? getAcademicYear(now(), false);
-                            $not_written = $new_data = 0;
-
-                            $connect->begin_transaction();
-                            try {
-                                for($row=$row_start; $row <= $max_row; $row++){
-                                    $hidden_index = null;
-                                    //grab columns [reject last column, column H]
-                                    for($col = 0; $col <= $headerCounter; $col++){
-                                        $cellValue = $sheet->getCell($current_col_names[$col].$row)->getValue() ?? "";
-                                        switch ($col) {
-                                            case 0:
-                                                $indexNumber = $cellValue;
-    
-                                                if(empty($indexNumber)){
-                                                    exit("Empty index number at cell ".$current_col_names[$col].$row.". Data before this cell have been saved");
-                                                }elseif(str_contains($indexNumber, "*")){
-                                                    $hidden_index = $indexNumber;   // store the hashed index_number
-                                                    do {
-                                                        $indexNumber = generateIndexNumber($user_school_id);
-                                                    } while (is_array(fetchData("indexNumber","cssps","indexNumber='$indexNumber'")));
-                                                }
-                                                break;
-                                            case 1:
-                                                //extract lastname and othernames
-                                                $name = explode(' ', formatName($cellValue), 2);
-        
-                                                if(is_array($name)){
-                                                    $Lastname = $name[0];
-                                                    $Othernames = $name[1] ?? "";
-    
-                                                    if(empty($Othernames)){
-                                                        $cellValue = $sheet->getCell($current_col_names[$col].$row)->getCalculatedValue();
-                                                        $name = explode(' ', formatname($cellValue), 2);
-                                                        if(is_array($name)){
-                                                            $Lastname = $name[0];
-                                                            $Othernames = $name[1] ?? "";
-                                                        }
-                                                        
-                                                        if(empty($Othernames)){
-                                                            exit("Student's name for '$indexNumber' at ".$current_col_names[$col].$row." could not be well formated");
-                                                        }
-                                                    }
-                                                }else{
-                                                    exit("Student's name for '$indexNumber' could not be retrieved. Check your file and try again later, else report to admin for help");
-                                                }
-                                                
-                                                break;
-                                            case 2:
-                                                $Gender = formatName($cellValue);
-                                                break;
-                                            case 3:
-                                                $aggregate = $cellValue;
-                                                break;
-                                            case 4:
-                                                $programme = formatName($cellValue);
-                                                break;    
-                                            case 5:
-                                                $trackID = formatName($cellValue);
-                                                break;
-                                            case 6:
-                                                $boardingStatus = formatName($cellValue);
-        
-                                                //convert to enum value
-                                                if(str_contains(strtolower($boardingStatus), "board")){
-                                                    $boardingStatus = 'Boarder';
-                                                }
-                                                break;
-            
-                                            default:
-                                                exit("Buffer count is beyond expected input count");
-                                        }
-                                    }
-            
-                                    //check if index number exists and insert data into database
-                                    if(!is_null($indexNumber) && !empty($indexNumber)){
-                                        if(!$hidden_index || is_null($hidden_index)){
-                                            $index = fetchData("indexNumber","cssps","indexNumber='$indexNumber'");
-                                        }
-                                        else{
-                                            $index = fetchData("indexNumber", "cssps", ["hidden_index = '$hidden_index'", "Lastname = '$Lastname'", "Othernames = '$Othernames'", "programme = '$programme'", "schoolID = $user_school_id"], where_binds: "AND");
-                                        }
-            
-                                        if($index == "empty"){
-                                            $sql = "INSERT INTO cssps(indexNumber, hidden_index, Lastname,Othernames,Gender,boardingStatus,programme,aggregate,trackID,schoolID, academic_year)
-                                                VALUES (?,?,?,?,?,?,?,?,?,?, '$academic_year')
-                                            ";
-                                            $stmt = $connect->prepare($sql);
-                                            $stmt->bind_param("sssssssisi",$indexNumber,$hidden_index, $Lastname,$Othernames,$Gender,$boardingStatus,$programme,$aggregate,$trackID,$user_school_id);
-                                            if($stmt->execute()){
-                                                ++$new_data;
-                                            }elseif(strtolower($boardingStatus) != "day" || strtolower($boardingStatus) != "boarder"){
-                                                echo "Detail for <b>$indexNumber</b> not written. Boarding Status should either be Day or Boarder<br>";
-                                            }elseif(strtolower($Gender) != "male" || strtolower($Gender) != "female"){
-                                                echo "Detail for <b>$indexNumber</b> not written. Gender must either be Male or Female";
-                                            }else{
-                                                throw new Exception("Statment Error: $stmt->error");
-                                            }
-                                        }else{
-                                            $not_written++;
-                                        }     
-                                    }else{
-                                        $cellName = $current_col_names[$col].$row;
-                                        echo "Operation exited by meeting an empty column ($cellName). All preceding data received successfully";
-                                        break;
-                                    }
-
-                                    if($row == $max_row){
-                                        $connect->commit();
-
-                                        if($not_written < 1)
-                                            echo "success";
-                                        else
-                                            echo "$new_data new records have been added";
-                                    }
-                                }
-                            } catch (\Throwable $th) {
-                                $connect->rollback();
-                                echo "Error: ".throwableMessage($th);
-                            }
+                            
                         }elseif($max_column == "J" && $last_heading == "Guardian Contact"){
                             $message = ""; $insert_count = 0; $houses = [];
                             $house_data = fetchData("id, title", "houses", "schoolID=$user_school_id", 0);

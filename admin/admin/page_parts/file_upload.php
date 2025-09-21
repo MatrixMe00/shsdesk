@@ -2,18 +2,19 @@
         <div class="head" style="padding: 0 1em 0.5rem">
             <h5>NB:</h5>
             <ol>
-                <li>Your file should be a spreadsheet file</li>
-                <li>Spreadsheet files with .xls or .xlsx as extensions are acceptable</li>
+                <li>Your file should be a spreadsheet file of format .xls or .xlsx</li>
                 <li>Your data should have headings for easy entry into the database</li>
                 <li>Make sure you have uploaded all your houses and their required details</li>
-                <li>Make sure your file's last column is any of these: <strong><em>[F,G,H,I,J]</em></strong>. Anything outside these would be rejected</li>
                 <li>Verify that the first column in your document is labeled <strong>"index number"</strong>. The system would mark a file without this first column as invalid</li>
                 <li>If you do not have the default spreadsheet file for upload, please click on <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template.xlsx">
                 document1</a>, <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template2.xlsx">document2</a> or <a href="<?php echo $url?>/admin/admin/assets/files/default files/enrolment_template3.xlsx" download="enrolment_template3">document3</a> to download</li>
                 <li>Please <strong>refrain</strong> from uploading the same document twice as this can lead to a <u>duplicate entry</u> of details if your document doesnt have the full index numbers of the students in place.
                     Quickly contact the system admins to assist you if you have a challenge
                 </li>
+                <li>In case your document is of a raw format (eg. downloaded from cssps directly), make sure it follows the column requirements below</li>
             </ol>
+
+            <?php echo getExcelHeadersTable("admission"); ?>
         </div>
         <div class="body">
             <?php 

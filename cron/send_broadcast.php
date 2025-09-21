@@ -25,7 +25,7 @@
             ["join" => "cssps cssps_guardians", "on" => "indexNumber index_number", "alias" => "c g"],
             ["join" => "cssps_guardians schools", "on" => "school_id id", "alias" => "g s"]
         ],
-        ["g.last_messaged IS NULL", "g.academic_year = '$academic_year'", "g.school_id NOT IN (".implode(",", $reject_schools).")"], 0, "AND", order_by: "g.school_id"
+        ["g.last_messaged IS NULL", "g.academic_year = '$academic_year'", "g.school_id NOT IN (".implode(",", $reject_schools).")"], 100, "AND", order_by: "g.school_id"
     ));
 
     if($students){
@@ -44,25 +44,22 @@
 
                 // loop through each student and format the template
                 foreach($students as $student){
-                    if(isset($ussds[$student["school_id"]])){
-                        $message = create_message($message_template, $keys, $student);
-                        $response = send_sms($ussds[$student["school_id"]], $message, [$student["contact"]]);
-                        // $response = send_sms($ussds[$student["school_id"]], $message, ["0249100268"]);
-                        
-                        if($response["response"]["status"] == "success"){
-                            $data = $response["response"]["data"];
+                    $message = create_message($message_template, $keys, $student);
+                    $response = send_sms($ussds[$student["school_id"]] ?? "SHSDesk", $message, [$student["contact"]]);
+                    
+                    if($response["response"]["status"] == "success"){
+                        $data = $response["response"]["data"];
 
-                            // if message was delivered, do not add to next batch of checks
-                            if(strtolower($data["status"]) == "delivered"){
-                                $connect->query("UPDATE cssps_guardians SET last_messaged = NOW() WHERE id = {$student['row_id']}");
-                                ++$delivered;
-                            }
+                        // if message was delivered, do not add to next batch of checks
+                        if(strtolower($data["status"]) == "delivered"){
+                            $connect->query("UPDATE cssps_guardians SET last_messaged = NOW() WHERE id = {$student['row_id']}");
+                            ++$delivered;
                         }
                     }
                 }
 
                 if($delivered){
-                    echo "successfully delivered $delivered messages out of $total_students intended";
+                    echo "successfully delivered $delivered messages out of $total_students intended\n";
                     
                     send_email(
                         "Hello Team,<br><br>
