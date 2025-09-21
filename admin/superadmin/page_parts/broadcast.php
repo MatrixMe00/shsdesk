@@ -9,6 +9,7 @@
     <div class="btn w-full p-med gap-sm flex-all-center flex-wrap">
         <button data-section="sms" class="plain-r primary control_btn">SMS</button>
         <button data-section="mail" class="plain-r teal control_btn">E-Mail</button>
+        <button data-section="broadcast" class="plain-r teal control_btn">Broadcast (SMS)</button>
     </div>
 </section>
 
@@ -93,6 +94,23 @@
         </div>
     </div>
 </section>
+
+<div class="section-wrapper no_disp" id="broadcast">
+    <section>
+        <p class="txt-al-c sp-med">The message below will be sent to <strong><?= fetchData("COUNT(id) AS total", "cssps_guardians", "last_messaged IS NULL")["total"] ?></strong> contacts</p>
+    </section>
+    <section id="sms_message" class="txt-al-c">
+        <label for="">
+            <textarea name="broadcast_message" id="broadcast_message" class="txt-fl text-message sadmin_tinymce" placeholder="SMS Text goes here. You have a maximum of 160 characters...">
+                <?= fetchData("value", "system_variables", "name = 'sms_broadcast'")["value"] ?? "" ?>
+            </textarea>
+        </label>
+        <span class="item-event info" id="message_count"></span>
+        <div class="btn w-full w-fluid-child p-med wmax-sm sm-auto">
+            <button class="primary send" name="submit" value="send_sms_broadcast" data-mode="sms">Save Template</button>
+        </div>
+    </section>
+</div>
 
 <script src="<?= "$url/admin/superadmin/assets/scripts/broadcast.js?v=".time() ?>"></script>
 

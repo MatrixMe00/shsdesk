@@ -627,6 +627,33 @@
             }
 
             echo $response;
+        }elseif($submit == "send_sms_broadcast" || $submit == "send_sms_broadcast_ajax"){
+            $message = $_POST["message"];
+
+            // Prepare the upsert statement
+            $sql = "
+                INSERT INTO system_variables (`name`, `value`) 
+                VALUES ('sms_broadcast', ?) 
+                ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)
+            ";
+
+            if ($stmt = $connect->prepare($sql)) {
+                // Bind the parameter
+                $stmt->bind_param("s", $message);
+
+                // Execute the statement
+                if ($stmt->execute()) {
+                    echo "Broadcast message saved successfully.";
+                } else {
+                    echo "Error executing query: " . $stmt->error;
+                }
+
+                // Close statement
+                $stmt->close();
+            } else {
+                echo "Error preparing statement: " . $connect->error;
+            }
+
         }elseif($submit == "send_mail_admin"){
             $recipients = $_POST["recipients"];
             $template = $_POST["message"];

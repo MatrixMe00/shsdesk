@@ -2,15 +2,27 @@
 
     //add nav point session
     $_SESSION["nav_point"] = "Schools";
+
+    $active_schools = decimalIndexArray(fetchData(
+        "s.id, s.schoolName, s.techName, s.headName,
+            SUM(CASE WHEN c.enroled=TRUE  AND c.current_data=TRUE THEN 1 ELSE 0 END) AS registered,
+            SUM(CASE WHEN c.enroled=FALSE AND c.current_data=TRUE THEN 1 ELSE 0 END) AS unregistered",
+        ["join" => "schools cssps", "on" => "id schoolID", "alias" => "s c"],
+        "s.Active = TRUE", 0, group_by: 's.id, s.schoolName, s.techName, s.headName', join_type: "left"
+    ));
+    $inactive_schools = decimalIndexArray(fetchData(
+        "s.id, s.schoolName, s.techName, s.headName,
+            SUM(CASE WHEN c.enroled=TRUE  AND c.current_data=TRUE THEN 1 ELSE 0 END) AS registered,
+            SUM(CASE WHEN c.enroled=FALSE AND c.current_data=TRUE THEN 1 ELSE 0 END) AS unregistered",
+        ["join" => "schools cssps", "on" => "id schoolID", "alias" => "s c"],
+        "s.Active = FALSE", 0, group_by: 's.id, s.schoolName, s.techName, s.headName', join_type: 'left'
+    ));
 ?>
 <section class="section_container">
     <div class="content primary">
         <div class="head">
             <h2>
-                <?php
-                $res = $connect->query("SELECT id FROM schools WHERE Active = TRUE");
-                echo $res->num_rows;
-                ?>
+                <?= $active_schools ? count($active_schools) : 0 ?>
             </h2>
         </div>
         <div class="body">
@@ -21,11 +33,7 @@
     <div class="content danger">
         <div class="head">
             <h2>
-                <?php
-                $res = $connect->query("SELECT id FROM schools WHERE Active = FALSE");
-
-                echo $res->num_rows;
-                ?>
+                <?= $inactive_schools ? count($inactive_schools) : 0 ?>
             </h2>
         </div>
         <div class="body">
@@ -35,94 +43,100 @@
 </section>
 
 <section class="page_setup">
+    <div class="body btn">
+        <button class="primary control" data-section="active-section">Active Schools</button>
+        <button class="plain-r control" data-section="inactive-section">Inactive Schools</button>
+    </div>
+</section>
+
+<section class="page_setup setup-section" id="active-section">
     <div class="head">
         <h2>Active Schools</h2>
     </div>
     <div class="body">
         <p>These are the schools which have been activated on the system</p>
     </div>
-    <div class="middle">
+    <label for="">
+        <input type="search" name="search" class="border" data-target="active" placeholder="Search for a school here">
+    </label>
+    <div class="middle" id="active">
         <?php
-            $res = $connect->query("SELECT * FROM schools WHERE Active = TRUE");
-
-            if($res->num_rows > 0){
-                while($row = $res->fetch_assoc()){
+            if ($active_schools) {
+                foreach ($active_schools as $row) {
         ?>
-        <div class="user_container">
-            <div class="top">
-                <h3><?php echo $row['schoolName'];?></h3>
+            <div class="user_container">
+                <div class="top">
+                    <h3><?php echo htmlspecialchars($row['schoolName']); ?></h3>
+                </div>
+                <div class="desc flex flex-wrap">
+                    <div class="school_admin"><?php echo htmlspecialchars($row['techName']); ?></div>
+                    <div class="head_master"><?php echo htmlspecialchars($row['headName']); ?></div>
+                    <div class="reg_studs">Registered Students: <?php echo (int)$row['registered']; ?></div>
+                    <div class="unreg_studs">Unregistered Students: <?php echo (int)$row['unregistered']; ?></div>
+                </div>
+                <?php if ($admin_access > 3): ?>
+                <div class="foot flex flex-wrap">
+                    <div class="item-event edit" data-school-id="<?php echo $row['id']; ?>">Edit</div>
+                    <div class="item-event deactivate" data-school-id="<?php echo $row['id']; ?>">Deactivate</div>
+                    <div class="item-event delete" data-school-id="<?php echo $row['id']; ?>">Delete</div>
+                    <div class="item-event clear" data-school-id="<?php echo $row['id']; ?>">Clear Records</div>
+                </div>
+                <?php endif; ?>
             </div>
-            <div class="desc flex flex-wrap">
-                <div class="school_admin"><?php echo $row['techName']?></div>
-                <div class="head_master"><?php echo $row['headName']?></div>
-                <?php 
-                    $reg = fetchData("COUNT(indexNumber) AS total","cssps","schoolID=".$row["id"]." AND enroled=TRUE AND current_data=TRUE", 0)["total"];
-                    $unreg = fetchData("COUNT(indexNumber) AS total","cssps","schoolID=".$row["id"]." AND enroled=FALSE AND current_data=TRUE", 0)["total"];
-                ?>
-                <div class="reg_studs">Registered Students: <?php echo $reg?></div>
-                <div class="unreg_studs">Unregistered Students: <?php echo $unreg?></div>
-            </div>
-            <?php if($admin_access > 3): ?>
-            <div class="foot flex flex-wrap">
-                <div class="item-event edit" data-school-id="<?php echo $row['id'] ?>">Edit</div>
-                <div class="item-event deactivate" data-school-id="<?php echo $row['id']?>">Deactivate</div>
-                <div class="item-event delete" data-school-id="<?php echo $row['id'] ?>">Delete</div>
-                <div class="item-event clear" data-school-id="<?php echo $row['id'] ?>">Clear Records</div>
-            </div>
-            <?php endif; ?>
-        </div>
-        <?php }
-            }else{ 
+        <?php
+                }
+            } else {
                 echo '<div class="school_container empty" style="text-align: center;">
-                <p>No active schools were found.</p>
-                </div>';
-        } ?>
+                        <p>No active schools were found.</p>
+                    </div>';
+            }
+        ?>
     </div>
+
 </section>
 
-<section class="page_setup">
+<section class="page_setup no_disp setup-section" id="inactive-section">
     <div class="head">
         <h2>Deactivated Schools</h2>
     </div>
     <div class="body">
         <p>These are the schools which have been deactivated on the system</p>
     </div>
-    <div class="middle">
+    <label for="">
+        <input type="search" name="search" class="border" data-target="inactive" placeholder="Search for a school here">
+    </label>
+    <div class="middle" id="inactive">
         <?php
-            $res = $connect->query("SELECT * FROM schools WHERE Active = FALSE");
-
-            if($res->num_rows > 0){
-                while($row = $res->fetch_assoc()){
+            if ($inactive_schools) {
+                foreach ($inactive_schools as $row) {
         ?>
-        <div class="user_container">
-            <div class="top">
-                <h3><?php echo $row['schoolName'];?></h3>
+            <div class="user_container">
+                <div class="top">
+                    <h3><?php echo htmlspecialchars($row['schoolName']); ?></h3>
+                </div>
+                <div class="desc flex flex-wrap">
+                    <div class="school_admin"><?php echo htmlspecialchars($row['techName']); ?></div>
+                    <div class="head_master"><?php echo htmlspecialchars($row['headName']); ?></div>
+                    <div class="reg_studs">Registered Students: <?php echo (int)$row['registered']; ?></div>
+                    <div class="unreg_studs">Unregistered Students: <?php echo (int)$row['unregistered']; ?></div>
+                </div>
+                <?php if ($admin_access > 3): ?>
+                <div class="foot flex flex-wrap">
+                    <div class="item-event edit" data-school-id="<?php echo $row['id']; ?>">Edit</div>
+                    <div class="item-event deactivate" data-school-id="<?php echo $row['id']; ?>">Deactivate</div>
+                    <div class="item-event delete" data-school-id="<?php echo $row['id']; ?>">Delete</div>
+                    <div class="item-event clear" data-school-id="<?php echo $row['id']; ?>">Clear Records</div>
+                </div>
+                <?php endif; ?>
             </div>
-            <div class="desc flex flex-wrap">
-                <div class="school_admin"><?php echo $row['techName']?></div>
-                <div class="head_master"><?php echo $row['headName']?></div>
-                <?php 
-                    $reg = fetchData("COUNT(indexNumber) AS total","cssps","schoolID=".$row["id"]." AND enroled=TRUE AND current_data = TRUE", 0)["total"];
-                    $unreg = fetchData("COUNT(indexNumber) AS total","cssps","schoolID=".$row["id"]." AND enroled=FALSE AND current_data = TRUE", 0)["total"];
-                ?>
-                <div class="reg_studs">Registered Students: <?php echo $reg?></div>
-                <div class="unreg_studs">Unregistered Students: <?php echo $unreg?></div>
-            </div>
-            <?php if($admin_access > 3): ?>
-            <div class="foot flex flex-wrap">
-                <div class="item-event edit" data-school-id="<?php echo $row['id'] ?>">Edit</div>
-                <div class="item-event activate" data-school-id="<?php echo $row['id']?>">Activate</div>
-                <div class="item-event delete" data-school-id="<?php echo $row['id'] ?>">Delete</div>
-                <div class="item-event clear" data-school-id="<?php echo $row['id'] ?>">Clear Records</div>
-            </div>
-            <?php endif; ?>
-        </div>
-        <?php }
-            }else{ 
+        <?php
+                }
+            } else {
                 echo '<div class="school_container empty" style="text-align: center;">
-                <p>No deactived schools were found.</p>
-                </div>';
-        } ?>
+                        <p>No deactived schools were found.</p>
+                    </div>';
+            }
+        ?>
     </div>
 </section>
 

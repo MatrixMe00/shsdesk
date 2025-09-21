@@ -158,3 +158,28 @@ $(".item-event.delete").click(function(){
     $("#gen_del input[name=mode]").val("delete");
     $("#gen_del input[name=table]").val("schools");
 })
+
+$(".control").click(function(){
+    $(this).siblings("button.primary").removeClass("primary").addClass("plain-r");
+    $(this).removeClass("plain-r").addClass("primary");
+    const section = $(this).data("section");
+
+    $(".setup-section:not(.no_disp)").addClass("no_disp");
+    $("#" + section).removeClass("no_disp");
+});
+
+$('input[name=search]').on('keyup', function() {
+    let searchVal = $(this).val().toLowerCase().trim();
+    let targetId = $(this).data('target');
+    let container = $('#' + targetId);
+
+    container.find('.user_container').each(function() {
+        let schoolName = $(this).find('.top h3').text().toLowerCase();
+        
+        if (searchVal === "" || schoolName.includes(searchVal)) {
+            $(this).removeClass('no_disp');
+        } else {
+            $(this).addClass('no_disp');
+        }
+    });
+});

@@ -24,6 +24,12 @@
         "where" => "status='pending'",
         "limit" => 0
     ]));
+
+    $schools = decimalIndexArray(fetchData(
+        "id, schoolName", "schools", limit: 0
+    ));
+
+    $schools = $schools ? pluck($schools, "id", "schoolName") : [];
 ?>
 
 <section class="section_container">
@@ -77,77 +83,130 @@
         <button class="primary btn_all" disabled data-value="approve_all">Approve All</button>
         <button class="red btn_all" disabled data-value="reject_all">Reject All</button>
     </div>
-    <div class="body flex flex-wrap sp-med gap-sm">
-        <?php
-            foreach($pending_ussds as $ussd) :
-        ?>
-        <div class="flex w-fit flex-column sm-rnd gap-sm lt-shade sp-med">
-            <h4 class=""><?= getSchoolDetail($ussd["school_id"])["schoolName"] ?></h4>
-            <span>USSD: <?= $ussd["sms_id"] ?></span>
-            <?php if(intval($user_details["role"]) == 1): ?>
-            <div class="foot">
-                <span class="item-event approve" data-value="approve" data-id="<?= $ussd["school_id"] ?>">Approve</span>
-                <span class="item-event reject" data-value="reject" data-id="<?= $ussd["school_id"] ?>">Reject</span>
-            </div>
-            <?php endif; ?>
-        </div>
-        <?php endforeach; ?>
-    </div>
-    <?php else : ?>
-    <div class="empty lt-shade sm-lg-t txt-al-c p-xlg">
-        <p>There are no pending USSDs</p>
-    </div>
     <?php endif; ?>
+    <div class="ussd-table-container">
+        <?php if (is_array($pending_ussds) && count($pending_ussds) > 0): ?>
+            <table class="ussd-table border-collapse full">
+                <thead>
+                    <tr>
+                        <td>School</td>
+                        <td>USSD</td>
+                        <?php if (intval($user_details["role"]) == 1): ?>
+                            <td>Actions</td>
+                        <?php endif; ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($pending_ussds as $ussd): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($schools[$ussd["school_id"]]); ?></td>
+                            <td><?= htmlspecialchars($ussd["sms_id"]); ?></td>
+                            <?php if (intval($user_details["role"]) == 1): ?>
+                                <td>
+                                    <span class="item-event approve" 
+                                        data-value="approve" 
+                                        data-id="<?= $ussd["school_id"]; ?>">
+                                        Approve
+                                    </span>
+                                    |
+                                    <span class="item-event reject" 
+                                        data-value="reject" 
+                                        data-id="<?= $ussd["school_id"]; ?>">
+                                        Reject
+                                    </span>
+                                </td>
+                            <?php endif; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <div class="empty lt-shade sm-lg-t txt-al-c p-xlg">
+                <p>There are no pending USSDs</p>
+            </div>
+        <?php endif; ?>
+    </div>
+
 </section>
 
 <section id="approve" class="control_section sp-xlg-tp no_disp">
     <h3 class="txt-al-c sm-xlg-b">Approved SMS USSDs</h3>
-    <?php
-        if(is_array($approved_ussds)) :
-
-        foreach($approved_ussds as $ussd) :
-    ?>
-        <div class="flex w-fit flex-column sm-rnd gap-sm lt-shade sp-med">
-            <h4 class=""><?= getSchoolDetail($ussd["school_id"])["schoolName"] ?></h4>
-            <span>USSD: <?= $ussd["sms_id"] ?></span>
-            <?php if(intval($user_details["role"]) == 1): ?>
-            <div class="foot">
-                <span class="item-event reject" data-value="reject" data-id="<?= $ussd["school_id"] ?>">Reject</span>
+    <div class="ussd-table-container">
+        <?php if (is_array($approved_ussds) && count($approved_ussds) > 0): ?>
+            <table class="ussd-table border-collapse full">
+                <thead>
+                    <tr>
+                        <td>School</td>
+                        <td>USSD</td>
+                        <?php if (intval($user_details["role"]) == 1): ?>
+                            <td>Actions</td>
+                        <?php endif; ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($approved_ussds as $ussd): ?>
+                        <tr>
+                            <td><?= $schools[$ussd["school_id"]]; ?></td>
+                            <td><?= htmlspecialchars($ussd["sms_id"]); ?></td>
+                            <?php if (intval($user_details["role"]) == 1): ?>
+                                <td>
+                                    <span class="item-event reject" 
+                                        data-value="reject" 
+                                        data-id="<?= $ussd["school_id"] ?>">
+                                        Reject
+                                    </span>
+                                </td>
+                            <?php endif; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <div class="empty lt-shade sm-lg-t txt-al-c p-xlg">
+                <p>There are no approved USSDs</p>
             </div>
-            <?php endif; ?>
-        </div>
-        <?php endforeach; ?>
+        <?php endif; ?>
     </div>
-    <?php else : ?>
-    <div class="empty lt-shade sm-lg-t txt-al-c p-xlg">
-        <p>There are no approved USSDs</p>
-    </div>
-    <?php endif; ?>
 </section>
 
 <section id="reject" class="control_section sp-xlg-tp no_disp">
     <h3 class="txt-al-c sm-xlg-b">Rejected SMS USSDs</h3>
-    <?php
-        if(is_array($rejected_ussds)) :
-
-        foreach($rejected_ussds as $ussd) :
-    ?>
-        <div class="flex w-fit flex-column sm-rnd gap-sm lt-shade sp-med">
-            <h4 class=""><?= getSchoolDetail($ussd["school_id"])["schoolName"] ?></h4>
-            <span>USSD: <?= $ussd["sms_id"] ?></span>
-            <?php if(intval($user_details["role"]) == 1): ?>
-            <div class="foot">
-                <span class="item-event approve" data-value="approve" data-id="<?= $ussd["school_id"] ?>">Approve</span>
+    <div class="ussd-table-container">
+        <?php if (is_array($rejected_ussds) && count($rejected_ussds) > 0): ?>
+            <table class="ussd-table border-collapse full">
+                <thead>
+                    <tr>
+                        <td>School</td>
+                        <td>USSD</td>
+                        <?php if (intval($user_details["role"]) == 1): ?>
+                            <td>Actions</td>
+                        <?php endif; ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($rejected_ussds as $ussd): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($schools[$ussd["school_id"]]); ?></td>
+                            <td><?= htmlspecialchars($ussd["sms_id"]); ?></td>
+                            <?php if (intval($user_details["role"]) == 1): ?>
+                                <td>
+                                    <span class="item-event approve" 
+                                        data-value="approve" 
+                                        data-id="<?= $ussd["school_id"]; ?>">
+                                        Approve
+                                    </span>
+                                </td>
+                            <?php endif; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <div class="empty lt-shade sm-lg-t txt-al-c p-xlg">
+                <p>There are no rejected USSDs</p>
             </div>
-            <?php endif; ?>
-        </div>
-        <?php endforeach; ?>
+        <?php endif; ?>
     </div>
-    <?php else : ?>
-    <div class="empty lt-shade sm-lg-t txt-al-c p-xlg">
-        <p>There are no rejected USSDs</p>
-    </div>
-    <?php endif; ?>
 </section>
 
 <script>
