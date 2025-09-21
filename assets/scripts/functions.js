@@ -111,38 +111,37 @@
  * @return {void} The function returns nothing
  */
 function formRequiredCheck(element) {
-    //check if element has required field
-    required = $(element).prop("required");
+    let $el = $(element);
 
-    if(!required){
-        //check if it has the required class
-        if($(element).hasClass("required")){
-            required = true;
+    // Check if element is required
+    let required = $el.prop("required") || $el.hasClass("required");
+
+    // Pick input element type (if needed)
+    let type = $el.attr("type");
+
+    // Grab content
+    let content = $el.val() || "";
+
+    // Min/Max length
+    let maxlength = parseInt($el.attr("maxlength"), 10) || 0;
+    let minlength = parseInt($el.attr("minlength"), 10) || 0;
+
+    let isValid = true;
+
+    if (required) {
+        if (content.length < minlength) {
+            isValid = false;
+        } else if (maxlength > 0 && content.length > maxlength) {
+            isValid = false;
+        } else if (content.length === 0) {
+            isValid = false;
         }
     }
 
-    //pick input element type
-    type = element.attr("type");
-
-    //grab content
-    content = $(element).val();
-
-    //check if element has max length or min length
-    maxlength = $(element).attr("maxlength");
-    minlength = $(element).attr("minlength");
-
-    if(maxlength == null){maxlength = 0}
-    if(minlength == null){minlength = 1}
-
-    //if element is required, paint as red else as green
-    if((required && minlength > 1 && content.length < minlength) || 
-        (required && maxlength > 0 && content.length < maxlength)
-    ){
-        $(element).css("border", "1px solid red");
-    }else if(required && content.length < 1){
-        $(element).css("border", "1px solid red");
-    }else{
-        $(element).css("border", "1px solid green");
+    if (required) {
+        $el.css("border", isValid ? "1px solid green" : "1px solid red");
+    } else {
+        $el.css("border", ""); // neutral for non-required
     }
 }
 
@@ -204,52 +203,41 @@ function resetAccepts(){
  */
 function checkForm(i){
     //return value
-    an_error = true;
+    let an_error = true;
 
-    //cssps details
-    shs_placed = $("#shs_placed").val();
-    ad_enrol_code = $("#ad_enrol_code").val();
-    ad_index = $("#ad_index").val();
-    ad_aggregate = $("#ad_aggregate").val();
-    ad_course = $("#ad_course").val();
+    // Candidate details
+    let ad_enrol_code = $("#ad_enrol_code").val() || "";
+    let ad_index = $("#ad_index").val() || "";
+    let ad_aggregate = $("#ad_aggregate").val() || "";
+    let ad_course = $("#ad_course").val() || "";
+    let ad_oname = $("#ad_oname").val() || "";
+    let ad_lname = $("#ad_lname").val() || "";
+    let ad_gender = $("#ad_gender").val() || "";
+    let ad_year = $("#ad_year").val() || "";
+    let ad_month = $("#ad_month").val() || "";
+    let ad_day = $("#ad_day").val() || "";
+    let ad_birth_place = $("#ad_birth_place").val() || "";
+    let ad_jhs = $("#ad_jhs").val() || "";
+    let ad_jhs_district = $("#ad_jhs_district").val() || "";
+    let ad_jhs_town = $("#ad_jhs_town").val() || "";
 
-    //personal details of candidate
-    ad_lname = $("#ad_lname").val();
-    ad_oname = $("#ad_oname").val();
-    ad_gender = $("#ad_gender").val();
-    ad_jhs = $("#ad_jhs").val();
-    ad_jhs_town = $("#ad_jhs_town").val();
-    ad_jhs_district = $("#ad_jhs_district").val();
-    ad_birthdate = $("#ad_birthdate").val();
-    ad_year = $("#ad_year").val();
-    ad_month = $("#ad_month").val();
-    ad_day = $("#ad_day").val();
-    ad_birth_place = $("#ad_birth_place").val();
+    // Parents / guardians
+    let ad_father_name = $("#ad_father_name").val() || "";
+    let ad_father_occupation = $("#ad_father_occupation").val() || "";
+    let ad_mother_name = $("#ad_mother_name").val() || "";
+    let ad_mother_occupation = $("#ad_mother_occupation").val() || "";
+    let ad_guardian_name = $("#ad_guardian_name").val() || "";
+    let ad_resident = $("#ad_resident").val() || "";
+    let ad_phone = $("#ad_phone").val() || "";
+    let ad_witness = $("#ad_witness").val() || "";
+    let ad_witness_phone = $("#ad_witness_phone").val() || "";
 
-    //parents particulars
-    ad_father_name = $("#ad_father_name").val();
-    ad_father_occupation = $("#ad_father_occupation").val();
-    ad_mother_name = $("#ad_mother_name").val();
-    ad_mother_occupation = $("#ad_mother_occupation").val();
-    ad_guardian_name = $("#ad_guardian_name").val();
-    ad_resident = $("#ad_resident").val();
-    ad_postal_address = $("#ad_postal_address").val();
-    ad_phone = $("#ad_phone").val();
-    ad_other_phone = $("#ad_other_phone").val();
-
-    //interests
-    interest = $("#interest").val();
-
-    //others
-    ad_awards = $("#ad_awards").val();
-    ad_position = $("#ad_position").val();
-
-    //witness
-    ad_witness = $("#ad_witness").val();
-    ad_witness_phone = $("#ad_witness_phone").val();
+    // Get enrol code min/max from input attributes
+    let enrolMin = parseInt($("#ad_enrol_code").attr("minlength"), 10) || 0;
+    let enrolMax = parseInt($("#ad_enrol_code").attr("maxlength"), 10) || Infinity;
 
     if(parseInt(i) == 1){
-        if(ad_enrol_code != "" && ad_enrol_code.length == 6 && ad_index != "" && ad_aggregate != "" && ad_course != "" &&
+        if(ad_enrol_code != "" && ad_enrol_code.length >= enrolMin && ad_enrol_code.length <= enrolMax && ad_index != "" && ad_aggregate != "" && ad_course != "" &&
         ad_oname != "" && ad_lname != "" && ad_gender != "" && ad_year != "" && ad_month != "" 
         && ad_day != "" && ad_birth_place != ""){
             if(ad_jhs != "" && ad_jhs_district != "" && ad_jhs_town != ""){

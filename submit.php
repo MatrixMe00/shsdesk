@@ -119,7 +119,7 @@
                     $message = "no-index-number";
                 }elseif(empty($ad_enrol_code)){
                     $message = "no-enrolment-code";
-                }elseif(strlen($ad_enrol_code) < 6 || strlen($ad_enrol_code) > 10){
+                }elseif(strlen($ad_enrol_code) < 6 || strlen($ad_enrol_code) > 12){
                     $message = "enrolment-code-short";
                 }elseif(fetchData("enrolCode","enrol_table","enrolCode='$ad_enrol_code'") != "empty"){
                     $message = "enrolment-code-exist";
