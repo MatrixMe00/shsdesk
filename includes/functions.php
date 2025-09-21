@@ -3,7 +3,8 @@
 
     use PHPMailer\PHPMailer\PHPMailer;
 
-    require "database_functions.php";
+    require_once "database_functions.php";
+    require_once "curl.php";
 
     /**
      * The purpose of this function is to retrieve user details from database
@@ -2590,8 +2591,10 @@
      * @return string
      */
     function get_default_email(string $name) :string{
+        global $serverName;
+        
         // if its the local development server, use local email
-        if(str_contains($_SERVER["SERVER_NAME"], "local"))
+        if(str_contains(($_SERVER["SERVER_NAME"] ?? $serverName), "local"))
             return "successinnovativehub@gmail.com";
 
         switch(strtolower($name)){
@@ -2774,5 +2777,35 @@
         $stmt->bind_param("sssi", $index_number, $contact, $academic_year, $school_id);
     
         return $stmt->execute();
+    }
+
+    /**
+     * This is used to send an sms message
+     * @param string $ussd The ussd to use
+     * @param string $message The message to send
+     * @param array $recipients The recipient to the message
+     */
+    function send_sms(string $ussd, string $message, array $receipients){
+        global $env;
+
+        $endPoint = 'https://webapp.usmsgh.com/api/sms/send';
+        $apiToken = $env["sms_token"];
+        $response = false;
+
+        foreach($receipients as $key => $recipient){
+            $recipient = remakeNumber($recipient, true, false);
+            $data = [
+                'recipient' => $recipient,
+                'sender_id' => $ussd,
+                'message'   => strip_tags($message)
+            ];
+
+            $response = curl_post($endPoint, $data, [
+                "accept: application/json",
+                "authorization: Bearer " . $apiToken,
+            ]);
+        }
+
+        return $response;
     }
     
