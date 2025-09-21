@@ -270,6 +270,16 @@ $("#view2 .checkbox").click(function(){
 
 //show the payment form when the payment / enrol button is clicked
 $("#payment_button, .enrol_button").click(function(){
+    // Check if payment button was clicked
+    if ($(this).is("#payment_button") && $(this).data("link")) {
+        // Open in a new tab
+        window.open($(this).data("link"), "_blank");
+
+        // Remove the attribute so it doesn't trigger again
+        $(this).removeAttr("data-link");
+        return;
+    }
+
     $("#payment_form").removeClass("no_disp").addClass("flex");
 
     //when it is client side, by default, the index number section should display first

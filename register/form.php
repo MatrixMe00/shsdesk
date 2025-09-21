@@ -68,6 +68,13 @@
         //address
         $school_email = $_POST["school_email"];
         $postal_address = formatName($_POST["postal_address"]);
+
+        // affiliate code
+        $affiliate_code = $_POST["affiliate_code"] ?? null;
+
+        if(empty($affiliate_code)){
+            $affiliate_code = null;
+        }
         
         //school's description
         $description = htmlentities($_POST["description"]);
@@ -184,27 +191,6 @@
             echo "<p>Please go back and complete the form</p>";
             exit(1);
         }
-
-        /*//allow user to upload prospectus
-        if(isset($_FILES["prospectus"]) && !empty($_FILES["prospectus"]["tmp_name"])){
-            //get file extension
-            $ext = strtolower(fileExtension("prospectus"));
-
-            if($ext =="pdf"){
-                $file_input_name = "prospectus";
-                $local_storage_directory = "$rootPath/admin/admin/assets/files/prospectus/";
-
-                $prostectusDirectory = getFileDirectory($file_input_name, $local_storage_directory);
-            }else{
-                echo "<p>File provided for prospectus is not a PDF</p>";
-                echo "<p>Please go back and provide valid document form</p>";
-            }
-        }else{
-            echo "<p>Please provide your prospectus</p>";
-            
-            echo "<p>Please go back and complete the form</p>";
-            exit(1);
-        }*/
 
         // prospectus type
         $multi_prospectus = isset($_POST["multi_prospectus"]);
@@ -331,14 +317,14 @@
         //query the database
         $query = "INSERT INTO schools (logoPath, prospectusPath, admissionPath, admissionHead, schoolName, postalAddress, abbr, 
             headName, techName, techContact, email, description, category, residence_status, sector, 
-            autoHousePlace, admission_template) 
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
+            autoHousePlace, admission_template, affiliate_code) 
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" or die($connect->error);
 
         //prepare query for entry into database
         $result = $connect->prepare($query);
-        $result->bind_param("ssssssssssssissis", $image_directory, $prospectusData, $admission_letter, $admission_letter_head,
+        $result->bind_param("ssssssssssssississ", $image_directory, $prospectusData, $admission_letter, $admission_letter_head,
         $school_name, $postal_address, $abbreviation, $head_name, $technical_name, $technical_phone, $school_email, $description, 
-        $category, $residence_status, $sector, $autoHousePlace, $template_dir);
+        $category, $residence_status, $sector, $autoHousePlace, $template_dir, $affiliate_code);
 
         //execute the results
         if($result->execute()){

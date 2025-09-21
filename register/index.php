@@ -98,6 +98,13 @@
                         <input type="text" name="postal_address" id="postal_address" class="text_input" placeholder="Postal Address*" required
                         autocomplete="off" title="Please provide your postal address. It will be useful in details of the admission form">
                     </label>
+                    <label for="affiliate_code">
+                        <span class="label_image">
+                            <img src="<?php echo $url?>/assets/images/icons/link-outline.svg" alt="postal">
+                        </span>
+                        <input type="text" name="affiliate_code" id="affiliate_code" class="text_input" placeholder="Affiliate Code (Optional)"
+                        autocomplete="off" title="Enter if referred; your students will be redirected to the affiliate’s website.">
+                    </label>
                 </div>
                 
                 <label for="description">

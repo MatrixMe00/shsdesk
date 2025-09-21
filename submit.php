@@ -119,7 +119,7 @@
                     $message = "no-index-number";
                 }elseif(empty($ad_enrol_code)){
                     $message = "no-enrolment-code";
-                }elseif(strlen($ad_enrol_code) != 6){
+                }elseif(strlen($ad_enrol_code) < 6 || strlen($ad_enrol_code) > 10){
                     $message = "enrolment-code-short";
                 }elseif(fetchData("enrolCode","enrol_table","enrolCode='$ad_enrol_code'") != "empty"){
                     $message = "enrolment-code-exist";
@@ -680,7 +680,31 @@
                         $message["status"] = "This index number has already been enroled. Visit the Student Menu to get your documents";
                     }                        
                 }else{
-                    $message["status"] = "Index Number could not be found. Please check and try again, else use the message us button";
+                    // check if its an affiliate index number
+                    $url = "https://myseniorhigh.com/api/v1/search/$indexNumber";
+                    $token = $env["affiliate_bearer"];
+                    $response = curl_get($url, headers: [
+                        "authorization: Bearer $token"
+                    ])["response"];
+
+                    if($response["exist"]){
+                        // ensure user hasnt completed his registration
+                        $school = fetchData("id, abbr, schoolName", "schools", "affiliate_code='{$response['school_uuid']}'");
+
+                        if(is_array($school)){
+                            // store student into our system
+                            $academic_year = getAcademicYear(now(), false);
+                            $connect->query("INSERT IGNORE INTO affiliate_cssps (index_number, school_id, academic_year) VALUES ('$indexNumber', {$school['id']}, '$academic_year')");
+                            $message["status"] = "success";
+                            $message["successMessage"] = "Congratulations $indexNumber on your admission to {$school['abbr']}";
+                            $message["schoolID"] = $school["id"];
+                            $message["schoolName"] = $school["schoolName"];
+                        }else{
+                            $message["status"] = "The school you are trying to enrol to is not registered on our platform. Contact admin for help";
+                        }
+                    }else{
+                        $message["status"] = "Index Number could not be found. Please check and try again, else use the message us button";
+                    }
                 }
             }
             

@@ -101,16 +101,26 @@ $("button#student_check").click(function(){
             
             const data = response_data;
             
-            if(data["status"] == "success"){                
-                //save student's selected school
-                $("#school_select option.selected").attr("value", data["schoolID"]).html(data["schoolName"]);
+            if(data["status"] == "success"){
+                if(data["link"]){
+                    //redirect to payment page
+                    $("#payment_button").attr("data-link", data["link"]);
+                }
+
+                if(!data["link"]){
+                    //save student's selected school
+                    $("#school_select option.selected").attr("value", data["schoolID"]).html(data["schoolName"]);
+                }                
 
                 //hide this button
                 this_element.parent().addClass("no_disp");
 
                 //preview the payment button and save index number in admission text field
                 $("#school_select").val(data["schoolID"]).change();
-                $("span#res_ad_index").html(index);
+
+                if(!data["link"]){
+                    $("span#res_ad_index").html(index);
+                }
 
                 //show success message
                 alert_box(data["successMessage"], "success", 7);

@@ -257,6 +257,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
                                         do {
                                             $indexNumber = generateIndexNumber($user_school_id);
                                         } while (is_array(fetchData("indexNumber","cssps","indexNumber='$indexNumber'")));
+                                    }elseif(strlen($indexNumber) === 11){
+                                        $indexNumber = "0$indexNumber";
                                     }
 
                                     if(is_array($name)){
