@@ -1,4 +1,5 @@
 <?php 
-    $connect = new mysqli("localhost","root", "", "shsdesk");
-    $connect2 = new mysqli("localhost","root", "", "shsdesk2");
+    $rootPath = dirname(__DIR__);
+    $serverName = "shsdesk.local";
+    require_once "$rootPath/includes/session.php";
 ?>
