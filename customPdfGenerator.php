@@ -106,7 +106,7 @@
             $house = "Allocated Later";
         }
         
-        $reopening = date("jS F, Y", strtotime($_SESSION["ad_reopening"]));
+        $reopening = $_SESSION["ad_reopening"] ? date("jS F, Y", strtotime($_SESSION["ad_reopening"])) : "N/A";
 
         $message = html_entity_decode($_SESSION["ad_message"]);
         $message = str_replace(PHP_EOL, '', $message);

@@ -26,6 +26,15 @@
             $_SESSION["ad_message"] = $school["admissionPath"];
             $_SESSION["ad_school_logo"] = $school["logoPath"];
             $_SESSION["ad_admission_title"] = $school["admissionHead"];
+
+            // change dates if academic year is same and reopening dates differ
+            if(getAcademicYear($school["reopeningDate"], false) == $student["academic_year"]){
+                if($student["reopening_date"] != $school["reopeningDate"]){
+                    // set the student's reopening date and persist in database
+                    $student["reopening_date"] = $school["reopeningDate"];
+                    $connect->query("UPDATE enrol_table SET reopening_date='{$school['reopeningDate']}' WHERE indexNumber='{$student['indexNumber']}'");
+                }
+            }
             $_SESSION["ad_reopening"] = $student["reopening_date"];
 
             //student details
