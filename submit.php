@@ -699,6 +699,7 @@
                             $message["successMessage"] = "Congratulations $indexNumber on your admission to {$school['abbr']}";
                             $message["schoolID"] = $school["id"];
                             $message["schoolName"] = $school["schoolName"];
+                            $message["link"] = $response["admission_url"];
                         }else{
                             $message["status"] = "The school you are trying to enrol to is not registered on our platform. Contact admin for help";
                         }

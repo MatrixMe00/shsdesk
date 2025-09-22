@@ -25,7 +25,7 @@
             ["join" => "cssps cssps_guardians", "on" => "indexNumber index_number", "alias" => "c g"],
             ["join" => "cssps_guardians schools", "on" => "school_id id", "alias" => "g s"]
         ],
-        ["g.last_messaged IS NULL", "g.academic_year = '$academic_year'", "g.school_id NOT IN (".implode(",", $reject_schools).")"], 100, "AND", order_by: "g.school_id"
+        ["g.is_valid = TRUE", "g.last_messaged IS NULL", "g.academic_year = '$academic_year'", "g.school_id NOT IN (".implode(",", $reject_schools).")"], 600, "AND", order_by: "g.school_id"
     ));
 
     if($students){
@@ -44,8 +44,15 @@
 
                 // loop through each student and format the template
                 foreach($students as $student){
+                    // skip invalid phone numbers
+                    if(!checkPhoneNumber($student["contact"])){
+                        $connect->query("UPDATE cssps_guardians SET is_valid = FALSE WHERE id = {$student['row_id']}");
+                        continue;
+                    }
+
                     $message = create_message($message_template, $keys, $student);
-                    $response = send_sms($ussds[$student["school_id"]] ?? "SHSDesk", $message, [$student["contact"]]);
+                    $ussd = $ussds[$student["school_id"]] ?? "SHSDesk";
+                    $response = send_sms($ussd, $message, [$student["contact"]]);
                     
                     if($response["response"]["status"] == "success"){
                         $data = $response["response"]["data"];
@@ -69,7 +76,7 @@
                         Thank you,<br>
                         System Notification",
                         "Placement SMS Broadcast Completed",
-                        ["successinnovativehub@gmail.com", "safosah0@gmail.com"]
+                        ["successinnovativehub@gmail.com", "safosah00@gmail.com"]
                     );
                 }
             }

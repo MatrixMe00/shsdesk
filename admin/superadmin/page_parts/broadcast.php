@@ -97,7 +97,7 @@
 
 <div class="section-wrapper no_disp" id="broadcast">
     <section>
-        <p class="txt-al-c sp-med">The message below will be sent to <strong><?= fetchData("COUNT(id) AS total", "cssps_guardians", "last_messaged IS NULL")["total"] ?></strong> contacts</p>
+        <p class="txt-al-c sp-med">The message below will be sent to <strong><?= fetchData("COUNT(id) AS total", "cssps_guardians", "last_messaged IS NULL AND is_valid = TRUE")["total"] ?></strong> contacts</p>
     </section>
     <section id="sms_message" class="txt-al-c">
         <label for="">

@@ -25,6 +25,10 @@ if($connect2->connect_error){
     die("Connection failed -> Port 2...".$connect2->connect_error);
 }
 
+// set connections to utf8
+$connect->set_charset("utf8mb4");
+$connect2->set_charset("utf8mb4");
+
 if($_SERVER["DOCUMENT_ROOT"]){
     //creating a default root path for finding php documents
     $rootPath = $_SERVER["DOCUMENT_ROOT"];

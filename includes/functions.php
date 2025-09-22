@@ -2796,7 +2796,7 @@
             $recipient = remakeNumber($recipient, true, false);
             $data = [
                 'recipient' => $recipient,
-                'sender_id' => $ussd,
+                'sender_id' => has_non_english_chars($ussd) ? "SHSDesk" : $ussd,
                 'message'   => strip_tags($message)
             ];
 
@@ -2854,5 +2854,15 @@
         $table .= "</table>";
 
         return $table;
+    }
+
+    /**
+     * Check if a string contains non-English or special characters.
+     *
+     * Allowed: A–Z, a–z, 0–9, space, and basic punctuation (.,!?-_)
+     */
+    function has_non_english_chars($string) {
+        // Regex: if a character is NOT in A-Z, a-z, 0-9, space, or .,!?-_ then it’s non-English
+        return preg_match('/[^A-Za-z0-9\s\.\,\!\?\-\_]/', $string) === 1;
     }
     
