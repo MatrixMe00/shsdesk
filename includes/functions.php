@@ -2836,4 +2836,19 @@
         // Regex: if a character is NOT in A-Z, a-z, 0-9, space, or .,!?-_ then it’s non-English
         return preg_match('/[^A-Za-z0-9\s\.\,\!\?\-\_]/', $string) === 1;
     }
+
+    /**
+     * Calculates the actual price of a role's amount
+     * @param mixed $price The amount to be processed
+     * @return float
+     */
+    function calculate_actual_price($price){
+        global $system_usage_price;
+
+        if($price >= 1){
+            $price /= 100;
+        }
+        
+        return is_numeric($price) ? round($price * $system_usage_price, 2) : 0.00;
+    }
     
