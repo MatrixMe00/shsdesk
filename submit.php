@@ -467,7 +467,24 @@
                     echo "ref_expired";
                 }
             }else{
-                echo "error";
+                // check on paystack to see if its valid
+                $response = transaction_exists($reference)["response"];
+
+                if($response["status"]){
+                    $data = $response["data"];
+                    $metadata = $data["metadata"]["custom_fields"];
+
+                    // insert transaction
+                    insert_transaction($data);
+
+                    $school = getSchoolDetail($metadata[2]["value"], true);
+                    $tech = $school["techContact"] ?? "N/A";
+
+                    echo "success-$tech";
+                }else{
+                    echo "error";
+                }
+
             }
         }elseif($submit == "faq_send"){
             $fullname = $_POST["fullname"];

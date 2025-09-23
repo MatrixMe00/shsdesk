@@ -2851,4 +2851,91 @@
         
         return is_numeric($price) ? round($price * $system_usage_price, 2) : 0.00;
     }
+
+    /**
+     * Checks if a transaction exists on paystack
+     * @param string $reference The transaction reference
+     * @return bool|array
+     */
+    function transaction_exists(string $reference){
+        global $server_secret;
+
+        $url = "https://api.paystack.co/transaction/verify/$reference";
+
+        $response = curl_get($url, [], [
+            "Authorization: Bearer $server_secret",
+            "Cache-Control: no-cache",
+        ]);
+
+        return $response;
+    }
+
+    /**
+     * This receives a data object from paystack and then inserts into the database
+     * @param array $data The data object
+     */
+    function insert_transaction(array $data){
+        $metadata = $data["metadata"]["custom_fields"];
+        $reference = $data["reference"];
+        $amount = (float) $data['amount'] / 100; 
+        $customer_name = $metadata[1]["value"];
+        $school_id = getSchoolDetail($metadata[2]["value"]);
+        $school_id = $school_id == "error" ? 0 : $school_id["id"];
+        $customer_email = $data["customer"]["email"];
+        $deduction = round($data["fees"] / 100, 2);
+        $paid_at = date("Y-m-d H:i:s", strtotime($data["paidAt"]));
+        $customer_number = $metadata[0]["value"];
+        $payment_type = $metadata[3]["value"];
+
+        if($payment_type == "admission"){
+            global $connect;
+            $academic_year = getAcademicYear(now(), false);
+    
+            //pass data if its not in the database
+            $exist = fetchData("transactionID","transaction", "transactionID='$reference'");
+    
+            if(!is_array($exist)){
+                $query = "INSERT INTO transaction (transactionID, contactNumber, schoolBought, amountPaid, contactName, 
+                    contactEmail, Deduction, Transaction_Date, academic_year) VALUES (?,?,?,?,?,?,?,?, '$academic_year')";
+                $result = $connect->prepare($query);
+                $result->bind_param("ssidssds", $reference, $customer_number, $school_id, $amount, $customer_name, $customer_email, 
+                    $deduction, $paid_at);
+                
+                // pass payment to database
+                $result->execute();
+            }
+        }elseif($payment_type == "access_code_bulk" || $payment_type == "access_code"){
+            // use connection set
+            global $connect2;
+
+            if(!$school_id){
+                $school_id = fetchData1("school_id", "students_table", "indexNumber = '".$metadata[3]["value"]."'");
+            }
+
+            // pass data if its not in the database
+            $exist = fetchData1("transactionID", "transaction", "transactionID='$reference'");
+
+            if(!is_array($exist)){
+                try{
+                    $index_number = $payment_type == "access_code_bulk" ? null : $metadata[3]["value"];
+                    $type = $payment_type == "access_code_bulk" ? "bulk" : "single";
+
+                    if($payment_type == "access_code_bulk"){
+                        $index_number = $metadata[4]["value"] ?? null;
+                    }
+
+                    $sql = "INSERT INTO transaction (transactionID, school_id, price, deduction, phoneNumber, email, index_number, pay_type) VALUES (?,?,?,?,?,?,?,?)";
+                    $stmt = $connect2->prepare($sql);
+                    $stmt->bind_param("siddssss", $reference, $school_id, $amount, $deduction, $customer_number, $customer_email, $index_number, $type);
+                    
+                    // pass payment to database
+                    $stmt->execute();
+
+                    activate_access_pay($index_number, $reference, $school_id);
+                }catch(Throwable $th){
+                    logThrowable($th);
+                }
+            }
+        }
+    }
     
