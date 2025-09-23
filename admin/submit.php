@@ -265,7 +265,7 @@
                 $password = password_hash($password, PASSWORD_DEFAULT);
                 $sql = "INSERT INTO admins_table (fullname, username, email, password, school_id, contact, role, adYear, new_login) VALUES (?,?,?,?,?,?,?,?,?)";
                 $stmt = $connect->prepare($sql);
-                $stmt->bind_param("ssssisisi", $fullname, $username,$email, $password, $user_school_id, $contact, $role, $date_added, $new_user);
+                $stmt->bind_param("ssssisisi", $fullname, $username,$email, $password, $school, $contact, $role, $date_added, $new_user);
 
                 if($stmt->execute()){
                     $message = "success";

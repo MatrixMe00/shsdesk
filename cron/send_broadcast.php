@@ -33,11 +33,11 @@
         $delivered = 0;
 
         // get schools who have set up their sms
-        $ussds = decimalIndexArray(fetchData1("school_id, sms_id", "school_ussds", "status = 'approve'", 0));
+        // $ussds = decimalIndexArray(fetchData1("school_id, sms_id", "school_ussds", "status = 'approve'", 0));
 
-        if($ussds){
+        if(true){
             $message_template = fetchData("value", "system_variables", "name='sms_broadcast'")["value"] ?? null;
-            $ussds = pluck($ussds, "school_id", "sms_id");
+            // $ussds = pluck($ussds, "school_id", "sms_id");
 
             if($message_template){
                 $keys = ["fullname", "school_name", "boarding_status", "programme"];
@@ -55,11 +55,11 @@
                     $ussd = "SHSDesk";
                     $response = send_sms($ussd, $message, [$student["contact"]], SMS_PROVIDER::MNOTIFY);
                     
-                    if($response["response"]["status"] == "success"){
-                        $data = $response["response"]["data"];
+                    if(!empty($response["response"]["status"]) && $response["response"]["status"] == "success"){
+                        $data = $response["response"]["summary"];
 
                         // if message was delivered, do not add to next batch of checks
-                        if(strtolower($data["status"]) == "delivered"){
+                        if(!empty($data["message_id"])){
                             $connect->query("UPDATE cssps_guardians SET last_messaged = NOW() WHERE id = {$student['row_id']}");
                             ++$delivered;
                         }
@@ -82,7 +82,4 @@
                 }
             }
         }
-    }
-
-
-    
+    }    

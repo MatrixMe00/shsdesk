@@ -123,7 +123,7 @@
                 <?php if ($admin_access > 3): ?>
                 <div class="foot flex flex-wrap">
                     <div class="item-event edit" data-school-id="<?php echo $row['id']; ?>">Edit</div>
-                    <div class="item-event deactivate" data-school-id="<?php echo $row['id']; ?>">Deactivate</div>
+                    <div class="item-event activate" data-school-id="<?php echo $row['id']; ?>">Activate</div>
                     <div class="item-event delete" data-school-id="<?php echo $row['id']; ?>">Delete</div>
                     <div class="item-event clear" data-school-id="<?php echo $row['id']; ?>">Clear Records</div>
                 </div>
