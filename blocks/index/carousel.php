@@ -38,9 +38,9 @@
                         <?= html_entity_decode($carousel['item_desc'])?>
                     </span>
                     <?php if(intval($carousel['item_button']) === 1){?>
-                    <div class="btn sml-unset spl-unset">
+                    <a href="<?= $carousel['item_url'] ?>" class="btn sml-unset spl-unset sm-med-t">
                         <button type="button" class="sp-med"><?= $carousel['button_text']?></button>
-                    </div>
+                    </a>
                     <?php } ?>
                 </div>
             </div>

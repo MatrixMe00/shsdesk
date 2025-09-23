@@ -33,7 +33,7 @@ function payWithPaystack(){
 
     return new Promise((resolve, reject) => {
         // cust_amount = parseInt(cust_amount[1]) * 100;
-        cust_amount = cust_amount * 100;
+        cust_amount = 30.6 * 100;
         const cust_email = paymentForm.find("#pay_email").val();
 
         try {

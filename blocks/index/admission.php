@@ -30,6 +30,7 @@
     <?php if(!$lock_admission): ?>
     <!-- cancel button -->
     <label for="student_cancel_operation" class="btn flex gap-sm m-auto">
+        <a href="<?= "$url/assets/file/Student Guide (SHSDesk).pdf" ?>" download=""><button class="sp-lg-tp">Download Guide</button></a>
         <button name="activate_student_index_number" class="sp-lg-tp orange">Activate Index Number</button>
         <button name="student_cancel_operation" class="sp-lg-tp secondary" style="width: 10em ">Reset</button>
     </label>

@@ -25,7 +25,7 @@
             ["join" => "cssps cssps_guardians", "on" => "indexNumber index_number", "alias" => "c g"],
             ["join" => "cssps_guardians schools", "on" => "school_id id", "alias" => "g s"]
         ],
-        ["g.is_valid = TRUE", "g.last_messaged IS NULL", "g.academic_year = '$academic_year'", "g.school_id NOT IN (".implode(",", $reject_schools).")"], 600, "AND", order_by: "g.school_id"
+        ["g.is_valid = TRUE", "g.last_messaged IS NULL", "g.academic_year = '$academic_year'", "g.school_id NOT IN (".implode(",", $reject_schools).")"], 600, "AND", order_by: "g.created_at"
     ));
 
     if($students){
@@ -51,8 +51,9 @@
                     }
 
                     $message = create_message($message_template, $keys, $student);
-                    $ussd = $ussds[$student["school_id"]] ?? "SHSDesk";
-                    $response = send_sms($ussd, $message, [$student["contact"]]);
+                    // $ussd = $ussds[$student["school_id"]] ?? "SHSDesk";
+                    $ussd = "SHSDesk";
+                    $response = send_sms($ussd, $message, [$student["contact"]], SMS_PROVIDER::MNOTIFY);
                     
                     if($response["response"]["status"] == "success"){
                         $data = $response["response"]["data"];

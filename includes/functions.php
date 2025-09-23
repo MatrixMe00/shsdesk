@@ -5,6 +5,7 @@
 
     require_once "database_functions.php";
     require_once "curl.php";
+    require_once "sms.php";
 
     /**
      * The purpose of this function is to retrieve user details from database
@@ -2777,36 +2778,6 @@
         $stmt->bind_param("sssi", $index_number, $contact, $academic_year, $school_id);
     
         return $stmt->execute();
-    }
-
-    /**
-     * This is used to send an sms message
-     * @param string $ussd The ussd to use
-     * @param string $message The message to send
-     * @param array $recipients The recipient to the message
-     */
-    function send_sms(string $ussd, string $message, array $receipients){
-        global $env;
-
-        $endPoint = 'https://webapp.usmsgh.com/api/sms/send';
-        $apiToken = $env["sms_token"];
-        $response = false;
-
-        foreach($receipients as $key => $recipient){
-            $recipient = remakeNumber($recipient, true, false);
-            $data = [
-                'recipient' => $recipient,
-                'sender_id' => has_non_english_chars($ussd) ? "SHSDesk" : $ussd,
-                'message'   => strip_tags($message)
-            ];
-
-            $response = curl_post($endPoint, $data, [
-                "accept: application/json",
-                "authorization: Bearer " . $apiToken,
-            ]);
-        }
-
-        return $response;
     }
 
     /**
