@@ -716,41 +716,20 @@
      * 
      * @return string It returns a string representation of the value
      */
-    function numberShortner($value){
-        $value = intval($value);
-        $divisor = array(
-            0 => array(
-                "div" => 1000000,
-                "val" => "M"
-            ),
-            1 => array(
-                "div" => 1000,
-                "val" => "K"
-            ),
-            2 => array(
-                "div" => 10,
-                "val" => ""
-            )
-        );
+    function numberShortner($value) {
+        $value = floatval($value);
     
-        $final = "";
-    
-        for($i=0; $i < count($divisor);$i++){
-            $divide = $value / $divisor[$i]["div"];
-    
-            if($value >= 1000)
-                $divide = round($divide,1);
-            else
-                $divide = intval($divide) * $divisor[$i]["div"];
-    
-            if($divide >= 1){
-                $final = $divide.$divisor[$i]["val"];
-                break;
-            }
+        if ($value >= 1000000000) {
+            return round($value / 1000000000, 1) . "B";
+        } elseif ($value >= 1000000) {
+            return round($value / 1000000, 1) . "M";
+        } elseif ($value >= 1000) {
+            return round($value / 1000, 1) . "K";
+        } else {
+            return (string) intval($value);
         }
-    
-        return $final;
     }
+    
     
     /**
      * Function to automatically set houses for students
