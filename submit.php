@@ -343,12 +343,13 @@
                             $sql = "INSERT INTO students_table (
                                 indexNumber, profile_pic, Lastname, Othernames, Gender, 
                                 houseID, school_id, studentYear, guardianContact, programme, program_id, 
-                                boardingStatus, password) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                                boardingStatus, password, uploaded) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                             $stmt = $connect2->prepare($sql);
-                            $house_id = intval($_SESSION["ad_stud_house"]);
+                            $house_id = $next_room ?? 0;
+                            $uploaded = false;
                             $year = 1;
-                            $stmt->bind_param("sssssiiississ", $ad_index, $ad_profile_pic, $ad_lname, $ad_oname, $ad_gender, $house_id, $shs_placed,
-                                $year, $ad_phone, $ad_course, $program_id, $student["boardingStatus"], $password);
+                            $stmt->bind_param("sssssiiississi", $ad_index, $ad_profile_pic, $ad_lname, $ad_oname, $ad_gender, $house_id, $shs_placed,
+                                $year, $ad_phone, $ad_course, $program_id, $student["boardingStatus"], $password, $uploaded);
                             $stmt->execute();
                             $stmt->close();
                         }
@@ -801,8 +802,11 @@
             $course_name = $_GET["course_name"];
             $school_id = $_GET["school_id"];
             $programs = decimalIndexArray(fetchData1(["program_id", "program_name", "course_ids"], "program", ["school_id=$school_id", "LOWER(associate_program) = '".strtolower($course_name)."'"], 0, where_binds: "AND"));
+            $auto_class_place = fetchData("a.autoClassPlace", [
+                "join" => "schools admissiondetails", "on" => "id schoolID", "alias" => "s a"
+            ], "s.id=$school_id")["autoClassPlace"] ?? false;
 
-            if($programs){
+            if($programs && $auto_class_place){
                 $progs = [];
                 foreach($programs as $program){
                     $ids = array_filter(explode(" ", $program["course_ids"]));

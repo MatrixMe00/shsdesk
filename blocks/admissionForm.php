@@ -647,5 +647,5 @@
     </div>
     <div id="form_footer">
     </div>
-    <a href="<?php echo $url?>/pdf_handle.php" class="no_disp" id="handle_pdf" target="_blank" rel="nofollow"></a>
+    <a href="<?php echo $url?>/pdf_handle.php" class="no_disp" id="handle_pdf" rel="nofollow"></a>
 </form>

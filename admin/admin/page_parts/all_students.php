@@ -14,7 +14,7 @@
     $year1 = decimalIndexArray(fetchData1(
         ["s.*, p.program_name"],
         ["join" => "students_table program", "alias" => "s p", "on" => "program_id program_id"], 
-        ["s.school_id=$user_school_id", "s.studentYear=1"], 0, "AND", "LEFT"
+        ["s.school_id=$user_school_id", "s.studentYear=1", "uploaded = TRUE"], 0, "AND", "LEFT"
     ));
     $year2 = decimalIndexArray(fetchData1(
         ["s.*, p.program_name"],

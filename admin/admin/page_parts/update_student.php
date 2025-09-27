@@ -63,7 +63,7 @@
                 <span class="label_image">
                     <img src="<?php echo $url?>/assets/images/icons/bed-outline.svg" alt="boarding_status">
                 </span>
-                <select name="boarding_status" id="boarding_status">
+                <select name="boarding_status" id="boarding_status" disabled>
                     <option value="">Select Boarding Status</option>
                     <option value="Day">Day</option>
                     <option value="Boarder">Boarding</option>

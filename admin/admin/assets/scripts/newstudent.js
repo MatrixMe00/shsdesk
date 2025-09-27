@@ -118,8 +118,15 @@ $("form[name=adminUpdateStudent]").submit(function(event){
     form_name="adminUpdateStudent";
     time = 5;
 
-    //send data
+    // Enable all disabled elements before submission
+    var disabledElements = $("form[name=adminUpdateStudent] :disabled");
+    disabledElements.prop("disabled", false);
+
+    // Perform the submission
     response = formSubmit($(this), $("form[name=adminUpdateStudent] button[name=submit]"));
+
+    // Disable the elements again after submission
+    disabledElements.prop("disabled", true);
     
     if(response == true){
         message = "Data for " + $("form[name=adminUpdateStudent] #lname").val() + " was updated successfully";

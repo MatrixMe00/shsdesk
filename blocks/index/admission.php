@@ -11,7 +11,7 @@
             </label>
             <div class="flex flex-center-align gap-sm" id="pay_div">
                 <label for="student_index_number" class="flex flex-column flex-wrap relative" style="flex: 4">
-                    <span class="label_title">Provide your JHS index number below. If it does not work, use the activate index number button</span>
+                    <span class="label_title">Provide your JHS index number below. <!-- If it does not work, use the activate index number button --></span>
                     <input type="text" name="student_index_number" id="student_index_number" class="sp-lg ms-border" data-index="" placeholder="Enter JHS index number [Eg. 1000000000<?= $index_end ?>]">
                 </label>
                 <label for="student_check" class="btn sp-unset w-fluid-child self-align-end" style="flex:1">
@@ -31,7 +31,7 @@
     <!-- cancel button -->
     <label for="student_cancel_operation" class="btn flex gap-sm m-auto">
         <a href="<?= "$url/assets/file/Student Guide (SHSDesk).pdf" ?>" download=""><button class="sp-lg-tp">Download Guide</button></a>
-        <button name="activate_student_index_number" class="sp-lg-tp orange">Activate Index Number</button>
+        <!-- <button name="activate_student_index_number" class="sp-lg-tp orange">Activate Index Number</button> -->
         <button name="student_cancel_operation" class="sp-lg-tp secondary" style="width: 10em ">Reset</button>
     </label>
 

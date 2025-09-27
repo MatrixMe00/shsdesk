@@ -97,7 +97,7 @@
             $jhs = formatName(strip_tags(stripslashes($_REQUEST["jhs"])));
             $dob = strip_tags(stripslashes($_REQUEST["dob"]));
             $track_id = strip_tags(stripslashes($_REQUEST["track_id"]));
-            $guardian_contact = $_REQUEST["guardian_contact"];
+            $guardian_contact = $_REQUEST["guardian_contact"] ?? null;
             $school_id = $user_school_id;
 
             //variable to hold messages
@@ -270,7 +270,7 @@
                 $message = "boarding-status-not-set";
             }elseif(is_null($student_course) || empty($student_course)){
                 $message = "no-student-program-set";
-            }elseif($admin_mode == "admission" && (intval($aggregate) < 6 || intval($aggregate) > 54)){
+            }elseif($admin_mode == "admission" && $aggregate && (intval($aggregate) < 6 || intval($aggregate) > 54)){
                 $message = "Aggregate score provided is invalid";
             }elseif($admin_mode == "admission" && (isset($_REQUEST['house']) && empty($house))){
                 $message = "no-house";
@@ -1173,16 +1173,34 @@
                         $admission_year = getAdmissionYear();
 
                         //update admission details table
-                        if(isset($_POST["letter_prefix"])){
-                            $sql = "UPDATE admissiondetails SET titleOfHead=?, headName=?, admissionYear=?, academicYear=?,
-                                reopeningDate=?, prefix_text = ?, letter_prefix = ? WHERE schoolID=?";
+                        if (isset($_POST["letter_prefix"])) {
+                            $sql = "INSERT INTO admissiondetails 
+                                        (schoolID, titleOfHead, headName, admissionYear, academicYear, reopeningDate, prefix_text, letter_prefix) 
+                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                                    ON DUPLICATE KEY UPDATE
+                                        titleOfHead = VALUES(titleOfHead),
+                                        headName = VALUES(headName),
+                                        admissionYear = VALUES(admissionYear),
+                                        academicYear = VALUES(academicYear),
+                                        reopeningDate = VALUES(reopeningDate),
+                                        prefix_text = VALUES(prefix_text),
+                                        letter_prefix = VALUES(letter_prefix)";
                             $stmt = $connect->prepare($sql);
-                            $stmt->bind_param("sssssssi", $head_title, $head_name, $admission_year, $academic_year, $reopening,  $_POST["prefix_text"], $letter_prefix,$school_id);
-                        }else{
-                            $sql = "UPDATE admissiondetails SET titleOfHead=?, headName=?, admissionYear=?, academicYear=?,
-                            reopeningDate=?, prefix_text = NULL, letter_prefix = NULL WHERE schoolID=?";
+                            $stmt->bind_param("isssssss", $school_id, $head_title, $head_name, $admission_year, $academic_year, $reopening, $_POST["prefix_text"], $letter_prefix);
+                        } else {
+                            $sql = "INSERT INTO admissiondetails 
+                                        (schoolID, titleOfHead, headName, admissionYear, academicYear, reopeningDate, prefix_text, letter_prefix) 
+                                    VALUES (?, ?, ?, ?, ?, ?, NULL, NULL)
+                                    ON DUPLICATE KEY UPDATE
+                                        titleOfHead = VALUES(titleOfHead),
+                                        headName = VALUES(headName),
+                                        admissionYear = VALUES(admissionYear),
+                                        academicYear = VALUES(academicYear),
+                                        reopeningDate = VALUES(reopeningDate),
+                                        prefix_text = VALUES(prefix_text),
+                                        letter_prefix = VALUES(letter_prefix)";
                             $stmt = $connect->prepare($sql);
-                            $stmt->bind_param("sssssi", $head_title, $head_name, $admission_year, $academic_year, $reopening, $school_id);
+                            $stmt->bind_param("isssss", $school_id, $head_title, $head_name, $admission_year, $academic_year, $reopening);
                         }                        
                         
                         $stmt->execute();
