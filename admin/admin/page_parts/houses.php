@@ -15,17 +15,18 @@
             ["join"=>"house_allocation houses", "alias" => "ho h", "on" => "houseID id"],
             ["h.schoolID=$user_school_id", "boardingStatus='Day'", "current_data=1"],0,"AND"
         )["total"];
-        $displaced_studs = (int) $connect->query(
-            "SELECT COUNT(indexNumber) AS total 
-                FROM house_allocation 
-                WHERE schoolID=$user_school_id AND current_data = 1 AND NOT EXISTS (
-                    SELECT 1 
-                    FROM houses 
-                    WHERE houses.id = house_allocation.houseID 
-                    AND houses.schoolID = $user_school_id
-                )"
-        )->fetch_assoc()["total"];
     }
+
+    $displaced_studs = (int) $connect->query(
+        "SELECT COUNT(indexNumber) AS total 
+            FROM house_allocation 
+            WHERE schoolID=$user_school_id AND current_data = 1 AND NOT EXISTS (
+                SELECT 1 
+                FROM houses 
+                WHERE houses.id = house_allocation.houseID 
+                AND houses.schoolID = $user_school_id
+            )"
+    )->fetch_assoc()["total"];
 
     $male_allocation = (int) fetchData("COUNT(ho.indexNumber) as total",
         ["join"=>"house_allocation houses", "alias" => "ho h", "on" => "houseID id"],
@@ -51,7 +52,7 @@
 <section class="section_container">
     <div class="content" style="background-color: #007bff;">
         <div class="head">
-            <h2><?php echo $male_allocation + $female_allocation + (int) $day_studs; ?></h2>
+            <h2><?php echo $male_allocation + $female_allocation + (int) ($isDay ? 0 : $day_studs); ?></h2>
         </div>
         <div class="body">
             <span>Students Registered Houses</span>
@@ -167,9 +168,10 @@
                     <td><?php echo $house["total"] ?></td>
                     <td><?php 
                         if(!is_null($house["studentGender"])){
-                            if($house["total"] == ($house["maleHeadPerRoom"] * $house["maleTotalRooms"])){
+                            $gender = strtolower($house["studentGender"]);
+                            if($house["total"] == ($house["{$gender}HeadPerRoom"] * $house["{$gender}TotalRooms"])){
                                 echo "Full";
-                            }elseif($house["total"] > ($house["maleHeadPerRoom"] * $house["maleTotalRooms"])){
+                            }elseif($house["total"] > ($house["{$gender}HeadPerRoom"] * $house["{$gender}TotalRooms"])){
                                 echo "Overboard";
                             }else{
                                 echo "Not Full";
@@ -188,42 +190,42 @@
         </table>
         <?php elseif($houses = decimalIndexArray(fetchData("*","houses","schoolID=$user_school_id",0))): ?>
             <table class="full">
-    <thead>
-        <tr>
-            <td>No.</td>
-            <td>House Name</td>
-            <td>Male Rooms</td>
-            <td>Male Heads/Room</td>
-            <td>Female Rooms</td>
-            <td>Female Heads/Room</td>
-            <td>Gender</td>
-            <td>Actions</td>
-        </tr>
-    </thead>
-    <tbody>
-        <?php 
-        $count = 0; 
-        foreach ($houses as $house): 
-        ?>
-            <tr data-item-id="<?php echo $house["id"] ?>">
-                <td><?= ++$count ?></td>
-                <td><?= $house["title"] ?></td>
-                <td><?= $house["maleTotalRooms"] ?></td>
-                <td><?= $house["maleHeadPerRoom"] ?></td>
-                <td><?= $house["femaleTotalRooms"] ?></td>
-                <td><?= $house["femaleHeadPerRoom"] ?></td>
-                <td><?= ucfirst($house["gender"]) ?></td>
-                <td class="flex flex-wrap">
-                    <span class="item-event edit">Edit</span>
-                    <span class="item-event delete">Delete</span>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
+                <thead>
+                    <tr>
+                        <td>No.</td>
+                        <td>House Name</td>
+                        <td>Male Rooms</td>
+                        <td>Male Heads/Room</td>
+                        <td>Female Rooms</td>
+                        <td>Female Heads/Room</td>
+                        <td>Gender</td>
+                        <td>Actions</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    $count = 0; 
+                    foreach ($houses as $house): 
+                    ?>
+                        <tr data-item-id="<?php echo $house["id"] ?>">
+                            <td><?= ++$count ?></td>
+                            <td><?= $house["title"] ?></td>
+                            <td><?= $house["maleTotalRooms"] ?></td>
+                            <td><?= $house["maleHeadPerRoom"] ?></td>
+                            <td><?= $house["femaleTotalRooms"] ?></td>
+                            <td><?= $house["femaleHeadPerRoom"] ?></td>
+                            <td><?= ucfirst($house["gender"]) ?></td>
+                            <td class="flex flex-wrap">
+                                <span class="item-event edit">Edit</span>
+                                <span class="item-event delete">Delete</span>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
 
         <?php else:
-                echo "<p style=\"margin-top: 5px; padding: 5px; text-align: center; background-color: white; border: 1px dashed lightgrey;\">No student allocation data available for the current admission.</p>";
+                echo "<p class=\"sp-lg txt-al-c border\">You have no houses set-up to facilitate current admission status.</p>";
             endif;
         ?>
     </div>
@@ -231,7 +233,7 @@
 
 <section>
     <div class="head">
-        <h2>House Allocation Summary (<?= implode(" - ",$academic_dates) ?>)</h2>
+        <h2>House Allocation Summary (<?= implode(" - ",array_reverse($academic_dates)) ?>)</h2>
     </div>
     <?php 
         $houses_db = decimalIndexArray(fetchData(
@@ -290,8 +292,10 @@
                     <td>House Name</td>
                     <td>Males</td>
                     <td>Females</td>
+                    <?php if(!$isDay): ?>
                     <td>Boarders</td>
                     <td>Day</td>
+                    <?php endif; ?>
                 </tr>
             </thead>
             <tbody>
@@ -304,8 +308,10 @@
                     <td><?= $house["title"] ?></td>
                     <td><?= $house["males"] ?></td>
                     <td><?= $house["females"] ?></td>
+                    <?php if(!$isDay): ?>
                     <td><?= $house["border"] ?></td>
                     <td><?= $house["day"] ?></td>
+                    <?php endif; ?>
                 </tr>
                 <?php endforeach; else: ?>
                 <tr class="empty">
@@ -317,7 +323,7 @@
     </div>
 </section>
 
-<?php if($displaced_studs > 0): ?>
+<?php if(!empty($displaced_studs)): ?>
 <section>
     <div class="head">
         <h2>Misplaced Students</h2>

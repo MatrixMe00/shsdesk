@@ -9,6 +9,41 @@
         
     </body>
     <?php 
+        $academic_year = getAcademicYear(now(), false);
+        // fetch all roles and their percentage prices
+        $roles = fetchData("id, title, price", "roles", [
+            "price > 0", "school_id = 0"
+        ], 0, "AND");
+
+        if(!is_array($roles)){
+            exit("No roles with prices found");
+        }
+
+        $roles = pluck($roles, "title", "array", true);
+
+        $where = ["e.academic_year = '$academic_year'"];
+
+        // get all enroled students
+        if($admin_access < 3){
+            if($user_school_id < 1){
+                exit("Your account is not linked to any school");
+            }else{
+                $where[] = ["shsID=$user_school_id"];
+            }
+        }
+
+        $column = ["COUNT(e.indexNumber) as total", "shsID", "sc.head"];
+        $tables = [
+            ["join" => "cssps enrol_table", "alias" => "c e", "on" => "indexNumber indexNumber"],
+            ["join" => "cssps schools", "alias" => "c s", "on" => "schoolID id"],
+            ["join" => "schools school_category", "alias" => "s sc", "on" => "category id"]
+        ];
+
+        $schools = fetchData($column, $tables, $where, 0, "AND", group_by: "shsID");
+        
+        $developer = [
+            "students" => 0, "unit_price" => calculate_actual_price($roles["developer"]["price"])
+        ];
     // test the send_email function
     // $message = "This is a test email for the test email function";
     // $subject = "Testing send_email Function";
@@ -77,10 +112,10 @@
             }
         }
     }*/
-    $recipients = "059247852, 059240313, 059248632, 059249601, 059242771, 059247420, 059243666, 059248698";
-    $transaction_id = "T727852147828886";
-    $role_school_id = 48;
-    activate_access_pay($recipients, $transaction_id, $user_school_id);
+    // $recipients = "059247852, 059240313, 059248632, 059249601, 059242771, 059247420, 059243666, 059248698";
+    // $transaction_id = "T727852147828886";
+    // $role_school_id = 48;
+    // activate_access_pay($recipients, $transaction_id, $user_school_id);
 
     /*$user_school_id = 3;
     

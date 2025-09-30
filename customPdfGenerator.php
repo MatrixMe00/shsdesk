@@ -17,7 +17,7 @@
         //set footer name with school name
         $school_name = $_SESSION["ad_school_name"];
 
-        $school = getSchoolDetail($school_name, true);
+        $school = getSchoolDetail($connect->real_escape_string($school_name), true);
 
         if(empty($school["admission_template"])){
             //make settings for footer
@@ -84,7 +84,7 @@
         $pdf->SetKeywords("Admission, SHSDesk, letter, document, $lastname, MatrixMe");
 
         //user data
-        $enrolment_code = $_SESSION["ad_stud_enrol_code"];
+        $enrolment_code = strtoupper($_SESSION["ad_stud_enrol_code"]);
         $candidate = $lastname." ".$_SESSION["ad_stud_oname"];
         $residence_status = $_SESSION["ad_stud_residence"];
         $program = $_SESSION["ad_stud_program"];

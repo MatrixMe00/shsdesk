@@ -19,6 +19,7 @@
 
     $printed_at = date('M j, Y \a\t g:i A');
     $enrolDate = date('M j, Y \a\t g:i A', strtotime($enrolDate));
+    $enrolCode = strtoupper($enrolCode);
 
     $data_string = <<<HTML
     <div class="view_box">

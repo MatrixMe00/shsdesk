@@ -365,6 +365,7 @@
                     FROM schools
                     WHERE id=$key";
         }elseif(!intval($key) && !$all){
+            $key = $connect->real_escape_string($key);
             $sql = "SELECT id
                     FROM schools
                     WHERE schoolName='$key'";
@@ -374,6 +375,7 @@
                     WHERE id=$key";
         }elseif(!intval($key) && $all){
             ///sql is responsible for storing the sql statement
+            $key = $connect->real_escape_string($key);
             $sql = "SELECT *
                     FROM schools
                     WHERE schoolName='$key'";

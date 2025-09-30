@@ -509,25 +509,36 @@
             echo json_encode($data);
         }elseif($submit == "updatePayment"){
             $academic_year = getAcademicYear(now(), false);
-            $where = [
-                "t.current_data=TRUE", "t.Transaction_Expired=TRUE", "s.Active=TRUE", "r.school_id=0",
-                "r.title LIKE 'admin%'", "t.academic_year='$academic_year'"
-            ];
+            // fetch all roles and their percentage prices
+            $roles = fetchData("id, price", "roles", [
+                "price > 0", "school_id = 0", "id < 5"
+            ], 0, "AND");
 
-            if($admin_access < 3){
-                $where[] = "s.id=$user_school_id";
+            if(!is_array($roles)){
+                exit("No roles with prices found");
             }
 
-            $columns = ["DISTINCT s.id", "sc.head", "SUM(t.amountPaid) as amountPaid", "COUNT(t.transactionID) as ttl", "a.role"];
+            $roles = pluck($roles, "id", "price");
+
+            $where = ["e.academic_year = '$academic_year'"];
+
+            // get all enroled students
+            if($admin_access < 3){
+                if($user_school_id < 1){
+                    exit("Your account is not linked to any school");
+                }else{
+                    $where[] = ["shsID=$user_school_id"];
+                }
+            }
+
+            $column = ["COUNT(e.indexNumber) as total", "shsID", "sc.head"];
             $tables = [
-                ["join" => "schools transaction", "alias" => "s t", "on" => "id schoolBought"],
-                ["join" => "schools admins_table", "alias" => "s a", "on" => "id school_id"],
-                ["join" => "admins_table roles", "alias" => "a r", "on" => "role id"],
-                ["join" => "transaction enrol_table", "alias" => "t e", "on" => "indexNumber indexNumber"],
+                ["join" => "cssps enrol_table", "alias" => "c e", "on" => "indexNumber indexNumber"],
+                ["join" => "cssps schools", "alias" => "c s", "on" => "schoolID id"],
                 ["join" => "schools school_category", "alias" => "s sc", "on" => "category id"]
             ];
 
-            $schools = fetchData($columns, $tables, $where, 0, "AND", group_by: ["s.id", "a.user_id"]);
+            $schools = fetchData($column, $tables, $where, 0, "AND", group_by: "shsID");
             
             if($schools == "empty"){
                 exit("No new payment data found");

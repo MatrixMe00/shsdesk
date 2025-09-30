@@ -37,8 +37,10 @@
                             <span class="label_image">
                                 <img src="<?php echo $url?>/assets/images/icons/reader-outline.svg" alt="enrol code">
                             </span>
-                            <input type="text" name="ad_enrol_code" id="ad_enrol_code" ng-model="ad_enrol_code" placeholder="Your Enrolment Code*" 
-                            title="Enter your enrolment code on your placement form" maxlength="12" minlength="6" required>
+                            <input type="text" name="ad_enrol_code" id="ad_enrol_code" ng-model="ad_enrol_code"
+                                placeholder="Your Enrolment Code*" title="Enter your enrolment code on your placement form"
+                                maxlength="12" minlength="6" required ng-model-options="{ updateOn: 'input' }"
+                                ng-change="ad_enrol_code = ad_enrol_code.toUpperCase()">
                         </label>
                         <label for="ad_index">
                             <span class="label_image">
