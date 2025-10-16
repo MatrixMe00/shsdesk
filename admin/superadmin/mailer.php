@@ -114,6 +114,22 @@
                 $mail->isHTML(true);
                 $mail->Subject = $subject;
                 $mail->Body    = $message_body;
+
+                // Handle attachments directly from temp location
+                if ($attachments && isset($attachments['name']) && is_array($attachments['name'])) {
+                    for ($i = 0; $i < count($attachments['name']); $i++) {
+                        if ($attachments['error'][$i] === UPLOAD_ERR_OK) {
+                            $tmp_name = $attachments['tmp_name'][$i];
+                            $file_name = basename($attachments['name'][$i]);
+
+                            // Optional: sanitize file name
+                            $file_name = preg_replace("/[^a-zA-Z0-9._-]/", "_", $file_name);
+
+                            // Attach directly (no need to move or store)
+                            $mail->addAttachment($tmp_name, $file_name);
+                        }
+                    }
+                }
             
                 if($mail->send()){
                     ++$pass;
@@ -127,6 +143,22 @@
                 $mail->isHTML(true);
                 $mail->Subject = $subject;
                 $mail->Body    = $template;
+
+                // Handle attachments directly from temp location
+                if ($attachments && isset($attachments['name']) && is_array($attachments['name'])) {
+                    for ($i = 0; $i < count($attachments['name']); $i++) {
+                        if ($attachments['error'][$i] === UPLOAD_ERR_OK) {
+                            $tmp_name = $attachments['tmp_name'][$i];
+                            $file_name = basename($attachments['name'][$i]);
+
+                            // Optional: sanitize file name
+                            $file_name = preg_replace("/[^a-zA-Z0-9._-]/", "_", $file_name);
+
+                            // Attach directly (no need to move or store)
+                            $mail->addAttachment($tmp_name, $file_name);
+                        }
+                    }
+                }
             
                 if($mail->send()){
                     ++$pass;

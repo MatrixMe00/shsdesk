@@ -660,6 +660,7 @@
             $sender_name = $_POST["sendas"];
             $extra = $_POST["extra"];
             $subject = $_POST["subject"];
+            $attachments = $_FILES["attachments"] ?? null;
 
             if(empty($recipients) || is_null($recipients)){
                 $message = "No recipients were specified";

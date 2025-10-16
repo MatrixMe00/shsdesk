@@ -68,72 +68,73 @@ $("input[name=sendas]").change(function(){
     $("input[name=sendas_val]").val($(this).val());
 })
 
-$("button.send").click(function(){
+$("button.send").click(async function() {
     const section = $(this).parents(".section-wrapper");
 
     const message = section.find(".text-message").val();
     const recipients = section.find(".recipients").val();
     const submit = $(this).val();
-
     const initial_message = $(this).html();
     const mode = $(this).attr("data-mode");
-    let data_string = {};
 
-    if(mode == "sms"){
-        data_string = {submit: submit, message: message, recipients: recipients};
-    }else{
+    // Create FormData for flexible data + file support
+    const formData = new FormData();
+
+    formData.append("submit", submit);
+    formData.append("message", message);
+    formData.append("recipients", recipients);
+
+    if (mode === "sms") {
+        formData.append("mode", "sms");
+    } else {
         const sendas = $("input[name=sendas_val]").val();
-        const extra_options = Boolean($("input#other_options").prop("checked"));
+        const extra_options = $("input#other_options").prop("checked") ? 1 : 0;
         const email_subject = $("input#email-subject").val();
 
-        data_string = {
-            submit: submit, message: message, recipients: recipients,
-            sendas: sendas, extra: extra_options, subject: email_subject
+        formData.append("sendas", sendas);
+        formData.append("extra", extra_options);
+        formData.append("subject", email_subject);
+        formData.append("mode", "email");
+
+        // 🔹 Add attachments if any
+        const attachments = section.find("input[type=file]")[0]?.files;
+        if (attachments && attachments.length > 0) {
+            for (let i = 0; i < attachments.length; i++) {
+                formData.append("attachments[]", attachments[i]);
+            }
         }
     }
 
-    $.ajax({
+    // 🔸 Call your ajaxCall() utility
+    const response = await ajaxCall({
         url: "./superadmin/submit.php",
-        data: data_string,
+        formData: formData,
         method: "POST",
+        returnType: "text",
+        sendRaw: true, // Important: needed for FormData
         timeout: 30000,
-        beforeSend: function(){
-            $("button.send").html("Sending...")
-        },
-        success: function(response){
-            $("button.send").html(initial_message);
-            color = "danger";
-            time = 6;
-
-            if(response == "sms sent"){
-                color = "success";
-                time = 2.5;
-
-                $("#text_message, input[name=specific]").val("")
-                $("#sms_message").addClass("no_disp")
-            }else if(response == "email sent"){
-                color = "success";
-                time = 2.5;
-
-                // $("#mail input[type=text], #mail input[type=hidden], #mail textarea").val("");
-                // $("#mail input[type=radio], #mail input[type=checkbox]").prop("checked", false);
-                // $("#options").addClass("no_disp");
-
-                response = "Email have been sent successfully";
-            }
-
-            alert_box(response, color, time)
-        },
-        error: function(response){
-            var message = ""
-            if(response.statusText == "timeout"){
-                message = "Connection was timed out due to a slow network. Please try again later"
-            }else{
-                message = JSON.stringify(response)
-            }
-
-            alert_box(message, "danger",6)
-            $("button.send").html("Send")
+        beforeSend: function() {
+            $("button.send").html("Sending...");
         }
-    })
-})
+    });
+
+    // 🔹 Handle response
+    $("button.send").html(initial_message);
+    let color = "danger";
+    let time = 6;
+    let message_ = response;
+
+    if (response === "sms sent") {
+        color = "success";
+        time = 2.5;
+        $("#text_message, input[name=specific]").val("");
+        $("#sms_message").addClass("no_disp");
+    } else if (response === "email sent") {
+        color = "success";
+        time = 2.5;
+        message_ = "Email has been sent successfully";
+        // You could clear email form inputs here if needed
+    }
+
+    alert_box(message_, color, time);
+});

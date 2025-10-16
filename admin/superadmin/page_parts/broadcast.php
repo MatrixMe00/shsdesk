@@ -88,6 +88,14 @@
             <textarea name="email-message" maxlength="160" id="email-message" class="txt-fn sadmin_tinymce text-message" 
                 placeholder="Your email template or message goes here..."></textarea>
         </label>
+        <label for="attachments" class="file_label">
+            <span class="label_title">Attachments (You can upload multiple files)</span>
+            <div class="fore_file_display">
+                <input type="file" name="attachments[]" id="attachments" accept=".pdf,.doc,.docx,.jpg,.png" multiple>
+                <span class="plus">+</span>
+                <span class="display_file_name">Choose or drag your files here</span>
+            </div>
+        </label>
         <span class="item-event info" id="email_count">Number of Recipients: 0</span>
         <div class="btn w-full w-fluid-child p-med wmax-sm sm-auto">
             <button class="primary send" name="submit" value="send_mail_admin" data-mode="mail">Send Mail</button>

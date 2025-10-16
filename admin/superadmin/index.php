@@ -101,11 +101,7 @@
             $("nav").addClass(nav_mode);
         })
     </script>
-    <?php }
-        
-        //close connection
-        $connect->close();
-    ?>
+    <?php } ?>
 </body>
 </html>
 <?php 

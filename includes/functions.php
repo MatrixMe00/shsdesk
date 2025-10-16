@@ -2487,21 +2487,32 @@
     }
 
     /**
-     * This sends an email to someone
-     * @param string $message The message body
-     * @param string $subject The message subject
-     * @param string $receipients The receipient email
-     * @param string $sender Default is from the default account
-     * @param string $name The name of the sender
-     * @param string|false $reply Provide an email for replies, or set to true if replies should be sent to sender email
-     * @return bool|string
+     * Sends an email to one or more recipients.
+     *
+     * @param string       $message     The message body (HTML supported)
+     * @param string       $subject     The subject of the email
+     * @param string|array $receipients Single email or array of emails / name-email pairs
+     * @param string|null  $sender      Optional sender email (default is system email)
+     * @param string|null  $name        Sender display name
+     * @param string|bool  $reply       Email for replies, or true to reply to sender
+     * @param mixed        $attachments Can be:
+     *                                  - false (no attachments)
+     *                                  - an array of file paths
+     *                                  - an array from $_FILES['attachments']
+     * @return bool|string              True on success, or error string on failure
      */
-    function send_email(string $message, string $subject, string|array $receipients, 
-        ?string $sender = null, ?string $name = null, string|bool $reply = false
-    ){
+    function send_email(
+        string $message,
+        string $subject,
+        string|array $receipients,
+        ?string $sender = null,
+        ?string $name = null,
+        string|bool $reply = false,
+        mixed $attachments = false
+    ) {
         global $rootPath, $mailserver_email, $mailserver_password, $mailserver;
 
-        // require the phpmailer
+        // Load PHPMailer classes
         require_once "$rootPath/phpmailer/src/Exception.php";
         require_once "$rootPath/phpmailer/src/PHPMailer.php";
         require_once "$rootPath/phpmailer/src/SMTP.php";
@@ -2509,59 +2520,98 @@
         $mail = new PHPMailer(true);
 
         try {
-            if(is_null($sender)){
+            // --- Sender setup ---
+            if (is_null($sender)) {
                 $name = "SHSDesk";
                 $sender = get_default_email($name);
-            }elseif(is_null($name) && validate_email($sender)){
+            } elseif (is_null($name) && validate_email($sender)) {
                 $name = explode("@", $sender)[0] ?? "No Name";
-            }elseif(!validate_email($sender)){
+            } elseif (!validate_email($sender)) {
                 throw new Exception("Sender mail is invalid");
             }
 
-            // turn recipients to array
-            if(!is_array($receipients)){
+            // --- Recipients ---
+            if (!is_array($receipients)) {
                 $receipients = [$receipients];
             }
 
-            //Server settings
+            // --- SMTP Settings ---
             $mail->isSMTP();
             $mail->Host       = $mailserver;
             $mail->SMTPAuth   = true;
             $mail->Username   = $mailserver_email;
             $mail->Password   = $mailserver_password;
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = 465;
-            
-            if($reply){
+
+            if ($reply) {
                 $reply = $reply === true ? $sender : $reply;
-                $mail->AddReplyTo($reply, $name ? $name : "");
+                $mail->addReplyTo($reply, $name ?: "");
             }
-            
+
             $mail->setFrom($sender, $name ?? "");
 
-            // add recipient(s)
-            foreach($receipients as $recipient){
-                if(is_array($recipient)){
-                    if(!isset($recipient["email"]) && !isset($receipient["name"])){
-                        throw new Exception("Recipient array should have 'name' and 'email' only");
+            // --- Add Recipients ---
+            foreach ($receipients as $recipient) {
+                if (is_array($recipient)) {
+                    if (!isset($recipient["email"])) {
+                        throw new Exception("Recipient array must include 'email'");
                     }
-
-                    $mail->addAddress($recipient["email"], $recipient["name"]);
-                }else{
+                    $mail->addAddress($recipient["email"], $recipient["name"] ?? "");
+                } else {
                     $mail->addAddress($recipient);
                 }
             }
-    
-            $mail->isHTML(true);                                  // Set email format to HTML
-    
+
+            // --- Message ---
+            $mail->isHTML(true);
             $mail->Subject = $subject;
-            $mail->Body = htmlwrap($message);
-            $mail->AltBody = 'This is the body in plain text for non-HTML mail clients. '.$message;
-            
+            $mail->Body    = htmlwrap($message);
+            $mail->AltBody = 'Plain text version: ' . strip_tags($message);
+
+            // --- Attachments ---
+            if ($attachments) {
+                // Case 1: $_FILES-style array (multi or single file)
+                if (isset($attachments['tmp_name'])) {
+                    if (is_array($attachments['tmp_name'])) {
+                        for ($i = 0; $i < count($attachments['tmp_name']); $i++) {
+                            if ($attachments['error'][$i] === UPLOAD_ERR_OK) {
+                                $mail->addAttachment(
+                                    $attachments['tmp_name'][$i],
+                                    basename($attachments['name'][$i])
+                                );
+                            }
+                        }
+                    } else {
+                        // Single file uploaded (non-multiple)
+                        if ($attachments['error'] === UPLOAD_ERR_OK) {
+                            $mail->addAttachment(
+                                $attachments['tmp_name'],
+                                basename($attachments['name'])
+                            );
+                        }
+                    }
+                }
+                // Case 2: Array of file paths
+                elseif (is_array($attachments)) {
+                    foreach ($attachments as $path) {
+                        if (file_exists($path)) {
+                            $mail->addAttachment($path);
+                        }
+                    }
+                }
+                // Case 3: Single file path
+                elseif (is_string($attachments) && file_exists($attachments)) {
+                    $mail->addAttachment($attachments);
+                }
+            }
+
+            // --- Send ---
             $response = $mail->send();
         } catch (\Throwable $th) {
-            // $response = 'Message could not be sent. Mailer Error: '. $mail->ErrorInfo;
-            $response = $mail->ErrorInfo ? "Mailer Error: ".$mail->ErrorInfo : throwableMessage($th);
+            $response = $mail->ErrorInfo
+                ? "Mailer Error: " . $mail->ErrorInfo
+                : throwableMessage($th);
         }
 
         return $response;

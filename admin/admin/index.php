@@ -185,7 +185,6 @@ if(isset($_SESSION['user_login_id']) && $_SESSION['user_login_id'] > 0){
 <?php
     }else{
         include_once($_SERVER["DOCUMENT_ROOT"]."/includes/session.php");
-        close_connections();
         
         header("location: $url/admin");
     }

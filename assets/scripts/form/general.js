@@ -85,22 +85,27 @@ $("button.request_btn").click(function(){
 })
 
 //concerning the files that will be chosen
-$("input[type=file]").change(function(){
-    //get the value of the image name
-    file_path = $(this).val();
+$("body").on("change", "input[type=file]", function() {    
+    // Get the file list (FileList object)
+    const files = this.files;
 
-    //strip the path name to file name only
-    file_name = file_path.split("C:\\fakepath\\");
+    // If there are files selected
+    if (files.length > 0) {
+        // Extract just the file names into an array
+        const file_names = Array.from(files).map(file => file.name);
 
-    //store the name of the file into the display div
-    if(file_path != ""){
+        // Join them with commas
+        const display_names = file_names.join(", ");
+
+        // Update the display
         $(this).siblings(".plus").hide();
-        $(this).siblings(".display_file_name").html(file_name);       
-    }else{
-        $(this).siblings(".plus").css("display","initial");
+        $(this).siblings(".display_file_name").html(display_names);
+    } else {
+        // Reset display if no files
+        $(this).siblings(".plus").css("display", "initial");
         $(this).siblings(".display_file_name").html("Choose or drag your file here");
     }
-})
+});
 
 // used for images or documents
 $("input.file_input").change(function(){
