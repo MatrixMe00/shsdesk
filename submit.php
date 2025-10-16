@@ -1,10 +1,10 @@
 <?php
     include_once("includes/session.php");
 
-    if(isset($_POST['submit']) || isset($_POST["submit_admission"])){
-        $submit = $_POST['submit'] ?? $_POST["submit_admission"];
+    if(isset($_POST['submit']) || isset($_POST["submit_admission"]) || isset($_POST["ad_transaction_id"])){
+        $submit = $_POST['submit'] ?? ($_POST["submit_admission"] ?? "no-submit");
 
-        if($submit == "admissionFormSubmit" || $submit == "admissionFormSubmit_ajax"){
+        if($submit == "admissionFormSubmit" || $submit == "admissionFormSubmit_ajax" || isset($_POST["ad_transaction_id"])){
             //receive details of the student
             //cssps details
             $ad_profile_pic = null;
@@ -67,29 +67,38 @@
                 $current_date = date("Y-m-d H:i:s");
 
                 //create profile picture
-                if(isset($_FILES["profile_pic"]) && !empty($_FILES["profile_pic"]["tmp_name"])){
-                    //get file extension
+                if (isset($_FILES["profile_pic"]) && !empty($_FILES["profile_pic"]["tmp_name"])) {
+                    // get file extension
                     $ext = strtolower(fileExtension("profile_pic"));
-                    $allowed = ["jpg","jpeg","png"];
-        
-                    if(in_array($ext, $allowed)){
-                        $file_input_name = "profile_pic";
-                        $local_storage_directory = "$rootPath/assets/images/profiles/students";
-
-                        if(!is_dir($local_storage_directory)){
-                            mkdir($local_storage_directory, recursive: true);
+                    $allowed = ["jpg", "jpeg", "png"];
+                    
+                    // max file size (2MB)
+                    $maxFileSize = 2 * 1024 * 1024; // 2MB in bytes
+                    
+                    if (in_array($ext, $allowed)) {
+                        if ($_FILES["profile_pic"]["size"] <= $maxFileSize) {
+                            
+                            $file_input_name = "profile_pic";
+                            $local_storage_directory = "$rootPath/assets/images/profiles/students";
+                            
+                            if (!is_dir($local_storage_directory)) {
+                                mkdir($local_storage_directory, recursive: true);
+                            }
+                            
+                            $ad_profile_pic = getFileDirectory($file_input_name, $local_storage_directory, $ad_index, true);
+                            
+                            // remove rootPath
+                            $ad_profile_pic = explode("$rootPath/", $ad_profile_pic);
+                            $ad_profile_pic = $ad_profile_pic[1];
+                            
+                        } else {
+                            exit("Profile picture is too large. Upload a file 2MB or less"); // file exceeds 2MB
                         }
-        
-                        $ad_profile_pic = getFileDirectory($file_input_name, $local_storage_directory, $ad_index, true);
-
-                        //remove rootPath
-                        $ad_profile_pic = explode("$rootPath/", $ad_profile_pic);
-                        $ad_profile_pic = $ad_profile_pic[1];
-                    }else{
-                        echo "profile-wrong-ext";
+                    } else {
+                        exit("profile-wrong-ext"); // invalid extension
                     }
-                }elseif(in_array($shs_placed, $required_profile) && empty($_FILES["profile_pic"]["tmp_name"])){
-                    echo "profile-pic-required";
+                } elseif (in_array($shs_placed, $required_profile) && empty($_FILES["profile_pic"]["tmp_name"])) {
+                    exit("profile-pic-required");
                 }
 
                 // generate extra info for student
@@ -127,9 +136,9 @@
                     $message = "wrong-school";
                 }/*elseif(empty($ad_aggregate)){
                     $message = "no-aggregate-score";
-                }elseif($ad_aggregate && (intval($ad_aggregate) < 6 || intval($ad_aggregate) > 54)){
+                }*/elseif($ad_aggregate && (intval($ad_aggregate) < 6 || intval($ad_aggregate) > 54)){
                     $message = "wrong-aggregate-score";
-                }*/elseif(empty($ad_course)){
+                }elseif(empty($ad_course)){
                     $message = "no-course-set";
                 }elseif(empty($ad_lname)){
                     $message = "no-lname-set";
@@ -460,7 +469,7 @@
                         echo "success";
 
                         //add admin number
-                        echo "-".getSchoolDetail($school, true)["techContact"];
+                        echo "-".remakeNumber(getSchoolDetail($school, true)["techContact"], true, false);
                     }else{
                         echo "This transaction id does not match the selected school";
                     }                    

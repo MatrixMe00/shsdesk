@@ -144,7 +144,7 @@
 </div>
 
 <script src="<?php echo $url?>/admin/admin/assets/scripts/placement.min.js?v=<?php echo time()?>" async></script>
-<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.min.js" async></script>
+<script src="<?php echo $url?>/admin/admin/assets/scripts/newstudent.min.js?v=<?= time() ?>"></script>
 <script src="<?php echo $url?>/assets/scripts/form/general.min.js?v=<?php echo time()?>" async></script>
 <script src="<?php echo $url?>/admin/admin/assets/scripts/table.min.js?v=<?php echo time()?>" async></script>
 <script>

@@ -58,11 +58,19 @@ form .body, .form .body{
 
 .body label{
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     border: 2px solid transparent;
     margin: 10px 2.5%;
     background-color: white;
+    position: relative;
+}
+
+label .field-error{
+    position: absolute;
+    top: 90%;
+    width: inherit;
 }
 
 .body label, .body label input, .body label select{
@@ -183,13 +191,13 @@ label.checkbox input{
 label input[type=text], label input[type=password],
 label input[type=email], label input.tel, 
 label select, label input[type=number], label input[type=url],
-label input[type=date]{
+label input[type=date], label input[type=tel]{
     background-color: whitesmoke;
 }
 
 label input[type=text]:focus, label input[type=password]:focus,
 label input[type=email]:focus, label input.tel:focus, label textarea:focus, label input[type=url]:focus,
-label select:focus, label input[type=number]:focus, label input[type=date]:focus{
+label select:focus, label input[type=number]:focus, label input[type=date]:focus, label input[type=tel]:focus{
     outline: none;
 }
 

@@ -2838,10 +2838,10 @@
      * @param string $reference The transaction reference
      * @return bool|array
      */
-    function transaction_exists(string $reference){
+    function transaction_exists(string|int $reference){
         global $server_secret;
 
-        $url = "https://api.paystack.co/transaction/verify/$reference";
+        $url = "https://api.paystack.co/transaction/".(!is_numeric($reference) ? "verify/" : "")."$reference";
 
         $response = curl_get($url, [], [
             "Authorization: Bearer $server_secret",

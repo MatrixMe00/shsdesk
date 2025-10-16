@@ -16,34 +16,35 @@ $(document).ready(function(){
  * This function is used to check if the next or submit button should be shown in the admission form
  * @returns {void} The function returns nothing
  */
- function admissionFormButtonChange()
- {
-     //get the total number of levels we have
-     total = $(".tabs").children("span.tab_button").length;
-     var i = 1;
-     
-     for(i; i <= total; i++){
-         //search for the currently selected tab
-         if($(".tabs span.tab_button:nth-child(" + i + ")").hasClass("active") && i < total){
-             $("button[name=submit_admission] span").html("Next");
-             $("button[name=submit_admission]").prop("disabled", checkForm(i));
- 
-             admission_button_tab_index = i;
- 
-             break;
-         }else if($(".tabs span.tab_button:nth-child(" + i + ")").hasClass("active") && i == total){
-             $("button[name=submit_admission] span").html("Submit");
-             $("button[name=submit_admission]").prop("disabled", checkForm(i));
- 
-             break;
-         }
-     }
- }
+function admissionFormButtonChange() {
+    const $tabs = $(".tabs span.tab_button");
+    const total = $tabs.length;
+
+    $tabs.each(function(index) {
+        if ($(this).hasClass("active")) {
+            const isLast = index === total - 1;
+            const $button = $("button[name=submit_admission]");
+
+            $button.find("span").html(isLast ? "Submit" : "Next");
+            $button.prop("disabled", checkForm(index + 1));
+
+            // keep track of the current tab index (1-based to match your original code)
+            window.admission_button_tab_index = index + 1;
+
+            return false; // break out of .each()
+        }
+    });
+}
+
+// Run this whenever inputs change
+$("#ad_father_name, #ad_father_occupation, #ad_mother_name, #ad_mother_occupation, #ad_guardian_name").on("input change blur", function () {
+    updateGuardianRules();
+});
 
 //fill the number of days depending on the selected month
 $("select[name=ad_month]").change(function(){
     //set the first key to be select
-    html1 = "<option value=''>Select Your Day of Birth</option>";
+    const html1 = "<option value=''>Select Your Day of Birth</option>";
     $("select[name=ad_day]").html(html1);
 
     if($("select[name=ad_year]").val() != "") {
@@ -80,7 +81,7 @@ $("select[name=ad_year]").change(function(){
         $("select[name=ad_month]").change();
     }else{
         //set the first key to be select
-        html1 = "<option value=''>Select Your Day of Birth</option>";
+        const html1 = "<option value=''>Select Your Day of Birth</option>";
         $("select[name=ad_day]").html(html1);
     }
 })
@@ -118,7 +119,7 @@ $("button[name=modal_cancel]").click(function(){
         $("form[name=admissionForm] label[for=submit_admission]").addClass("no_disp");
 
         //submit button should turn to button and should be disabled
-        $("button[name=submit_admission]").prop("disabled", true).prop("type","button");
+        $("button[name=submit_admission]").prop("disabled", true).prop("type","button").val("admissionFormSubmit");
 
         //click first tab
         $(".tabs span.tab_button").addClass("no_disp").removeClass("incomplete");
@@ -129,6 +130,9 @@ $("button[name=modal_cancel]").click(function(){
 
         //reset form
         $("form[name=admissionForm]")[0].reset();
+
+        // remove any disabled
+        $("form[name=admissionForm]").find("input:disabled, select:disabled, textarea:disabled").prop("disabled", false);
 
         $("#interest").val('');
 
@@ -142,20 +146,20 @@ $("button[name=modal_cancel]").click(function(){
 })
 
 //what to do with the submit admission button
-$("button[name=submit_admission]").click(function() {
-    //get the total number of levels we have
-    total = $(".tabs").children("span.tab_button").length;
+$("button[name=submit_admission][type=button]").click(function() {
+    const tabs = $(".tabs > span.tab_button");
+    const total = tabs.length;
 
-    if(admission_button_tab_index < total){
-        admission_button_tab_index += 1;
+    if (admission_button_tab_index < total) {
+        admission_button_tab_index++;
+        tabs.eq(admission_button_tab_index - 1).click();
     }
 
-    $(".tabs span.tab_button:nth-child(" + admission_button_tab_index + ")").click();
-
-    /*if($(this).prop("type") == "submit"){
-        $("form[name=admissionForm]").submit();
-    }*/
-})
+    // If at the end and button was submit:
+    // if (this.type === "submit") {
+    //     $("form[name=admissionForm]").submit();
+    // }
+});
 
 //marking the button enabled when user agrees that data is correct
 $("label[for=agree]").click(function(){
@@ -177,83 +181,25 @@ $("label[for=agree]").click(function(){
     $("button[name=submit_admission]").prop("disabled", !check);
 })
 
-//dynamically help the user when typing the phone number
-$("input.tel").keyup(function(){
-    val = $(this).val();
-
-    //give a default maximum length
-    maxlength = 10;
-
-    //check if the user is starting from 0 or +
-    if(val[0] == "+" && val.includes(" ")){
-        maxlength = 16;
-    }else if(val[0] == "+" && !val.includes(" ")){
-        maxlength = 13;
-    }else if(val[0] == "0" && val.includes(" ")){
-        maxlength = 12;
-    }else if(val[0] == "0" && !val.includes(" ")){
-        maxlength = 10;
-    }else{
-        $(this).val('');
-    }
-
-    //change the maximum length
-    $(this).prop("maxlength",maxlength);
-})
-
-//remove spaces from phone number
-$("input.tel").blur(function(){
-    i = 0;
-    value = $(this).val();
-
-    if(value.includes(" ")){
-        //split value
-        value = value.split(" ");
-        length = 0;
-        new_value = "";
-
-        //join separate values
-        while(length < value.length){
-            new_value += value[length];
-            length++;
-        }
-
-        //pass new value into value
-        value = new_value;
-    }
-
-    //convert value into +233
-    if(value[0] == "0"){
-        new_val = "+233";
-
-        //grab from second value
-        i = 1;
-
-        while(i <= 9){
-            new_val += value[i];
-            i++;
-        }
-
-        value = new_val;
-    }
-
-    $(this).val(value);
-})
-
 //form tab menu
-$(".tabs span.tab_button").click(function(){
-    //shade the selected tab button
+$(".tabs span.tab_button").click(function() {
+    // shade the selected tab button
     $(".tabs span.tab_button").removeClass("active");
     $(this).addClass("active");
 
-    //hide all views
+    // hide all views
     $(".form_views > div").addClass("no_disp");
 
-    //display its associated form view
-    $("#" + $(this).attr("data-views")).removeClass("no_disp");
+    // display its associated form view
+    const targetId = $(this).attr("data-views");
+    const $target = $("#" + targetId);
+    $target.removeClass("no_disp");
+
+    // reset scroll to top of the form_views container
+    $(".form_views").animate({ scrollTop: 0 }, 300);
 
     admissionFormButtonChange();
-})
+});
 
 //automatically check for enabling the button when changes are made from select and input fields
 $("#admission select").change(function(){
@@ -508,6 +454,7 @@ $("button[name=continue]").click(function(){
         beforeSend: function(){
             $("#view1 .para_message").html("Checking index number, please wait...");
             alert_box("Retrieving CSSPS data...", "secondary", 2);
+            $(".tabs span.tab_button.active").removeClass("no_disp");
         },
         success: function(json){
             $("#view1 .para_message").html("Parts with * means they are required fields");
@@ -701,6 +648,9 @@ $("form[name=admissionForm] button[name=modal_cancel]").click(function(){
 $("form[name=admissionForm]").submit(function(e){
     e.preventDefault();
 
+    // enable all disabled fields
+    $(this).find("input, select, textarea").prop("disabled", false);
+
     fileUpload($(this), $(this).find("button[name=submit_admission]"), true)
     .then(response => {
         time = 5;
@@ -864,6 +814,8 @@ $("form[name=admissionForm]").submit(function(e){
 
             messageBoxTimeout(form_element.prop("name"), message, type);
     })
+
+    updateGuardianRules();
 })
 
 //display print button on admission form

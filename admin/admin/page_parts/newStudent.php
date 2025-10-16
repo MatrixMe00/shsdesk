@@ -1,4 +1,7 @@
-<?php include_once("auth.php") ?>
+<?php include_once("auth.php");
+
+    $programs = decimalIndexArray(fetchData("DISTINCT programme", "cssps","schoolID=$user_school_id",0));
+?>
 
 <?php if(isset($db2)): ?>
 <form action="<?php echo $url?>/admin/admin/submit.php" method="get" class="fixed" name="adminAddStudent">
@@ -92,10 +95,7 @@
                 </span>
                 <input type="text" name="student_course" id="student_course" title="Enter the selected course"
                 autocomplete="on" list="program-list" placeholder="Enter the selected course*" required>
-                <?php 
-                    $programs = decimalIndexArray(fetchData("DISTINCT programme", "cssps","schoolID=$user_school_id",0));
-                    if($programs):
-                ?>
+                <?php if($programs): ?>
                 <datalist id="program-list">
                     <?php foreach($programs as $program): ?>
                         <option value="<?= $program["programme"] ?>">
@@ -211,7 +211,15 @@
                     <img src="<?php echo $url?>/assets/images/icons/book-outline.svg" alt="course">
                 </span>
                 <input type="text" name="student_course" id="student_course" title="Enter the selected course"
-                autocomplete="off" placeholder="Enter the selected course*" required>
+                autocomplete="off" placeholder="Enter the selected course*" required list="program-list">
+
+                <?php if($programs): ?>
+                <datalist id="program-list">
+                    <?php foreach($programs as $program): ?>
+                        <option value="<?= $program["programme"] ?>">
+                    <?php endforeach; ?>
+                </datalist>
+                <?php endif; ?>
             </label>
             <label for="aggregate">
                 <span class="label_image">

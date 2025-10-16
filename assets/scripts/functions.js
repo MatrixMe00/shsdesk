@@ -105,6 +105,21 @@
 }
 
 /**
+ * Used to show a field's error
+ * @param {*} $el The element
+ * @param {*} message The message to be shown
+ */
+function showFieldError($el, message) {
+    // Remove existing error
+    $el.next(".field-error").remove();
+
+    // Add only if there's a message
+    if (message) {
+        $el.after('<small class="field-error" style="color:red;display:block;margin-top:3px;">' + message + '</small>');
+    }
+}
+
+/**
  * This function here would be used to alert the user on required forms field in the admission form
  * 
  * @param {any} element The current selected element
@@ -142,6 +157,135 @@ function formRequiredCheck(element) {
         $el.css("border", isValid ? "1px solid green" : "1px solid red");
     } else {
         $el.css("border", ""); // neutral for non-required
+    }
+}
+
+/**
+ * Validate a single field and show inline error
+ * @param {jQuery} $el The input element wrapped in jQuery
+ * @returns {boolean} true = valid, false = invalid
+ */
+function validateField($el) {
+    // ✅ Skip disabled fields
+    if ($el.prop("disabled")) {
+        $el.css("border", "");          // reset border
+        showFieldError($el, "");        // clear any error message
+        return true;                    // treat as valid
+    }
+
+    let required = $el.prop("required") || $el.hasClass("required");
+    let value = ($el.val() || "").trim();
+    let minlength = parseInt($el.attr("minlength"), 10) || 0;
+    let maxlength = parseInt($el.attr("maxlength"), 10) || Infinity;
+    let pattern = $el.attr("pattern"); // regex pattern if defined
+
+    let message = "";
+
+    // ✅ Required check
+    if (required && value.length === 0) {
+        message = "This field is required.";
+    } else if (value.length > 0) {
+        // ✅ Only validate non-required fields if they have a value
+        if (value.length < minlength) {
+            message = "Minimum length is " + minlength + " characters.";
+        } else if (value.length > maxlength) {
+            message = "Maximum length is " + maxlength + " characters.";
+        } else if (pattern) {
+            try {
+                let regex = new RegExp("^" + pattern + "$");
+                if (!regex.test(value)) {
+                    message = "Invalid format.";
+                }
+            } catch (e) {
+                console.warn("Invalid regex pattern for", $el.attr("name"), pattern);
+            }
+        }
+    }
+
+    // ✅ Update border
+    if (message) {
+        $el.css("border", "1px solid red");
+    } else if (value.length > 0 || required) {
+        // only show green if filled or required
+        $el.css("border", "1px solid green");
+    } else {
+        // reset border for optional empty
+        $el.css("border", "");
+    }
+
+    // ✅ Show or clear error
+    showFieldError($el, message);
+
+    return message === ""; // valid if no error
+}
+
+/**
+ * Validate all fields in the current tab
+ * Includes per-field and step-level rules
+ * @returns {boolean} true = tab valid, false = tab invalid
+ */
+function validateCurrentTab() {
+    let $activeTab = $(".form_views > div:not(.no_disp)");
+    let allValid = true;
+
+    // Validate each field individually
+    $activeTab.find("input, select, textarea").each(function() {
+        let valid = validateField($(this));
+        if (!valid) allValid = false;
+    });
+
+    // Step-level special rules
+    if ($activeTab.attr("id") === "view2") {
+        let fatherOk = $("#ad_father_name").val().trim().length >= 6 && $("#ad_father_occupation").val().trim() !== "";
+        let motherOk = $("#ad_mother_name").val().trim().length >= 6 && $("#ad_mother_occupation").val().trim() !== "";
+        let guardianOk = $("#ad_guardian_name").val().trim().length >= 5;
+
+        if (!(fatherOk || motherOk || guardianOk)) {
+            allValid = false;
+        }
+    }
+
+    return allValid;
+}
+
+/**
+ * Update guardian/father/mother rules dynamically
+ */
+function updateGuardianRules() {
+    const fatherName = $("#ad_father_name").val().trim();
+    const fatherOcc = $("#ad_father_occupation").val().trim();
+    const motherName = $("#ad_mother_name").val().trim();
+    const motherOcc = $("#ad_mother_occupation").val().trim();
+    const guardianName = $("#ad_guardian_name").val().trim();
+
+    const fatherOk = fatherName.length >= 6 && fatherOcc.length > 0;
+    const motherOk = motherName.length >= 6 && motherOcc.length > 0;
+    const guardianOk = guardianName.length >= 6;
+
+    // If father OR mother is valid → lock guardian
+    if (fatherOk || motherOk) {
+        $("#ad_guardian_name").prop("disabled", true).val(""); // clear guardian
+    } else {
+        $("#ad_guardian_name").prop("disabled", false);
+    }
+
+    // If guardian is valid → lock father + mother
+    if (guardianOk) {
+        $("#ad_father_name, #ad_father_occupation, #ad_mother_name, #ad_mother_occupation")
+            .prop("disabled", true)
+            .val(""); // clear fields
+    } else {
+        $("#ad_father_name, #ad_father_occupation, #ad_mother_name, #ad_mother_occupation")
+            .prop("disabled", false);
+    }
+
+    // If ANY of them is valid → set all boxes to green
+    if (fatherOk || motherOk || guardianOk) {
+        $("#ad_father_name, #ad_father_occupation, #ad_mother_name, #ad_mother_occupation, #ad_guardian_name")
+            .css("border", "2px solid green");
+    } else {
+        $("#ad_father_name, #ad_father_occupation, #ad_mother_name, #ad_mother_occupation, #ad_guardian_name")
+            .css("border", ""); // reset border
     }
 }
 
@@ -196,112 +340,53 @@ function resetAccepts(){
 }
 //function to check the form and make submit button ready
 /**
- * This value is used for tracking changes in the admission form control
- * @param {number} i This paramneter receives the index of the current tab
- * @returns {boolean} The function returns a true or false value which is used to
- * tell if the submit button should be enabled or not
+ * Validate admission form step by step
+ * @param {number} i The current tab index (1-based)
+ * @returns {boolean} true = has error, false = valid
  */
-function checkForm(i){
-    //return value
+function checkForm(i) {
     let an_error = true;
+    let step = parseInt(i, 10);
 
-    // Candidate details
-    let ad_enrol_code = $("#ad_enrol_code").val() || "";
-    let ad_index = $("#ad_index").val() || "";
-    let ad_aggregate = $("#ad_aggregate").val() || "";
-    let ad_course = $("#ad_course").val() || "";
-    let ad_oname = $("#ad_oname").val() || "";
-    let ad_lname = $("#ad_lname").val() || "";
-    let ad_gender = $("#ad_gender").val() || "";
-    let ad_year = $("#ad_year").val() || "";
-    let ad_month = $("#ad_month").val() || "";
-    let ad_day = $("#ad_day").val() || "";
-    let ad_birth_place = $("#ad_birth_place").val() || "";
-    let ad_jhs = $("#ad_jhs").val() || "";
-    let ad_jhs_district = $("#ad_jhs_district").val() || "";
-    let ad_jhs_town = $("#ad_jhs_town").val() || "";
+    // Run field validation for the current tab
+    let tabValid = validateCurrentTab();
 
-    // Parents / guardians
-    let ad_father_name = $("#ad_father_name").val() || "";
-    let ad_father_occupation = $("#ad_father_occupation").val() || "";
-    let ad_mother_name = $("#ad_mother_name").val() || "";
-    let ad_mother_occupation = $("#ad_mother_occupation").val() || "";
-    let ad_guardian_name = $("#ad_guardian_name").val() || "";
-    let ad_resident = $("#ad_resident").val() || "";
-    let ad_phone = $("#ad_phone").val() || "";
-    let ad_witness = $("#ad_witness").val() || "";
-    let ad_witness_phone = $("#ad_witness_phone").val() || "";
+    // Track agreements for step 1 & 2
+    if (step === 1) {
+        accept1 = tabValid;
+        $(".tab_button.active").toggleClass("incomplete", tabValid === false);
+    } else if (step === 2) {
+        accept2 = tabValid;
+        $(".tab_button.active").toggleClass("incomplete", tabValid === false);
+    }
 
-    // Get enrol code min/max from input attributes
-    let enrolMin = parseInt($("#ad_enrol_code").attr("minlength"), 10) || 0;
-    let enrolMax = parseInt($("#ad_enrol_code").attr("maxlength"), 10) || Infinity;
-
-    if(parseInt(i) == 1){
-        if(ad_enrol_code != "" && ad_enrol_code.length >= enrolMin && ad_enrol_code.length <= enrolMax && ad_index != "" && ad_aggregate != "" && ad_course != "" &&
-        ad_oname != "" && ad_lname != "" && ad_gender != "" && ad_year != "" && ad_month != "" 
-        && ad_day != "" && ad_birth_place != ""){
-            if(ad_jhs != "" && ad_jhs_district != "" && ad_jhs_town != ""){
-                $(".tab_button.active").removeClass("incomplete");
-                an_error = false;
-
-                //prepare to be agreed
-                accept1 = true;
-            }else{
-                an_error = true;
-
-                //disagree with document
-                accept1 = false;
-            }
-        }else{
-            $(".tab_button.active").addClass("incomplete");
-            an_error = true;
-        }
-    }else if(parseInt(i) == 2){
-        if((((ad_father_name != "" && ad_father_occupation != "") && ad_father_name.length >= 6) || 
-          ((ad_mother_name != "" && ad_mother_occupation != "") && ad_mother_name.length >= 6) || 
-          (ad_guardian_name != "") && ad_guardian_name.length >= 5) && ad_resident != "" && 
-          ad_phone != "" && ad_witness != "" && ad_witness_phone != ""){
-            $(".tab_button.active").removeClass("incomplete");
-            an_error = false;
-
-            //prepare to be agreed
-            accept2 = true;
-        }else{
-            $(".tab_button.active").addClass("incomplete");
-            an_error = true;
+    // If valid → allow next tab to be visible
+    if (tabValid) {
+        let next = step + 1;
+        let $nextTab = $(".tab_button:nth-child(" + next + ")");
+        if ($nextTab.hasClass("no_disp")) {
+            $nextTab.removeClass("no_disp");
         }
     }
 
-    //check if tab is completely filled with required data
-    if(an_error == false){
-        next = parseInt(i) + 1;
-        element = $(".tab_button:nth-child(" + next + ")");
-        if($(element).hasClass("no_disp")){
-            $(element).removeClass("no_disp");
+    // Enable or disable agree checkbox (step 3 logic)
+    if (accept1 && accept2) {
+        let $agreeInput = $("label[for=agree] input[name=agree]");
+        $agreeInput.prop("disabled", false);
+
+        if (step === 3) {
+            let checked = $agreeInput.prop("checked");
+            tabValid = checked; // must check agreement
         }
-    }
-
-    //enable or disable agree button
-    if(accept1 && accept2){
-        $("label[for=agree] input[name=agree]").prop("disabled", false);
-        an_error = false;
-
-        if(parseInt(i) == 3){
-            val = $("label[for=agree] input[name=agree]").prop("checked");
-
-            if(val){
-                an_error = false;
-            }else{
-                an_error = true;
-            }
-        }
-    }else{
+    } else {
         $("label[for=agree] input[name=agree]").prop("disabled", true);
     }
-    
-    //update interest
+
+    // Update interests in summary (still needed)
     $("#res_ad_interest").html($("input#interest").val());
 
+    // Final decision
+    an_error = !tabValid;
     return an_error;
 }
 

@@ -18,9 +18,9 @@ if(isset($_REQUEST['submit'])){
         $text_message = $_REQUEST["message"];
 
         // use mnotify
-        $response = send_sms($senderId, $text_message, $recipients, SMS_PROVIDER::MNOTIFY)["response"];
-        echo json_encode($response);
-        exit;
+        // $response = send_sms($senderId, $text_message, $recipients, SMS_PROVIDER::MNOTIFY)["response"];
+        // echo json_encode($response);
+        // return;
     }elseif($submit == 'exeat_request' || $submit == 'exeat_request_ajax'){
         $student = fetchData1("lastname, othernames, guardianContact","students_table","indexNumber='$student_index'");
         if(is_array($student)){

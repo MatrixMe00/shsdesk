@@ -53,7 +53,7 @@
                             <span class="label_image">
                                 <img src="<?php echo $url?>/assets/images/icons/hashtag.png" alt="aggregate">
                             </span>
-                            <input type="text" name="ad_aggregate" id="ad_aggregate" maxlength="2"
+                            <input type="text" name="ad_aggregate" id="ad_aggregate"
                             placeholder="Enter your aggregate here" title="Enter your aggregate here" 
                             ng-model="ad_aggregate" readonly>
                         </label>
@@ -214,7 +214,7 @@
                             <span class="label_image">
                                 <img src="<?php echo $url?>/assets/images/icons/bag-handle-outline.svg" alt="occupation">
                             </span>
-                            <input type="text" name="ad_father_occupation" id="ad_father_occupation" minlength="6" ng-model="ad_father_occupation" 
+                            <input type="text" name="ad_father_occupation" id="ad_father_occupation" minlength="2" ng-model="ad_father_occupation" 
                             title="Enter the occupation of your father" class="required"
                             placeholder="Father's Occupation*">
                         </label>
@@ -230,7 +230,7 @@
                             <span class="label_image">
                                 <img src="<?php echo $url?>/assets/images/icons/bag-handle-outline.svg" alt="occupation">
                             </span>
-                            <input type="text" name="ad_mother_occupation" id="ad_mother_occupation" minlength="5" ng-model="ad_mother_occupation" 
+                            <input type="text" name="ad_mother_occupation" id="ad_mother_occupation" minlength="2" ng-model="ad_mother_occupation" 
                             title="Enter the occupation of your mother" class="required"
                             placeholder="Mother's Occupation*">
                         </label>
@@ -238,7 +238,7 @@
                             <span class="label_image">
                                 <img src="<?php echo $url?>/assets/images/icons/man_woman.png" alt="">
                             </span>
-                            <input type="text" name="ad_guardian_name" id="ad_guardian_name" minlength="5" autocomplete="off" 
+                            <input type="text" name="ad_guardian_name" id="ad_guardian_name" minlength="6" autocomplete="off" 
                             placeholder="Name of Guardian" ng-model="ad_guardian_name" class="required"
                             title="Enter the full name of your guardian">
                         </label>
@@ -260,16 +260,16 @@
                             <span class="label_image">
                                 <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="phone">
                             </span>
-                            <input type="text" name="ad_phone" ng-model="ad_phone" id="ad_phone" maxlength="16"
-                            placeholder="Primary Phone Number*" title="Enter the phone number easily accessible to you" 
-                            class="tel" required>
+                            <input type="tel" name="ad_phone" ng-model="ad_phone" id="ad_phone" maxlength="16" minlength="10"
+                            placeholder="Primary Phone Number*" title="Enter the phone number easily accessible to you" pattern="[0-9+()\-\s]{10,15}"
+                            required>
                         </label>
                         <label for="ad_other_phone">
                             <span class="label_image">
                                 <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="">
                             </span>
-                            <input type="text" name="ad_other_phone" id="ad_other_phone" ng-model="ad_other_phone" maxlength="16"
-                            placeholder="Secondary Phone number" title="Enter an alternative phone number" class="tel">
+                            <input type="text" name="ad_other_phone" id="ad_other_phone" ng-model="ad_other_phone" maxlength="16" minlength="10"
+                            placeholder="Secondary Phone number" title="Enter an alternative phone number" pattern="[0-9+()\-\s]{10,15}" />
                         </label>
                     </div>
                 </fieldset>
@@ -336,8 +336,8 @@
                         <span class="label_image">
                             <img src="<?php echo $url?>/assets/images/icons/phone-portrait-outline.svg" alt="witness phone">
                         </span>
-                        <input type="text" name="ad_witness_phone" id="ad_witness_phone" ng-model="ad_witness_phone" required maxlength = "16" 
-                        placeholder="Witness' Contact Number*" title="Enter a valid phone number, and it should be only numbers" class="tel">
+                        <input type="text" name="ad_witness_phone" id="ad_witness_phone" ng-model="ad_witness_phone" required minlength="10" maxlength = "16" 
+                        placeholder="Witness' Contact Number*" title="Enter a valid phone number, and it should be only numbers" pattern="[0-9+()\-\s]{10,15}" />
                     </label>
                 </fieldset>
             </div>                           
@@ -649,5 +649,5 @@
     </div>
     <div id="form_footer">
     </div>
-    <a href="<?php echo $url?>/pdf_handle.php" class="no_disp" id="handle_pdf" rel="nofollow"></a>
+    <a href="<?php echo $url?>/pdf_handle.php" class="no_disp" id="handle_pdf" target="_blank" rel="nofollow"></a>
 </form>

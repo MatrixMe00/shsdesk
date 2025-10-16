@@ -1,5 +1,6 @@
 <?php //include_once("auth.php");
     $admin_mode = $_SESSION["admin_mode"] ?? "no-data";
+    $programs = decimalIndexArray(fetchData("DISTINCT programme", "cssps","schoolID=$user_school_id",0));
 ?>
 
 <div class="flex flex-column flex-center-align flex-center-content">
@@ -93,6 +94,14 @@
                 </span>
                 <input type="text" name="student_course" id="student_course" title="Enter the selected course"
                 autocomplete="off" list="program-list" placeholder="Enter the selected course*" required>
+                
+                <?php if($programs): ?>
+                <datalist id="program-list">
+                    <?php foreach($programs as $program): ?>
+                        <option value="<?= $program["programme"] ?>">
+                    <?php endforeach; ?>
+                </datalist>
+                <?php endif; ?>
             </label>
             <?php if($admin_mode == "records") : ?>
             <label for="program_id">
