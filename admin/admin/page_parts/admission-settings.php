@@ -7,7 +7,7 @@
 
 <?php 
     $students = decimalIndexArray(fetchData("*", "cssps", "schoolID=$user_school_id", 0));
-
+    $admission_details = fetchData("*", "admissiondetails", "schoolID = $user_school_id");
     if($students):
 ?>
 
@@ -82,6 +82,18 @@
                         "status" => !$new_admission && $clean_data
                     ]
                 ],
+                [
+                    "settings" => "Close Admission",
+                    "info" => "Use this to close the current admission year. New entries will not received. The system will automatically enable admissions on the first of september every year.",
+                    "alert_message" => "This action cannot be undone until the next admission year.",
+                    "submit_value" => "close_admission",
+                    "action" => [
+                        "name" => "Close",
+                        "status" => ($admission_details["lockAdmission"] ?? true) == false,
+                        "false_text" => !is_null($admission_details) ? "Open" : "",
+                        "false_alert_message" => !is_null($admission_details) ? "Are you sure you want to open admissions for new entries?" : ""
+                    ]
+                ],
                 /*[
                     "settings" => "",
                     "info" => "",
@@ -112,6 +124,8 @@
                         <td>
                             <?php if($setting["action"]["status"]): ?>
                             <span class="item-event action" data-submit="<?= $setting["submit_value"] ?>" data-alert-message="<?= $setting["alert_message"] ?>"><?= $setting["action"]["name"] ?></span>
+                            <?php elseif(!$setting["action"]["status"] && !empty($settings["action"]["false_text"])): ?>
+                            <span class="item-event action" data-submit="<?= $setting["submit_value"] ?>" data-alert-message="<?= $setting["false_alert_message"] ?>"><?= $setting["action"]["false_text"] ?></span>
                             <?php else: ?>
                                 <span class="item-event info">No Action</span>
                             <?php endif; ?>

@@ -2592,6 +2592,15 @@
             }
 
             echo json_encode(["status" => $response, "message" => $message]);
+        }elseif($submit == "close_admission"){
+            $response = boolval($user_school_id);
+            $message = $response ? "success" : "School could not be recognized";
+
+            if($response){
+                $connect->query("UPDATE admissiondetails SET lockAdmission = TRUE WHERE schoolID = $user_school_id");
+            }
+            
+            echo json_encode(["status" => $response, "message" => $message]);
         }elseif($submit == "clean_data"){
             $sql = "DELETE FROM cssps WHERE schoolID=$user_school_id AND enroled = FALSE AND current_data = FALSE";
             $response = $connect->query($sql);

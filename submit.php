@@ -675,9 +675,13 @@
             }else{
                 $indexNumber = $_GET["indexNumber"];
                 $student = fetchData(
-                    ["c.schoolID", "c.Gender", "c.academic_year", "c.enroled", "c.Lastname", "s.schoolName", "s.abbr"],
-                    [ "join" => "schools cssps", "alias" => "s c", "on" => "id schoolID"],
-                    "c.indexNumber='$indexNumber'"
+                    ["c.schoolID", "c.Gender", "c.academic_year", "c.enroled", "c.Lastname", "s.schoolName", "s.abbr", "a.lockAdmission"],
+                    [
+                        ["join" => "schools cssps", "alias" => "s c", "on" => "id schoolID"],
+                        ["join" => "schools admissiondetails", "alias" => "s a", "on" => "id schoolID"]
+                    ],
+                    "c.indexNumber='$indexNumber'",
+                    join_type: "LEFT"
                 );
 
                 if(is_array($student)){
@@ -685,20 +689,25 @@
                         $academic_year = getAcademicYear(now(), false);
 
                         if(formatAcademicYear($student["academic_year"], false) == $academic_year){
-                            $active = (int) fetchData("COUNT(id) as total","houses","schoolID=".$student["schoolID"])["total"];
-                        
-                            if($active > 0){
-                                $message = $student;
-                                $message["status"] = "success";
-                                if(strtolower($student["Gender"]) == "male"){
-                                    $sal = "Mr";
-                                }else{
-                                    $sal = "Mad";
-                                }
-                                $message["successMessage"] = "Congratulations $sal. ".$student["Lastname"]." on your admission to ".$student["abbr"];
+                            if($student["lockAdmission"] == 1 || $student["lockAdmission"] === null){
+                                $message["status"] = "Your school has closed admissions for the current academic year";
                             }else{
-                                $message["status"] = "Your school is not ready for admission. Please try again at another time";
+                                $active = (int) fetchData("COUNT(id) as total","houses","schoolID=".$student["schoolID"])["total"];
+                        
+                                if($active > 0){
+                                    $message = $student;
+                                    $message["status"] = "success";
+                                    if(strtolower($student["Gender"]) == "male"){
+                                        $sal = "Mr";
+                                    }else{
+                                        $sal = "Mad";
+                                    }
+                                    $message["successMessage"] = "Congratulations $sal. ".$student["Lastname"]." on your admission to ".$student["abbr"];
+                                }else{
+                                    $message["status"] = "Your school is not ready for admission. Please try again at another time";
+                                }
                             }
+                            
                         }else{
                             $message["status"] = "You are not registered for this admission year. Contact school admin for help";
                         }
@@ -714,7 +723,7 @@
                         "authorization: Bearer $token"
                     ])["response"];
 
-                    if($response["exist"]){
+                    if(!empty($response["exist"])){
                         // ensure user hasnt completed his registration
                         $school = fetchData("id, abbr, schoolName", "schools", "affiliate_code='{$response['school_uuid']}'");
 
